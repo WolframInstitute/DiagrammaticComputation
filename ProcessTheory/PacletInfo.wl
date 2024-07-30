@@ -21,7 +21,10 @@ PacletObject[
 			"System`ProcessDiagram"
 		},
         "Root" -> "Kernel",
-        "Context" -> {"ProcessTheory`"}
+        "Context" -> {
+			"ProcessTheoryLoader`",
+			"ProcessTheory`"
+		}
       }
     }
   |>
