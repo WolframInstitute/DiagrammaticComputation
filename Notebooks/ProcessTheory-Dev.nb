@@ -1,0 +1,523 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 14.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     20321,        515]
+NotebookOptionsPosition[     14105,        377]
+NotebookOutlinePosition[     19669,        503]
+CellTagsIndexPosition[     19626,        500]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Setup", "Section",
+ CellChangeTimes->{{3.93133847668083*^9, 
+  3.931338478926214*^9}},ExpressionUUID->"a181af94-2936-4fbe-94a6-\
+43d5c0c7ea33"],
+
+Cell[CellGroupData[{
+
+Cell["Docked cell", "Subsubsection",
+ CellChangeTimes->{{3.845656082047042*^9, 
+  3.845656084407159*^9}},ExpressionUUID->"253447e9-3e74-4cb0-b85b-\
+2a968dbf8cdb"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"CurrentValue", "[", 
+    RowBox[{
+     RowBox[{"EvaluationNotebook", "[", "]"}], ",", "DockedCells"}], "]"}], 
+   "=", 
+   RowBox[{"{", "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.9134444552285137`*^9, 3.9134444657964354`*^9}, 
+   3.930441404240829*^9},
+ CellLabel->"In[3]:=",ExpressionUUID->"061df8e9-91f3-4022-9090-a888975b2ac4"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+  "ResourceFunction", "[", 
+   "\"\<https://www.wolframcloud.com/obj/nikm/DeveloperDockedCell\>\"", "]"}],
+   "[", 
+  RowBox[{"\"\<ProcessTheory`\>\"", ",", 
+   RowBox[{"FileNameJoin", "[", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<..\>\"", ",", 
+      "\"\<ProcessTheory\>\""}], "}"}], "]"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.9131303339714746`*^9, 3.913130368231477*^9}, {
+  3.913130423349548*^9, 3.913130448363908*^9}, {3.931337602447563*^9, 
+  3.9313376327725363`*^9}, {3.9313379259531507`*^9, 3.93133795536695*^9}, {
+  3.931340242503326*^9, 3.931340242657839*^9}},
+ CellLabel->"In[2]:=",ExpressionUUID->"90e4dc01-7e80-46e7-8c42-63a89fd6633e"]
+}, Closed]]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Playground", "Section",
+ CellChangeTimes->{{3.931337589438048*^9, 
+  3.931337592488842*^9}},ExpressionUUID->"59da5806-1577-4795-93eb-\
+4864fea8d352"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["ProcessDiagram"], "Input",
+ CellChangeTimes->{{3.931340413068007*^9, 
+  3.9313404174671803`*^9}},ExpressionUUID->"71915634-aa07-45ad-9ef5-\
+331961225aad"],
+
+Cell[BoxData[
+ InterpretationBox[
+  StyleBox[
+   FrameBox[
+    DynamicModuleBox[{System`InformationDump`open$$ = True, 
+     System`InformationDump`mouseOver$$ = False}, 
+     PaneSelectorBox[{True->
+      TagBox[GridBox[{
+         {
+          ItemBox[
+           PaneBox[
+            StyleBox[
+             TagBox[
+              TooltipBox[
+               StyleBox["\<\" Symbol\"\>", "InformationRowLabel",
+                StripOnInput->False],
+               "\"Symbol\"",
+               TooltipStyle->"TextStyling"],
+              Annotation[#, "Symbol", "Tooltip"]& ], "InformationTitleText",
+             StripOnInput->False,
+             BaseStyle -> None],
+            FrameMargins->{{4, 0}, {-1, 1}}],
+           BaseStyle->"InformationTitleBackground",
+           StripOnInput->False], 
+          ItemBox[
+           PaneBox[
+            TooltipBox[
+             ButtonBox[
+              PaneSelectorBox[{False->
+               
+               DynamicBox[FEPrivate`FrontEndResource[
+                "FEBitmaps", "InformationHelpIcon"],
+                ImageSizeCache->{13., {3.634033203125, 9.365966796875}}], 
+               True->
+               
+               DynamicBox[FEPrivate`FrontEndResource[
+                "FEBitmaps", "InformationHelpIconHot"],
+                ImageSizeCache->{13., {3.634033203125, 9.365966796875}}]}, 
+               Dynamic[
+                CurrentValue["MouseOver"]]],
+              Appearance->None,
+              BaseStyle->"Link",
+              
+              ButtonData->
+               "http://reference.wolfram.com/language/ref/ProcessDiagram.html",
+              
+              ButtonNote->
+               "http://reference.wolfram.com/language/ref/ProcessDiagram.\
+html"],
+             
+             "\"http://reference.wolfram.com/language/ref/ProcessDiagram.html\
+\""],
+            FrameMargins->{{0, 4}, {0, 2}}],
+           BaseStyle->"InformationTitleBackground",
+           StripOnInput->False]},
+         {
+          ItemBox[
+           PaneBox[
+            StyleBox["\<\"System`ProcessDiagram\"\>", "InformationUsageText",
+             StripOnInput->False,
+             LineSpacing->{1.5, 1.5, 3.}],
+            FrameMargins->{{10, 10}, {8, 10}}],
+           BaseStyle->"InformationUsageSubtitleBackground",
+           StripOnInput->False], 
+          ItemBox["\<\"\"\>",
+           BaseStyle->"InformationUsageSubtitleBackground",
+           StripOnInput->False]},
+         {
+          PaneBox[GridBox[{
+             {
+              
+              DynamicModuleBox[{System`InformationDump`open$$ = {
+               False, False, False, False, False, False}}, 
+               StyleBox[GridBox[{
+                  {
+                   TagBox[
+                    TooltipBox[
+                    StyleBox["\<\" Documentation\"\>", "InformationRowLabel",
+                    StripOnInput->False],
+                    "\"Documentation\"",
+                    TooltipStyle->"TextStyling"],
+                    Annotation[#, "Documentation", "Tooltip"]& ], 
+                   TemplateBox[{
+                    TemplateBox[{"\"Web \[RightGuillemet]\"", {
+                    URL[
+                    "http://reference.wolfram.com/language/ref/ProcessDiagram.\
+html"], None}, 
+                    "http://reference.wolfram.com/language/ref/ProcessDiagram.\
+html", "Hyperlink", {
+                    RGBColor[0.9686274509803922, 0.4666666666666667, 0.]}, 
+                    BaseStyle -> {
+                    RGBColor[0.0784313725490196, 0.1568627450980392, 0.6]}}, 
+                    "HyperlinkTemplate"]},
+                    "RowDefault"]},
+                  {
+                   TagBox[
+                    TooltipBox[
+                    StyleBox["\<\" Full Name\"\>", "InformationRowLabel",
+                    StripOnInput->False],
+                    "\"FullName\"",
+                    TooltipStyle->"TextStyling"],
+                    
+                    Annotation[#, "FullName", 
+                    "Tooltip"]& ], "\<\"System`ProcessDiagram\"\>"}
+                 },
+                 AutoDelete->False,
+                 GridBoxAlignment->{"Columns" -> {Right, Left}},
+                 GridBoxDividers->None,
+                 GridBoxItemSize->{"Columns" -> {Automatic, Automatic}},
+                 GridBoxSpacings->{"Columns" -> {
+                    Offset[0.27999999999999997`], {
+                    Offset[0.5599999999999999]}, 
+                    Offset[0.27999999999999997`]}, "Rows" -> {
+                    Offset[0.2], {
+                    Offset[0.8]}, 
+                    Offset[0.2]}}], "DialogStyle",
+                StripOnInput->False],
+               DynamicModuleValues:>{}]}
+            },
+            DefaultBaseStyle->"Column",
+            GridBoxAlignment->{"Columns" -> {{Left}}},
+            GridBoxDividers->{"Columns" -> {{False}}, "Rows" -> {{False}}},
+            
+            GridBoxItemSize->{
+             "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+            GridBoxSpacings->{"Columns" -> {
+                Offset[0.27999999999999997`], {
+                 Offset[0.5599999999999999]}, 
+                Offset[0.27999999999999997`]}, "Rows" -> {
+                Offset[0.2], {
+                 Offset[3.6]}, 
+                Offset[0.2]}}],
+           FrameMargins->{{6, 6}, {6, 3}}], ""},
+         {
+          ItemBox[
+           TagBox[
+            ButtonBox[
+             PaneSelectorBox[{False->
+              
+              DynamicBox[FEPrivate`FrontEndResource[
+               "FEBitmaps", "UpPointerOpener"],
+               ImageSizeCache->{10., {1.143798828125, 8.856201171875}}], True->
+              
+              
+              DynamicBox[FEPrivate`FrontEndResource[
+               "FEBitmaps", "UpPointerOpenerHot"],
+               ImageSizeCache->{10., {1.143798828125, 8.856201171875}}]}, 
+              Dynamic[System`InformationDump`mouseOver$$]],
+             Alignment->Left,
+             Appearance->{"Default" -> None},
+             
+             ButtonFunction:>FEPrivate`Set[
+              System`InformationDump`open$$, False],
+             Evaluator->Automatic,
+             FrameMargins->{{9, 0}, {0, 0}},
+             ImageMargins->0,
+             ImageSize->Full,
+             Method->"Preemptive"],
+            
+            EventHandlerTag[{
+             "MouseEntered" :> 
+              FEPrivate`Set[System`InformationDump`mouseOver$$, True], 
+              "MouseExited" :> 
+              FEPrivate`Set[System`InformationDump`mouseOver$$, False], 
+              Method -> "Preemptive", PassEventsDown -> Automatic, 
+              PassEventsUp -> True}]],
+           BaseStyle->"InformationTitleBackground",
+           StripOnInput->False], "\[SpanFromLeft]"}
+        },
+        AutoDelete->False,
+        FrameStyle->Directive[
+          GrayLevel[0.8], 
+          Thickness[Tiny]],
+        GridBoxAlignment->{"Columns" -> {Left, Right}, "Rows" -> {{Center}}},
+        GridBoxDividers->{
+         "Columns" -> {{None}}, "Rows" -> {False, {True}, False}},
+        GridBoxItemSize->{
+         "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+       "Grid"], False->
+      TagBox[GridBox[{
+         {
+          ItemBox[
+           PaneBox[
+            StyleBox[
+             TagBox[
+              TooltipBox[
+               StyleBox["\<\" Symbol\"\>", "InformationRowLabel",
+                StripOnInput->False],
+               "\"Symbol\"",
+               TooltipStyle->"TextStyling"],
+              Annotation[#, "Symbol", "Tooltip"]& ], "InformationTitleText",
+             StripOnInput->False],
+            FrameMargins->{{4, 0}, {-1, 1}}],
+           BaseStyle->"InformationTitleBackground",
+           StripOnInput->False], 
+          ItemBox[
+           PaneBox[
+            TooltipBox[
+             ButtonBox[
+              PaneSelectorBox[{False->
+               
+               DynamicBox[FEPrivate`FrontEndResource[
+                "FEBitmaps", "InformationHelpIcon"]], True->
+               
+               DynamicBox[FEPrivate`FrontEndResource[
+                "FEBitmaps", "InformationHelpIconHot"]]}, Dynamic[
+                CurrentValue["MouseOver"]]],
+              Appearance->None,
+              BaseStyle->"Link",
+              
+              ButtonData->
+               "http://reference.wolfram.com/language/ref/ProcessDiagram.html",
+              
+              ButtonNote->
+               "http://reference.wolfram.com/language/ref/ProcessDiagram.\
+html"],
+             
+             "\"http://reference.wolfram.com/language/ref/ProcessDiagram.html\
+\""],
+            FrameMargins->{{0, 4}, {0, 2}}],
+           BaseStyle->"InformationTitleBackground",
+           StripOnInput->False]},
+         {
+          ItemBox[
+           PaneBox[
+            StyleBox["\<\"System`ProcessDiagram\"\>", "InformationUsageText",
+             StripOnInput->False,
+             LineSpacing->{1.5, 1.5, 3.}],
+            FrameMargins->{{10, 10}, {8, 10}}],
+           BaseStyle->"InformationUsageSubtitleBackground",
+           StripOnInput->False], 
+          ItemBox["\<\"\"\>",
+           BaseStyle->"InformationUsageSubtitleBackground",
+           StripOnInput->False]},
+         {
+          ItemBox[
+           TagBox[
+            ButtonBox[
+             PaneSelectorBox[{False->
+              
+              DynamicBox[FEPrivate`FrontEndResource[
+               "FEBitmaps", "DownPointerOpener"]], True->
+              
+              DynamicBox[FEPrivate`FrontEndResource[
+               "FEBitmaps", "DownPointerOpenerHot"]]}, Dynamic[
+              System`InformationDump`mouseOver$$]],
+             Alignment->Left,
+             Appearance->{"Default" -> None},
+             
+             ButtonFunction:>FEPrivate`Set[
+              System`InformationDump`open$$, True],
+             Evaluator->Automatic,
+             FrameMargins->{{9, 0}, {0, 0}},
+             ImageMargins->0,
+             ImageSize->Full,
+             Method->"Preemptive"],
+            
+            EventHandlerTag[{
+             "MouseEntered" :> 
+              FEPrivate`Set[System`InformationDump`mouseOver$$, True], 
+              "MouseExited" :> 
+              FEPrivate`Set[System`InformationDump`mouseOver$$, False], 
+              Method -> "Preemptive", PassEventsDown -> Automatic, 
+              PassEventsUp -> True}]],
+           BaseStyle->"InformationTitleBackground",
+           StripOnInput->False], "\[SpanFromLeft]"}
+        },
+        AutoDelete->False,
+        FrameStyle->Directive[
+          GrayLevel[0.8], 
+          Thickness[Tiny]],
+        GridBoxAlignment->{"Columns" -> {Left, Right}, "Rows" -> {{Center}}},
+        GridBoxDividers->{
+         "Columns" -> {{None}}, "Rows" -> {False, {True}, False}},
+        GridBoxItemSize->{
+         "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+       "Grid"]}, Dynamic[System`InformationDump`open$$],
+      BaselinePosition->Baseline,
+      FrameMargins->0,
+      ImageSize->Automatic],
+     DynamicModuleValues:>{}],
+    BaseStyle->"InformationGridFrame",
+    StripOnInput->False], "InformationGridPlain",
+   StripOnInput->False],
+  InformationData[<|
+   "ObjectType" -> "Symbol", "Usage" -> "System`ProcessDiagram", 
+    "Documentation" -> <|
+     "Web" -> "http://reference.wolfram.com/language/ref/ProcessDiagram.html"|>\
+, "OwnValues" -> None, "UpValues" -> None, "DownValues" -> None, "SubValues" -> 
+    None, "DefaultValues" -> None, "NValues" -> None, "FormatValues" -> None, 
+    "Options" -> None, "Attributes" -> {}, "FullName" -> 
+    "System`ProcessDiagram"|>, False]]], "Output",
+ CellChangeTimes->{3.931340413994857*^9},
+ CellLabel->"Out[1]=",ExpressionUUID->"8997fb27-d3cf-4990-aa03-fc0b92a47c48"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{1728, 1051},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+DockedCells->{
+  Cell[
+   BoxData[
+    DynamicModuleBox[{
+     FunctionRepository`$598814ae482740ef88670950c7e1928b`Wolfram`\
+MulticomputationInit`name$$ = "ProcessTheory", 
+      FunctionRepository`$598814ae482740ef88670950c7e1928b`time$$ = 0, 
+      FunctionRepository`$598814ae482740ef88670950c7e1928b`Wolfram`\
+MulticomputationInit`paclet$$ = "", 
+      FunctionRepository`$598814ae482740ef88670950c7e1928b`url$$ = None, 
+      FunctionRepository`$598814ae482740ef88670950c7e1928b`progress$$ = "", 
+      FunctionRepository`$598814ae482740ef88670950c7e1928b`withProgress$$ = 
+      Function[Null, 
+        FunctionRepository`$598814ae482740ef88670950c7e1928b`progress$$ = 
+         ProgressIndicator[Appearance -> "Necklace"]; #; 
+        FunctionRepository`$598814ae482740ef88670950c7e1928b`progress$$ = 
+         Quantity[
+          FunctionRepository`$598814ae482740ef88670950c7e1928b`time$$, 
+           "Seconds"], HoldAll]}, 
+     TagBox[
+      GridBox[{{
+         TagBox[
+          GridBox[{{
+             ButtonBox[
+             "\"Reload code\"", ButtonFunction :> 
+              FunctionRepository`$598814ae482740ef88670950c7e1928b`\
+withProgress$$[
+               FunctionRepository`$598814ae482740ef88670950c7e1928b`time$$ = 
+                 First[
+                   AbsoluteTiming[
+                   Module[{
+                    FunctionRepository`$598814ae482740ef88670950c7e1928b`\
+pacletDirectory$}, Quiet[
+                    Unprotect[
+                    "ProcessTheory`" <> "`*", "ProcessTheory`" <> "`**`*"]]; 
+                    Quiet[
+                    ClearAll[
+                    "ProcessTheory`" <> "`*", "ProcessTheory`" <> "`**`*"]]; 
+                    PacletDirectoryLoad[
+                    "/Users/swish/src/wolfram/ProcessTheory/Notebooks/../\
+ProcessTheory"]; Null]; Get["ProcessTheory`"]; Null]]; Null], Appearance -> 
+              Automatic, Evaluator -> Automatic, Method -> "Preemptive"]}, {
+             ButtonBox[
+             "\"Reload paclet\"", ButtonFunction :> 
+              FunctionRepository`$598814ae482740ef88670950c7e1928b`\
+withProgress$$[
+               FunctionRepository`$598814ae482740ef88670950c7e1928b`time$$ = 
+                 First[
+                   AbsoluteTiming[
+                   Get["PacletTools`"]; 
+                    FunctionRepository`$598814ae482740ef88670950c7e1928b`\
+Wolfram`MulticomputationInit`paclet$$ = Enclose[
+                    Confirm[
+                    PacletTools`PacletBuild[
+                    "/Users/swish/src/wolfram/ProcessTheory/Notebooks/../\
+ProcessTheory"]]["PacletArchive"]]; 
+                    PacletInstall[
+                    FunctionRepository`$598814ae482740ef88670950c7e1928b`\
+Wolfram`MulticomputationInit`paclet$$, ForceVersionInstall -> True]; 
+                    Get["ProcessTheory`"]]]; Null], Method -> "Queued", 
+              Appearance -> Automatic, Evaluator -> Automatic]}}, 
+           GridBoxAlignment -> {"Columns" -> {{Left}}}, DefaultBaseStyle -> 
+           "Column", 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Column"], 
+         
+         DynamicBox[
+          ToBoxes[
+           Column[{
+             ClickToCopy[
+              FileNameTake[
+              FunctionRepository`$598814ae482740ef88670950c7e1928b`Wolfram`\
+MulticomputationInit`paclet$$], 
+              FunctionRepository`$598814ae482740ef88670950c7e1928b`Wolfram`\
+MulticomputationInit`paclet$$], 
+             FunctionRepository`$598814ae482740ef88670950c7e1928b`progress$$}]\
+, StandardForm], 
+          TrackedSymbols :> {
+           FunctionRepository`$598814ae482740ef88670950c7e1928b`Wolfram`\
+MulticomputationInit`paclet$$, 
+            FunctionRepository`$598814ae482740ef88670950c7e1928b`progress$$}],
+          ""}, {
+         ButtonBox[
+         "\"Upload paclet\"", ButtonFunction :> 
+          FunctionRepository`$598814ae482740ef88670950c7e1928b`withProgress$$[
+           FunctionRepository`$598814ae482740ef88670950c7e1928b`time$$ = First[
+               AbsoluteTiming[
+               CloudObject`Private`$allowInternetCheck = False; 
+                FunctionRepository`$598814ae482740ef88670950c7e1928b`url$$ = 
+                 URLShorten[
+                   CopyFile[
+                    File[
+                    FunctionRepository`$598814ae482740ef88670950c7e1928b`\
+Wolfram`MulticomputationInit`paclet$$], 
+                    CloudObject[
+                    FunctionRepository`$598814ae482740ef88670950c7e1928b`\
+Wolfram`MulticomputationInit`name$$ <> ".paclet", Permissions -> "Public"], 
+                    OverwriteTarget -> True]]]]; Null], Method -> "Queued", 
+          Appearance -> Automatic, Evaluator -> Automatic], 
+         DynamicBox[
+          ToBoxes[$CloudUserID, StandardForm]], 
+         DynamicBox[
+          ToBoxes[
+           ClickToCopy[
+           FunctionRepository`$598814ae482740ef88670950c7e1928b`url$$], 
+           StandardForm]]}}, GridBoxAlignment -> {"Columns" -> {{Left}}}, 
+       AutoDelete -> False, 
+       GridBoxItemSize -> {
+        "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], 
+     DynamicModuleValues :> {}]]]},
+FrontEndVersion->"14.2 for Mac OS X ARM (64-bit) (July 30, 2024)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"a4362aa5-b395-405e-a7e8-34c3bbfa52d2"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 149, 3, 66, "Section",ExpressionUUID->"a181af94-2936-4fbe-94a6-43d5c0c7ea33"],
+Cell[CellGroupData[{
+Cell[754, 29, 162, 3, 43, "Subsubsection",ExpressionUUID->"253447e9-3e74-4cb0-b85b-2a968dbf8cdb"],
+Cell[919, 34, 382, 10, 29, "Input",ExpressionUUID->"061df8e9-91f3-4022-9090-a888975b2ac4"],
+Cell[1304, 46, 737, 16, 29, "Input",ExpressionUUID->"90e4dc01-7e80-46e7-8c42-63a89fd6633e"]
+}, Closed]]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[2090, 68, 155, 3, 52, "Section",ExpressionUUID->"59da5806-1577-4795-93eb-4864fea8d352"],
+Cell[CellGroupData[{
+Cell[2270, 75, 168, 3, 29, "Input",ExpressionUUID->"71915634-aa07-45ad-9ef5-331961225aad"],
+Cell[2441, 80, 11636, 293, 132, "Output",ExpressionUUID->"8997fb27-d3cf-4990-aa03-fc0b92a47c48"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
