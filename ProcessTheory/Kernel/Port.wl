@@ -68,7 +68,7 @@ Port /: SuperStar[p_Port ? PortQ] := p["Dual"]
 
 (* merge options *)
 
-Port[p_ ? PortQ, opts : OptionsPattern[]] := Port[Normal[Merge[{opts, p["Data"]}, First]]]
+Port[p_ ? PortQ, opts : OptionsPattern[]] := Port[Replace[Normal[Merge[{opts, p["Data"]}, List]], head_[k_, {{v_, ___}}] :> head[k, v], 1]]
 
 
 (* data constructor *)
@@ -113,7 +113,15 @@ PortProp[p_, "Label"] := Replace[
     }
 ]
 
+PortProp[p_, "View"] := With[{
+    label = p["Label"]
+},
+    Defer[Port[label]] /. HoldForm[x_] :> x
+]
+
 PortProp[p_, "Dual"] := Port[p, "DualQ" -> ! p["DualQ"]]
+
+PortProp[_, prop_] := Missing[prop]
 
 
 (* internal properties *)
@@ -129,7 +137,7 @@ PortProp[p_, "PortList"] := If[p["ProductQ"],
 (* ::Section:: *)
 (* Formatting *)
 
-Port /: MakeBoxes[p_Port /; PortQ[p], form_] := With[{
+Port /: MakeBoxes[p : Port[_Association] ? PortQ, form_] := With[{
     boxes = ToBoxes[p["Label"], form],
     tooltip = ToBoxes[p["Type"] /. {CircleTimes[] -> "1", CircleTimes[x_] :> x}, form]
 },
