@@ -1,43 +1,40 @@
-(* ::Package:: *)
+BeginPackage["ProcessTheory`Port`"];
 
-(* ::Section:: *)
-(*Package Header*)
+Port
+PortQ
 
 
-System`Private`NewContextPath[{"System`", "ProcessTheory`"}];
-
-ProcessTheory`PortDump`$exported = {
-	System`Port,
-	System`PortQ
-};
-
-Unprotect /@ ProcessTheory`PortDump`$exported;
-ClearAll /@ ProcessTheory`PortDump`$exported;
-
-Begin["ProcessTheory`PortDump`"];
+Begin["ProcessTheory`Port`Private`"];
 
 
 (* ::Section:: *)
-(*Definitions*)
+(* Definitions *)
+
+Port::usage = "Port[expr] represents a symbolic port for node inputs and outputs"
+
+Options[Port] = {"DualQ" -> False, "Type" -> \[FormalCapitalT]};
+
+$PortProperties = Join[Keys[Options[Port]], {"Properties", "Data", "HoldExpression", "Types", "Arity", "Label"}];
 
 
-Options[Port] = {"Dimensions" -> {}, "DualQ" -> False, "Field" -> None}
+(* ::Section:: *)
+(* Validation *)
 
-
-(** Validation **)
-
-PortQ[p_Port] := System`Private`HoldValidQ[p]
-
-PortQ[___] := False
-
-portQ[Port[data_Association]] := MatchQ[data, KeyValuePattern[{_["Expression", _], "Dimensions" -> {___Integer}, "DualQ" -> _ ? BooleanQ, "Field" -> _}]]
+portQ[Port[data_Association]] := MatchQ[data, KeyValuePattern[{_["Expression", _], "DualQ" -> _ ? BooleanQ, "Type" -> _}]]
 
 portQ[___] := False
 
-p_Port /; System`Private`HoldNotValidQ[p] && portQ[Unevaluated[p]] := System`Private`HoldSetValid[p]
+
+x_Port /; System`Private`HoldNotValidQ[x] && portQ[Unevaluated[x]] := (System`Private`HoldSetValid[x]; System`Private`HoldSetNoEntry[x])
+
+PortQ[x_Port] := System`Private`HoldValidQ[x]
+
+PortQ[___] := False
 
 
-(** Constructors **)
+(* ::Section:: *)
+(* Constructors *)
+
 
 (* empty/unit *)
 
@@ -45,19 +42,19 @@ Port[(Power | Superscript | Overscript)[port_, 0], ___] := emptyPort[port]
 
 Port[1 | CircleTimes[], ___] := emptyPort["1"]
 
-emptyPort[t_] := Port[t, "Dimensions" -> {}, "Field" -> CircleTimes[]]
+emptyPort[p_] := Port[p, "Type" -> CircleTimes[]]
 
 
 (* exponential *)
 
-Port[(Power | Superscript | Overscript)[p_, n_Integer ? NonNegative], opts : OptionsPattern[]] := Port[Unevaluated[p], "Dimensions" -> {n}, opts]
+Port[(Power | Superscript | Overscript)[p_, n_Integer ? NonNegative], opts : OptionsPattern[]] := With[{port = Port[Unevaluated[p], opts]}, Port[port, "Type" -> Superscript[port["Type"], n]]]
 
 
 (* product *)
 
 Port[CircleTimes[ps__], opts : OptionsPattern[]] := CircleTimes @@ Map[Function[Null, Port[Unevaluated[#], opts], HoldFirst], Unevaluated[{ps}]]
 
-Port /: CircleTimes[ps___Port ? PortQ] := Port["Expression" -> {ps}, "Dimensions" -> Catenate[Through[{ps}["Dimensions"]]]]
+Port /: CircleTimes[ps___Port ? PortQ] := Port["Expression" -> {ps}, "Type" -> CircleTimes @@ Through[{ps}["Type"]]]
 
 
 (* conjugation *)
@@ -81,10 +78,8 @@ Port[expr : Except[_Association | _Port | OptionsPattern[]], opts : OptionsPatte
 Port[opts : OptionsPattern[]] := Port[KeySort[<|"Expression" -> "1", FilterRules[{Options[Port], opts}, Append["Expression"] @ Options[Port]]|>]]
 
 
-
-(** Properties **)
-
-$PortProperties = Join[Keys[Options[Port]], {"Properties", "Data", "HoldExpression", "Dimension", "Arity", "Label"}]
+(* ::Section:: *)
+(* Properties *)
 
 
 (* dispatch properties *)
@@ -104,9 +99,9 @@ PortProp[p_, "HoldExpression"] := Extract[p["Data"], "Expression", HoldForm]
 
 PortProp[p_, "Options"] := Normal[KeyDrop[p["Data"], "Expression"]]
 
-PortProp[p_, "Dimension"] := Times @@ p["Dimensions"]
+PortProp[p_, "Types"] := Through[p["PortList"]["Type"]]
 
-PortProp[p_, "Arity"] := Length[Catenate[Through[p["PortList"]["Dimensions"]]]]
+PortProp[p_, "Arity"] := Length[p["Types"]]
 
 PortProp[p_, "Label"] := Replace[
     CircleTimes @@ Map[If[#["DualQ"], SuperStar, Identity][#["HoldExpression"]] &, p["PortList"]],
@@ -120,9 +115,8 @@ PortProp[p_, "Label"] := Replace[
 
 PortProp[p_, "Dual"] := Port[p, "DualQ" -> ! p["DualQ"]]
 
-(* internal properties *)
 
-PortProp[p_, "Fields"] := Through[p["PortList"]["Field"]]
+(* internal properties *)
 
 PortProp[p_, "ProductQ"] := MatchQ[p["HoldExpression"], HoldForm[{___Port ? PortQ}]]
 
@@ -132,17 +126,12 @@ PortProp[p_, "PortList"] := If[p["ProductQ"],
 ]
 
 
-
-(** Formatting **)
+(* ::Section:: *)
+(* Formatting *)
 
 Port /: MakeBoxes[p_Port /; PortQ[Unevaluated[p]], form_] := With[{
     boxes = ToBoxes[p["Label"], form],
-    tooltip = With[{fields = Replace[p["Fields"], None -> \[FormalCapitalA], 1], dims = p["Dimensions"]},
-        If[ Length[fields] == Length[dims] && Length[dims] > 1,
-            ToBoxes[CircleTimes @@ MapThread[Superscript, {fields, dims}] /. CircleTimes[] -> 1, form],
-            ToBoxes[Superscript[First[fields], Times @@ dims], form]
-        ]
-    ]
+    tooltip = ToBoxes[p["Type"] /. {CircleTimes[] -> "1", CircleTimes[x_] :> x}, form]
 },
     InterpretationBox[
         boxes,
@@ -152,12 +141,7 @@ Port /: MakeBoxes[p_Port /; PortQ[Unevaluated[p]], form_] := With[{
 ]
 
 
-(* ::Section::Closed:: *)
-(*Package Footer*)
 
+End[];
 
-End[]; (* ProcessTheory`PortDump` *)
-
-System`Private`RestoreContextPath[];
-
-ProcessTheory`PortDump`$exported
+EndPackage[];
