@@ -14,13 +14,15 @@ Port::usage = "Port[expr] represents a symbolic port for node inputs and outputs
 
 Options[Port] = {"DualQ" -> False, "Type" -> \[FormalCapitalT]};
 
+$PortHiddenOptions = {"Expression" -> "1"}
+
 $PortProperties = Join[Keys[Options[Port]], {"Properties", "Data", "HoldExpression", "Types", "Arity", "Label"}];
 
 
 (* ::Section:: *)
 (* Validation *)
 
-portQ[Port[data_Association]] := MatchQ[data, KeyValuePattern[{_["Expression", _], "DualQ" -> _ ? BooleanQ, "Type" -> _}]]
+portQ[HoldPattern[Port[data_Association]]] := MatchQ[data, KeyValuePattern[{_["Expression", _], "DualQ" -> _ ? BooleanQ, "Type" -> _}]]
 
 portQ[___] := False
 
@@ -66,16 +68,14 @@ Port /: SuperStar[p_Port ? PortQ] := p["Dual"]
 
 (* merge options *)
 
-Port[p_ ? PortQ, opts___] := With[{expr = Unevaluated @@ p["HoldExpression"]},
-    Port[expr, Normal[Merge[{opts, p["Options"]}, First]]]
-]
+Port[p_ ? PortQ, opts : OptionsPattern[]] := Port[Normal[Merge[{opts, p["Data"]}, First]]]
 
 
 (* data constructor *)
 
-Port[expr : Except[_Association | _Port | OptionsPattern[]], opts : OptionsPattern[]] := Port[KeySort[<|"Expression" :> expr, FilterRules[{Options[Port], opts}, Options[Port]]|>]]
+Port[expr : Except[_Association | _Port | OptionsPattern[]], opts : OptionsPattern[]] := Port[FilterRules[{"Expression" :> expr, opts}, Join[Options[Port], $PortHiddenOptions]]]
 
-Port[opts : OptionsPattern[]] := Port[KeySort[<|"Expression" -> "1", FilterRules[{Options[Port], opts}, Append["Expression"] @ Options[Port]]|>]]
+Port[opts : OptionsPattern[]] := Port[KeySort[<|DeleteDuplicatesBy[First] @ FilterRules[{opts, Options[Port], $PortHiddenOptions}, Join[Options[Port], $PortHiddenOptions]]|>]]
 
 
 (* ::Section:: *)
@@ -129,7 +129,7 @@ PortProp[p_, "PortList"] := If[p["ProductQ"],
 (* ::Section:: *)
 (* Formatting *)
 
-Port /: MakeBoxes[p_Port /; PortQ[Unevaluated[p]], form_] := With[{
+Port /: MakeBoxes[p_Port /; PortQ[p], form_] := With[{
     boxes = ToBoxes[p["Label"], form],
     tooltip = ToBoxes[p["Type"] /. {CircleTimes[] -> "1", CircleTimes[x_] :> x}, form]
 },
