@@ -18,13 +18,16 @@ PacletObject[
 			"System`DiagramProduct",
 			"System`DiagramSum",
 			"System`DiagramTranspose",
+			"System`Port",
+			"System`PortQ",
 			"System`ProcessDiagram",
 			"System`ProcessDiagramQ"
 		},
         "Root" -> "Kernel",
         "Context" -> {
 			"ProcessTheoryLoader`",
-			"ProcessTheory`"
+			"ProcessTheory`",
+			"Port`"
 		}
       }
     }
