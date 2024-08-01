@@ -56,7 +56,10 @@ Port[(Power | Superscript | Overscript)[p_, n_Integer ? NonNegative], opts : Opt
 
 Port[CircleTimes[ps__], opts : OptionsPattern[]] := CircleTimes @@ Map[Function[Null, Port[Unevaluated[#], opts], HoldFirst], Unevaluated[{ps}]]
 
-Port /: CircleTimes[ps___Port ? PortQ] := Port["Expression" -> {ps}, "Type" -> CircleTimes @@ Through[{ps}["Type"]]]
+Port /: CircleTimes[ps___Port ? PortQ] := If[AllTrue[{ps}, #["DualQ"] &],
+    Port["Expression" -> Through[{ps}["Dual"]], "DualQ" -> True, "Type" -> CircleTimes @@ Through[{ps}["Type"]]],
+    Port["Expression" -> {ps}, "Type" -> CircleTimes @@ Through[{ps}["Type"]]]
+]
 
 
 (* conjugation *)
@@ -99,12 +102,12 @@ PortProp[p_, "HoldExpression"] := Extract[p["Data"], "Expression", HoldForm]
 
 PortProp[p_, "Options"] := Normal[KeyDrop[p["Data"], "Expression"]]
 
-PortProp[p_, "Types"] := Through[p["PortList"]["Type"]]
+PortProp[p_, "Types"] := Through[Flatten[p["PortList"]]["Type"]]
 
 PortProp[p_, "Arity"] := Length[p["Types"]]
 
-PortProp[p_, "Label"] := Replace[
-    CircleTimes @@ Map[If[#["DualQ"], SuperStar, Identity][#["HoldExpression"]] &, p["PortList"]],
+PortProp[p_, "Label"] := ReplaceAll[
+    ReplaceAll[p["PortList"], q_Port :> If[q["DualQ"], SuperStar, Identity][q["HoldExpression"]]] /. List -> CircleTimes,
     {
         CircleTimes[x_, y_] /; x === SuperStar[y] :> OverHat[x],
         CircleTimes[x_, y_] /; SuperStar[x] ===y :> OverHat[y],
@@ -129,8 +132,8 @@ PortProp[_, prop_] := Missing[prop]
 PortProp[p_, "ProductQ"] := MatchQ[p["HoldExpression"], HoldForm[{___Port ? PortQ}]]
 
 PortProp[p_, "PortList"] := If[p["ProductQ"],
-    If[p["DualQ"], OperatorApplied[Comap]["Dual"], Identity] @ Catenate[Through[p["Expression"]["PortList"]]],
-    {p}
+    If[p["DualQ"], ReplaceAll[q_Port :> q["Dual"]], Identity] @ Through[p["Expression"]["PortList"]],
+    p
 ]
 
 

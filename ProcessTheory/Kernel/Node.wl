@@ -65,8 +65,8 @@ Node[n_ ? NodeQ, opts : OptionsPattern[]] := Node[Replace[Normal[Merge[{opts, n[
 NodeProduct[ns___Node ? NodeQ, opts : OptionsPattern[]] := Node[
     opts,
     With[{expr = Unevaluated @@ CircleTimes @@@ Hold[Evaluate[Through[{ns}["HoldExpression"]]]]}, "Expression" :> expr],
-    "OutputPorts" -> CircleTimes @@@ Through[{ns}["OutputPorts"]],
-    "InputPorts" -> CircleTimes @@@ Through[{ns}["InputPorts"]]
+    "OutputPorts" -> Replace[CircleTimes @@@ Through[{ns}["OutputPorts"]], CircleTimes[] -> Port[1], 1],
+    "InputPorts" -> Replace[CircleTimes @@@ Through[{ns}["InputPorts"]], CircleTimes[] -> Port[SuperStar[1]], 1]
 ]
 
 
@@ -76,10 +76,14 @@ NodeCompose[ns___Node ? NodeQ, opts : OptionsPattern[]] := Node[
     opts,
     With[{expr = Unevaluated @@ Composition @@@ Hold[Evaluate[Through[{ns}["HoldExpression"]]]]}, "Expression" :> expr],
 
-    With[{ports = Thread[{Through[{ns}["OutputPorts"]], Through[{ns}["InputPorts"]]}]}, {
-        "OutputPorts" -> Null,
-        "InputPorts" -> Null
-    }]
+    Block[{graph = NodesGraph[{ns}], nodes = Through[{ns}["Flatten"]], freeWires, edges},
+        freeWires = Cases[Pick[VertexList[graph], VertexDegree[graph], 1], _HoldForm];
+        edges = EdgeList[graph];
+        {
+            "OutputPorts" -> Cases[edges, DirectedEdge[{nodeId_, 1, portId_}, Alternatives @@ freeWires] :> nodes[[nodeId]]["OutputPorts"][[portId]]],
+            "InputPorts" -> Cases[edges, DirectedEdge[Alternatives @@ freeWires, {nodeId_, 2, portId_}] :> nodes[[nodeId]]["InputPorts"][[portId]]]
+        }
+    ]
 ]
 
 
@@ -110,9 +114,9 @@ NodeProp[n_, "InputArity"] := Length[n["InputPorts"]]
 
 NodeProp[n_, "Arity"] := Length[n["Ports"]]
 
-NodeProp[n_, "FlattenOutputs"] := Node[n, "OutputPorts" -> Catenate[Through[n["OutputPorts"]["PortList"]]]]
+NodeProp[n_, "FlattenOutputs"] := Node[n, "OutputPorts" -> Flatten[Through[n["OutputPorts"]["PortList"]]]]
 
-NodeProp[n_, "FlattenInputs"] := Node[n, "InputPorts" -> Catenate[Through[n["InputPorts"]["PortList"]]]]
+NodeProp[n_, "FlattenInputs"] := Node[n, "InputPorts" -> Flatten[Through[n["InputPorts"]["PortList"]]]]
 
 NodeProp[n_, "Flatten"] := n["FlattenOutputs"]["FlattenInputs"]
 
@@ -121,8 +125,10 @@ NodeProp[n_, "View"] := With[{
     outputs = Through[n["OutputPorts"]["Label"]],
     inputs = Through[Through[n["InputPorts"]["Dual"]]["Label"]]
 },
-    Defer[Node[expr, outputs, inputs]] /. HoldForm[x_] :> x
+    Defer[Node[expr, outputs, inputs]] //. HoldForm[x_] :> x
 ]
+
+NodeProp[n_, "Symbol"] := Switch[n["Arity"], 1, VectorSymbol, 2, MatrixSymbol, _, ArraySymbol][n["HoldExpression"], n["Ports"]]
 
 NodeProp[n_, "Diagram", opts___] := NodeDiagram[n, opts]
 
@@ -137,7 +143,7 @@ Options[NodeDiagram] = Options[Graphics];
 NodeDiagram[node_ ? NodeQ, opts : OptionsPattern[]] := Graphics[{
     EdgeForm[Black], FaceForm[Transparent], 
     Rectangle[],
-    Text[ClickToCopy[node["Expression"], node["View"]], {1/2, 1/2}],
+    Text[ClickToCopy[node["HoldExpression"], node["View"]], {1/2, 1/2}],
     Arrowheads[Small],
     With[{xs = node["OutputPorts"]},
         MapThread[{Arrow[If[#2["DualQ"], Reverse, Identity] @ {{#, 1}, {#,  1.3}}], Text[ClickToCopy[#2, #2["View"]], {#,  1.5}]} &, {Range[0, 1, 1 / (Length[xs] + 1)][[2 ;; -2]], xs}]
