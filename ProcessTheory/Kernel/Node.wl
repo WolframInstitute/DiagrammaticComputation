@@ -272,7 +272,7 @@ NodesNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
 	portLabelsQ = TrueQ[OptionValue["ShowPortLabels"]],
 	wireLabelsQ = TrueQ[OptionValue["ShowWireLabels"]]
 },
-	nodes = AnnotationValue[{graph, nodeVertices}, "Node"];
+	nodes = Through[AnnotationValue[{graph, nodeVertices}, "Node"]["Flatten"]];
 	If[Length[nodes] == 0, Return[Graphics[FilterRules[Join[{opts}, Options[graph]], Options[Graphics]]]]];
 	embedding = AssociationThread[VertexList[graph], GraphEmbedding[graph]];
 	If[EdgeCount[graph] == 0 && VertexCount[graph] > 1, embedding = ScalingTransform[{1, .5} / Max[#2 - #1 & @@@ CoordinateBounds[embedding]], Mean[embedding]][embedding]];
@@ -331,7 +331,9 @@ NodesNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
 		],
 		EdgeShapeFunction -> Replace[edges, {
 				edge : DirectedEdge[v_Integer, w_Integer, {{i : 1 | 2, n_Integer, p_Integer}, x_, {j : 1 | 2, m_Integer, q_Integer}}] :> edge -> Block[{
-					point1, point2, normal1, normal2, orientation1 = orientations[[v]], orientation2 = orientations[[w]], wireCoords = Lookup[embedding, x]
+					point1, point2, normal1, normal2, orientation1 = orientations[[v]], orientation2 = orientations[[w]], wireCoords = Lookup[embedding, x],
+                    port1 = nodes[[v]][Replace[i, {1 -> "OutputPorts", 2 -> "InputPorts"}]][[p]],
+                    port2 = nodes[[w]][Replace[j, {1 -> "OutputPorts", 2 -> "InputPorts"}]][[q]]
 				},
 					If[ i == 1,
 						point1 = {- 1 / 2 + p / (n + 1),   1 / 2} scale;
@@ -353,14 +355,19 @@ NodesNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
 					normal2 = RotationTransform[{{0, 1}, orientation2}] @ normal2;
 					With[{a = VectorSymbol["p", 2], b = VectorSymbol["q", 2]},
 						Function[Evaluate @ {
-							Arrowheads[With[{size = 0.01}, Which[i == j == 1, {{size, .3}, {-size, .7}}, i == j == 2, {{-size, .3}, {size, .7}}, i == 1, {{size, .5}}, True, {{-size, .5}}]]],
+							Arrowheads[With[{size = 0.01}, {
+                                If[port1["DualQ"], {- size, .3}, {size, .3}],
+                                If[port2["DualQ"], {size, .7}, {- size, .7}]
+                            }
+                            ]],
 							Arrow @ BSplineCurve[{a + point1, a + point1 + normal1, b + point2 + normal2, b + point2}],
 							If[wireLabelsQ, Text[Style[ClickToCopy[x, x], Black], (a + point1 + normal1 + b + point2 + normal2) / 2 + .1 normal1], Nothing]
 						}] /. {a :> #[[1]], b :> #[[-1]]}
 					]
 				],
-				edge : DirectedEdge[v_Integer, w_, {i : 1 | 2, n_Integer, p_Integer}] :> edge -> Block[{
-					point, normal, orientation = orientations[[v]], portCoords = Lookup[embedding, Key[{v, i, p}]]
+				edge : DirectedEdge[v_Integer, _, {i : 1 | 2, n_Integer, p_Integer}] :> edge -> Block[{
+					point, normal, orientation = orientations[[v]], portCoords = Lookup[embedding, Key[{v, i, p}]],
+                    port = nodes[[v]][Replace[i, {1 -> "OutputPorts", 2 -> "InputPorts"}]][[p]]
 				},
 					If[ i == 1,
 						point = {- 1 / 2 + p / (n + 1),   1 / 2} scale;
@@ -374,7 +381,7 @@ NodesNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
 
 					With[{a = VectorSymbol["p", 2], b = VectorSymbol["q", 2]},
 						Function[Evaluate @ {
-							Arrowheads[With[{size = 0.01}, If[i == 1, {{size, .5}}, {{-size, .5}}]]],
+							Arrowheads[With[{size = 0.01}, If[port["DualQ"], {{-size, .5}}, {{size, .5}}]]],
 							Arrow @ BSplineCurve[{a + point, a + point + normal, b + scale Normalize[portCoords - b], b + rad scale Normalize[portCoords - b]}]
 						}] /. {a :> #[[1]], b :> #[[-1]]}
 					]
