@@ -35,11 +35,11 @@ ProcessDiagramQ[___] := False
 (* Constructors *)
 
 ProcessDiagram[nodes : Except[_Association | _ProcessDiagram | OptionsPattern[]], opts : OptionsPattern[]] :=
-    ProcessDiagram[FilterRules[{"Nodes" -> Node /@ Developer`ToList[nodes], opts}, Join[Options[ProcessDiagram], $ProcessDiagramHiddenOptions, Options[ProcessDiagramPlot]]]]
+    ProcessDiagram[FilterRules[{"Nodes" -> Node /@ Developer`ToList[nodes], opts}, Join[Options[ProcessDiagram], $ProcessDiagramHiddenOptions, Options[NodesNetGraph]]]]
 
 ProcessDiagram[opts : OptionsPattern[]] := ProcessDiagram[KeySort[<|
     DeleteDuplicatesBy[First] @ FilterRules[
-        {"DiagramOptions" -> FilterRules[{opts, Values[FilterRules[{opts}, "DiagramOptions"]]}, Options[ProcessDiagramPlot]], opts, Options[ProcessDiagram], $ProcessDiagramHiddenOptions},
+        {"DiagramOptions" -> FilterRules[{opts, Values[FilterRules[{opts}, "DiagramOptions"]]}, Options[NodesNetGraph]], opts, Options[ProcessDiagram], $ProcessDiagramHiddenOptions},
         Join[Options[ProcessDiagram], $ProcessDiagramHiddenOptions]
     ]|>
 ]]
@@ -51,7 +51,7 @@ ProcessDiagram[opts : OptionsPattern[]] := ProcessDiagram[KeySort[<|
 
 (* dispatch properties *)
 
-(d_ProcessDiagram ? ProcessDiagramQ)[prop_] := ProcessDiagramProp[d, prop] 
+(d_ProcessDiagram ? ProcessDiagramQ)[prop_, opts___] := ProcessDiagramProp[d, prop, opts] 
 
 
 (* property definitions *)
@@ -68,20 +68,15 @@ ProcessDiagramProp[d_, "PortGraph", opts___] := NodesPortGraph[d["Nodes"], opts]
 
 ProcessDiagramProp[d_, "Graph", opts___] := NodesGraph[d["Nodes"], opts]
 
-ProcessDiagramProp[d_, "Diagram", opts___] := ProcessDiagramPlot[d, opts]
+ProcessDiagramProp[d_, "Diagram", opts___] := NodesNetGraph[d["Nodes"], opts, d["DiagramOptions"]]
 
 
 (* ::Subsection:: *)
 (* Formatting *)
 
-Options[ProcessDiagramPlot] = Options[GraphicsRow];
-
-ProcessDiagramPlot[diag_ ? ProcessDiagramQ, opts : OptionsPattern[]] := GraphicsRow[
-    Through[diag["Nodes"]["Diagram"]],
-    FilterRules[{opts, diag["DiagramOptions"]}, Options[GraphicsRow]]
-]
-
-ProcessDiagram /: MakeBoxes[diag_ProcessDiagram /; ProcessDiagramQ[diag], form_] := With[{boxes = ToBoxes[diag["Diagram"], form]},
+ProcessDiagram /: MakeBoxes[diag_ProcessDiagram /; ProcessDiagramQ[diag], form_] := With[{
+    boxes = ToBoxes[diag["Diagram", BaseStyle -> {GraphicsHighlightColor -> Magenta}], form]
+},
     InterpretationBox[boxes, diag]
 ]
 

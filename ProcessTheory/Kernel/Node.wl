@@ -10,6 +10,7 @@ NodesFreePorts
 
 NodesPortGraph
 NodesGraph
+NodesNetGraph
 
 Begin["ProcessTheory`Node`Private`"];
 
@@ -23,7 +24,9 @@ Options[Node] = {};
 
 $NodeHiddenOptions = {"Expression" -> None, "OutputPorts" -> {}, "InputPorts" -> {}, "DiagramOptions" -> {}};
 
-$NodeProperties = Join[Keys[Options[Node]], {"Properties", "HoldExpression", "Ports", "Arity", "FlattenOutputs", "FlattenInputs", "Flatten"}];
+$NodeProperties = Join[Keys[Options[Node]],
+    {"Properties", "HoldExpression", "Ports", "Arity", "FlattenOutputs", "FlattenInputs", "Flatten", "View", "Symbol", "Shape", "Diagram"}
+];
 
 
 (* ::Subsection:: *)
@@ -45,7 +48,21 @@ NodeQ[___] := False
 (* Constructors *)
 
 Node[expr : Except[_Association | _Node | OptionsPattern[]], outputs : {} | Except[OptionsPattern[], _List] : {}, inputs : {} | Except[OptionsPattern[], _List] : {}, opts : OptionsPattern[]] :=
-    Node[FilterRules[{"Expression" :> expr, "OutputPorts" -> Port /@ outputs, "InputPorts" -> Comap[Port /@ inputs, "Dual"], opts}, Join[Options[Node], $NodeHiddenOptions, Options[NodeDiagram]]]]
+    Node[
+        FilterRules[{
+            "Expression" :> expr,
+            "OutputPorts" -> Map[Function[p, Port[Unevaluated[p]], HoldFirst], Unevaluated[outputs]],
+            "InputPorts" -> Comap[Map[Function[p, Port[Unevaluated[p]], HoldFirst], Unevaluated[inputs]], "Dual"],
+            opts
+        },
+            Join[Options[Node], $NodeHiddenOptions, Options[NodeDiagram]]
+        ]
+    ]
+
+Node[expr_, output : Except[_List], inputs : {} | Except[OptionsPattern[], _List] : {}, opts : OptionsPattern[]] :=
+    Node[Unevaluated[expr], Unevaluated[{output}], Unevaluated[inputs], opts]
+
+Node[expr_, outputs : {} | Except[OptionsPattern[], _List] : {}, input : Except[_List], opts___] := Node[Unevaluated[expr], Unevaluated[outputs], Unevaluated[{input}], opts]
 
 Node[opts : OptionsPattern[]] := Node[KeySort[<|
     DeleteDuplicatesBy[First] @ FilterRules[
@@ -65,8 +82,8 @@ Node[n_ ? NodeQ, opts : OptionsPattern[]] := Node[Replace[Normal[Merge[{opts, n[
 NodeProduct[ns___Node ? NodeQ, opts : OptionsPattern[]] := Node[
     opts,
     With[{expr = Unevaluated @@ CircleTimes @@@ Hold[Evaluate[Through[{ns}["HoldExpression"]]]]}, "Expression" :> expr],
-    "OutputPorts" -> Replace[CircleTimes @@@ Through[{ns}["OutputPorts"]], CircleTimes[] -> Port[1], 1],
-    "InputPorts" -> Replace[CircleTimes @@@ Through[{ns}["InputPorts"]], CircleTimes[] -> Port[SuperStar[1]], 1]
+    "OutputPorts" -> Replace[Through[{ns}["OutputPorts"]], {{} -> Port[1], ps_ :> PortProduct @@ ps}, 1],
+    "InputPorts" -> Replace[Through[{ns}["InputPorts"]], {{} -> Port[SuperStar[1]], ps_ :> PortProduct @@ ps}, 1]
 ]
 
 
@@ -93,7 +110,7 @@ NodeCompose[ns___Node ? NodeQ, opts : OptionsPattern[]] := Node[
 
 (* dispatch properties *)
 
-(p_Node ? NodeQ)[prop_] := NodeProp[p, prop] 
+(p_Node ? NodeQ)[prop_, opts___] := NodeProp[p, prop, opts] 
 
 
 (* property definitions *)
@@ -132,24 +149,42 @@ NodeProp[n_, "Symbol"] := Switch[n["Arity"], 1, VectorSymbol, 2, MatrixSymbol, _
 
 NodeProp[n_, "Diagram", opts___] := NodeDiagram[n, opts]
 
+NodeProp[n_, "Shape", opts___] := Replace[
+    OptionValue[{opts, n["DiagramOptions"], Options[NodeDiagram]}, "Shape"],
+    {
+        Automatic -> Rectangle[{- 1 / 2, - 1 / 2}, {1 / 2 , 1 / 2}, RoundingRadius -> {{Left, Top} -> .2}],
+        "Triangle" -> Polygon[{{- 1 / 2, - 1 / 2}, {0, 1 / 2}, {1 / 2, - 1 / 2}}]
+    }
+]
+
 NodeProp[_, prop_] := Missing[prop]
 
 
 (* ::Subsection:: *)
 (* Formatting *)
 
-Options[NodeDiagram] = Options[Graphics];
+Options[NodeDiagram] = Join[{"Shape" -> Automatic}, Options[Graphics]];
 
 NodeDiagram[node_ ? NodeQ, opts : OptionsPattern[]] := Graphics[{
     EdgeForm[Black], FaceForm[Transparent], 
-    Rectangle[],
-    Text[ClickToCopy[node["HoldExpression"], node["View"]], {1/2, 1/2}],
+    node["Shape", opts],
+    Text[ClickToCopy[node["HoldExpression"], node["View"]]],
     Arrowheads[Small],
     With[{xs = node["OutputPorts"]},
-        MapThread[{Arrow[If[#2["DualQ"], Reverse, Identity] @ {{#, 1}, {#,  1.3}}], Text[ClickToCopy[#2, #2["View"]], {#,  1.5}]} &, {Range[0, 1, 1 / (Length[xs] + 1)][[2 ;; -2]], xs}]
+        MapThread[{
+            Arrow[If[#2["DualQ"], Reverse, Identity] @ {{- 1 / 2 + #, 1 / 2}, {- 1 / 2 + #,  .75}}],
+            Text[ClickToCopy[#2, #2["View"]], {- 1 / 2 + #,  1}]
+        } &,
+            {Range[0, 1, 1 / (Length[xs] + 1)][[2 ;; -2]], xs}
+        ]
     ],
     With[{xs = node["InputPorts"]},
-        MapThread[{Arrow[If[#2["DualQ"], Reverse, Identity] @ {{#, 0}, {#, -0.3}}], Text[ClickToCopy[#2, #2["View"]], {#, -0.5}]} &, {Range[0, 1, 1 / (Length[xs] + 1)][[2 ;; -2]], xs}]
+        MapThread[{
+            Arrow[If[#2["DualQ"], Reverse, Identity] @ {{- 1 / 2 + #, - 1 / 2}, {- 1 / 2 + #, - .75}}],
+            Text[ClickToCopy[#2, #2["View"]], {- 1 / 2 + #, -1}]
+        } &,
+            {Range[0, 1, 1 / (Length[xs] + 1)][[2 ;; -2]], xs}
+        ]
     ]
 },
     FilterRules[{opts, node["DiagramOptions"]}, Options[Graphics]],
@@ -176,9 +211,10 @@ NodesPortGraph[nodes : {___Node ? NodeQ}, opts : OptionsPattern[]] := GraphSum[#
 
 Options[NodesGraph] = Options[Graph];
 NodesGraph[nodes : {___Node ? NodeQ}, opts : OptionsPattern[]] := Block[{
-    ports = Thread[{Through[#["OutputPorts"]], Through[#["InputPorts"]]}] & @ Through[nodes["Flatten"]]
+    ports = Thread[{Through[#["OutputPorts"]], Through[#["InputPorts"]]}] & @ Through[nodes["Flatten"]],
+    graph, embedding
 },
-    Graph[
+    graph = Graph[
         Join[
             MapIndexed[Annotation[#2[[1]], "Node" -> #1] &, nodes],
             Flatten[MapIndexed[Annotation[#2, "Port" -> #1] &, ports, {3}], 2]
@@ -193,17 +229,165 @@ NodesGraph[nodes : {___Node ? NodeQ}, opts : OptionsPattern[]] := Block[{
             ],
             3
         ],
-        FilterRules[{opts}, Options[Graph]],
         VertexLabels -> MapAt[Placed[#, Center] &, {All, 2}] @ Join[
             {_ -> Automatic},
             Thread[Range[Length[nodes]] -> Through[nodes["HoldExpression"]]],
             Flatten[MapIndexed[#2 -> #1["Label"] &, ports, {3}], 2]
         ],
-        VertexSize -> {_ -> Small, _Integer -> Large, {__Integer} -> Medium},
-        VertexShapeFunction -> _Integer -> "Square",
+        VertexSize -> {_ -> Medium, _Integer -> Large, {__Integer} -> Medium},
+        VertexShapeFunction -> {_ -> "Diamond", _Integer -> "Square", {__Integer} -> "Circle"},
+        VertexStyle -> Transparent,
         PerformanceGoal -> "Quality"
+    ];
+    embedding = AssociationThread[
+        VertexList[graph],
+        GraphEmbedding[
+            EdgeAdd[graph,
+                Catenate[DirectedEdge @@@ Partition[Reverse @ Catenate[#], 2, 1, 1] & /@ MapAt[Reverse, MapIndexed[#2 &, ports, {3}], {All, 2}]],
+                FilterRules[{opts}, {VertexCoordinates, GraphLayout}]
+            ]
+        ]
+    ];
+    embedding = <|
+        embedding,
+        With[{nodeCenter = Lookup[embedding, #[[1, 1, 1]]]},
+            Thread[# -> SortBy[Lookup[embedding, #], ArcTan @@ (# - nodeCenter) &]] & /@ #
+        ] & /@ MapIndexed[#2 &, ports, {3}]
+    |>;
+    Graph[
+        graph,
+        FilterRules[{opts}, Options[Graph]],
+        VertexCoordinates -> Normal[embedding]
     ]
 ]
+
+
+Options[NodesNetGraph] = Join[{"ShowPortLabels" -> True, "ShowWireLabels" -> True, "Scale" -> Automatic}, Options[NodeDiagram], Options[Graph]];
+NodesNetGraph[nodes_, opts : OptionsPattern[]] := NodesNetGraph[NodesGraph[nodes], opts]
+NodesNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
+	nodeVertices = VertexList[graph, _Integer], spiderVertices, vertices, edges,
+	nodes, outDegrees, inDegrees,
+	embedding, orientations,
+	scale = Replace[OptionValue["Scale"], Automatic -> .75], rad = .2,
+	portLabelsQ = TrueQ[OptionValue["ShowPortLabels"]],
+	wireLabelsQ = TrueQ[OptionValue["ShowWireLabels"]]
+},
+	nodes = AnnotationValue[{graph, nodeVertices}, "Node"];
+	If[Length[nodes] == 0, Return[Graphics[FilterRules[Join[{opts}, Options[graph]], Options[Graphics]]]]];
+	embedding = AssociationThread[VertexList[graph], GraphEmbedding[graph]];
+	If[EdgeCount[graph] == 0 && VertexCount[graph] > 1, embedding = ScalingTransform[{1, .5} / Max[#2 - #1 & @@@ CoordinateBounds[embedding]], Mean[embedding]][embedding]];
+	orientations = KeyValueMap[{node, centers} |-> Normalize[Lookup[centers, 1, Lookup[embedding, node]] - Lookup[centers, 2, Lookup[embedding, node]]],
+		GroupBy[VertexList[graph, {__Integer}], First, Mean /@ GroupBy[#, #[[2]] &, Lookup[embedding, #] &] &]
+	];
+	{outDegrees, inDegrees} = AssociationThread[VertexList[graph] -> #] & /@ Through[{VertexOutDegree, VertexInDegree}[graph]];
+	spiderVertices = VertexList[graph, _HoldForm];
+	spiderVertices = Pick[spiderVertices, VertexDegree[graph, #] & /@ spiderVertices, d_ /; d > 2];
+	spiderVertices = Reap[
+		edges = Map[v |->
+			Block[{in = VertexInComponent[graph, v, {1}], out = VertexOutComponent[graph, v, {1}], ports},
+				ports = Join[out, in];
+				If[ Length[in] + Length[out] == 2,
+					DirectedEdge[ports[[1, 1]], ports[[2, 1]], {{ports[[1, 2]], If[ports[[1, 2]] == 1, outDegrees, inDegrees][ports[[1, 1]]], ports[[1, 3]]}, v, {ports[[2, 2]], If[ports[[2, 2]] == 1, outDegrees, inDegrees][ports[[2, 1]]], ports[[2, 3]]}}],
+					Sow[v]; Splice[
+						If[#[[2]] == 1, DirectedEdge[#[[1]], v, {#[[2]], Lookup[outDegrees, #[[1]]], #[[3]]}], DirectedEdge[#[[1]], v, {#[[2]], Lookup[inDegrees, #[[1]]], #[[3]]}]] & /@ ports
+					]
+				]
+			],
+			VertexList[graph, _HoldForm]
+		]
+	][[2, 1]];
+	vertices = Join[nodeVertices, spiderVertices];
+	Graph[
+		vertices,
+		edges,
+		FilterRules[{opts}, Options[Graph]],
+		VertexCoordinates -> Thread[vertices -> Lookup[embedding, vertices]],
+		VertexShapeFunction -> Join[
+			Thread[nodeVertices ->
+				MapThread[{node, orientation} |-> With[{
+						shape = node["Shape", opts],
+						labels = Join[
+							{Text[ClickToCopy[node["HoldExpression"], RawBoxes @ ToBoxes[node["View"], StandardForm]], {0, 0}]},
+							If[ portLabelsQ,
+								Join[
+									MapIndexed[Text[ClickToCopy[#1["HoldExpression"], RawBoxes @ ToBoxes[#1["View"], StandardForm]], {- 1 / 2 + #2[[1]] / (node["OutputArity"] + 1) + .1, 1.25 / 2}] &, node["OutputPorts"]],
+									MapIndexed[Text[ClickToCopy[#1["HoldExpression"], RawBoxes @ ToBoxes[#1["View"], StandardForm]], {- 1 / 2 + #2[[1]] / (node["InputArity"] + 1) + .1, - 1.25 / 2}] &, node["InputPorts"]]
+								],
+								{}
+							]
+						],
+						transform = RotationTransform[{{0, 1}, orientation}] @* ScalingTransform[scale {1, 1}]
+					},
+						Function[{
+							Black, FaceForm[None],
+							GeometricTransformation[{shape}, TranslationTransform[#1] @* transform],
+							SubsetMap[TranslationTransform[#1] @* transform, labels, {All, 2}]
+						}]
+					],
+					{Through[nodes["Flatten"]], orientations}
+				]
+			],
+			Thread[spiderVertices -> With[{radius = rad scale}, Function[Circle[#1, radius]]]]
+		],
+		EdgeShapeFunction -> Replace[edges, {
+				edge : DirectedEdge[v_Integer, w_Integer, {{i : 1 | 2, n_Integer, p_Integer}, x_, {j : 1 | 2, m_Integer, q_Integer}}] :> edge -> Block[{
+					point1, point2, normal1, normal2, orientation1 = orientations[[v]], orientation2 = orientations[[w]], wireCoords = Lookup[embedding, x]
+				},
+					If[ i == 1,
+						point1 = {- 1 / 2 + p / (n + 1),   1 / 2} scale;
+						normal1 = {0, 1} scale
+						,
+						point1 = {- 1 / 2 + p / (n + 1), - 1 / 2} scale;
+						normal1 = - {0, 1} scale
+					];
+					point1 = RotationTransform[{{0, 1}, orientation1}] @ point1;
+					normal1 = RotationTransform[{{0, 1}, orientation1}] @ normal1;
+					If[ j == 1,
+						point2 = {- 1 / 2 + q / (m + 1),   1 / 2} scale;
+						normal2 = {0, 1} scale
+						,
+						point2 = {- 1 / 2 + q / (m + 1), - 1 / 2} scale;
+						normal2 = - {0, 1} scale
+					];
+					point2 = RotationTransform[{{0, 1}, orientation2}] @ point2;
+					normal2 = RotationTransform[{{0, 1}, orientation2}] @ normal2;
+					With[{a = VectorSymbol["p", 2], b = VectorSymbol["q", 2]},
+						Function[Evaluate @ {
+							Arrowheads[With[{size = 0.01}, Which[i == j == 1, {{size, .3}, {-size, .7}}, i == j == 2, {{-size, .3}, {size, .7}}, i == 1, {{size, .5}}, True, {{-size, .5}}]]],
+							Arrow @ BSplineCurve[{a + point1, a + point1 + normal1, b + point2 + normal2, b + point2}],
+							If[wireLabelsQ, Text[Style[ClickToCopy[x, x], Black], (a + point1 + normal1 + b + point2 + normal2) / 2 + .1 normal1], Nothing]
+						}] /. {a :> #[[1]], b :> #[[-1]]}
+					]
+				],
+				edge : DirectedEdge[v_Integer, w_, {i : 1 | 2, n_Integer, p_Integer}] :> edge -> Block[{
+					point, normal, orientation = orientations[[v]], portCoords = Lookup[embedding, Key[{v, i, p}]]
+				},
+					If[ i == 1,
+						point = {- 1 / 2 + p / (n + 1),   1 / 2} scale;
+						normal = {0, 1} scale
+						,
+						point = {- 1 / 2 + p / (n + 1), - 1 / 2} scale;
+						normal = - {0, 1} scale
+					];
+					point = RotationTransform[{{0, 1}, orientation}] @ point;
+					normal = RotationTransform[{{0, 1}, orientation}] @ normal;
+
+					With[{a = VectorSymbol["p", 2], b = VectorSymbol["q", 2]},
+						Function[Evaluate @ {
+							Arrowheads[With[{size = 0.01}, If[i == 1, {{size, .5}}, {{-size, .5}}]]],
+							Arrow @ BSplineCurve[{a + point, a + point + normal, b + scale Normalize[portCoords - b], b + rad scale Normalize[portCoords - b]}]
+						}] /. {a :> #[[1]], b :> #[[-1]]}
+					]
+				],
+				_ -> Nothing
+			},
+			1
+		],
+		VertexLabels -> _HoldForm -> Placed[Automatic, Center],
+		BaseStyle -> {FormatType -> StandardForm}
+	]
+]
+
 
 NodesFreePorts[nodes : {___Node ? NodeQ}] := Keys @ Select[CountsBy[Catenate[Through[Through[nodes["Flatten"]]["Ports"]]], #["HoldExpression"] &], EqualTo[1]]
 

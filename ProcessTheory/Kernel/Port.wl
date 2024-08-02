@@ -3,6 +3,8 @@ BeginPackage["ProcessTheory`Port`"];
 Port
 PortQ
 
+PortProduct
+
 
 Begin["ProcessTheory`Port`Private`"];
 
@@ -16,7 +18,7 @@ Options[Port] = {"DualQ" -> False, "Type" -> \[FormalCapitalT]};
 
 $PortHiddenOptions = {"Expression" -> "1"}
 
-$PortProperties = Join[Keys[Options[Port]], {"Properties", "Data", "HoldExpression", "Types", "Arity", "Label"}];
+$PortProperties = Join[Keys[Options[Port]], {"Properties", "Data", "HoldExpression", "Types", "Arity", "Label", "View", "Dual"}];
 
 
 (* ::Section:: *)
@@ -54,9 +56,9 @@ Port[(Power | Superscript | Overscript)[p_, n_Integer ? NonNegative], opts : Opt
 
 (* product *)
 
-Port[CircleTimes[ps__], opts : OptionsPattern[]] := CircleTimes @@ Map[Function[Null, Port[Unevaluated[#], opts], HoldFirst], Unevaluated[{ps}]]
+Port[CircleTimes[ps__], opts : OptionsPattern[]] := PortProduct @@ Map[Function[Null, Port[Unevaluated[#], opts], HoldFirst], Unevaluated[{ps}]]
 
-Port /: CircleTimes[ps___Port ? PortQ] := If[AllTrue[{ps}, #["DualQ"] &],
+PortProduct[ps___Port ? PortQ] := If[AllTrue[{ps}, #["DualQ"] &],
     Port["Expression" -> Through[{ps}["Dual"]], "DualQ" -> True, "Type" -> CircleTimes @@ Through[{ps}["Type"]]],
     Port["Expression" -> {ps}, "Type" -> CircleTimes @@ Through[{ps}["Type"]]]
 ]
@@ -78,6 +80,8 @@ Port[p_ ? PortQ, opts : OptionsPattern[]] := Port[Replace[Normal[Merge[{opts, p[
 
 Port[expr : Except[_Association | _Port | OptionsPattern[]], opts : OptionsPattern[]] := Port[FilterRules[{"Expression" :> expr, opts}, Join[Options[Port], $PortHiddenOptions]]]
 
+Port[expr : Except[_Association], type : Except[OptionsPattern[]], opts : OptionsPattern[]] := Port[expr, "Type" -> type, opts]
+
 Port[opts : OptionsPattern[]] := Port[KeySort[<|DeleteDuplicatesBy[First] @ FilterRules[{opts, Options[Port], $PortHiddenOptions}, Join[Options[Port], $PortHiddenOptions]]|>]]
 
 
@@ -87,7 +91,7 @@ Port[opts : OptionsPattern[]] := Port[KeySort[<|DeleteDuplicatesBy[First] @ Filt
 
 (* dispatch properties *)
 
-(p_Port ? PortQ)[prop_] := PortProp[p, prop] 
+(p_Port ? PortQ)[prop_, opts___] := PortProp[p, prop, opts] 
 
 
 (* property definitions *)
