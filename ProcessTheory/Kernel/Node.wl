@@ -131,9 +131,9 @@ NodeProp[n_, "InputArity"] := Length[n["InputPorts"]]
 
 NodeProp[n_, "Arity"] := Length[n["Ports"]]
 
-NodeProp[n_, "FlattenOutputs"] := Node[n, "OutputPorts" -> Flatten[Through[n["OutputPorts"]["PortList"]]]]
+NodeProp[n_, "FlattenOutputs"] := Node[n, "OutputPorts" -> Flatten[Through[n["OutputPorts"]["PortTree"]]]]
 
-NodeProp[n_, "FlattenInputs"] := Node[n, "InputPorts" -> Flatten[Through[n["InputPorts"]["PortList"]]]]
+NodeProp[n_, "FlattenInputs"] := Node[n, "InputPorts" -> Flatten[Through[n["InputPorts"]["PortTree"]]]]
 
 NodeProp[n_, "Flatten"] := n["FlattenOutputs"]["FlattenInputs"]
 

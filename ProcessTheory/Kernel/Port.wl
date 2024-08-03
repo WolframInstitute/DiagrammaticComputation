@@ -106,12 +106,12 @@ PortProp[p_, "HoldExpression"] := Extract[p["Data"], "Expression", HoldForm]
 
 PortProp[p_, "Options"] := Normal[KeyDrop[p["Data"], "Expression"]]
 
-PortProp[p_, "Types"] := Through[Flatten[p["PortList"]]["Type"]]
+PortProp[p_, "Types"] := Through[Flatten[p["PortTree"]]["Type"]]
 
 PortProp[p_, "Arity"] := Length[p["Types"]]
 
 PortProp[p_, "Label"] := ReplaceAll[
-    ReplaceAll[p["PortList"], q_Port :> If[q["DualQ"], SuperStar, Identity][q["HoldExpression"]]] /. List -> CircleTimes,
+    ReplaceAll[p["PortTree"], q_Port :> If[q["DualQ"], SuperStar, Identity][q["HoldExpression"]]] /. List -> CircleTimes,
     {
         CircleTimes[x_, y_] /; x === SuperStar[y] :> OverHat[x],
         CircleTimes[x_, y_] /; SuperStar[x] ===y :> OverHat[y],
@@ -135,8 +135,8 @@ PortProp[_, prop_] := Missing[prop]
 
 PortProp[p_, "ProductQ"] := MatchQ[p["HoldExpression"], HoldForm[{___Port ? PortQ}]]
 
-PortProp[p_, "PortList"] := If[p["ProductQ"],
-    If[p["DualQ"], ReplaceAll[q_Port :> q["Dual"]], Identity] @ Through[p["Expression"]["PortList"]],
+PortProp[p_, "PortTree"] := If[p["ProductQ"],
+    If[p["DualQ"], ReplaceAll[q_Port :> q["Dual"]], Identity] @ Through[p["Expression"]["PortTree"]],
     p
 ]
 
