@@ -1,7 +1,7 @@
 BeginPackage["ProcessTheory`Diagram`", {"ProcessTheory`Port`", "ProcessTheory`Node`"}];
 
-ProcessDiagram
-ProcessDiagramQ
+NodeDiagram
+NodeDiagramQ
 
 Begin["ProcessTheory`Diagram`Private`"];
 
@@ -9,38 +9,38 @@ Begin["ProcessTheory`Diagram`Private`"];
 (* ::Subsection:: *)
 (* Definitions *)
 
-Options[ProcessDiagram] = {};
+Options[NodeDiagram] = {};
 
-$ProcessDiagramHiddenOptions = {"Nodes" -> {}, "DiagramOptions" -> {}};
+$NodeDiagramHiddenOptions = {"Nodes" -> {}, "DiagramOptions" -> {}};
 
-$ProcessDiagramProperties = Join[Keys[Options[ProcessDiagram]], {"Properties", "FreePorts", "PortGraph", "Graph", "Diagram"}];
+$NodeDiagramProperties = Join[Keys[Options[NodeDiagram]], {"Properties", "FreePorts", "PortGraph", "Graph", "Diagram"}];
 
 
 (* ::Subsection:: *)
 (* Validation *)
 
-processDiagramQ[HoldPattern[ProcessDiagram[data_Association]]] := MatchQ[data, KeyValuePattern[{"Nodes" -> _List, "DiagramOptions" -> OptionsPattern[]}]]
+NodeDiagramQ[HoldPattern[NodeDiagram[data_Association]]] := MatchQ[data, KeyValuePattern[{"Nodes" -> _List, "DiagramOptions" -> OptionsPattern[]}]]
 
-processDiagramQ[___] := False
+NodeDiagramQ[___] := False
 
 
-x_ProcessDiagram /; System`Private`HoldNotValidQ[x] && processDiagramQ[Unevaluated[x]] := (System`Private`HoldSetValid[x]; System`Private`HoldSetNoEntry[x])
+x_NodeDiagram /; System`Private`HoldNotValidQ[x] && NodeDiagramQ[Unevaluated[x]] := (System`Private`HoldSetValid[x]; System`Private`HoldSetNoEntry[x])
 
-ProcessDiagramQ[x_ProcessDiagram] := System`Private`HoldValidQ[x]
+NodeDiagramQ[x_NodeDiagram] := System`Private`HoldValidQ[x]
 
-ProcessDiagramQ[___] := False
+NodeDiagramQ[___] := False
 
 
 (* ::Subsection:: *)
 (* Constructors *)
 
-ProcessDiagram[nodes : Except[_Association | _ProcessDiagram | OptionsPattern[]], opts : OptionsPattern[]] :=
-    ProcessDiagram[FilterRules[{"Nodes" -> Node /@ Developer`ToList[nodes], opts}, Join[Options[ProcessDiagram], $ProcessDiagramHiddenOptions, Options[NodesNetGraph]]]]
+NodeDiagram[nodes : Except[_Association | _NodeDiagram | OptionsPattern[]], opts : OptionsPattern[]] :=
+    NodeDiagram[FilterRules[{"Nodes" -> Node /@ Developer`ToList[nodes], opts}, Join[Options[NodeDiagram], $NodeDiagramHiddenOptions, Options[NodesNetGraph]]]]
 
-ProcessDiagram[opts : OptionsPattern[]] := ProcessDiagram[KeySort[<|
+NodeDiagram[opts : OptionsPattern[]] := NodeDiagram[KeySort[<|
     DeleteDuplicatesBy[First] @ FilterRules[
-        {"DiagramOptions" -> FilterRules[{opts, Values[FilterRules[{opts}, "DiagramOptions"]]}, Options[NodesNetGraph]], opts, Options[ProcessDiagram], $ProcessDiagramHiddenOptions},
-        Join[Options[ProcessDiagram], $ProcessDiagramHiddenOptions]
+        {"DiagramOptions" -> FilterRules[{opts, Values[FilterRules[{opts}, "DiagramOptions"]]}, Options[NodesNetGraph]], opts, Options[NodeDiagram], $NodeDiagramHiddenOptions},
+        Join[Options[NodeDiagram], $NodeDiagramHiddenOptions]
     ]|>
 ]]
 
@@ -51,30 +51,30 @@ ProcessDiagram[opts : OptionsPattern[]] := ProcessDiagram[KeySort[<|
 
 (* dispatch properties *)
 
-(d_ProcessDiagram ? ProcessDiagramQ)[prop_, opts___] := ProcessDiagramProp[d, prop, opts] 
+(d_NodeDiagram ? NodeDiagramQ)[prop_, opts___] := NodeDiagramProp[d, prop, opts] 
 
 
 (* property definitions *)
 
-ProcessDiagramProp[_, "Properties"] := Sort[$ProcessDiagramProperties]
+NodeDiagramProp[_, "Properties"] := Sort[$NodeDiagramProperties]
 
-ProcessDiagramProp[HoldPattern[ProcessDiagram[data_]], "Data"] := data
+NodeDiagramProp[HoldPattern[NodeDiagram[data_]], "Data"] := data
 
-ProcessDiagramProp[HoldPattern[ProcessDiagram[data_Association]], prop_] /; KeyExistsQ[data, prop] := Lookup[data, prop]
+NodeDiagramProp[HoldPattern[NodeDiagram[data_Association]], prop_] /; KeyExistsQ[data, prop] := Lookup[data, prop]
 
-ProcessDiagramProp[d_, "FreePorts"] := NodesFreePorts[d["Nodes"]]
+NodeDiagramProp[d_, "FreePorts"] := NodesFreePorts[d["Nodes"]]
 
-ProcessDiagramProp[d_, "PortGraph", opts___] := NodesPortGraph[d["Nodes"], opts]
+NodeDiagramProp[d_, "PortGraph", opts___] := NodesPortGraph[d["Nodes"], opts]
 
-ProcessDiagramProp[d_, "Graph", opts___] := NodesGraph[d["Nodes"], opts]
+NodeDiagramProp[d_, "Graph", opts___] := NodesGraph[d["Nodes"], opts]
 
-ProcessDiagramProp[d_, "Diagram", opts___] := NodesNetGraph[d["Nodes"], opts, d["DiagramOptions"]]
+NodeDiagramProp[d_, "Diagram", opts___] := NodesNetGraph[d["Nodes"], opts, d["DiagramOptions"]]
 
 
 (* ::Subsection:: *)
 (* Formatting *)
 
-ProcessDiagram /: MakeBoxes[diag_ProcessDiagram /; ProcessDiagramQ[diag], form_] := With[{
+NodeDiagram /: MakeBoxes[diag_NodeDiagram /; NodeDiagramQ[diag], form_] := With[{
     boxes = ToBoxes[diag["Diagram", BaseStyle -> {GraphicsHighlightColor -> Magenta}], form]
 },
     InterpretationBox[boxes, diag]

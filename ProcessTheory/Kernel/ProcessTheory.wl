@@ -15,8 +15,8 @@ ProcessTheory`ProcessTheoryDump`$exported = {
 	System`DiagramProduct,
 	System`DiagramSum,
 	System`DiagramTranspose,
-	System`ProcessDiagram,
-	System`ProcessDiagramQ
+	System`NodeDiagram,
+	System`NodeDiagramQ
 };
 
 Unprotect /@ ProcessTheory`ProcessTheoryDump`$exported;

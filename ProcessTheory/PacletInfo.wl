@@ -18,8 +18,8 @@ PacletObject[
 			"System`DiagramProduct",
 			"System`DiagramSum",
 			"System`DiagramTranspose",
-			"System`ProcessDiagram",
-			"System`ProcessDiagramQ"
+			"System`NodeDiagram",
+			"System`NodeDiagramQ"
 		},
         "Root" -> "Kernel",
         "Context" -> {
