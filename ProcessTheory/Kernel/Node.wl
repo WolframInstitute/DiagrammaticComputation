@@ -7,6 +7,7 @@ NodeProduct
 NodeSum
 NodeCompose
 
+NodeCombine
 NodesFreePorts
 
 NodesPortGraph
@@ -26,7 +27,7 @@ Options[Node] = {};
 $NodeHiddenOptions = {"Expression" -> None, "OutputPorts" -> {}, "InputPorts" -> {}, "DiagramOptions" -> {}};
 
 $NodeProperties = Join[Keys[Options[Node]],
-    {"Properties", "HoldExpression", "Ports", "Arity", "FlattenOutputs", "FlattenInputs", "Flatten", "View", "Symbol", "Shape", "Diagram"}
+    {"Properties", "HoldExpression", "ProductQ", "SumQ", "Ports", "Arity", "FlattenOutputs", "FlattenInputs", "Flatten", "View", "Symbol", "Shape", "Diagram"}
 ];
 
 
@@ -48,9 +49,17 @@ NodeQ[___] := False
 (* ::Subsection:: *)
 (* Constructors *)
 
-Node[CircleTimes[ns___], opts : OptionsPattern[]] := Node[Unevaluated[NodeProduct[##]], opts] & @@ Node /@ {ns}
+Node[CircleTimes[ns___], opts : OptionsPattern[]] := With[{nodes = Node /@ {ns}}, {node = NodeProduct @@ nodes},
+    Node["Expression" :> NodeProduct[##], "OutputPorts" -> node["OutputPorts"], "InputPorts" -> node["InputPorts"], opts] & @@ nodes
+]
 
-Node[CirclePlus[ns___], opts : OptionsPattern[]] := Node[Unevaluated[NodeSum[##]], opts] & @@ Node /@ {ns}
+Node[CirclePlus[ns___], opts : OptionsPattern[]] := With[{nodes = Node /@ {ns}}, {node = NodeSum @@ nodes},
+    Node["Expression" :> NodeSum[##], "OutputPorts" -> node["OutputPorts"], "InputPorts" -> node["InputPorts"], opts] & @@ nodes
+]
+
+Node[CircleDot[ns___], opts : OptionsPattern[]] := With[{nodes = Node /@ {ns}}, {node = NodeCompose @@ nodes},
+    Node["Expression" :> NodeCompose[##], "OutputPorts" -> node["OutputPorts"], "InputPorts" -> node["InputPorts"], opts] & @@ nodes
+]
 
 Node[expr : Except[_Association | _Node | OptionsPattern[]],
     outputs : {} | Except[OptionsPattern[], _List] : {},
@@ -68,10 +77,11 @@ Node[expr : Except[_Association | _Node | OptionsPattern[]],
         ]
     ]
 
-Node[expr_, output : Except[_List], inputs : {} | Except[OptionsPattern[], _List] : {}, opts : OptionsPattern[]] :=
-    Node[Unevaluated[expr], Unevaluated[{output}], Unevaluated[inputs], opts]
+Node[expr_, output : Except[_List], args___] := Node[Unevaluated[expr], Unevaluated[{output}], args]
 
-Node[expr_, outputs : {} | Except[OptionsPattern[], _List] : {}, input : Except[_List], opts___] := Node[Unevaluated[expr], Unevaluated[outputs], Unevaluated[{input}], opts]
+Node[expr_, outputs_List, input : Except[_List | OptionsPattern[]], opts___] := Node[Unevaluated[expr], Unevaluated[outputs], Unevaluated[{input}], opts]
+
+Node[expr_, output : Except[_List], input : Except[_List], opts___] := Node[Unevaluated[expr], Unevaluated[{output}], Unevaluated[{input}], opts]
 
 Node[opts : OptionsPattern[]] := Node[KeySort[<|
     DeleteDuplicatesBy[First] @ FilterRules[
@@ -86,19 +96,39 @@ Node[opts : OptionsPattern[]] := Node[KeySort[<|
 Node[n_ ? NodeQ, opts : OptionsPattern[]] := Node[Replace[Normal[Merge[{opts, n["Data"]}, List]], head_[k_, {{v_, ___}}] :> head[k, v], 1]]
 
 
+(* sum *)
+
+NodeSum[ns___Node ? NodeQ, opts : OptionsPattern[]] := Node[
+    opts,
+    With[{expr = Unevaluated @@ CirclePlus @@@ Hold[Evaluate[Through[{ns}["HoldExpression"]]]]}, "Expression" :> expr],
+    "OutputPorts" -> Replace[Through[{ns}["OutputPorts"]], {{} -> Port["0"], ps_ :> PortSum @@ ps}, 1],
+    "InputPorts" -> Replace[Through[{ns}["InputPorts"]], {{} -> Port[SuperStar["0"]], ps_ :> PortSum @@ ps}, 1]
+]
+
 (* horizontal product *)
 
 NodeProduct[ns___Node ? NodeQ, opts : OptionsPattern[]] := Node[
     opts,
     With[{expr = Unevaluated @@ CircleTimes @@@ Hold[Evaluate[Through[{ns}["HoldExpression"]]]]}, "Expression" :> expr],
-    "OutputPorts" -> Replace[Through[{ns}["OutputPorts"]], {{} -> Port[1], ps_ :> PortProduct @@ ps}, 1],
-    "InputPorts" -> Replace[Through[{ns}["InputPorts"]], {{} -> Port[SuperStar[1]], ps_ :> PortProduct @@ ps}, 1]
+    "OutputPorts" -> Replace[Through[{ns}["OutputPorts"]], {{} -> Port["1"], ps_ :> PortProduct @@ ps}, 1],
+    "InputPorts" -> Replace[Through[{ns}["InputPorts"]], {{} -> Port[SuperStar["1"]], ps_ :> PortProduct @@ ps}, 1]
 ]
 
 
 (* vertical product *)
 
-NodeCompose[ns___Node ? NodeQ, opts : OptionsPattern[]] := Node[
+collectPorts[ports_List] := If[ports === {}, {}, Fold[{Union[#2[[1]], Complement[#1[[1]], #2[[2]]]], Union[#1[[2]], Complement[#2[[2]], #1[[1]]]]} &, ports]]
+
+NodeCompose[ns___Node ? NodeQ, opts : OptionsPattern[]] := With[{ports = collectPorts[{Through[#["OutputPorts"]["Expression"]], Through[#["InputPorts"]["Expression"]]} & /@ Through[{ns}["Flatten"]]]},
+    Node[
+        opts,
+        With[{expr = Unevaluated @@ CircleDot @@@ Hold[Evaluate[Through[{ns}["HoldExpression"]]]]}, "Expression" :> expr],
+        "OutputPorts" -> (Port /@ ports[[1]]),
+        "InputPorts" -> (Port[#]["Dual"] & /@ ports[[2]])
+    ]
+]
+
+NodeCombine[ns___Node ? NodeQ, opts : OptionsPattern[]] := Node[
     opts,
     With[{expr = Unevaluated @@ Composition @@@ Hold[Evaluate[Through[{ns}["HoldExpression"]]]]}, "Expression" :> expr],
 
@@ -107,7 +137,7 @@ NodeCompose[ns___Node ? NodeQ, opts : OptionsPattern[]] := Node[
         edges = EdgeList[graph];
         {
             "OutputPorts" -> Cases[edges, DirectedEdge[{nodeId_, 1, portId_}, Alternatives @@ freeWires] :> nodes[[nodeId]]["OutputPorts"][[portId]]],
-            "InputPorts" -> Cases[edges, DirectedEdge[Alternatives @@ freeWires, {nodeId_, 2, portId_}] :> nodes[[nodeId]]["InputPorts"][[portId]]]
+            "InputPorts" -> Cases[edges, DirectedEdge[Alternatives @@ freeWires, {nodeId_, 2, portId_}] :> nodes[[nodeId]]["InputPorts"][[portId]]["Dual"]]
         }
     ]
 ]
@@ -131,6 +161,12 @@ NodeProp[HoldPattern[Node[data_]], "Data"] := data
 NodeProp[HoldPattern[Node[data_Association]], prop_] /; KeyExistsQ[data, prop] := Lookup[data, prop]
 
 NodeProp[n_, "HoldExpression"] := Extract[n["Data"], "Expression", HoldForm]
+
+NodeProp[n_, "ProductQ"] := MatchQ[n["HoldExpression"], HoldForm[_NodeProduct]]
+
+NodeProp[n_, "SumQ"] := MatchQ[n["HoldExpression"], HoldForm[_NodeSum]]
+
+NodeProp[n_, "ComposeQ"] := MatchQ[n["HoldExpression"], HoldForm[_NodeCompose]]
 
 NodeProp[n_, "Ports"] := Join[n["OutputPorts"], n["InputPorts"]]
 
@@ -211,6 +247,8 @@ Node /: MakeBoxes[node : Node[_Association] ? NodeQ, form_] := With[{boxes = ToB
 NodeProduct /: MakeBoxes[NodeProduct[ns___], form_] := With[{boxes = ToBoxes[CircleTimes[ns], form]}, InterpretationBox[boxes, NodeProduct[ns]]]
 
 NodeSum /: MakeBoxes[NodeSum[ns___], form_] := With[{boxes = ToBoxes[CirclePlus[ns], form]}, InterpretationBox[boxes, NodeSum[ns]]]
+
+NodeCompose /: MakeBoxes[NodeCompose[ns___], form_] := With[{boxes = ToBoxes[CircleDot[ns], form]}, InterpretationBox[boxes, NodeSum[ns]]]
 
 
 (* ::Subsection:: *)

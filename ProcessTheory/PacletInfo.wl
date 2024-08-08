@@ -14,7 +14,6 @@ PacletObject[
 			"System`DiagramAdjoint",
 			"System`DiagramComposition",
 			"System`DiagramConjugate",
-			"System`DiagramPlot",
 			"System`DiagramProduct",
 			"System`DiagramSum",
 			"System`DiagramTranspose",
@@ -26,7 +25,8 @@ PacletObject[
 			"ProcessTheoryLoader`",
 			"ProcessTheory`",
 			"Port`",
-			"Node`"
+			"Node`",
+			"Circuit`"
 		}
       }
     }

@@ -46,11 +46,11 @@ PortQ[___] := False
 
 Port[(Power | Superscript | Overscript)[port_, 0], ___] := emptyPort[port]
 
-Port[1 | CircleTimes[], ___] := emptyPort["1"]
+Port["1" | CircleTimes[], ___] := emptyPort["1"]
 
-emptyPort[p_] := Port[p, "Type" -> CircleTimes[]]
+emptyPort[p_] := Port["Expression" :> p, "Type" -> CircleTimes[]]
 
-Port[0 | CirclePlus[], ___] := Port["0", "Type" -> CirclePlus[]]
+Port["0" | CirclePlus[], ___] := Port["Expression" :> "0", "Type" -> CirclePlus[]]
 
 
 (* exponential *)
@@ -73,7 +73,7 @@ PortProduct[ps___Port ? PortQ] := If[AllTrue[{ps}, #["DualQ"] &],
 Port[CirclePlus[ps__], opts : OptionsPattern[]] := PortSum @@ Map[Function[Null, Port[Unevaluated[#], opts], HoldFirst], Unevaluated[{ps}]]
 
 PortSum[ps___Port ? PortQ] := If[AllTrue[{ps}, #["DualQ"] &],
-    Port["Expression" :> PortDual[PortSum[ps]], "Type" -> CirclePlus @@ Through[{ps}["Type"]]] & @@ Through[{ps}["Dual"]],
+    Port["Expression" :> PortDual[PortSum[##]], "Type" -> CirclePlus @@ Through[{ps}["Type"]]] & @@ Through[{ps}["Dual"]],
     Port["Expression" :> PortSum[ps], "Type" -> CirclePlus @@ Through[{ps}["Type"]]]
 ]
 
@@ -167,11 +167,13 @@ PortProp[p_, "PortTree"] :=
 
 PortProp[p_, "ProductList"] := Replace[p["HoldExpression"], {
     HoldForm[PortProduct[ps___]] :> Catenate[Through[{ps}["ProductList"]]],
+    HoldForm[PortDual[PortProduct[ps___]]] :> Through[Catenate[Through[{ps}["ProductList"]]]["Dual"]],
     _ :> {p}
 }]
 
 PortProp[p_, "SumList"] := Replace[p["HoldExpression"], {
     HoldForm[PortSum[ps___]] :> Catenate[Through[{ps}["SumList"]]],
+    HoldForm[PortDual[PortSum[ps___]]] :> Through[Catenate[Through[{ps}["SumList"]]]["Dual"]],
     _ :> {p}
 }]
 

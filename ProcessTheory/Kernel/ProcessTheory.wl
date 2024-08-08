@@ -11,7 +11,6 @@ ProcessTheory`ProcessTheoryDump`$exported = {
 	System`DiagramAdjoint,
 	System`DiagramComposition,
 	System`DiagramConjugate,
-	System`DiagramPlot,
 	System`DiagramProduct,
 	System`DiagramSum,
 	System`DiagramTranspose,
