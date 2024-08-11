@@ -24,6 +24,7 @@ PacletObject[
         "Context" -> {
 			"ProcessTheoryLoader`",
 			"ProcessTheory`",
+			"Utilities`",
 			"Port`",
 			"Node`",
 			"Circuit`"

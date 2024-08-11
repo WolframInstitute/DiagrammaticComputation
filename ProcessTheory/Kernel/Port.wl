@@ -1,4 +1,4 @@
-BeginPackage["ProcessTheory`Port`"];
+BeginPackage["ProcessTheory`Port`", {"ProcessTheory`Utilities`"}];
 
 Port
 PortQ
@@ -20,7 +20,7 @@ Options[Port] = {"Type" -> \[FormalCapitalT]};
 
 $PortHiddenOptions = {"Expression" -> "1"}
 
-$PortProperties = Join[Keys[Options[Port]], {"Properties", "Data", "HoldExpression", "Name", "Types", "Arity", "Label", "View", "Dual"}];
+$PortProperties = Join[Keys[Options[Port]], {"Properties", "Data", "HoldExpression", "Name", "Types", "Arity", "Label", "View", "Dual", "Reverse"}];
 
 
 (* ::Section:: *)
@@ -141,10 +141,12 @@ PortProp[p_, "Label"] := ReplaceAll[
 PortProp[p_, "View"] := With[{
     label = p["Label"]
 },
-    Defer[Port[label]] /. HoldForm[x_] :> x
+    Defer[Port[label]] //. HoldForm[x_] :> x
 ]
 
 PortProp[p_, "Dual"] := PortDual[p]
+
+PortProp[p_, "Reverse"] := Port[reverseTree[p["PortTree"]], reverseTree[p["Type"]]]
 
 PortProp[_, prop_] := Missing[prop]
 
