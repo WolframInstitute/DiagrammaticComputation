@@ -1,25 +1,25 @@
-BeginPackage["ProcessTheory`Circuit`", {"ProcessTheory`Port`", "ProcessTheory`Node`"}];
+BeginPackage["ProcessTheory`Circuit`", {"ProcessTheory`Port`", "ProcessTheory`Diagram`"}];
 
-NodesToCircuitDiagram
+DiagramsToCircuitDiagram
 
 Begin["ProcessTheory`Circuit`Private`"];
 
 
-NodesToCircuitDiagram[nodes_] := Block[{
-    portIndex = First /@ PositionIndex[Union @ Through[Catenate[#["Flatten"]["Ports"] & /@ nodes]["Name"]]]
+DiagramsToCircuitDiagram[diagrams_List] := Block[{
+    portIndex = First /@ PositionIndex[Union @ Through[Catenate[#["Flatten"]["Ports"] & /@ diagrams]["Name"]]]
 },
     <|
-        "Elements" -> Map[node |-> 
+        "Elements" -> Map[diagram |-> 
             <|
-                "Type" -> If[node["ComposeQ"], "Diagram", "Operator"],
-                "Label" -> node["Expression"],
-                "Thickness" -> {ConstantArray[2, node["OutputArity"]], ConstantArray[2, node["InputArity"]]},
-                "Position" -> (Lookup[portIndex, Through[Catenate[Through[node[#]["ProductList"]]]["Name"]]] & /@ {"OutputPorts", "InputPorts"}),
+                "Type" -> If[diagram["CompositionQ"], "Diagram", "Operator"],
+                "Label" -> diagram["Expression"],
+                "Thickness" -> {ConstantArray[2, diagram["OutputArity"]], ConstantArray[2, diagram["InputArity"]]},
+                "Position" -> (Lookup[portIndex, Through[Catenate[Through[diagram[#]["ProductList"]]]["Name"]]] & /@ {"OutputPorts", "InputPorts"}),
                 "Thick" -> False,
-                "Diagram" -> Replace[node["HoldExpression"], {HoldForm[NodeCompose[ns___]] :> NodesToCircuitDiagram[{ns}], _ -> None}]
+                "Diagram" -> Replace[diagram["HoldExpression"], {HoldForm[DiagramComposition[ds___]] :> DiagramsToCircuitDiagram[{ds}], _ -> None}]
             |>
             ,
-            nodes
+            diagrams
         ],
         "Label" -> None,
         "Expand" -> True

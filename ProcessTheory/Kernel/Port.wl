@@ -14,7 +14,7 @@ Begin["ProcessTheory`Port`Private`"];
 (* ::Section:: *)
 (* Definitions *)
 
-Port::usage = "Port[expr] represents a symbolic port for node inputs and outputs"
+Port::usage = "Port[expr] represents a symbolic port for diagram inputs and outputs"
 
 Options[Port] = {"Type" -> \[FormalCapitalT]};
 

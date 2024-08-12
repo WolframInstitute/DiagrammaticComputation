@@ -10,15 +10,15 @@ PacletObject[
       {
         "Kernel",
 		"Symbols" -> {
-			"System`CircuitDiagramQ",
-			"System`DiagramAdjoint",
-			"System`DiagramComposition",
-			"System`DiagramConjugate",
+			"System`DiagramQ",
+			"System`DiagramQ",
+			"System`DiagramDual",
+			"System`DiagramFlip",
+			"System`DiagramReverse",
 			"System`DiagramProduct",
 			"System`DiagramSum",
-			"System`DiagramTranspose",
-			"System`NodeDiagram",
-			"System`NodeDiagramQ"
+			"System`DiagramComposition",
+			"System`DiagramNetwork"
 		},
         "Root" -> "Kernel",
         "Context" -> {
@@ -26,7 +26,7 @@ PacletObject[
 			"ProcessTheory`",
 			"Utilities`",
 			"Port`",
-			"Node`",
+			"Diagram`",
 			"Circuit`"
 		}
       }

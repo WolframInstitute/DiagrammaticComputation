@@ -7,15 +7,15 @@
 System`Private`NewContextPath[{"System`", "ProcessTheory`"}];
 
 ProcessTheory`ProcessTheoryDump`$exported = {
-	System`CircuitDiagramQ,
-	System`DiagramAdjoint,
-	System`DiagramComposition,
-	System`DiagramConjugate,
+	System`DiagramQ,
+	System`Diagram,
+	System`DiagramDual,
+	System`DiagramFlip,
+	System`DiagramReverse,
 	System`DiagramProduct,
 	System`DiagramSum,
-	System`DiagramTranspose,
-	System`NodeDiagram,
-	System`NodeDiagramQ
+	System`DiagramComposition,
+	System`DiagramNetwork
 };
 
 Unprotect /@ ProcessTheory`ProcessTheoryDump`$exported;
