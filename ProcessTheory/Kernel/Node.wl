@@ -11,7 +11,7 @@ NodeProduct
 NodeSum
 NodeCompose
 
-NodeCombine
+NodeNetwork
 NodesFreePorts
 
 NodesPortGraph
@@ -53,6 +53,15 @@ NodeQ[___] := False
 (* ::Subsection:: *)
 (* Constructors *)
 
+Node[SuperStar[n_], opts : OptionsPattern[]] :=
+    With[{node = NodeDual[#]}, Node["Expression" :> NodeDual[#], "OutputPorts" -> node["OutputPorts"], "InputPorts" -> node["InputPorts"], opts]] & @ Node[n]
+
+Node[OverBar[n_], opts : OptionsPattern[]] :=
+    With[{node = NodeFlip[#]}, Node["Expression" :> NodeFlip[#], "OutputPorts" -> node["OutputPorts"], "InputPorts" -> node["InputPorts"], opts]] & @ Node[n]
+
+Node[OverTilde[n_], opts : OptionsPattern[]] :=
+    With[{node = NodeReverse[#]}, Node["Expression" :> NodeReverse[#], "OutputPorts" -> node["OutputPorts"], "InputPorts" -> node["InputPorts"], opts]] & @ Node[n]
+
 Node[CircleTimes[ns___], opts : OptionsPattern[]] := With[{nodes = Node /@ {ns}}, {node = NodeProduct @@ nodes},
     Node["Expression" :> NodeProduct[##], "OutputPorts" -> node["OutputPorts"], "InputPorts" -> node["InputPorts"], opts] & @@ nodes
 ]
@@ -63,6 +72,10 @@ Node[CirclePlus[ns___], opts : OptionsPattern[]] := With[{nodes = Node /@ {ns}},
 
 Node[CircleDot[ns___], opts : OptionsPattern[]] := With[{nodes = Node /@ {ns}}, {node = NodeCompose @@ nodes},
     Node["Expression" :> NodeCompose[##], "OutputPorts" -> node["OutputPorts"], "InputPorts" -> node["InputPorts"], opts] & @@ nodes
+]
+
+Node[ns : Except[OptionsPattern[], _List], opts : OptionsPattern[]] := With[{nodes = Node /@ ns}, {node = NodeNetwork @@ nodes},
+    Node["Expression" :> NodeNetwork[##], "OutputPorts" -> node["OutputPorts"], "InputPorts" -> node["InputPorts"], opts] & @@ nodes
 ]
 
 Node[expr : Except[_Association | _Node | OptionsPattern[]],
@@ -162,9 +175,9 @@ NodeCompose[ns___Node ? NodeQ, opts : OptionsPattern[]] := With[{ports = collect
     ]
 ]
 
-NodeCombine[ns___Node ? NodeQ, opts : OptionsPattern[]] := Node[
+NodeNetwork[ns___Node ? NodeQ, opts : OptionsPattern[]] := Node[
     opts,
-    "Expression" :> NodeCombine[ns],
+    "Expression" :> NodeNetwork[ns],
 
     Block[{graph = NodesGraph[{ns}], nodes = Through[{ns}["Flatten"]], freeWires, edges},
         freeWires = Cases[Pick[VertexList[graph], VertexDegree[graph], 1], _HoldForm];
@@ -218,8 +231,16 @@ NodeProp[n_, "Flatten"] := n["FlattenOutputs"]["FlattenInputs"]
 
 NodeProp[n_, "View"] := With[{
     expr = Replace[n["HoldExpression"],
-        HoldForm[(head : NodeDual | NodeFlip | NodeReverse | NodeProduct | NodeSum | NodeCompose | NodeCombine)[ns___]] :>
-            head @@@ HoldForm[Evaluate[Flatten[Defer @@ (Node[#]["View"] & /@ {ns})]]]
+        HoldForm[(head : NodeDual | NodeFlip | NodeReverse | NodeProduct | NodeSum | NodeCompose | NodeNetwork)[ns___]] :>
+            Replace[head, {
+                NodeDual -> SuperStar,
+                NodeFlip -> OverBar,
+                NodeReverse -> OverTilde,
+                NodeProduct -> CircleTimes,
+                NodeSum -> CirclePlus,
+                NodeCompose -> CircleDot
+            }
+            ] @@@ HoldForm[Evaluate[Flatten[Defer @@ (Node[#]["View"] & /@ {ns})]]]
     ],
     outputs = Through[n["OutputPorts"]["Label"]],
     inputs = Through[Through[n["InputPorts"]["Dual"]]["Label"]]
@@ -291,9 +312,9 @@ NodeProduct /: MakeBoxes[NodeProduct[ns___], form_] := With[{boxes = ToBoxes[Cir
 
 NodeSum /: MakeBoxes[NodeSum[ns___], form_] := With[{boxes = ToBoxes[CirclePlus[ns], form]}, InterpretationBox[boxes, NodeSum[ns]]]
 
-NodeCompose /: MakeBoxes[NodeCompose[ns___], form_] := With[{boxes = ToBoxes[CircleDot[ns], form]}, InterpretationBox[boxes, NodeSum[ns]]]
+NodeCompose /: MakeBoxes[NodeCompose[ns___], form_] := With[{boxes = ToBoxes[CircleDot[ns], form]}, InterpretationBox[boxes, NodeCompose[ns]]]
 
-NodeCombine /: MakeBoxes[NodeCombine[ns___], form_] := With[{boxes = ToBoxes[NodesNetGraph[{ns}], form]}, InterpretationBox[boxes, NodeCombine[ns]]]
+NodeNetwork /: MakeBoxes[NodeNetwork[ns___], form_] := With[{boxes = ToBoxes[NodesNetGraph[{ns}], form]}, InterpretationBox[boxes, NodeNetwork[ns]]]
 
 
 (* ::Subsection:: *)
