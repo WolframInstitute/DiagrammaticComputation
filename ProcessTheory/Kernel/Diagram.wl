@@ -52,14 +52,14 @@ DiagramQ[___] := False
 (* ::Subsection:: *)
 (* Constructors *)
 
-Diagram[SuperStar[n_], opts : OptionsPattern[]] :=
-    With[{diagram = DiagramDual[#]}, Diagram["Expression" :> DiagramDual[#], "OutputPorts" -> diagram["OutputPorts"], "InputPorts" -> diagram["InputPorts"], opts]] & @ Diagram[n]
+Diagram[SuperStar[d_], opts : OptionsPattern[]] :=
+    With[{diagram = DiagramDual[#]}, Diagram["Expression" :> DiagramDual[#], "OutputPorts" -> diagram["OutputPorts"], "InputPorts" -> diagram["InputPorts"], opts]] & @ Diagram[d]
 
-Diagram[OverBar[n_], opts : OptionsPattern[]] :=
-    With[{diagram = DiagramFlip[#]}, Diagram["Expression" :> DiagramFlip[#], "OutputPorts" -> diagram["OutputPorts"], "InputPorts" -> diagram["InputPorts"], opts]] & @ Diagram[n]
+Diagram[OverBar[d_], opts : OptionsPattern[]] :=
+    With[{diagram = DiagramFlip[#]}, Diagram["Expression" :> DiagramFlip[#], "OutputPorts" -> diagram["OutputPorts"], "InputPorts" -> diagram["InputPorts"], opts]] & @ Diagram[d]
 
-Diagram[OverTilde[n_], opts : OptionsPattern[]] :=
-    With[{diagram = DiagramReverse[#]}, Diagram["Expression" :> DiagramReverse[#], "OutputPorts" -> diagram["OutputPorts"], "InputPorts" -> diagram["InputPorts"], opts]] & @ Diagram[n]
+Diagram[OverTilde[d_], opts : OptionsPattern[]] :=
+    With[{diagram = DiagramReverse[#]}, Diagram["Expression" :> DiagramReverse[#], "OutputPorts" -> diagram["OutputPorts"], "InputPorts" -> diagram["InputPorts"], opts]] & @ Diagram[d]
 
 Diagram[CircleTimes[ds___], opts : OptionsPattern[]] := With[{diagrams = Diagram /@ {ds}}, {diagram = DiagramProduct @@ diagrams},
     Diagram["Expression" :> DiagramProduct[##], "OutputPorts" -> diagram["OutputPorts"], "InputPorts" -> diagram["InputPorts"], opts] & @@ diagrams
@@ -107,35 +107,44 @@ Diagram[opts : OptionsPattern[]] := Diagram[KeySort[<|
 ]]
 
 
+(* overwrite ports *)
+
+Diagram[d_ ? DiagramQ,
+    outputs : Inherited | {} | Except[OptionsPattern[], _List] : Inherited,
+    inputs : Inherited | {} | Except[OptionsPattern[], _List] : Inherited,
+    opts : OptionsPattern[]
+] := Diagram[Unevaluated @@ d["HoldExpression"], Replace[outputs, Inherited :> d["OutputPorrts"]], Replace[inputs, Inherited :> d["InputPorrts"]], opts]
+
+
 (* merge options *)
 
-Diagram[n_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[Replace[Normal[Merge[{opts, n["Data"]}, List]], head_[k_, {{v_, ___}}] :> head[k, v], 1]]
+Diagram[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[Replace[Normal[Merge[{opts, d["Data"]}, List]], head_[k_, {{v_, ___}}] :> head[k, v], 1]]
 
 
 (* ::Subsubsection:: *)
 (* Unary ops *)
 
-DiagramDual[n_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
+DiagramDual[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
     opts,
-    With[{expr = Unevaluated @@ DiagramDual @@@ Hold[Evaluate[n["HoldExpression"]]]}, "Expression" :> expr],
-    "OutputPorts" -> Through[n["OutputPorts"]["Dual"]],
-    "InputPorts" -> Through[n["InputPorts"]["Dual"]]
+    "Expression" :> DiagramDual[d],
+    "OutputPorts" -> Through[d["OutputPorts"]["Dual"]],
+    "InputPorts" -> Through[d["InputPorts"]["Dual"]]
 ]
 
-DiagramFlip[n_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
+DiagramFlip[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
     opts,
-    With[{expr = Unevaluated @@ DiagramFlip @@@ Hold[Evaluate[n["HoldExpression"]]]}, "Expression" :> expr],
-    "Shape" -> GeometricTransformation[n["Shape"], ReflectionTransform[{0, 1}]],
-    "OutputPorts" -> n["InputPorts"],
-    "InputPorts" -> n["OutputPorts"]
+    "Expression" :> DiagramFlip[d],
+    "Shape" -> GeometricTransformation[d["Shape"], ReflectionTransform[{0, 1}]],
+    "OutputPorts" -> d["InputPorts"],
+    "InputPorts" -> d["OutputPorts"]
 ]
 
-DiagramReverse[n_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
+DiagramReverse[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
     opts,
-    With[{expr = Unevaluated @@ DiagramReverse @@@ Hold[Evaluate[n["HoldExpression"]]]}, "Expression" :> expr],
-    "Shape" -> GeometricTransformation[n["Shape"], ReflectionTransform[{1, 0}]],
-    "OutputPorts" -> Reverse[Through[n["OutputPorts"]["Reverse"]]],
-    "InputPorts" -> Reverse[Through[n["InputPorts"]["Reverse"]]]
+    "Expression" :> DiagramReverse[d],
+    "Shape" -> GeometricTransformation[d["Shape"], ReflectionTransform[{1, 0}]],
+    "OutputPorts" -> Reverse[Through[d["OutputPorts"]["Reverse"]]],
+    "InputPorts" -> Reverse[Through[d["InputPorts"]["Reverse"]]]
 ]
 
 
@@ -206,53 +215,45 @@ DiagramProp[HoldPattern[Diagram[data_]], "Data"] := data
 
 DiagramProp[HoldPattern[Diagram[data_Association]], prop_] /; KeyExistsQ[data, prop] := Lookup[data, prop]
 
-DiagramProp[n_, "HoldExpression"] := Extract[n["Data"], "Expression", HoldForm]
+DiagramProp[d_, "HoldExpression"] := Extract[d["Data"], "Expression", HoldForm]
 
-DiagramProp[n_, "ProductQ"] := MatchQ[n["HoldExpression"], HoldForm[_DiagramProduct]]
+DiagramProp[d_, "ProductQ"] := MatchQ[d["HoldExpression"], HoldForm[_DiagramProduct]]
 
-DiagramProp[n_, "SumQ"] := MatchQ[n["HoldExpression"], HoldForm[_DiagramSum]]
+DiagramProp[d_, "SumQ"] := MatchQ[d["HoldExpression"], HoldForm[_DiagramSum]]
 
-DiagramProp[n_, "CompositionQ"] := MatchQ[n["HoldExpression"], HoldForm[_DiagramComposition]]
+DiagramProp[d_, "CompositionQ"] := MatchQ[d["HoldExpression"], HoldForm[_DiagramComposition]]
 
-DiagramProp[n_, "Ports"] := Join[n["OutputPorts"], n["InputPorts"]]
+DiagramProp[d_, "Ports"] := Join[d["OutputPorts"], d["InputPorts"]]
 
-DiagramProp[n_, "OutputArity"] := Length[n["OutputPorts"]]
+DiagramProp[d_, "OutputArity"] := Length[d["OutputPorts"]]
 
-DiagramProp[n_, "InputArity"] := Length[n["InputPorts"]]
+DiagramProp[d_, "InputArity"] := Length[d["InputPorts"]]
 
-DiagramProp[n_, "Arity"] := Length[n["Ports"]]
+DiagramProp[d_, "Arity"] := Length[d["Ports"]]
 
-DiagramProp[n_, "FlattenOutputs"] := Diagram[n, "OutputPorts" -> Catenate[Through[n["OutputPorts"]["ProductList"]]]]
+DiagramProp[d_, "FlattenOutputs"] := Diagram[d, "OutputPorts" -> Catenate[Through[d["OutputPorts"]["ProductList"]]]]
 
-DiagramProp[n_, "FlattenInputs"] := Diagram[n, "InputPorts" -> Catenate[Through[n["InputPorts"]["ProductList"]]]]
+DiagramProp[d_, "FlattenInputs"] := Diagram[d, "InputPorts" -> Catenate[Through[d["InputPorts"]["ProductList"]]]]
 
-DiagramProp[n_, "Flatten"] := n["FlattenOutputs"]["FlattenInputs"]
+DiagramProp[d_, "Flatten"] := d["FlattenOutputs"]["FlattenInputs"]
 
-DiagramProp[n_, "View"] := With[{
-    expr = Replace[n["HoldExpression"],
+DiagramProp[d_, "View"] := With[{
+    expr = Replace[d["HoldExpression"],
         HoldForm[(head : DiagramDual | DiagramFlip | DiagramReverse | DiagramProduct | DiagramSum | DiagramComposition | DiagramNetwork)[ds___]] :>
-            Replace[head, {
-                DiagramDual -> SuperStar,
-                DiagramFlip -> OverBar,
-                DiagramReverse -> OverTilde,
-                DiagramProduct -> CircleTimes,
-                DiagramSum -> CirclePlus,
-                DiagramComposition -> CircleDot
-            }
-            ] @@@ HoldForm[Evaluate[Flatten[Defer @@ (Diagram[#]["View"] & /@ {ds})]]]
+            head @@@ HoldForm[Evaluate[Flatten[Defer @@ (Function[Null, If[DiagramQ[#], #["View"], Defer[#]], HoldFirst] /@ Unevaluated[{ds}])]]]
     ],
-    outputs = Through[n["OutputPorts"]["Label"]],
-    inputs = Through[Through[n["InputPorts"]["Dual"]]["Label"]]
+    outputs = Through[d["OutputPorts"]["Label"]],
+    inputs = Through[Through[d["InputPorts"]["Dual"]]["Label"]]
 },
     Function[Null, Defer[Diagram[#, outputs, inputs]] //. HoldForm[x_] :> x, HoldFirst] @@ expr
 ]
 
-DiagramProp[n_, "Symbol"] := Switch[n["Arity"], 1, VectorSymbol, 2, MatrixSymbol, _, ArraySymbol][n["HoldExpression"], n["Ports"]]
+DiagramProp[d_, "Symbol"] := Switch[n["Arity"], 1, VectorSymbol, 2, MatrixSymbol, _, ArraySymbol][d["HoldExpression"], d["Ports"]]
 
-DiagramProp[n_, "Diagram", opts___] := DiagramGraphics[n, opts]
+DiagramProp[d_, "Diagram", opts___] := DiagramGraphics[d, opts]
 
-DiagramProp[n_, "Shape", opts___] := Replace[
-    OptionValue[{opts, n["DiagramOptions"], Options[DiagramGraphics]}, "Shape"],
+DiagramProp[d_, "Shape", opts___] := Replace[
+    OptionValue[{opts, d["DiagramOptions"], Options[DiagramGraphics]}, "Shape"],
     {
         Automatic -> Rectangle[{- 1 / 2, - 1 / 2}, {1 / 2 , 1 / 2}, RoundingRadius -> {{Left, Top} -> .2}],
         "Triangle" -> Polygon[{{- 1 / 2, - 1 / 2}, {0, 1 / 2}, {1 / 2, - 1 / 2}}]
@@ -270,7 +271,7 @@ Options[DiagramGraphics] = Join[{"Shape" -> Automatic}, Options[Graphics]];
 DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Graphics[{
     EdgeForm[Black], FaceForm[Transparent], 
     diagram["Shape", opts],
-    Text[ClickToCopy[diagram["HoldExpression"], diagram["View"]]],
+    Text[ClickToCopy[diagram["HoldExpression"] //. d_Diagram ? DiagramQ :> RuleCondition[d["HoldExpression"]], diagram["View"]]],
     Arrowheads[Small],
     With[{xs = diagram["OutputPorts"]},
         MapThread[{
@@ -301,11 +302,11 @@ Diagram /: MakeBoxes[diagram : Diagram[_Association] ? DiagramQ, form_] := With[
     InterpretationBox[boxes, diagram]
 ]
 
-DiagramDual /: MakeBoxes[DiagramDual[n_], form_] := With[{boxes = ToBoxes[SuperStar[n], form]}, InterpretationBox[boxes, DiagramDual[n]]]
+DiagramDual /: MakeBoxes[DiagramDual[d_], form_] := With[{boxes = ToBoxes[SuperStar[d], form]}, InterpretationBox[boxes, DiagramDual[d]]]
 
-DiagramFlip /: MakeBoxes[DiagramFlip[n_], form_] := With[{boxes = ToBoxes[OverBar[n], form]}, InterpretationBox[boxes, DiagramFlip[n]]]
+DiagramFlip /: MakeBoxes[DiagramFlip[d_], form_] := With[{boxes = ToBoxes[OverBar[d], form]}, InterpretationBox[boxes, DiagramFlip[d]]]
 
-DiagramReverse /: MakeBoxes[DiagramReverse[n_], form_] := With[{boxes = ToBoxes[Overscript[n, RawBoxes["\[LongLeftRightArrow]"]], form]}, InterpretationBox[boxes, DiagramReverse[n]]]
+DiagramReverse /: MakeBoxes[DiagramReverse[d_], form_] := With[{boxes = ToBoxes[Overscript[d, RawBoxes["\[LongLeftRightArrow]"]], form]}, InterpretationBox[boxes, DiagramReverse[d]]]
 
 DiagramProduct /: MakeBoxes[DiagramProduct[ds___], form_] := With[{boxes = ToBoxes[CircleTimes[ds], form]}, InterpretationBox[boxes, DiagramProduct[ds]]]
 
