@@ -174,7 +174,9 @@ DiagramProduct[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := Diagram[
 
 collectPorts[ports_List] := If[ports === {}, {}, Fold[{Union[#2[[1]], Complement[#1[[1]], #2[[2]]]], Union[#1[[2]], Complement[#2[[2]], #1[[1]]]]} &, ports]]
 
-DiagramComposition[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{ports = collectPorts[{Through[#["OutputPorts"]["Expression"]], Through[#["InputPorts"]["Expression"]]} & /@ Through[{ds}["Flatten"]]]},
+DiagramComposition[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
+    ports = collectPorts[{Through[#["OutputPorts"]["Name"]], Through[#["InputPorts"]["Name"]]} & /@ Through[Reverse[{ds}]["Flatten"]]]
+},
     Diagram[
         opts,
         "Expression" :> DiagramComposition[ds],
