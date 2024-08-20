@@ -12,6 +12,10 @@ DiagramSum
 DiagramComposition
 DiagramNetwork
 
+DiagramCompose
+DiagramDecompose
+DiagramGrid
+
 DiagramsFreePorts
 DiagramsPortGraph
 DiagramsGraph
@@ -180,8 +184,8 @@ DiagramComposition[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
     Diagram[
         opts,
         "Expression" :> DiagramComposition[ds],
-        "OutputPorts" -> (Port /@ ports[[1]]),
-        "InputPorts" -> (Port[#]["Dual"] & /@ ports[[2]])
+        "OutputPorts" -> (Port[Unevaluated @@ #] & /@ ports[[1]]),
+        "InputPorts" -> (Port[Unevaluated @@ #]["Dual"] & /@ ports[[2]])
     ]
 ]
 
@@ -200,13 +204,66 @@ DiagramNetwork[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := Diagram[
 ]
 
 
+DiagramCompose[{x_, y_}, OptionsPattern[]] := Module[{a = x["FlattenInputs"], b = y["FlattenOutputs"], aPorts, bPorts, aOutputs, aInputs, bOutputs, bInputs},
+	aPorts = Through[Through[a["InputPorts"]["Dual"]]["HoldExpression"]];
+	bPorts = Through[b["OutputPorts"]["HoldExpression"]];
+	With[{
+		idInputs = Unevaluated @@ List @@@ Hold[Evaluate @ Flatten[HoldForm @@ DeleteElements[aPorts, 1 -> bPorts]]],
+		idOutputs = Unevaluated @@ List @@@ Hold[Evaluate @ Flatten[HoldForm @@ DeleteElements[bPorts, 1 -> aPorts]]]
+	},
+		If[idInputs =!= {}, b = DiagramProduct[Diagram["1", idInputs, idInputs, "Shape" -> "Permutation", "ShowLabel" -> False], b]["Flatten"]];
+		If[idOutputs =!= {}, a = DiagramProduct[Diagram["1", idOutputs, idOutputs, "Shape" -> "Permutation", "ShowLabel" -> False], a]["Flatten"]];
+	];
+	aOutputs = a["OutputPorts"];
+	aInputs = a["InputPorts"];
+	bOutputs = b["OutputPorts"];
+	bInputs = b["InputPorts"];
+	Which[
+		Through[Through[aInputs["Dual"]]["HoldExpression"]] === Through[bOutputs["HoldExpression"]],
+		DiagramComposition[a, b],
+		Sort[Through[Through[aInputs["Dual"]]["HoldExpression"]]] === Sort[Through[bOutputs["HoldExpression"]]],
+		With[{
+			piOutputs = Unevaluated @@ List @@@ Hold[Evaluate @ Flatten[HoldForm @@ Through[Through[aInputs["Dual"]]["Name"]]]],
+			piInputs = Unevaluated @@ List @@@ Hold[Evaluate @ Flatten[HoldForm @@ Through[bOutputs["Name"]]]]
+		},
+			DiagramComposition[a, Diagram["\[Pi]", piOutputs, piInputs, "Shape" -> "Permutation", "ShowLabel" -> False], b]
+		],
+		True,
+		$Failed
+	]
+]
+
+DiagramCompose[xs_List, opts : OptionsPattern[]] := Fold[DiagramCompose[{##}, opts] &, xs]
+
+DiagramDecompose[diagram_Diagram ? DiagramQ] := 
+	Replace[diagram["HoldExpression"], {
+		HoldForm[DiagramProduct[ds___]] :> DiagramDecompose /@ CircleTimes[ds],
+		HoldForm[DiagramComposition[ds___]] :> DiagramDecompose /@ CircleDot[ds],
+		_ :> diagram
+	}]
+
+decompositionWidth[expr_] := Replace[expr, {d_Diagram :> d["OptionValue"["Width"]], CircleTimes[ds___] :> Total[decompositionWidth /@ {ds}], CircleDot[ds___] :> Max[decompositionWidth /@ {ds}]}]
+decompositionHeight[expr_] := Replace[expr, {d_Diagram :> d["OptionValue"["Height"]], CircleTimes[ds___] :> Max[decompositionHeight /@ {ds}], CircleDot[ds___] :> Total[decompositionHeight /@ {ds}]}]
+
+
+(* WIP *)
+DiagramGrid[diagram_Diagram ? DiagramQ] := Block[{decomp = DiagramDecompose[diagram], width, height},
+	width = decompositionWidth[decomp];
+	height = decompositionHeight[decomp];
+	MapIndexed[
+		Replace[#1, {d_Diagram :> Diagram[d, "Width" -> width, "Center" -> {0, #2[[1]]}], ds_CircleTimes :> (Diagram[#, "Width" -> width / Length[ds]] & /@ List @@ ds)}] &,
+		Replace[decomp, {CircleDot[ds___] :> Reverse[{ds}], d_ :> {d}}]
+	]
+]
+
+
 (* ::Subsection:: *)
 (* Properties *)
 
 
 (* dispatch properties *)
 
-(p_Diagram ? DiagramQ)[prop_, opts___] := DiagramProp[p, prop, opts] 
+(d_Diagram ? DiagramQ)[prop_, opts___] := DiagramProp[d, prop, opts] 
 
 
 (* property definitions *)
@@ -250,17 +307,55 @@ DiagramProp[d_, "View"] := With[{
     Function[Null, Defer[Diagram[#, outputs, inputs]] //. HoldForm[x_] :> x, HoldFirst] @@ expr
 ]
 
-DiagramProp[d_, "Symbol"] := Switch[n["Arity"], 1, VectorSymbol, 2, MatrixSymbol, _, ArraySymbol][d["HoldExpression"], d["Ports"]]
+DiagramProp[d_, "Symbol"] := Switch[d["Arity"], 1, VectorSymbol, 2, MatrixSymbol, _, ArraySymbol][d["HoldExpression"], d["Ports"]]
 
-DiagramProp[d_, "Diagram", opts___] := DiagramGraphics[d, opts]
+DiagramProp[d_, "Diagram" | "Graphics", opts : OptionsPattern[]] := DiagramGraphics[d, opts]
 
-DiagramProp[d_, "Shape", opts___] := Replace[
-    OptionValue[{opts, d["DiagramOptions"], Options[DiagramGraphics]}, "Shape"],
+DiagramProp[d_, "OptionValue"[opt_], opts : OptionsPattern[]] := OptionValue[{opts, d["DiagramOptions"], Options[DiagramGraphics]}, opt]
+
+DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ With[{
+    w = d["OptionValue"["Width"], opts],
+    h = d["OptionValue"["Height"], opts],
+    c = d["OptionValue"["Center"], opts]
+},
+    Replace[
+        d["OptionValue"["Shape"], opts],
+        {
+            Automatic :> Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c, RoundingRadius -> {{Left, Top} -> .1 (w + h)}],
+            "Triangle" :> Polygon[{{- w / 2, - h / 2}, {0, h / 2}, {w / 2, - h / 2}} + Threaded[c]],
+            "Permutation" :> With[{points = d["PortPoints", opts]},
+                ConfirmAssert[Equal @@ Length /@ points];
+                MapIndexed[
+                    With[{i = #2[[1]], j = #1},
+                        BSplineCurve[{
+                            points[[2, i, 1]], points[[2, i, 1]] + (points[[2, i, 1]] - points[[2, i, 2]]),
+                            points[[1, j, 1]] + (points[[1, j, 1]] - points[[1, j, 2]]), points[[1, j, 1]]
+                        }]
+                        ] &,
+                    PermutationList[Confirm @ FindPermutation[Through[d["InputPorts"]["Name"]], Through[d["OutputPorts"]["Name"]]], Length[points[[1]]]]
+                ]
+            ]
+        }
+    ]
+]
+
+DiagramProp[d_, "PortPoints", opts : OptionsPattern[]] := With[{
+    w = d["OptionValue"["Width"], opts],
+    h = d["OptionValue"["Height"], opts],
+    c = d["OptionValue"["Center"], opts]
+},
     {
-        Automatic -> Rectangle[{- 1 / 2, - 1 / 2}, {1 / 2 , 1 / 2}, RoundingRadius -> {{Left, Top} -> .2}],
-        "Triangle" -> Polygon[{{- 1 / 2, - 1 / 2}, {0, 1 / 2}, {1 / 2, - 1 / 2}}]
+        Map[
+            {{(- 1 / 2 + #) w, h / 2}, {(- 1 / 2 + #) w, 3 / 4 h}} + Threaded[c] &,
+            Range[0, 1, 1 / (d["OutputArity"] + 1)][[2 ;; -2]]
+        ],
+        Map[
+            {{(- 1 / 2 + #) w, - h / 2}, {(- 1 / 2 + #) w, - 3 / 4 h}} + Threaded[c] &,
+            Range[0, 1, 1 / (d["InputArity"] + 1)][[2 ;; -2]]
+        ]
     }
 ]
+
 
 DiagramProp[_, prop_] := Missing[prop]
 
@@ -268,27 +363,47 @@ DiagramProp[_, prop_] := Missing[prop]
 (* ::Subsection:: *)
 (* Formatting *)
 
-Options[DiagramGraphics] = Join[{"Shape" -> Automatic}, Options[Graphics]];
+Options[DiagramGraphics] = Join[{
+    "Shape" -> Automatic,
+    "Center" -> {0, 0},
+    "Width" -> 1,
+    "Height" -> 1,
+    "ShowLabel" -> Automatic,
+    "ShowPortLabels" -> Automatic
+}, Options[Graphics]];
 
-DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Graphics[{
+DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[{
+    points = diagram["PortPoints", opts]
+}, Graphics[{
     EdgeForm[Black], FaceForm[Transparent], 
-    diagram["Shape", opts],
-    Text[ClickToCopy[diagram["HoldExpression"] //. d_Diagram ? DiagramQ :> RuleCondition[d["HoldExpression"]], diagram["View"]]],
+    Confirm @ diagram["Shape", opts],
+    If[ MatchQ[diagram["OptionValue"["ShowLabel"], opts], None | False], Nothing,
+        Text[
+            ClickToCopy[Replace[diagram["HoldExpression"], expr : Except[HoldForm[_DiagramNetwork]] :> (expr //. d_Diagram ? DiagramQ :> RuleCondition[d["HoldExpression"]])], diagram["View"]],
+            diagram["OptionValue"["Center"], opts]
+        ]
+    ],
     Arrowheads[Small],
     With[{xs = diagram["OutputPorts"]},
         MapThread[{
-            Arrow[If[#2["DualQ"], Reverse, Identity] @ {{- 1 / 2 + #, 1 / 2}, {- 1 / 2 + #,  .75}}],
-            Text[ClickToCopy[#2, #2["View"]], {- 1 / 2 + #,  1}]
+            Arrow[If[#2["DualQ"], Reverse, Identity] @ #1],
+            If[ MatchQ[diagram["OptionValue"["ShowPortLabels"], opts], None | False],
+                Nothing,
+                Text[ClickToCopy[#2, #2["View"]], #1[[-1]] + {1, 4 / 3} (#1[[-1]] - #1[[1]])]
+            ]
         } &,
-            {Range[0, 1, 1 / (Length[xs] + 1)][[2 ;; -2]], xs}
+            {points[[1]], xs}
         ]
     ],
     With[{xs = diagram["InputPorts"]},
         MapThread[{
-            Arrow[If[#2["DualQ"], Reverse, Identity] @ {{- 1 / 2 + #, - 1 / 2}, {- 1 / 2 + #, - .75}}],
-            Text[ClickToCopy[#2, #2["View"]], {- 1 / 2 + #, -1}]
+            Arrow[If[#2["DualQ"], Reverse, Identity] @ #1],
+            If[ MatchQ[diagram["OptionValue"["ShowPortLabels"], opts], None | False],
+                Nothing,
+                Text[ClickToCopy[#2, #2["View"]], #1[[-1]] + {1, 4 / 3} (#1[[-1]] - #1[[1]])]
+            ]
         } &,
-            {Range[0, 1, 1 / (Length[xs] + 1)][[2 ;; -2]], xs}
+            {points[[2]], xs}
         ]
     ]
 },
@@ -298,7 +413,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Graphics[{
     BaseStyle -> {
         GraphicsHighlightColor -> Magenta
     }
-]
+]]
 
 Diagram /: MakeBoxes[diagram : Diagram[_Association] ? DiagramQ, form_] := With[{boxes = ToBoxes[diagram["Diagram"], form]},
     InterpretationBox[boxes, diagram]
