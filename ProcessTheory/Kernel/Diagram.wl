@@ -377,7 +377,9 @@ Options[DiagramGraphics] = Join[{
     "Width" -> 1,
     "Height" -> 1,
     "ShowLabel" -> Automatic,
-    "ShowPortLabels" -> Automatic
+    "ShowPortLabels" -> Automatic,
+    "ShowOutputPortLabels" -> Automatic,
+    "ShowInputPortLabels" -> Automatic
 }, Options[Graphics]];
 
 DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[{
@@ -395,7 +397,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
     With[{xs = diagram["OutputPorts"]},
         MapThread[{
             Arrow[If[#2["DualQ"], Reverse, Identity] @ #1],
-            If[ MatchQ[diagram["OptionValue"["ShowPortLabels"], opts], None | False],
+            If[ MatchQ[diagram["OptionValue"["ShowPortLabels"], opts], None | False] || MatchQ[diagram["OptionValue"["ShowOutputPortLabels"], opts], None | False],
                 Nothing,
                 Text[ClickToCopy[#2, #2["View"]], #1[[-1]] + {1, 4 / 3} (#1[[-1]] - #1[[1]])]
             ]
@@ -406,7 +408,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
     With[{xs = diagram["InputPorts"]},
         MapThread[{
             Arrow[If[#2["DualQ"], Reverse, Identity] @ #1],
-            If[ MatchQ[diagram["OptionValue"["ShowPortLabels"], opts], None | False],
+            If[ MatchQ[diagram["OptionValue"["ShowPortLabels"], opts], None | False] || MatchQ[diagram["OptionValue"["ShowInputPortLabels"], opts], None | False],
                 Nothing,
                 Text[ClickToCopy[#2, #2["View"]], #1[[-1]] + {1, 4 / 3} (#1[[-1]] - #1[[1]])]
             ]
