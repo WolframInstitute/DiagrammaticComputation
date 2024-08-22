@@ -176,7 +176,15 @@ DiagramProduct[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := Diagram[
 
 (* vertical product *)
 
-collectPorts[ports_List] := If[ports === {}, {}, Fold[{Union[#2[[1]], Complement[#1[[1]], #2[[2]]]], Union[#1[[2]], Complement[#2[[2]], #1[[1]]]]} &, ports]]
+collectPorts[ports_List] := If[ports === {}, {},
+    Fold[
+        {
+            DeleteDuplicates @ Join[#2[[1]], DeleteElements[#1[[1]], #2[[2]]]],
+            DeleteDuplicates @ Join[#1[[2]], DeleteElements[#2[[2]], #1[[1]]]]
+        } &,
+        ports
+    ]
+]
 
 DiagramComposition[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
     ports = collectPorts[{Through[#["OutputPorts"]["Name"]], Through[#["InputPorts"]["Name"]]} & /@ Through[Reverse[{ds}]["Flatten"]]]
@@ -506,15 +514,15 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
 	portLabelsQ = TrueQ[OptionValue["ShowPortLabels"]],
 	wireLabelsQ = TrueQ[OptionValue["ShowWireLabels"]]
 },
-	diagrams = Through[AnnotationValue[{graph, diagramVertices}, "Diagram"]["Flatten"]];
+	diagrams = Through[(AnnotationValue[{graph, #}, "Diagram"] & /@ diagramVertices)["Flatten"]];
 	If[Length[diagrams] == 0, Return[Graphics[FilterRules[Join[{opts}, Options[graph]], Options[Graphics]]]]];
 	embedding = AssociationThread[VertexList[graph], GraphEmbedding[graph]];
 	If[EdgeCount[graph] == 0 && VertexCount[graph] > 1, embedding = ScalingTransform[{1, .5} / Max[#2 - #1 & @@@ CoordinateBounds[embedding]], Mean[embedding]][embedding]];
 	orientations = Map[
         Normalize[Lookup[#, 1] - Lookup[#, 2]] &,
 		Values @ <|
-            # -> <|1 -> {0, 1 / 2}, 2 -> {0, - 1 / 2}|> & /@ Range[Length[diagrams]],
-            GroupBy[VertexList[graph, {__Integer}], First, Mean /@ GroupBy[#, #[[2]] &, Lookup[embedding, #] &] &]
+            GroupBy[VertexList[graph, {__Integer}], First, Mean /@ GroupBy[#, #[[2]] &, Lookup[embedding, #] &] &],
+            # -> <|1 -> {0, 1 / 2}, 2 -> {0, - 1 / 2}|> & /@ Range[Length[diagrams]]
         |>
 	];
 	{outDegrees, inDegrees} = AssociationThread[VertexList[graph] -> #] & /@ Through[{VertexOutDegree, VertexInDegree}[graph]];
