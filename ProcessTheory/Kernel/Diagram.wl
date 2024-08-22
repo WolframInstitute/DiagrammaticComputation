@@ -254,14 +254,44 @@ decompositionWidth[expr_] := Replace[expr, {d_Diagram :> d["OptionValue"["Width"
 decompositionHeight[expr_] := Replace[expr, {d_Diagram :> d["OptionValue"["Height"]], CircleTimes[ds___] :> Max[decompositionHeight /@ {ds}], CircleDot[ds___] :> Total[decompositionHeight /@ {ds}]}]
 
 
-(* WIP *)
-DiagramGrid[diagram_Diagram ? DiagramQ] := Block[{decomp = DiagramDecompose[diagram], width, height},
+Options[DiagramGrid] = Join[{"HorizontalGapSize" -> 1.5, "VerticalGapSize" -> 2}, Options[Graphics]]
+DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
+    decomp = DiagramDecompose[diagram] //. cd_CircleDot :> Flatten[cd, 1, CircleDot], width, height,
+    wires,
+    vGapSize = OptionValue["VerticalGapSize"],
+    hGapSize = OptionValue["HorizontalGapSize"]
+},
 	width = decompositionWidth[decomp];
 	height = decompositionHeight[decomp];
-	MapIndexed[
-		Replace[#1, {d_Diagram :> Diagram[d, "Width" -> width, "Center" -> {0, #2[[1]]}], ds_CircleTimes :> (Diagram[#, "Width" -> width / Length[ds]] & /@ List @@ ds)}] &,
-		Replace[decomp, {CircleDot[ds___] :> Reverse[{ds}], d_ :> {d}}]
-	]
+    decomp = MapIndexed[{vd, idx} |-> With[{i = idx[[1]]},
+        Replace[vd, {
+            d_Diagram :> {Diagram[d, "Width" -> width, "Center" -> {width / 2, vGapSize * i}]},
+            ds_CircleDot :> {Diagram[DiagramComposition @@ ds, "Width" -> width, "Center" -> {width / 2, vGapSize * i}]},
+            ds_CircleTimes :> With[{diagrams = List @@ ds}, {arities = Accumulate @ MapThread[Max, {Through[diagrams["OutputArity"]], Through[diagrams["InputArity"]]}]},
+                MapIndexed[{hd, jidx} |->
+                    With[{arity = Max[hd["OutputArity"], hd["InputArity"]], j = jidx[[1]]},
+                        Diagram[hd,
+                            "Width" -> width * arity / arities[[-1]],
+                            "Center" -> {width * arities[[j]] / arities[[-1]], vGapSize * i}
+                        ]
+                        ],
+                    diagrams
+                ]
+            ]
+        }]
+    ],
+        Replace[decomp, {CircleDot[ds___] :> Reverse[{ds}], d_ :> {d}}]
+    ] // MapAt[Diagram[#, "ShowInputPortLabels" -> False] &, {2;;, All}];
+ 
+    wires = Replace[{out_List, in_List} :> MapThread[
+        BSplineCurve @ {#1[[1]], #1[[1]] + vGapSize (#1[[2]] - #1[[1]]), #2[[1]] + vGapSize (#2[[2]] - #2[[1]]), #2[[2]]} &,
+        {Catenate[Through[out["PortPoints"]][[All, 1]]], Catenate[Through[in["PortPoints"]][[All, 2]]]}]
+    ] /@ Partition[decomp, 2, 1];
+	Show[
+        Map[#["Graphics"] &, decomp, {2}],
+        Graphics[wires],
+        opts
+    ]
 ]
 
 
