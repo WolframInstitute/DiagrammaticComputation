@@ -34,7 +34,7 @@ Options[Diagram] = {};
 $DiagramHiddenOptions = {"Expression" -> None, "OutputPorts" -> {}, "InputPorts" -> {}, "DiagramOptions" -> {}};
 
 $DiagramProperties = Join[Keys[Options[Diagram]],
-    {"Properties", "HoldExpression", "ProductQ", "SumQ", "Ports", "Arity", "FlattenOutputs", "FlattenInputs", "Flatten", "View", "Symbol", "Shape", "Diagram"}
+    {"Properties", "HoldExpression", "ProductQ", "SumQ", "Ports", "Arity", "FlattenOutputs", "FlattenInputs", "Flatten", "View", "Name", "ArraySymbol", "Shape", "Diagram"}
 ];
 
 
@@ -345,7 +345,30 @@ DiagramProp[d_, "View"] := With[{
     Function[Null, Defer[Diagram[#, outputs, inputs]] //. HoldForm[x_] :> x, HoldFirst] @@ expr
 ]
 
-DiagramProp[d_, "Symbol"] := Switch[d["Arity"], 1, VectorSymbol, 2, MatrixSymbol, _, ArraySymbol][d["HoldExpression"], d["Ports"]]
+DiagramProp[d_, "Name"] := Replace[
+    d["HoldExpression"],
+
+    HoldForm[(head : DiagramDual | DiagramFlip | DiagramReverse | DiagramProduct | DiagramSum | DiagramComposition | DiagramNetwork)[ds___]] :>
+        Replace[head, {
+            DiagramDual -> SuperStar,
+            DiagramFlip -> OverBar,
+            DiagramReverse -> OverTilde,
+            DiagramProduct -> CircleTimes,
+            DiagramSum -> CirclePlus,
+            DiagramComposition -> CircleDot,
+            DiagramNetwork -> List
+        }] @@@ HoldForm[Evaluate[Flatten[Defer @@ (Function[Null, If[DiagramQ[#], #["Name"], Defer[#]], HoldFirst] /@ Unevaluated[{ds}])]]]
+]
+
+DiagramProp[diagram_, "ArraySymbol"] := DiagramDecompose[diagram] /. {
+    d_Diagram :> Switch[d["Arity"], 1, VectorSymbol, 2, MatrixSymbol, _, ArraySymbol][d["HoldExpression"], Through[d["Ports"]["Name"]]],
+    CircleTimes -> TensorProduct,
+    CirclePlus -> Plus,
+    CircleDot -> Dot,
+    SuperStar -> Conjugate,
+    OverBar -> Transpose,
+    OverTilde -> ConjugateTranspose
+}
 
 DiagramProp[d_, "Diagram" | "Graphics", opts : OptionsPattern[]] := DiagramGraphics[d, opts]
 
