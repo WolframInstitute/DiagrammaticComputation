@@ -354,40 +354,45 @@ DiagramProp[d_, "OptionValue"[opt_], opts : OptionsPattern[]] := OptionValue[{op
 DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ With[{
     w = d["OptionValue"["Width"], opts],
     h = d["OptionValue"["Height"], opts],
-    c = d["OptionValue"["Center"], opts]
+    c = d["OptionValue"["Center"], opts],
+    a = d["OptionValue"["Angle"], opts]
 },
-    Replace[
-        d["OptionValue"["Shape"], opts],
-        {
-            Automatic :> Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c, RoundingRadius -> {{Left, Top} -> .1 (w + h)}],
-            "Triangle" :> Polygon[{{- w / 2, - h / 2}, {0, h / 2}, {w / 2, - h / 2}} + Threaded[c]],
-            "Permutation" :> With[{points = d["PortPoints", opts]},
-                ConfirmAssert[Equal @@ Length /@ points];
-                MapIndexed[
-                    With[{i = #2[[1]], j = #1},
-                        BSplineCurve[{
-                            points[[2, i, 1]], points[[2, i, 1]] + (points[[2, i, 1]] - points[[2, i, 2]]),
-                            points[[1, j, 1]] + (points[[1, j, 1]] - points[[1, j, 2]]), points[[1, j, 1]]
-                        }]
-                        ] &,
-                    PermutationList[Confirm @ FindPermutation[Through[d["InputPorts"]["Name"]], Through[d["OutputPorts"]["Name"]]], Length[points[[1]]]]
+    GeometricTransformation[
+        Replace[
+            d["OptionValue"["Shape"], opts],
+            {
+                Automatic :> Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c, RoundingRadius -> {{Left, Top} -> .1 (w + h)}],
+                "Triangle" :> Polygon[{{- w / 2, - h / 2}, {0, h / 2}, {w / 2, - h / 2}} + Threaded[c]],
+                "Permutation" :> With[{points = d["PortPoints", opts]},
+                    ConfirmAssert[Equal @@ Length /@ points];
+                    MapIndexed[
+                        With[{i = #2[[1]], j = #1},
+                            BSplineCurve[{
+                                points[[2, i, 1]], points[[2, i, 1]] + (points[[2, i, 1]] - points[[2, i, 2]]),
+                                points[[1, j, 1]] + (points[[1, j, 1]] - points[[1, j, 2]]), points[[1, j, 1]]
+                            }]
+                            ] &,
+                        PermutationList[Confirm @ FindPermutation[Through[d["InputPorts"]["Name"]], Through[d["OutputPorts"]["Name"]]], Length[points[[1]]]]
+                    ]
                 ]
-            ]
-        }
+            }
+        ],
+        RotationTransform[a, c]
     ]
 ]
 
 DiagramProp[d_, "PortPoints", opts : OptionsPattern[]] := With[{
     w = d["OptionValue"["Width"], opts],
     h = d["OptionValue"["Height"], opts],
-    c = d["OptionValue"["Center"], opts]
+    c = d["OptionValue"["Center"], opts],
+    a = d["OptionValue"["Angle"], opts]
 },
     {
-        Map[
+        RotationTransform[a, c] @ Map[
             {{(- 1 / 2 + #) w, h / 2}, {(- 1 / 2 + #) w, 3 / 4 h}} + Threaded[c] &,
             Range[0, 1, 1 / (d["OutputArity"] + 1)][[2 ;; -2]]
         ],
-        Map[
+        RotationTransform[a, c] @ Map[
             {{(- 1 / 2 + #) w, - h / 2}, {(- 1 / 2 + #) w, - 3 / 4 h}} + Threaded[c] &,
             Range[0, 1, 1 / (d["InputArity"] + 1)][[2 ;; -2]]
         ]
@@ -406,6 +411,7 @@ Options[DiagramGraphics] = Join[{
     "Center" -> {0, 0},
     "Width" -> 1,
     "Height" -> 1,
+    "Angle" -> 0,
     "ShowLabel" -> Automatic,
     "ShowPortLabels" -> Automatic,
     "ShowOutputPortLabels" -> Automatic,
