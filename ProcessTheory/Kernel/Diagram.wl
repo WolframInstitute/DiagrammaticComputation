@@ -13,6 +13,8 @@ DiagramComposition
 DiagramNetwork
 
 DiagramCompose
+DiagramJoin
+DiagramArrange
 DiagramDecompose
 DiagramGrid
 
@@ -197,6 +199,9 @@ DiagramComposition[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
     ]
 ]
 
+
+(* network of diagrams exposing free ports *)
+
 DiagramNetwork[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := Diagram[
     opts,
     "Expression" :> DiagramNetwork[ds],
@@ -212,15 +217,36 @@ DiagramNetwork[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := Diagram[
 ]
 
 
+idDiagram[ports_List] := Function[ps, Diagram["1", Unevaluated[{ps}], Unevaluated[{ps}], "Shape" -> "Permutation", "ShowLabel" -> False], HoldAll] @@
+    Flatten[HoldForm @@ Flatten @* HoldForm /@ ports]
+
+
+(* compose vertically preserving grid structure *)
+
 DiagramCompose[{x_, y_}, OptionsPattern[]] := Module[{a = x["FlattenInputs"], b = y["FlattenOutputs"], aPorts, bPorts, aOutputs, aInputs, bOutputs, bInputs},
 	aPorts = Through[Through[a["InputPorts"]["Dual"]]["HoldExpression"]];
 	bPorts = Through[b["OutputPorts"]["HoldExpression"]];
+    If[ ContainsNone[aPorts, bPorts],
+        With[{ha = DecompositionHeight[a], hb = DecompositionHeight[b]},
+            Return[
+                Which[
+                    ha > hb,
+                    DiagramProduct[a, DiagramComposition @@ Append[ConstantArray[idDiagram[bPorts], ha - hb], b]],
+                    ha < hb,
+                    DiagramProduct[DiagramComposition @@ Prepend[ConstantArray[idDiagram[aPorts], hb - ha], a], b],
+                    True,
+                    DiagramProduct[a, b]
+                ],
+                Module
+            ]
+        ]
+    ];
 	With[{
 		idInputs = Unevaluated @@ List @@@ Hold[Evaluate @ Flatten[HoldForm @@ DeleteElements[aPorts, 1 -> bPorts]]],
 		idOutputs = Unevaluated @@ List @@@ Hold[Evaluate @ Flatten[HoldForm @@ DeleteElements[bPorts, 1 -> aPorts]]]
 	},
-		If[idInputs =!= {}, b = DiagramProduct[Diagram["1", idInputs, idInputs, "Shape" -> "Permutation", "ShowLabel" -> False], b]["Flatten"]];
-		If[idOutputs =!= {}, a = DiagramProduct[Diagram["1", idOutputs, idOutputs, "Shape" -> "Permutation", "ShowLabel" -> False], a]["Flatten"]];
+		If[idInputs =!= {}, b = DiagramProduct[idDiagram[idInputs], b]["Flatten"]];
+		If[idOutputs =!= {}, a = DiagramProduct[idDiagram[idOutputs], a]["Flatten"]];
 	];
 	aOutputs = a["OutputPorts"];
 	aInputs = a["InputPorts"];
@@ -243,6 +269,33 @@ DiagramCompose[{x_, y_}, OptionsPattern[]] := Module[{a = x["FlattenInputs"], b 
 
 DiagramCompose[xs_List, opts : OptionsPattern[]] := Fold[DiagramCompose[{##}, opts] &, xs]
 
+
+(* compose horizontally preserving height *)
+
+DiagramJoin[{x_, y_}, OptionsPattern[]] := Module[{a = x["FlattenInputs"], b = y["FlattenOutputs"], aPorts, bPorts, ha, hb},
+	aPorts = Through[Through[a["InputPorts"]["Dual"]]["HoldExpression"]];
+	bPorts = Through[b["OutputPorts"]["HoldExpression"]];
+    ha = DecompositionHeight[a];
+    hb = DecompositionHeight[b];
+    Which[
+        ha > hb,
+        DiagramProduct[a, DiagramComposition @@ Append[ConstantArray[idDiagram[bPorts], ha - hb], b]],
+        ha < hb,
+        DiagramProduct[DiagramComposition @@ Prepend[ConstantArray[idDiagram[aPorts], hb - ha], a], b],
+        True,
+        DiagramProduct[a, b]
+    ]
+]
+
+DiagramJoin[xs_List, opts : OptionsPattern[]] := Fold[DiagramJoin[{##}, opts] &, xs]
+
+
+DiagramArrange[d_Diagram, opts : OptionsPattern[]] := DiagramDecompose[d] //. {
+    CircleTimes[ds___Diagram] :> DiagramJoin[{ds}, opts],
+    CircleDot[ds___Diagram] :> DiagramCompose[{ds}, opts]
+}
+
+
 DiagramDecompose[diagram_Diagram ? DiagramQ] := 
 	Replace[diagram["HoldExpression"], {
 		HoldForm[DiagramProduct[ds___]] :> DiagramDecompose /@ CircleTimes[ds],
@@ -250,31 +303,51 @@ DiagramDecompose[diagram_Diagram ? DiagramQ] :=
 		_ :> diagram
 	}]
 
-decompositionWidth[expr_] := Replace[expr, {d_Diagram :> d["OptionValue"["Width"]], CircleTimes[ds___] :> Total[decompositionWidth /@ {ds}], CircleDot[ds___] :> Max[decompositionWidth /@ {ds}]}]
-decompositionHeight[expr_] := Replace[expr, {d_Diagram :> d["OptionValue"["Height"]], CircleTimes[ds___] :> Max[decompositionHeight /@ {ds}], CircleDot[ds___] :> Total[decompositionHeight /@ {ds}]}]
+DecompositionTranspose[expr_] := With[{ctPos = Position[expr, CircleTimes, All, Heads -> True], cdPos = Position[expr, CircleDot, All, Heads -> True]},
+	ReplacePart[Transpose[expr /. CircleTimes | CircleDot -> List], Join[Thread[ctPos -> CircleDot], Thread[cdPos -> CircleTimes]]]
+]
+
+DecompostionWidth[d_Diagram, opts___] := decompositionWidth[DiagramDecompose[d], opts]
+
+decompositionWidth[expr_, opt_ : Automatic] := Replace[expr, {
+    d_Diagram :> Replace[opt, {Automatic -> 1, x_ :> d["OptionValue"[x]]}],
+    CircleTimes[ds___] :> Total[decompositionWidth /@ {ds}],
+    CircleDot[ds___] :> Max[decompositionWidth /@ {ds}]}
+
+]
+
+DecompositionHeight[d_Diagram, opts___] := decompositionHeight[DiagramDecompose[d], opts]
+
+decompositionHeight[expr_, opt_ : Automatic] := Replace[expr, {
+    d_Diagram :> Replace[opt, {Automatic -> 1, x_ :> d["OptionValue"[x]]}],
+    CircleTimes[ds___] :> Max[decompositionHeight /@ {ds}],
+    CircleDot[ds___] :> Total[decompositionHeight /@ {ds}]
+}]
 
 
-Options[DiagramGrid] = Join[{"HorizontalGapSize" -> 1.5, "VerticalGapSize" -> 2}, Options[Graphics]]
+
+Options[DiagramGrid] = Join[{"HorizontalGapSize" -> 1, "VerticalGapSize" -> 2}, Options[Graphics]]
 DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
     decomp = DiagramDecompose[diagram] //. cd_CircleDot :> Flatten[cd, 1, CircleDot], width, height,
     wires,
     vGapSize = OptionValue["VerticalGapSize"],
     hGapSize = OptionValue["HorizontalGapSize"]
 },
+    If[MatchQ[decomp, _CircleTimes], decomp = DecompositionTranspose[decomp]];
 	width = decompositionWidth[decomp];
 	height = decompositionHeight[decomp];
     decomp = MapIndexed[{vd, idx} |-> With[{i = idx[[1]]},
         Replace[vd, {
             d_Diagram :> {Diagram[d, "Width" -> width, "Center" -> {width / 2, vGapSize * i}]},
             ds_CircleDot :> {Diagram[DiagramComposition @@ ds, "Width" -> width, "Center" -> {width / 2, vGapSize * i}]},
-            ds_CircleTimes :> With[{diagrams = List @@ ds}, {arities = Accumulate @ MapThread[Max, {Through[diagrams["OutputArity"]], Through[diagrams["InputArity"]]}]},
+            ds_CircleTimes :> With[{diagrams = Diagram /@ List @@ ds}, {arities = Accumulate @ MapThread[Max, {Through[diagrams["OutputArity"]], Through[diagrams["InputArity"]]}]},
                 MapIndexed[{hd, jidx} |->
                     With[{arity = Max[hd["OutputArity"], hd["InputArity"]], j = jidx[[1]]},
                         Diagram[hd,
                             "Width" -> width * arity / arities[[-1]],
-                            "Center" -> {width * arities[[j]] / arities[[-1]], vGapSize * i}
+                            "Center" -> {width * arities[[j]] / arities[[-1]] + hGapSize * (j - 1), vGapSize * i}
                         ]
-                        ],
+                    ],
                     diagrams
                 ]
             ]
@@ -290,7 +363,10 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
 	Show[
         Map[#["Graphics"] &, decomp, {2}],
         Graphics[wires],
-        opts
+        opts,
+        BaseStyle -> {
+            GraphicsHighlightColor -> Automatic
+        }
     ]
 ]
 
