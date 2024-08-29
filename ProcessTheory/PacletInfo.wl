@@ -19,7 +19,10 @@ PacletObject[
 			"System`DiagramSum",
 			"System`DiagramComposition",
 			"System`DiagramNetwork",
-			"System`DiagramGrid"
+			"System`DiagramCompose",
+			"System`DiagramJoin",
+			"System`DiagramGrid",
+			"System`DiagramArrange"
 		},
         "Root" -> "Kernel",
         "Context" -> {
