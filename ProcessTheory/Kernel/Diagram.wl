@@ -328,7 +328,8 @@ decompositionHeight[expr_, opt_ : Automatic] := Replace[expr, {
 
 Options[DiagramGrid] = Join[{"HorizontalGapSize" -> 1, "VerticalGapSize" -> 2}, Options[Graphics]]
 DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
-    decomp = DiagramDecompose[diagram] //. cd_CircleDot :> Flatten[cd, 1, CircleDot], width, height,
+    decomp = DiagramDecompose[DiagramArrange[diagram]] //. cd_CircleDot :> Flatten[cd, 1, CircleDot],
+    width, height,
     wires,
     vGapSize = OptionValue["VerticalGapSize"],
     hGapSize = OptionValue["HorizontalGapSize"]
@@ -354,7 +355,9 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
         }]
     ],
         Replace[decomp, {CircleDot[ds___] :> Reverse[{ds}], d_ :> {d}}]
-    ] // MapAt[Diagram[#, "ShowInputPortLabels" -> False] &, {2;;, All}];
+    ] // 
+        MapAt[Diagram[#, "ShowInputPortLabels" -> False] &, {2 ;;, All}] //
+        MapAt[Diagram[#, "OutputPortLabelShift" -> {1 / 2, 1}] &, {;; -2, All}];
  
     wires = Replace[{out_List, in_List} :> MapThread[
         BSplineCurve @ {#1[[1]], #1[[1]] + vGapSize (#1[[2]] - #1[[1]]), #2[[1]] + vGapSize (#2[[2]] - #2[[1]]), #2[[2]]} &,
@@ -514,11 +517,15 @@ Options[DiagramGraphics] = Join[{
     "ShowLabel" -> Automatic,
     "ShowPortLabels" -> Automatic,
     "ShowOutputPortLabels" -> Automatic,
-    "ShowInputPortLabels" -> Automatic
+    "ShowInputPortLabels" -> Automatic,
+    "OutputPortLabelShift" -> Automatic,
+    "InputPortLabelShift" -> Automatic
 }, Options[Graphics]];
 
 DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[{
-    points = diagram["PortPoints", opts]
+    points = diagram["PortPoints", opts],
+    outputLabelShift = Replace[diagram["OptionValue"["OutputPortLabelShift"], opts], Automatic :> {0, 2}],
+    inputLabelShift = Replace[diagram["OptionValue"["InputPortLabelShift"], opts], Automatic :> {0, 2}]
 }, Graphics[{
     EdgeForm[Black], FaceForm[Transparent], 
     Confirm @ diagram["Shape", opts],
@@ -534,7 +541,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
             Arrow[If[#2["DualQ"], Reverse, Identity] @ #1],
             If[ MatchQ[diagram["OptionValue"["ShowPortLabels"], opts], None | False] || MatchQ[diagram["OptionValue"["ShowOutputPortLabels"], opts], None | False],
                 Nothing,
-                Text[ClickToCopy[#2, #2["View"]], #1[[-1]] + {1, 4 / 3} (#1[[-1]] - #1[[1]])]
+                Text[ClickToCopy[#2, #2["View"]], With[{v = #1[[-1]] - #1[[1]]}, #1[[1]] + outputLabelShift[[2]] * v + outputLabelShift[[1]] * RotationTransform[- Pi / 2][v]]]
             ]
         } &,
             {points[[1]], xs}
@@ -545,7 +552,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
             Arrow[If[#2["DualQ"], Reverse, Identity] @ #1],
             If[ MatchQ[diagram["OptionValue"["ShowPortLabels"], opts], None | False] || MatchQ[diagram["OptionValue"["ShowInputPortLabels"], opts], None | False],
                 Nothing,
-                Text[ClickToCopy[#2, #2["View"]], #1[[-1]] + {1, 4 / 3} (#1[[-1]] - #1[[1]])]
+                Text[ClickToCopy[#2, #2["View"]], With[{v = #1[[-1]] - #1[[1]]}, #1[[1]] + inputLabelShift[[2]] * v + inputLabelShift[[1]] * RotationTransform[Pi / 2][v]]]
             ]
         } &,
             {points[[2]], xs}

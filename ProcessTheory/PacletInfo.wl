@@ -11,7 +11,7 @@ PacletObject[
         "Kernel",
 		"Symbols" -> {
 			"System`DiagramQ",
-			"System`DiagramQ",
+			"System`Diagram",
 			"System`DiagramDual",
 			"System`DiagramFlip",
 			"System`DiagramReverse",
