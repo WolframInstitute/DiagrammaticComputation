@@ -357,7 +357,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
         Replace[decomp, {CircleDot[ds___] :> Reverse[{ds}], d_ :> {d}}]
     ] // 
         MapAt[Diagram[#, "ShowInputPortLabels" -> False] &, {2 ;;, All}] //
-        MapAt[Diagram[#, "OutputPortLabelShift" -> {1 / 2, 1}] &, {;; -2, All}];
+        MapAt[Diagram[#, "OutputPortLabelShift" -> {2 / 3, 1}] &, {;; -2, All}];
  
     wires = Replace[{out_List, in_List} :> MapThread[
         BSplineCurve @ {#1[[1]], #1[[1]] + vGapSize (#1[[2]] - #1[[1]]), #2[[1]] + vGapSize (#2[[2]] - #2[[1]]), #2[[2]]} &,
@@ -515,17 +515,16 @@ Options[DiagramGraphics] = Join[{
     "Height" -> 1,
     "Angle" -> 0,
     "ShowLabel" -> Automatic,
-    "ShowPortLabels" -> Automatic,
-    "ShowOutputPortLabels" -> Automatic,
-    "ShowInputPortLabels" -> Automatic,
-    "OutputPortLabelShift" -> Automatic,
-    "InputPortLabelShift" -> Automatic
+    "PortArrows" -> Automatic,
+    "PortLabels" -> Automatic
 }, Options[Graphics]];
 
 DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[{
     points = diagram["PortPoints", opts],
-    outputLabelShift = Replace[diagram["OptionValue"["OutputPortLabelShift"], opts], Automatic :> {0, 2}],
-    inputLabelShift = Replace[diagram["OptionValue"["InputPortLabelShift"], opts], Automatic :> {0, 2}]
+    arities = {diagram["OutputArity"], diagram["InputArity"]}
+}, {
+    portArrows = fillAutomatic[diagram["OptionValue"["PortArrows"], opts], arities, True],
+    portLabels = fillAutomatic[diagram["OptionValue"["PortLabels"], opts], arities, Automatic]
 }, Graphics[{
     EdgeForm[Black], FaceForm[Transparent], 
     Confirm @ diagram["Shape", opts],
@@ -536,27 +535,24 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
         ]
     ],
     Arrowheads[Small],
-    With[{xs = diagram["OutputPorts"]},
-        MapThread[{
-            Arrow[If[#2["DualQ"], Reverse, Identity] @ #1],
-            If[ MatchQ[diagram["OptionValue"["ShowPortLabels"], opts], None | False] || MatchQ[diagram["OptionValue"["ShowOutputPortLabels"], opts], None | False],
+    MapThread[{ports, ps, arrows, labels, angle} |->
+        MapThread[{x, p, arrow, label} |-> {
+            If[ MatchQ[arrow, None | False],
                 Nothing,
-                Text[ClickToCopy[#2, #2["View"]], With[{v = #1[[-1]] - #1[[1]]}, #1[[1]] + outputLabelShift[[2]] * v + outputLabelShift[[1]] * RotationTransform[- Pi / 2][v]]]
-            ]
-        } &,
-            {points[[1]], xs}
-        ]
-    ],
-    With[{xs = diagram["InputPorts"]},
-        MapThread[{
-            Arrow[If[#2["DualQ"], Reverse, Identity] @ #1],
-            If[ MatchQ[diagram["OptionValue"["ShowPortLabels"], opts], None | False] || MatchQ[diagram["OptionValue"["ShowInputPortLabels"], opts], None | False],
+                {If[MatchQ[arrow, True | Automatic], Nothing, arrow], Arrow[If[x["DualQ"], Reverse, Identity] @ p]}
+            ],
+            If[ MatchQ[label, None | False],
                 Nothing,
-                Text[ClickToCopy[#2, #2["View"]], With[{v = #1[[-1]] - #1[[1]]}, #1[[1]] + inputLabelShift[[2]] * v + inputLabelShift[[1]] * RotationTransform[Pi / 2][v]]]
+                Replace[label, Placed[l_, pos_] | l_ :> Text[
+                        ClickToCopy[l /. Automatic -> x, x["View"]],
+                        With[{v = p[[-1]] - p[[1]], s = PadLeft[Flatten[Replace[{pos}, {} -> {0, 2}]], 2, 0]}, p[[1]] + s[[2]] * v + s[[1]] * RotationTransform[angle][v]]
+                    ]
+                ]
             ]
-        } &,
-            {points[[2]], xs}
-        ]
+        },
+           {ports, ps, arrows, labels}
+        ],
+        {{diagram["OutputPorts"], diagram["InputPorts"]}, points, portArrows, portLabels, {- Pi / 2, Pi / 2}}
     ]
 },
     FilterRules[{opts, diagram["DiagramOptions"]}, Options[Graphics]],
