@@ -356,11 +356,12 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
     ],
         Replace[decomp, {CircleDot[ds___] :> Reverse[{ds}], d_ :> {d}}]
     ] // 
-        MapAt[Diagram[#, "ShowInputPortLabels" -> False] &, {2 ;;, All}] //
-        MapAt[Diagram[#, "OutputPortLabelShift" -> {2 / 3, 1}] &, {;; -2, All}];
+        MapAt[Diagram[#, "PortLabels" -> {Placed[Automatic, {- 2 / 3, 1}], None}, "PortArrows" -> None] &, {2 ;; -2, All}] //
+        MapAt[Diagram[#, "PortLabels" -> {Automatic, None}, "PortArrows" -> {Automatic, None}] &, {-1, All}] //
+        MapAt[Diagram[#, "PortLabels" -> {Placed[Automatic, {- 2 / 3, 1}], Automatic}, "PortArrows" -> {None, Automatic}] &, {1, All}];
  
     wires = Replace[{out_List, in_List} :> MapThread[
-        BSplineCurve @ {#1[[1]], #1[[1]] + vGapSize (#1[[2]] - #1[[1]]), #2[[1]] + vGapSize (#2[[2]] - #2[[1]]), #2[[2]]} &,
+        BSplineCurve @ {#1[[1]], #1[[1]] + vGapSize (#1[[2]] - #1[[1]]), #2[[1]] + vGapSize (#2[[2]] - #2[[1]]), #2[[1]]} &,
         {Catenate[Through[out["PortPoints"]][[All, 1]]], Catenate[Through[in["PortPoints"]][[All, 2]]]}]
     ] /@ Partition[decomp, 2, 1];
 	Show[
