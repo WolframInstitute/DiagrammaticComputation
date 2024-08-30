@@ -628,7 +628,7 @@ DiagramSum /: MakeBoxes[DiagramSum[ds___], form_] := With[{boxes = ToBoxes[Circl
 
 DiagramComposition /: MakeBoxes[DiagramComposition[ds___], form_] := With[{boxes = ToBoxes[CircleDot[ds], form]}, InterpretationBox[boxes, DiagramComposition[ds]]]
 
-DiagramNetwork /: MakeBoxes[DiagramNetwork[ds___], form_] := With[{boxes = ToBoxes[DiagramGrid[DiagramArrange @ DiagramCompose[{ds}]], form]}, InterpretationBox[boxes, DiagramNetwork[ds]]]
+DiagramNetwork /: MakeBoxes[DiagramNetwork[ds___], form_] := With[{boxes = ToBoxes[DiagramsNetGraph[{ds}, BaseStyle -> {GraphicsHighlightColor -> Magenta}], form]}, InterpretationBox[boxes, DiagramNetwork[ds]]]
 
 
 (* ::Subsection:: *)
@@ -742,11 +742,11 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
 				MapThread[{diagram, orientation} |-> With[{
 						shape = diagram["Shape", opts],
 						labels = Join[
-							{Text[ClickToCopy[diagram["HoldExpression"], RawBoxes @ ToBoxes[diagram["View"], StandardForm]], {0, 0}]},
+							{Text[ClickToCopy[diagram["Name"], RawBoxes @ ToBoxes[diagram["View"], StandardForm]], {0, 0}]},
 							If[ portLabelsQ,
 								Join[
-									MapIndexed[Text[ClickToCopy[#1["HoldExpression"], RawBoxes @ ToBoxes[#1["View"], StandardForm]], {- 1 / 2 + #2[[1]] / (diagram["OutputArity"] + 1) + .1, 1.25 / 2}] &, diagram["OutputPorts"]],
-									MapIndexed[Text[ClickToCopy[#1["HoldExpression"], RawBoxes @ ToBoxes[#1["View"], StandardForm]], {- 1 / 2 + #2[[1]] / (diagram["InputArity"] + 1) + .1, - 1.25 / 2}] &, diagram["InputPorts"]]
+									MapIndexed[Text[ClickToCopy[#1["Name"], RawBoxes @ ToBoxes[#1["View"], StandardForm]], {- 1 / 2 + #2[[1]] / (diagram["OutputArity"] + 1) + .1, 1.25 / 2}] &, diagram["OutputPorts"]],
+									MapIndexed[Text[ClickToCopy[#1["Name"], RawBoxes @ ToBoxes[#1["View"], StandardForm]], {- 1 / 2 + #2[[1]] / (diagram["InputArity"] + 1) + .1, - 1.25 / 2}] &, diagram["InputPorts"]]
 								],
 								{}
 							]
