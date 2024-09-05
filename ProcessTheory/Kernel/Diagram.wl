@@ -335,7 +335,10 @@ decompositionHeight[expr_, opt_ : Automatic] := Replace[expr, {
 }]
 
 
-decompositionArrange[diagram_Diagram, {width_, height_}, _, corner_ : {0, 0}] := With[{w = Replace[width, Automatic -> 1], h = Replace[height, Automatic -> 1]},
+decompositionArrange[diagram_Diagram, {width_, height_}, {dx_, dy_}, corner_ : {0, 0}] := With[{
+    w = Replace[width, Automatic -> 1] * (1 + dx) - dx,
+    h = Replace[height, Automatic -> 1] * (1 + dy) - dy
+},
     Diagram[diagram,
         "Width" -> w,
         "Height" -> h,
@@ -343,20 +346,20 @@ decompositionArrange[diagram_Diagram, {width_, height_}, _, corner_ : {0, 0}] :=
     ]
 ]
 
-decompositionArrange[decomp : CircleTimes[ds___], {width_, height_}, {dx_, dy_}, {xMin_, yMin_}] := Block[{widths, heights, positions},
+decompositionArrange[decomp : CircleTimes[ds___], {width_, height_}, {dx_, dy_}, {xMin_, yMin_}] := Block[{widths, newHeight, positions},
     widths = decompositionWidth /@ {ds};
     If[width =!= Automatic, widths = width * widths / Total[widths]];
-    heights = decompositionHeight /@ {ds};
-    positions = Prepend[Accumulate[widths], 0] + Range[0, Length[widths]] dx;
-    MapIndexed[With[{i = #2[[1]]}, decompositionArrange[#1, {widths[[i]], height}, {dx, dy}, {xMin + positions[[i]], yMin}]] &, decomp]
+    newHeight = Replace[height, Automatic :> Max[decompositionHeight /@ {ds}]];
+    positions = Prepend[Accumulate[widths * (1 + dx)], 0];
+    MapIndexed[With[{i = #2[[1]]}, decompositionArrange[#1, {widths[[i]], newHeight}, {dx, dy}, {xMin + positions[[i]], yMin}]] &, decomp]
 ]
 
-decompositionArrange[decomp : CircleDot[ds___], {width_, height_}, {dx_, dy_}, {xMin_, yMin_}] := Block[{widths, heights, positions},
+decompositionArrange[decomp : CircleDot[ds___], {width_, height_}, {dx_, dy_}, {xMin_, yMin_}] := Block[{heights, newWeight, positions},
     heights = decompositionHeight /@ {ds};
     If[height =!= Automatic, heights = height * heights / Total[heights]];
-    widths = decompositionWidth /@ {ds};
-    positions = Prepend[Accumulate[heights], 0] + Range[0, Length[heights]] dy;
-    MapIndexed[With[{i = #2[[1]]}, decompositionArrange[#1, {width, heights[[i]]}, {dx, dy}, {xMin, yMin - positions[[i]]}]] &, decomp]
+    newWeight = Replace[width, Automatic :> Max[decompositionWidth /@ {ds}]];
+    positions = Prepend[Accumulate[heights * (1 + dy)], 0];
+    MapIndexed[With[{i = #2[[1]]}, decompositionArrange[#1, {newWeight, heights[[i]]}, {dx, dy}, {xMin, yMin - positions[[i]]}]] &, decomp]
 ]
 
 decompositionArrange[decomp_, gapSizes_] := decompositionArrange[decomp, {Automatic, Automatic}, gapSizes, {0, 0}]
