@@ -21,8 +21,7 @@ PacletObject[
 			"System`DiagramNetwork",
 			"System`DiagramCompose",
 			"System`DiagramJoin",
-			"System`DiagramGrid",
-			"System`DiagramArrange"
+			"System`DiagramGrid"
 		},
         "Root" -> "Kernel",
         "Context" -> {
