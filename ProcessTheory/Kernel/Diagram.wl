@@ -311,7 +311,7 @@ DiagramDecompose[diagram_Diagram ? DiagramQ, productTop : _ ? BooleanQ : False] 
 
 
 decompositionTranspose[CircleTimes[ds___CircleDot]] := CircleDot @@ ResourceFunction["GeneralizedMapThread"][DiagramDecompose[DiagramJoin[Diagram /@ {##}], True] &, List @@@ {ds}]
-decompositionTranspose[CircleDot[ds___CircleTimes]] := CircleTimes @@ ResourceFunction["GeneralizedMapThread"][DiagramDecompose[DiagramCompose[Diagram /@ {##} // Echo]] & , List @@@ {ds}]
+decompositionTranspose[CircleDot[ds___CircleTimes]] := CircleTimes @@ ResourceFunction["GeneralizedMapThread"][DiagramDecompose[DiagramCompose[Diagram /@ {##}]] & , List @@@ {ds}]
 decompositionTranspose[ct_CircleTimes] := CircleDot[ct]
 decompositionTranspose[cd_CircleDot] := CircleTimes[cd]
 decompositionTranspose[d_] := d
@@ -492,7 +492,7 @@ DiagramProp[d_, "Name"] := Replace[
         }] @@@ HoldForm[Evaluate[Flatten[Defer @@ (Function[Null, If[DiagramQ[#], #["Name"], Defer[#]], HoldFirst] /@ Unevaluated[{ds}])]]]
 ]
 
-DiagramProp[diagram_, "Decompose"] := DiagramDecompose[diagram]
+DiagramProp[diagram_, "Decompose", args___] := DiagramDecompose[diagram, args]
 
 DiagramProp[diagram_, "ArraySymbol"] := DiagramDecompose[diagram] /. {
     d_Diagram :> Switch[d["Arity"], 1, VectorSymbol, 2, MatrixSymbol, _, ArraySymbol][d["HoldExpression"], Through[d["Ports"]["Name"]]],
@@ -504,7 +504,7 @@ DiagramProp[diagram_, "ArraySymbol"] := DiagramDecompose[diagram] /. {
     OverTilde -> ConjugateTranspose
 }
 
-DiagramProp[d_, "Diagram" | "Graphics", opts : OptionsPattern[]] := DiagramGraphics[d, opts]
+DiagramProp[d_, "Diagram" | "Graphics", opts : OptionsPattern[]] := DiagramGraphics[d, opts, BaseStyle -> {GraphicsHighlightColor -> Automatic}]
 
 DiagramProp[d_, "Graph", opts : OptionsPattern[]] := DiagramsNetGraph[d["SubDiagrams"], opts]
 
@@ -737,8 +737,11 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
 	orientations = Map[
         Normalize[Lookup[#, 1] - Lookup[#, 2]] &,
 		Values @ <|
-            GroupBy[VertexList[graph, {__Integer}], First, Mean /@ GroupBy[#, #[[2]] &, Lookup[embedding, #] &] &],
-            # -> <|1 -> {0, 1 / 2}, 2 -> {0, - 1 / 2}|> & /@ Range[Length[diagrams]]
+            # -> <|1 -> {0, 1 / 2}, 2 -> {0, - 1 / 2}|> & /@ Range[Length[diagrams]],
+            KeyValueMap[
+                With[{center = Lookup[embedding, #1]}, #1 -> <|<|1 -> center, 2 -> center|>, #2|>] &,
+                GroupBy[VertexList[graph, {__Integer}], First, Mean /@ GroupBy[#, #[[2]] &, Lookup[embedding, #] &] &]
+            ]
         |>
 	];
 	{outDegrees, inDegrees} = AssociationThread[VertexList[graph] -> #] & /@ Through[{VertexOutDegree, VertexInDegree}[graph]];
