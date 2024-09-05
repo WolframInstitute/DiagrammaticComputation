@@ -137,23 +137,28 @@ DiagramDual[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
     opts,
     "Expression" :> DiagramDual[d],
     "OutputPorts" -> Through[d["OutputPorts"]["Dual"]],
-    "InputPorts" -> Through[d["InputPorts"]["Dual"]]
+    "InputPorts" -> Through[d["InputPorts"]["Dual"]],
+    "DiagramOptions" -> d["DiagramOptions"]
 ]
 
 DiagramFlip[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
     opts,
     "Expression" :> DiagramFlip[d],
-    "Shape" -> GeometricTransformation[d["Shape"], ReflectionTransform[{0, 1}]],
     "OutputPorts" -> d["InputPorts"],
-    "InputPorts" -> d["OutputPorts"]
+    "InputPorts" -> d["OutputPorts"],
+    "Shape" -> GeometricTransformation[Diagram[d, "Angle" -> 0, "Reflect" -> False]["Shape"], ReflectionTransform[{0, 1}]],
+    "Angle" -> d["OptionValue"["Angle"]],
+    "Reflect" -> d["OptionValue"["Reflect"]]
 ]
 
 DiagramReverse[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
     opts,
     "Expression" :> DiagramReverse[d],
-    "Shape" -> GeometricTransformation[d["Shape"], ReflectionTransform[{1, 0}]],
     "OutputPorts" -> Reverse[Through[d["OutputPorts"]["Reverse"]]],
-    "InputPorts" -> Reverse[Through[d["InputPorts"]["Reverse"]]]
+    "InputPorts" -> Reverse[Through[d["InputPorts"]["Reverse"]]],
+    "Shape" -> GeometricTransformation[Diagram[d, "Angle" -> 0, "Reflect" -> False]["Shape"], ReflectionTransform[{1, 0}]],
+    "Angle" -> d["OptionValue"["Angle"]],
+    "Reflect" -> d["OptionValue"["Reflect"]]
 ]
 
 
@@ -406,7 +411,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
 	Show[
         Cases[decomp, d_Diagram :> d["Graphics"], All],
         Graphics[wires],
-        opts,
+        FilterRules[{opts}, Options[Graphics]],
         BaseStyle -> {
             GraphicsHighlightColor -> Automatic
         }
@@ -513,7 +518,10 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ With[{
     w = d["OptionValue"["Width"], opts],
     h = d["OptionValue"["Height"], opts],
     c = d["OptionValue"["Center"], opts],
-    a = d["OptionValue"["Angle"], opts]
+    a = d["OptionValue"["Angle"], opts],
+    r = d["OptionValue"["Reflect"], opts]
+}, {
+    transform = RotationTransform[a, c] @* If[TrueQ[r], ReflectionTransform[{1, 0}, c], Identity]
 },
     GeometricTransformation[
         Replace[
@@ -536,7 +544,7 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ With[{
                 ]
             }
         ],
-        RotationTransform[a, c]
+        transform
     ]
 ]
 
@@ -544,14 +552,17 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := With[{
     w = d["OptionValue"["Width"], opts],
     h = d["OptionValue"["Height"], opts],
     c = d["OptionValue"["Center"], opts],
-    a = d["OptionValue"["Angle"], opts]
+    a = d["OptionValue"["Angle"], opts],
+    r = d["OptionValue"["Reflect"], opts]
+}, {
+    transform = RotationTransform[a, c] @* If[TrueQ[r], ReflectionTransform[{1, 0}, c], Identity]
 },
     {
-        RotationTransform[a, c] @ Map[
+        transform @ Map[
             {{(- 1 / 2 + #) w, h / 2}, {(- 1 / 2 + #) w, 3 / 4 h}} + Threaded[c] &,
             Range[0, 1, 1 / (d["OutputArity"] + 1)][[2 ;; -2]]
         ],
-        RotationTransform[a, c] @ Map[
+        transform @ Map[
             {{(- 1 / 2 + #) w, - h / 2}, {(- 1 / 2 + #) w, - 3 / 4 h}} + Threaded[c] &,
             Range[0, 1, 1 / (d["InputArity"] + 1)][[2 ;; -2]]
         ]
@@ -571,6 +582,7 @@ Options[DiagramGraphics] = Join[{
     "Width" -> 1,
     "Height" -> 1,
     "Angle" -> 0,
+    "Reflect" -> False,
     "ShowLabel" -> Automatic,
     "PortArrows" -> Automatic,
     "PortLabels" -> Automatic
