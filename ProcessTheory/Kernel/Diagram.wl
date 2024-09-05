@@ -395,8 +395,8 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
             Replace[{top_, bot_} :> MapThread[
                 BSplineCurve @ {#1[[1]], #1[[1]] + vGapSize (#1[[2]] - #1[[1]]), #2[[1]] + vGapSize (#2[[2]] - #2[[1]]), #2[[1]]} &,
                 {
-                    Catenate[Through[Extract[bot, decompositionOutputPositions[bot]]["PortPoints"]][[All, 1]]],
-                    Catenate[Through[Extract[top, decompositionInputPositions[top]]["PortPoints"]][[All, 2]]]
+                    Catenate[Through[Extract[bot, decompositionOutputPositions[bot]]["PortArrows"]][[All, 1]]],
+                    Catenate[Through[Extract[top, decompositionInputPositions[top]]["PortArrows"]][[All, 2]]]
                 }]
             ] /@ Partition[{ds}, 2, 1]
         ),
@@ -522,7 +522,7 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ With[{
                 Automatic :> Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c, RoundingRadius -> {{Left, Top} -> .1 (w + h)}],
                 "Triangle" :> Polygon[{{- w / 2, - h / 2}, {0, h / 2}, {w / 2, - h / 2}} + Threaded[c]],
                 "UpsideDownTriangle" :> Polygon[{{- w / 2, h / 2}, {0, - h / 2}, {w / 2, h / 2}} + Threaded[c]],
-                "Permutation" :> With[{points = d["PortPoints", opts]},
+                "Permutation" :> With[{points = d["PortArrows", opts]},
                     ConfirmAssert[Equal @@ Length /@ points];
                     MapIndexed[
                         With[{i = #2[[1]], j = #1},
@@ -540,7 +540,7 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ With[{
     ]
 ]
 
-DiagramProp[d_, "PortPoints", opts : OptionsPattern[]] := With[{
+DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := With[{
     w = d["OptionValue"["Width"], opts],
     h = d["OptionValue"["Height"], opts],
     c = d["OptionValue"["Center"], opts],
@@ -577,7 +577,7 @@ Options[DiagramGraphics] = Join[{
 }, Options[Graphics]];
 
 DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[{
-    points = diagram["PortPoints", opts],
+    points = diagram["PortArrows", opts],
     arities = {diagram["OutputArity"], diagram["InputArity"]}
 }, {
     portArrows = fillAutomatic[diagram["OptionValue"["PortArrows"], opts], arities, True],
@@ -777,8 +777,8 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
 				},
                     port1 = diagram1[Replace[i, {1 -> "OutputPorts", 2 -> "InputPorts"}]][[p]];
                     port2 = diagram2[Replace[j, {1 -> "OutputPorts", 2 -> "InputPorts"}]][[q]];
-                    points1 = diagram1["PortPoints"][[i, p]];
-                    points2 = diagram2["PortPoints"][[j, q]];
+                    points1 = diagram1["PortArrows"][[i, p]];
+                    points2 = diagram2["PortArrows"][[j, q]];
                     point1 = points1[[1]] * scale;
                     normal1 = (points1[[-1]] - points1[[1]]) * scale * 3;
                     point2 = points2[[1]] * scale;
@@ -805,7 +805,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
                     port, points
 				},
                     port = diagram[Replace[i, {1 -> "OutputPorts", 2 -> "InputPorts"}]][[p]];
-                    points = diagram["PortPoints"][[i, p]];
+                    points = diagram["PortArrows"][[i, p]];
                     point = points[[1]] * scale;
                     normal = (points[[-1]] - points[[1]]) * scale * 3;
 					point = RotationTransform[{{0, 1}, orientation}] @ point;
