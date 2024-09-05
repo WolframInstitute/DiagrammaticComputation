@@ -463,12 +463,13 @@ DiagramProp[d_, "Flatten"] := d["FlattenOutputs"]["FlattenInputs"]
 DiagramProp[d_, "View"] := With[{
     expr = Replace[d["HoldExpression"],
         HoldForm[(head : DiagramDual | DiagramFlip | DiagramReverse | DiagramProduct | DiagramSum | DiagramComposition | DiagramNetwork)[ds___]] :>
-            head @@@ HoldForm[Evaluate[Flatten[Defer @@ (Function[Null, If[DiagramQ[#], #["View"], Defer[#]], HoldFirst] /@ Unevaluated[{ds}])]]]
+            head @@@ HoldForm[Evaluate[Flatten[Defer @@ (Function[Null, If[DiagramQ[#], #, Defer[#]], HoldFirst] /@ Unevaluated[{ds}])]]]
     ],
     outputs = Replace[Through[d["OutputPorts"]["Label"]], {p_} :> p],
-    inputs = Replace[Through[Through[d["InputPorts"]["Dual"]]["Label"]], {p_} :> p]
+    inputs = Replace[Through[Through[d["InputPorts"]["Dual"]]["Label"]], {p_} :> p],
+    opts = d["DiagramOptions"]
 },
-    Function[Null, Defer[Diagram[#, outputs, inputs]] //. HoldForm[x_] :> x, HoldFirst] @@ expr
+    Function[Null, If[opts === {}, Defer[Diagram[#, outputs, inputs]], Defer[Diagram[#, outputs, inputs, opts]]] //. HoldForm[x_] :> x, HoldFirst] @@ expr
 ]
 
 DiagramProp[d_, "Name"] := Replace[
@@ -584,11 +585,15 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
 }, Graphics[{
     EdgeForm[Black], FaceForm[Transparent], 
     Confirm @ diagram["Shape", opts],
-    If[ MatchQ[diagram["OptionValue"["ShowLabel"], opts], None | False], Nothing,
-        Text[
-            ClickToCopy[Replace[diagram["HoldExpression"], expr : Except[HoldForm[_DiagramNetwork]] :> (expr //. d_Diagram ? DiagramQ :> RuleCondition[d["HoldExpression"]])], diagram["View"]],
-            diagram["OptionValue"["Center"], opts]
-        ]
+    Text[
+        ClickToCopy[
+            If[ MatchQ[diagram["OptionValue"["ShowLabel"], opts], None | False],
+                "",
+                Replace[diagram["HoldExpression"], expr : Except[HoldForm[_DiagramNetwork]] :> (expr //. d_Diagram ? DiagramQ :> RuleCondition[d["HoldExpression"]])]
+            ],
+            diagram["View"]
+        ],
+        diagram["OptionValue"["Center"], opts]
     ],
     Arrowheads[Small],
     MapThread[{ports, ps, arrows, labels, angle} |->
