@@ -230,7 +230,7 @@ DiagramNetwork[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
 ]
 
 
-idDiagram[ports_List] := Function[ps, Diagram["1", Unevaluated[{ps}], Unevaluated[{ps}], "Shape" -> "Permutation", "ShowLabel" -> False], HoldAll] @@
+idDiagram[ports_List] := Function[Null, Diagram["1", Unevaluated[{##}], Unevaluated[{##}], "Shape" -> "Permutation", "ShowLabel" -> False], HoldAll] @@
     Flatten[HoldForm @@ Flatten @* HoldForm /@ ports]
 
 
