@@ -340,8 +340,8 @@ decompositionArrange[diagram_Diagram, {width_, height_}, {dx_, dy_}, corner_ : {
     h = Replace[height, Automatic -> 1] * (1 + dy) - dy
 },
     Diagram[diagram,
-        "Width" -> w,
-        "Height" -> h,
+        "Width" -> Replace[diagram["OptionValue"["Width"]], Automatic -> w],
+        "Height" -> Replace[diagram["OptionValue"["Height"]], Automatic -> h],
         "Center" -> corner + {w / 2, h / 2}
     ]
 ]
@@ -518,8 +518,8 @@ DiagramProp[d_, "Grid", opts : OptionsPattern[]] := DiagramGrid[DiagramCompose[d
 DiagramProp[d_, "OptionValue"[opt_], opts : OptionsPattern[]] := OptionValue[{opts, d["DiagramOptions"], Options[DiagramGraphics]}, opt]
 
 DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ With[{
-    w = d["OptionValue"["Width"], opts],
-    h = d["OptionValue"["Height"], opts],
+    w = Replace[d["OptionValue"["Width"], opts], Automatic -> 1],
+    h = Replace[d["OptionValue"["Height"], opts], Automatic -> 1],
     c = d["OptionValue"["Center"], opts],
     a = d["OptionValue"["Angle"], opts],
     r = d["OptionValue"["Reflect"], opts]
@@ -552,8 +552,8 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ With[{
 ]
 
 DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := With[{
-    w = d["OptionValue"["Width"], opts],
-    h = d["OptionValue"["Height"], opts],
+    w = Replace[d["OptionValue"["Width"], opts], Automatic -> 1],
+    h = Replace[d["OptionValue"["Height"], opts], Automatic -> 1],
     c = d["OptionValue"["Center"], opts],
     a = d["OptionValue"["Angle"], opts],
     r = d["OptionValue"["Reflect"], opts]
@@ -582,8 +582,8 @@ DiagramProp[_, prop_] := Missing[prop]
 Options[DiagramGraphics] = Join[{
     "Shape" -> Automatic,
     "Center" -> {0, 0},
-    "Width" -> 1,
-    "Height" -> 1,
+    "Width" -> Automatic,
+    "Height" -> Automatic,
     "Angle" -> 0,
     "Reflect" -> False,
     "ShowLabel" -> Automatic,
