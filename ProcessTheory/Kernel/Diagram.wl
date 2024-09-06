@@ -720,7 +720,14 @@ DiagramsGraph[diagrams : {___Diagram ? DiagramQ}, opts : OptionsPattern[]] := Bl
 ]
 
 
-Options[DiagramsNetGraph] = Join[{"ShowPortLabels" -> False, "ShowWireLabels" -> True, "Scale" -> Automatic, "ArrowSize" -> 0.01, "SpiderRadius" -> 0.2}, Options[DiagramGraphics], Options[Graph]];
+Options[DiagramsNetGraph] = Join[{
+    "ShowPortLabels" -> False,
+    "ShowWireLabels" -> True,
+    "Scale" -> Automatic,
+    "ArrowSize" -> 0.01,
+    "SpiderRadius" -> 0.2,
+    "BinarySpiders" -> True
+}, Options[DiagramGraphics], Options[Graph]];
 DiagramsNetGraph[diagrams : {___Diagram ? DiagramQ}, opts : OptionsPattern[]] :=
     DiagramsNetGraph[DiagramsGraph[diagrams, FilterRules[{opts}, GraphLayout]], FilterRules[{opts}, Except[GraphLayout]]]
 DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
@@ -731,7 +738,8 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
     arrowSize = OptionValue["ArrowSize"],
     rad = OptionValue["SpiderRadius"],
 	portLabelsQ = TrueQ[OptionValue["ShowPortLabels"]],
-	wireLabelsQ = TrueQ[OptionValue["ShowWireLabels"]]
+	wireLabelsQ = TrueQ[OptionValue["ShowWireLabels"]],
+    binarySpiders = OptionValue["BinarySpiders"]
 },
 	diagrams = Through[(AnnotationValue[{graph, #}, "Diagram"] & /@ diagramVertices)["Flatten"]];
 	If[Length[diagrams] == 0, Return[Graphics[FilterRules[Join[{opts}, Options[graph]], Options[Graphics]]]]];
@@ -748,17 +756,20 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
         |>
 	];
 	{outDegrees, inDegrees} = AssociationThread[VertexList[graph] -> #] & /@ Through[{VertexOutDegree, VertexInDegree}[graph]];
-	spiderVertices = VertexList[graph, _HoldForm];
-	spiderVertices = Pick[spiderVertices, VertexDegree[graph, #] & /@ spiderVertices, d_ /; d > 2];
 	spiderVertices = First[Reap[
 		edges = Map[v |->
 			Block[{in = VertexInComponent[graph, v, {1}], out = VertexOutComponent[graph, v, {1}], ports},
 				ports = Join[out, in];
-				If[ Length[in] + Length[out] == 2,
-					DirectedEdge[ports[[1, 1]], ports[[2, 1]], {{ports[[1, 2]], If[ports[[1, 2]] == 1, outDegrees, inDegrees][ports[[1, 1]]], ports[[1, 3]]}, v, {ports[[2, 2]], If[ports[[2, 2]] == 1, outDegrees, inDegrees][ports[[2, 1]]], ports[[2, 3]]}}],
+				If[ Length[ports] != 2 || MatchQ[binarySpiders, All | Full] || MatchQ[binarySpiders, True] && SameQ @@ ports[[All, 2]],
 					Sow[v]; Splice[
 						If[#[[2]] == 1, DirectedEdge[#[[1]], v, {#[[2]], Lookup[outDegrees, #[[1]]], #[[3]]}], DirectedEdge[#[[1]], v, {#[[2]], Lookup[inDegrees, #[[1]]], #[[3]]}]] & /@ ports
-					]
+					],
+					Block[{src, tgt, srcDegree, tgtDegree},
+                        {src, tgt} = If[ ports[[1, 2]] == 1, {ports[[1]], ports[[2]]}, {ports[[2]], ports[[1]]}];
+                        srcDegree = If[ src[[2]] == 1, outDegrees, inDegrees][src[[1]]];
+                        tgtDegree = If[ tgt[[2]] == 1, outDegrees, inDegrees][tgt[[1]]];
+                        DirectedEdge[src[[1]], tgt[[1]], {{src[[2]], srcDegree, src[[3]]}, v, {tgt[[2]], tgtDegree, tgt[[3]]}}]
+                    ]
 				]
 			],
 			VertexList[graph, _HoldForm]
@@ -781,7 +792,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
 							GeometricTransformation[shape, TranslationTransform[#1] @* transform]
 						}]
 					],
-					{Through[diagrams["Flatten"]], orientations}
+					{diagrams, orientations}
 				]
 			],
 			Thread[spiderVertices -> With[{radius = rad * scale}, Function[Circle[#1, radius]]]]
