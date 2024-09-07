@@ -62,7 +62,7 @@ Port[(Power | Superscript | Overscript)[p_, n_Integer ? NonNegative], opts : Opt
 
 Port[CircleTimes[ps__], opts : OptionsPattern[]] := PortProduct @@ Map[Function[Null, Port[Unevaluated[#], opts], HoldFirst], Unevaluated[{ps}]]
 
-PortProduct[ps___Port ? PortQ] := If[AllTrue[{ps}, #["DualQ"] &],
+PortProduct[ps___Port ? PortQ] := If[Length[{ps}] > 0 && AllTrue[{ps}, #["DualQ"] &],
     Port["Expression" :> PortDual[PortProduct[##]], "Type" -> CircleTimes @@ Through[{ps}["Type"]]] & @@ Through[{ps}["Dual"]],
     Port["Expression" :> PortProduct[ps], "Type" -> CircleTimes @@ Through[{ps}["Type"]]]
 ]
@@ -72,7 +72,7 @@ PortProduct[ps___Port ? PortQ] := If[AllTrue[{ps}, #["DualQ"] &],
 
 Port[CirclePlus[ps__], opts : OptionsPattern[]] := PortSum @@ Map[Function[Null, Port[Unevaluated[#], opts], HoldFirst], Unevaluated[{ps}]]
 
-PortSum[ps___Port ? PortQ] := If[AllTrue[{ps}, #["DualQ"] &],
+PortSum[ps___Port ? PortQ] := If[Length[{ps}] > 0 && AllTrue[{ps}, #["DualQ"] &],
     Port["Expression" :> PortDual[PortSum[##]], "Type" -> CirclePlus @@ Through[{ps}["Type"]]] & @@ Through[{ps}["Dual"]],
     Port["Expression" :> PortSum[ps], "Type" -> CirclePlus @@ Through[{ps}["Type"]]]
 ]
