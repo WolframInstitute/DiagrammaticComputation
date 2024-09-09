@@ -12,8 +12,8 @@ DiagramSum
 DiagramComposition
 DiagramNetwork
 
-DiagramCompose
-DiagramJoin
+DiagramColumn
+DiagramRow
 DiagramGrid
 
 DiagramsFreePorts
@@ -247,22 +247,22 @@ idDiagram[ports_List] := Function[Null, Diagram["1", Unevaluated[{##}], Unevalua
 
 (* compose vertically preserving grid structure *)
 
-Options[DiagramCompose] = Join[{"PortFunction" -> Function[#["Name"]]}, Options[Diagram]]
-DiagramCompose[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{a = x["FlattenInputs"], b = y["FlattenOutputs"], func = OptionValue["PortFunction"], aPorts, bPorts, aOutputs, aInputs, bOutputs, bInputs},
+Options[DiagramColumn] = Join[{"PortFunction" -> Function[#["Name"]]}, Options[Diagram]]
+DiagramColumn[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{a = x["FlattenInputs"], b = y["FlattenOutputs"], func = OptionValue["PortFunction"], aPorts, bPorts, aOutputs, aInputs, bOutputs, bInputs},
 	aPorts = func /@ Through[a["InputPorts"]["Dual"]];
 	bPorts = func /@ b["OutputPorts"];
     If[ ContainsNone[aPorts, bPorts],
         If[ aPorts === {} && bPorts === {},
             Return[DiagramComposition[a, b, opts]],
-            Return[DiagramJoin[{a, b}, opts]]
+            Return[DiagramRow[{a, b}, opts]]
         ]
     ];
 	With[{
 		idInputs = Unevaluated @@ List @@@ Hold[Evaluate @ Flatten[HoldForm @@ DeleteElements[aPorts, 1 -> bPorts]]],
 		idOutputs = Unevaluated @@ List @@@ Hold[Evaluate @ Flatten[HoldForm @@ DeleteElements[bPorts, 1 -> aPorts]]]
 	},
-		If[idInputs =!= {}, b = DiagramJoin[{idDiagram[idInputs], b}, opts]["Flatten"]];
-		If[idOutputs =!= {}, a = DiagramJoin[{idDiagram[idOutputs], a}, opts]["Flatten"]];
+		If[idInputs =!= {}, b = DiagramRow[{idDiagram[idInputs], b}, opts]["Flatten"]];
+		If[idOutputs =!= {}, a = DiagramRow[{idDiagram[idOutputs], a}, opts]["Flatten"]];
 	];
 	aOutputs = a["OutputPorts"];
 	aInputs = a["InputPorts"];
@@ -283,13 +283,13 @@ DiagramCompose[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{a = x
 	]
 ]
 
-DiagramCompose[xs : {___Diagram}, opts : OptionsPattern[]] := Fold[DiagramCompose[{##}, opts] &, xs]
+DiagramColumn[xs : {___Diagram}, opts : OptionsPattern[]] := Fold[DiagramColumn[{##}, opts] &, xs]
 
 
 (* compose horizontally preserving height *)
 
-Options[DiagramJoin] = Join[{"PortFunction" -> Function[#["Name"]]}, Options[Diagram]]
-DiagramJoin[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{a = x["FlattenInputs"], b = y["FlattenOutputs"], func = OptionValue["PortFunction"], aPorts, bPorts, ha, hb},
+Options[DiagramRow] = Join[{"PortFunction" -> Function[#["Name"]]}, Options[Diagram]]
+DiagramRow[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{a = x["FlattenInputs"], b = y["FlattenOutputs"], func = OptionValue["PortFunction"], aPorts, bPorts, ha, hb},
 	aPorts = func /@ Through[a["InputPorts"]["Dual"]];
 	bPorts = func /@ b["OutputPorts"];
     ha = DecompositionHeight[a];
@@ -304,7 +304,7 @@ DiagramJoin[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{a = x["F
     ]
 ]
 
-DiagramJoin[xs : {___Diagram}, opts : OptionsPattern[]] := Fold[DiagramJoin[{##}, opts] &, xs]
+DiagramRow[xs : {___Diagram}, opts : OptionsPattern[]] := Fold[DiagramRow[{##}, opts] &, xs]
 
 
 DiagramArrange[diagram_Diagram, opts : OptionsPattern[]] := With[{decomp = DiagramDecompose[diagram]},
@@ -312,8 +312,8 @@ DiagramArrange[diagram_Diagram, opts : OptionsPattern[]] := With[{decomp = Diagr
         ReplaceAt[
             #1,
             {
-                ct_CircleTimes :> DiagramJoin[List @@ Flatten[ct], opts],
-                cd_CircleDot :> DiagramCompose[List @@ Flatten[cd], opts],
+                ct_CircleTimes :> DiagramRow[List @@ Flatten[ct], opts],
+                cd_CircleDot :> DiagramColumn[List @@ Flatten[cd], opts],
                 cp_CirclePlus :> DiagramSum[List @@ Flatten[cp], opts]
             },
             #2
@@ -330,65 +330,67 @@ DiagramDecompose[diagram_Diagram ? DiagramQ] :=
 		HoldForm[DiagramComposition[ds___]] :> DiagramDecompose /@ CircleDot[ds],
         HoldForm[DiagramSum[ds___]] :> DiagramDecompose /@ CirclePlus[ds],
         HoldForm[DiagramNetwork[ds___]] :> With[{g = DiagramsNetGraph[{ds}, "BinarySpiders" -> All, "UnarySpiders" -> False, "RemoveCycles" -> True]},
-            DiagramDecompose[DiagramCompose[AnnotationValue[{g, Reverse[TopologicalSort[g]]}, "Diagram"], "PortFunction" -> Function[#["HoldExpression"]]]]
+            DiagramDecompose[DiagramColumn[AnnotationValue[{g, Reverse[TopologicalSort[g]]}, "Diagram"], "PortFunction" -> Function[#["HoldExpression"]]]]
         ],
 		_ :> diagram
 	}]
 
 
-decompositionTranspose[CircleTimes[ds___CircleDot]] := CircleDot @@ ResourceFunction["GeneralizedMapThread"][DiagramDecompose[DiagramJoin[Diagram /@ {##}]] &, List @@@ {ds}]
-decompositionTranspose[CircleDot[ds___CircleTimes]] := CircleTimes @@ ResourceFunction["GeneralizedMapThread"][DiagramDecompose[DiagramCompose[Diagram /@ {##}]] & , List @@@ {ds}]
+decompositionTranspose[CircleTimes[ds___CircleDot]] := CircleDot @@ ResourceFunction["GeneralizedMapThread"][DiagramDecompose[DiagramRow[Diagram /@ {##}]] &, List @@@ {ds}]
+decompositionTranspose[CircleDot[ds___CircleTimes]] := CircleTimes @@ ResourceFunction["GeneralizedMapThread"][DiagramDecompose[DiagramColumn[Diagram /@ {##}]] & , List @@@ {ds}]
 decompositionTranspose[ct_CircleTimes] := CircleDot[ct]
 decompositionTranspose[cd_CircleDot] := CircleTimes[cd]
 decompositionTranspose[d_] := d
 
 
-DecompostionWidth[d_Diagram, opts___] := decompositionWidth[DiagramDecompose[d], opts]
+DecompostionWidth[d_Diagram, args___] := decompositionWidth[DiagramDecompose[d], args]
 
-decompositionWidth[expr_, opt_ : Automatic] := Replace[expr, {
-    d_Diagram :> Replace[opt, {Automatic -> 1, x_ :> d["OptionValue"[x]]}],
-    CircleTimes[ds___] :> Total[decompositionWidth /@ {ds}],
-    (CircleDot | CirclePlus)[ds___] :> Max[decompositionWidth /@ {ds}]
+decompositionWidth[expr_, prop_ : Automatic] := Replace[expr, {
+    d_Diagram :> Replace[prop, {Automatic :> d["MaxArity"], _ :> d[prop]}],
+    CircleTimes[ds___] :> Total[decompositionWidth[#, prop] & /@ {ds}],
+    (CircleDot | CirclePlus)[ds___] :> Max[decompositionWidth[#, prop] & /@ {ds}]
 }]
 
-DecompositionHeight[d_Diagram, opts___] := decompositionHeight[DiagramDecompose[d], opts]
+DecompositionHeight[d_Diagram, args___] := decompositionHeight[DiagramDecompose[d], args]
 
-decompositionHeight[expr_, opt_ : Automatic] := Replace[expr, {
-    d_Diagram :> Replace[opt, {Automatic -> 1, x_ :> d["OptionValue"[x]]}],
-    (CircleTimes | CirclePlus)[ds___] :> Max[decompositionHeight /@ {ds}],
-    CircleDot[ds___] :> Total[decompositionHeight /@ {ds}],
+decompositionHeight[expr_, prop_ : Automatic] := Replace[expr, {
+    d_Diagram :> Replace[prop, {Automatic -> 1, _ :> d[prop]}],
+    (CircleTimes | CirclePlus)[ds___] :> Max[decompositionHeight[#, prop] & /@ {ds}],
+    CircleDot[ds___] :> Total[decompositionHeight[#, prop] & /@ {ds}],
     CircleMinus[ds___] :> {ds}
 }]
 
 
-decompositionArrange[diagram_Diagram, {width_, height_}, {dx_, dy_}, corner_ : {0, 0}] := With[{
-    w = Replace[width, Automatic -> 1] * (1 + dx) - dx,
+decompositionArrange[diagram_Diagram, {width_, height_}, {dx_, dy_}, corner_ : {0, 0}, angle_ : 0] := With[{
+    w = 1 / 1.5 * (1 + dx) * (1 + diagram["MaxArity"]),
     h = Replace[height, Automatic -> 1] * (1 + dy) - dy
 },
     Diagram[diagram,
-        "Width" -> Replace[diagram["OptionValue"["Width"]], Automatic -> w],
+        "Width" -> Replace[diagram["OptionValue"["Width"]], Automatic :> If[MatchQ[diagram["OptionValue"["Shape"]], "Circle"] || diagram["MaxArity"] == 1, 1, w]],
         "Height" -> Replace[diagram["OptionValue"["Height"]], Automatic -> h],
-        "Center" -> corner + {w / 2, h / 2}
+        "Angle" -> diagram["OptionValue"["Angle"]] + angle,
+        "Center" -> corner + RotationTransform[angle] @ {1.5 w / 2, h / 2}
     ]
 ]
 
-decompositionArrange[decomp : CircleTimes[ds___], {width_, height_}, {dx_, dy_}, {xMin_, yMin_}] := Block[{widths, newHeight, positions},
+decompositionArrange[decomp : CircleTimes[ds___], {width_, height_}, {dx_, dy_}, {xMin_, yMin_}, angle_] := Block[{widths, newHeight, positions},
     widths = decompositionWidth /@ {ds};
     If[width =!= Automatic, widths = width * widths / Total[widths]];
     newHeight = Replace[height, Automatic :> Max[decompositionHeight /@ {ds}]];
+    widths = FoldPairList[With[{x = Floor[#1 + #2]}, {x, #2 - x}] &, 0, widths];
     positions = Prepend[Accumulate[widths * (1 + dx)], 0];
-    MapIndexed[With[{i = #2[[1]]}, decompositionArrange[#1, {widths[[i]], newHeight}, {dx, dy}, {xMin + positions[[i]], yMin}]] &, decomp]
+    MapIndexed[With[{i = #2[[1]]}, decompositionArrange[#1, {widths[[i]], newHeight}, {dx, dy}, {xMin, yMin} + RotationTransform[angle] @ {positions[[i]], 0}, angle]] &, decomp]
 ]
 
-decompositionArrange[decomp : CircleDot[ds___], {width_, height_}, {dx_, dy_}, {xMin_, yMin_}] := Block[{heights, newWidth, positions},
+decompositionArrange[decomp : CircleDot[ds___], {width_, height_}, {dx_, dy_}, {xMin_, yMin_}, angle_] := Block[{heights, newWidth, positions},
     heights = decompositionHeight /@ {ds};
     If[height =!= Automatic, heights = height * heights / Total[heights]];
     newWidth = Replace[width, Automatic :> Max[decompositionWidth /@ {ds}]];
     positions = Prepend[Accumulate[heights * (1 + dy)], 0];
-    MapIndexed[With[{i = #2[[1]]}, decompositionArrange[#1, {newWidth, heights[[i]]}, {dx, dy}, {xMin, yMin - positions[[i]]}]] &, decomp]
+    MapIndexed[With[{i = #2[[1]]}, decompositionArrange[#1, {newWidth, heights[[i]]}, {dx, dy}, {xMin, yMin} + RotationTransform[angle] @ {0, - positions[[i]]}, angle]] &, decomp]
 ]
 
-decompositionArrange[decomp_, gapSizes_] := decompositionArrange[decomp, {Automatic, Automatic}, gapSizes, {0, 0}]
+decompositionArrange[decomp_, gapSizes_, angle_] := decompositionArrange[decomp, {Automatic, Automatic}, gapSizes, {0, 0}, angle]
 
 
 decompositionOutputPositions[_Diagram, pos_] := {pos}
@@ -402,19 +404,20 @@ decompositionInputPositions[CircleDot[ds___, d_], pos_] := decompositionInputPos
 decompositionInputPositions[decomp_] := decompositionInputPositions[decomp, {}]
 
 
-Options[DiagramGrid] = Join[{"HorizontalGapSize" -> 1, "VerticalGapSize" -> 1, "DiagramLayout" -> Automatic}, Options[DiagramGraphics], Options[Graphics]]
+Options[DiagramGrid] = Join[{"HorizontalGapSize" -> 1, "VerticalGapSize" -> 1, "Rotate" -> 0, "DiagramLayout" -> Automatic}, Options[DiagramGraphics], Options[Graphics]]
 DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
     decomp = DiagramDecompose[DiagramArrange[diagram]],
     width, height,
     outputPositions, inputPositions, positions, wires,
     vGapSize = OptionValue["VerticalGapSize"],
     hGapSize = OptionValue["HorizontalGapSize"],
+    angle = Replace[OptionValue["Rotate"], {Left -> Pi / 2, Right -> - Pi / 2, Down -> Pi, Up -> 0}],
     diagramOptions = FilterRules[{opts}, Except[Options[Graphics], Options[DiagramGraphics]]]
 },
 	width = decompositionWidth[decomp];
 	height = decompositionHeight[decomp];
 
-    decomp = decompositionArrange[decomp, {hGapSize, vGapSize}];
+    decomp = decompositionArrange[decomp, {hGapSize, vGapSize}, angle];
 
     outputPositions = decompositionOutputPositions[decomp];
     inputPositions = decompositionInputPositions[decomp];
@@ -489,6 +492,8 @@ DiagramProp[d_, "InputArity"] := Length[d["InputPorts"]]
 
 DiagramProp[d_, "Arity"] := Length[d["Ports"]]
 
+DiagramProp[d_, "MaxArity"] := Max[d["OutputArity"], d["InputArity"]]
+
 DiagramProp[d_, "FlattenOutputs"] := Diagram[d, "OutputPorts" -> Catenate[Through[d["OutputPorts"]["ProductList"]]]]
 
 DiagramProp[d_, "FlattenInputs"] := Diagram[d, "InputPorts" -> Catenate[Through[d["InputPorts"]["ProductList"]]]]
@@ -551,34 +556,31 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ With[{
     a = d["OptionValue"["Angle"], opts],
     r = d["OptionValue"["Reflect"], opts]
 }, {
-    transform = RotationTransform[a, c] @* If[TrueQ[r], ReflectionTransform[{1, 0}, c], Identity]
+    transform = GeometricTransformation[#, RotationTransform[a, c] @* If[TrueQ[r], ReflectionTransform[{1, 0}, c], Identity]] &
 },
-    GeometricTransformation[
-        Replace[
-            d["OptionValue"["Shape"], opts],
-            {
-                Automatic :> Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c, RoundingRadius -> {{Left, Top} -> .1 (w + h)}],
-                "Triangle" :> Polygon[{{- w / 2, - h / 2}, {0, h / 2}, {w / 2, - h / 2}} + Threaded[c]],
-                "UpsideDownTriangle" :> Polygon[{{- w / 2, h / 2}, {0, - h / 2}, {w / 2, h / 2}} + Threaded[c]],
-                "Circle" :> Circle[c, {w, h} / 2],
-                "Wires" :> With[{
-                    points = d["PortArrows", opts],
-                    inputs = PositionIndex[Through[Through[d["InputPorts"]["Dual"]]["HoldExpression"]]],
-                    outputs = PositionIndex[Through[d["OutputPorts"]["HoldExpression"]]]
-                },
-                    Map[
-                        ps |-> BSplineCurve[{ps[[1, 1]], 2 * ps[[1, 1]] - ps[[1, 2]], If[Length[ps] == 2, Nothing, c], 2 * #[[1]] - #[[2]], #[[1]]}] & /@ Rest[ps],
-                        Values @ Merge[KeyUnion[{inputs, outputs}, {} &], Apply[Join[points[[2, #1]], points[[1, #2]]] &]]
-                    ]
-                ],
-                "Wire" :> With[{
-                    ps = Catenate[d["PortArrows", opts]]
-                },
-                    BSplineCurve[{ps[[1, 1]], 2 * ps[[1, 1]] - ps[[1, 2]], c, 2 * #[[1]] - #[[2]], #[[1]]}] & /@ Rest[ps]
+    Replace[
+        d["OptionValue"["Shape"], opts],
+        {
+            Automatic :> transform @ Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c, RoundingRadius -> {{Left, Top} -> .1 (w + h)}],
+            "Triangle" :> transform @ Polygon[{{- w / 2, - h / 2}, {0, h / 2}, {w / 2, - h / 2}} + Threaded[c]],
+            "UpsideDownTriangle" :> transform @ Polygon[{{- w / 2, h / 2}, {0, - h / 2}, {w / 2, h / 2}} + Threaded[c]],
+            "Circle" :> transform @ Circle[c, {w, h} / 2],
+            "Wires" :> With[{
+                points = d["PortArrows", opts],
+                inputs = PositionIndex[Through[Through[d["InputPorts"]["Dual"]]["HoldExpression"]]],
+                outputs = PositionIndex[Through[d["OutputPorts"]["HoldExpression"]]]
+            },
+                Map[
+                    ps |-> BSplineCurve[{ps[[1, 1]], 2 * ps[[1, 1]] - ps[[1, 2]], If[Length[ps] == 2, Nothing, c], 2 * #[[1]] - #[[2]], #[[1]]}] & /@ Rest[ps],
+                    Values @ Merge[KeyUnion[{inputs, outputs}, {} &], Apply[Join[points[[2, #1]], points[[1, #2]]] &]]
                 ]
-            }
-        ],
-        transform
+            ],
+            "Wire" :> With[{
+                ps = Catenate[d["PortArrows", opts]]
+            },
+                BSplineCurve[{ps[[1, 1]], 2 * ps[[1, 1]] - ps[[1, 2]], c, 2 * #[[1]] - #[[2]], #[[1]]}] & /@ Rest[ps]
+            ]
+        }
     ]
 ]
 
@@ -608,11 +610,11 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := With[{
         {
             transform @ Map[
                 {{(- 1 / 2 + #) w, h / 2}, {(- 1 / 2 + #) w, 3 / 4 h}} + Threaded[c] &,
-                Range[0, 1, 1 / (d["OutputArity"] + 1)][[2 ;; -2]]
+                Range[-.25, 1.25, 1.5 / (d["OutputArity"] + 1)][[2 ;; -2]]
             ],
             transform @ Map[
                 {{(- 1 / 2 + #) w, - h / 2}, {(- 1 / 2 + #) w, - 3 / 4 h}} + Threaded[c] &,
-                Range[0, 1, 1 / (d["InputArity"] + 1)][[2 ;; -2]]
+                Range[-.25, 1.25, 1.5 / (d["InputArity"] + 1)][[2 ;; -2]]
             ]
         }
     ]
@@ -852,7 +854,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
                         Diagram[v,
                             Replace[v, HoldForm[x_] :> Port[Unevaluated @ Interpretation[x, #]]] & /@ out,
                             Replace[v, HoldForm[x_] :> Port[Unevaluated @ Interpretation[x, #]]] & /@ in,
-                            "Shape" -> "Circle"
+                            If[Length[ports] == 2, {"Shape" -> "Wire", "ShowLabel" -> False}, "Shape" -> "Circle"]
                         ]
                     }];
                     Splice @ Catenate @ {
