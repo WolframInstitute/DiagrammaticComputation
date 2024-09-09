@@ -340,17 +340,72 @@ DiagramArrange[diagram_Diagram, opts : OptionsPattern[]] := With[{decomp = Diagr
 ]
 
 
-DiagramDecompose[diagram_Diagram ? DiagramQ] := 
-	Replace[diagram["HoldExpression"], {
-		HoldForm[DiagramProduct[ds___]] :> DiagramDecompose /@ CircleTimes[ds],
-		HoldForm[DiagramComposition[ds___]] :> DiagramDecompose /@ CircleDot[ds],
-        HoldForm[DiagramSum[ds___]] :> DiagramDecompose /@ CirclePlus[ds],
-        HoldForm[DiagramNetwork[ds___]] :> With[{g = DiagramsNetGraph[{ds}, "BinarySpiders" -> All, "UnarySpiders" -> False, "RemoveCycles" -> True]},
-            DiagramDecompose[DiagramColumn[AnnotationValue[{g, Reverse[TopologicalSort[g]]}, "Diagram"], "PortFunction" -> Function[#["HoldExpression"]]]]
-        ],
-		_ :> diagram
-	}]
+matchPorts[d_Diagram, {outputPorts_, inputPorts_}] := Diagram[d,
+    If[outputPorts === Automatic, {}, "OutputPorts" -> MapThread[If[#2 === Automatic, #1, #2] &, {d["OutputPorts"], Join[outputPorts, Drop[d["OutputPorts"], Length[outputPorts]]]}]],
+    If[inputPorts === Automatic, {}, "InputPorts" -> MapThread[If[#2 === Automatic, #1, #2] &, {d["InputPorts"], Join[inputPorts, Drop[d["InputPorts"], Length[inputPorts]]]}]]
+]
 
+matchPorts[cd_CircleDot, {outputPorts_, inputPorts_}] :=
+    CircleDot @@ FoldPairList[
+        If[ DeleteCases[#1, Automatic] === {},
+            {#2, #1},
+            With[{ds = Extract[#2, decompositionOutputPositions[#2]]},
+                {outputs = Catenate[Through[ds["OutputPorts"]]], inputs = Through[Catenate[Through[ds["InputPorts"]]]["Dual"]]},
+                {leftoverPorts = DeleteElements[#1, outputs]}, 
+                {
+                    matchPorts[#2, {DeleteElements[#1, leftoverPorts], Automatic}],
+                    ReplacePart[inputs, Thread[Position[Through[inputs["HoldExpression"]], Except[Alternatives @@ Through[leftoverPorts["HoldExpression"]]], {1}, Heads -> False] -> Automatic]]
+                }
+            ]
+        ] &,
+        outputPorts,
+        Reverse @ FoldPairList[
+            If[ DeleteCases[#1, Automatic] === {},
+                {#2, #1},
+                With[{ds = Extract[#2, decompositionInputPositions[#2]]},
+                    {outputs = Through[Catenate[Through[ds["OutputPorts"]]]["Dual"]], inputs = Catenate[Through[ds["InputPorts"]]]},
+                    {leftoverPorts = DeleteElements[#1, inputs]}, 
+                    {
+                        matchPorts[#2, {Automatic, DeleteElements[#1, leftoverPorts]}],
+                        ReplacePart[outputs, Thread[Position[Through[outputs["HoldExpression"]], Except[Alternatives @@ Through[leftoverPorts["HoldExpression"]]], {1}, Heads -> False] -> Automatic]]
+                    }
+                ]
+            ] &,
+            inputPorts,
+            Reverse[List @@ cd]
+        ]
+    ]
+        
+
+matchPorts[cp_CirclePlus, {outputPorts_, inputPorts_}] := matchPorts[#, {outputPorts, inputPorts}] & /@ cp
+
+matchPorts[CircleTimes[ds___], {outputPorts_, inputPorts_}] := CircleTimes @@ MapThread[
+    matchPorts[#1, {#2, #3}] &,
+    {
+        {ds},
+        With[{outputs = Catenate[Through[Extract[#, decompositionOutputPositions[#]]["OutputPorts"]]] & /@ {ds}},
+            If[outputPorts === Automatic, outputs, TakeList[outputPorts, Length /@ outputs]]
+        ],
+        With[{inputs = Catenate[Through[Extract[#, decompositionInputPositions[#]]["InputPorts"]]] & /@ {ds}},
+            If[inputPorts === Automatic, inputs, TakeList[inputPorts, Length /@ inputs]]
+        ]
+    }
+]
+
+DiagramDecompose[diagram_Diagram ? DiagramQ] := With[{ports = {#["OutputPorts"], #["InputPorts"]} & @ diagram["Flatten"]},
+	matchPorts[
+        Replace[diagram["HoldExpression"], {
+            HoldForm[DiagramProduct[ds___]] :> DiagramDecompose /@ CircleTimes[ds],
+            HoldForm[DiagramComposition[ds___]] :> DiagramDecompose /@ CircleDot[ds],
+            HoldForm[DiagramSum[ds___]] :> DiagramDecompose /@ CirclePlus[ds],
+            HoldForm[DiagramNetwork[ds___]] :> With[{g = DiagramsNetGraph[{ds}, "BinarySpiders" -> All, "UnarySpiders" -> False, "RemoveCycles" -> True]},
+                DiagramDecompose[DiagramColumn[AnnotationValue[{g, Reverse[TopologicalSort[g]]}, "Diagram"], "PortFunction" -> Function[#["HoldExpression"]]]]
+            ],
+            _ :> diagram
+        }],
+        ports
+    ]
+]
 
 decompositionTranspose[CircleTimes[ds___CircleDot]] := CircleDot @@ ResourceFunction["GeneralizedMapThread"][DiagramDecompose[DiagramRow[Diagram /@ {##}]] &, List @@@ {ds}]
 decompositionTranspose[CircleDot[ds___CircleTimes]] := CircleTimes @@ ResourceFunction["GeneralizedMapThread"][DiagramDecompose[DiagramColumn[Diagram /@ {##}]] & , List @@@ {ds}]
