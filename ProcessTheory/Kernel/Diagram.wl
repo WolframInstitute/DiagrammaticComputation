@@ -173,8 +173,8 @@ DiagramSum[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{subDiagram
     Diagram[
         opts,
         "Expression" :> DiagramSum[##] & @@ subDiagrams,
-        "OutputPorts" -> Replace[Through[subDiagrams["OutputPorts"]], {{} -> PortSum[], ps_ :> PortSum @@ ps}, 1],
-        "InputPorts" -> Replace[Through[subDiagrams["InputPorts"]], {{} -> PortSum[]["Dual"], ps_ :> PortSum @@ ps}, 1]
+        "OutputPorts" -> Replace[Through[{ds}["OutputPorts"]], {{} -> PortSum[], ps_ :> PortSum @@ ps}, 1],
+        "InputPorts" -> Replace[Through[{ds}["InputPorts"]], {{} -> PortSum[]["Dual"], ps_ :> PortSum @@ ps}, 1]
     ]
 ]
 
@@ -185,8 +185,8 @@ DiagramProduct[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{subDia
     Diagram[
         opts,
         "Expression" :> DiagramProduct[##] & @@ subDiagrams,
-        "OutputPorts" -> Replace[Through[subDiagrams["OutputPorts"]], {{} -> PortProduct[], ps_ :> PortProduct @@ ps}, 1],
-        "InputPorts" -> Replace[Through[subDiagrams["InputPorts"]], {{} -> PortProduct[]["Dual"], ps_ :> PortProduct @@ ps}, 1]
+        "OutputPorts" -> Replace[Through[{ds}["OutputPorts"]], {{} -> PortProduct[], ps_ :> PortProduct @@ ps}, 1],
+        "InputPorts" -> Replace[Through[{ds}["InputPorts"]], {{} -> PortProduct[]["Dual"], ps_ :> PortProduct @@ ps}, 1]
     ]
 ]
 
@@ -208,7 +208,7 @@ DiagramComposition[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
     subDiagrams = If[#["CompositionQ"], Splice[#["SubDiagrams"]], #] & /@ {ds},
     func = OptionValue["PortFunction"]
 }, {
-    ports = collectPorts[{func /@ #["OutputPorts"], func /@ Through[#["InputPorts"]["Dual"]]} & /@ Through[Reverse[subDiagrams]["Flatten"]]]
+    ports = collectPorts[{func /@ #["OutputPorts"], func /@ Through[#["InputPorts"]["Dual"]]} & /@ Through[Reverse[{ds}]["Flatten"]]]
 },
     Diagram[
         opts,
@@ -362,14 +362,14 @@ decompositionHeight[expr_, prop_ : Automatic] := Replace[expr, {
 
 
 decompositionArrange[diagram_Diagram, {width_, height_}, {dx_, dy_}, corner_ : {0, 0}, angle_ : 0] := With[{
-    w = 1 / 1.5 * (1 + dx) * (1 + diagram["MaxArity"]),
+    w = 1 / 1.6 * (1 + dx) * (1 + diagram["MaxArity"]),
     h = Replace[height, Automatic -> 1] * (1 + dy) - dy
 },
     Diagram[diagram,
         "Width" -> Replace[diagram["OptionValue"["Width"]], Automatic :> If[MatchQ[diagram["OptionValue"["Shape"]], "Circle"] || diagram["MaxArity"] == 1, 1, w]],
         "Height" -> Replace[diagram["OptionValue"["Height"]], Automatic -> h],
         "Angle" -> diagram["OptionValue"["Angle"]] + angle,
-        "Center" -> corner + RotationTransform[angle] @ {1.5 w / 2, h / 2}
+        "Center" -> corner + RotationTransform[angle] @ {1.6 w / 2, h / 2}
     ]
 ]
 
@@ -541,6 +541,8 @@ DiagramProp[diagram_, "ArraySymbol"] := DiagramDecompose[diagram] /. {
 
 DiagramProp[d_, "Diagram" | "Graphics", opts : OptionsPattern[]] := DiagramGraphics[d, opts, BaseStyle -> {GraphicsHighlightColor -> Automatic}]
 
+DiagramProp[d_, "PortGraph", opts : OptionsPattern[]] := DiagramsPortGraph[d["SubDiagrams"], opts]
+
 DiagramProp[d_, "Graph", opts : OptionsPattern[]] := DiagramsNetGraph[d["SubDiagrams"], opts]
 
 DiagramProp[d_, "Arrange", opts : OptionsPattern[]] := DiagramArrange[d, opts]
@@ -610,11 +612,11 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := With[{
         {
             transform @ Map[
                 {{(- 1 / 2 + #) w, h / 2}, {(- 1 / 2 + #) w, 3 / 4 h}} + Threaded[c] &,
-                Range[-.25, 1.25, 1.5 / (d["OutputArity"] + 1)][[2 ;; -2]]
+                Range[-.3, 1.3, 1.6 / (d["OutputArity"] + 1)][[2 ;; -2]]
             ],
             transform @ Map[
                 {{(- 1 / 2 + #) w, - h / 2}, {(- 1 / 2 + #) w, - 3 / 4 h}} + Threaded[c] &,
-                Range[-.25, 1.25, 1.5 / (d["InputArity"] + 1)][[2 ;; -2]]
+                Range[-.3, 1.3, 1.6 / (d["InputArity"] + 1)][[2 ;; -2]]
             ]
         }
     ]
@@ -681,13 +683,11 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
 },
     FilterRules[{opts, diagram["DiagramOptions"]}, Options[Graphics]],
     ImageSize -> Tiny,
-    FormatType -> StandardForm,
-    BaseStyle -> {
-        GraphicsHighlightColor -> Magenta
-    }
+    FormatType -> StandardForm
 ]]
 
-Diagram /: MakeBoxes[diagram : Diagram[_Association] ? DiagramQ, form_] := With[{boxes = ToBoxes[diagram["Diagram"], form]},
+Diagram /: MakeBoxes[diagram : Diagram[_Association] ? DiagramQ, form_] := With[{boxes = ToBoxes[Show[
+    If[diagram["NetworkQ"], diagram["Graph"], diagram["Grid"]], BaseStyle -> {GraphicsHighlightColor -> Magenta}], form]},
     InterpretationBox[boxes, diagram]
 ]
 
