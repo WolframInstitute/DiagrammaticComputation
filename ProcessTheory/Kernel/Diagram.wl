@@ -241,14 +241,25 @@ DiagramNetwork[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
 ]
 
 
-idDiagram[ports_List] := Function[Null, Diagram["1", Unevaluated[{##}], Unevaluated[{##}], "Shape" -> "Wires", "ShowLabel" -> False], HoldAll] @@
-    Flatten[HoldForm @@ Flatten @* HoldForm /@ ports]
+makePorts[xs_List] := Function[Null, Port[Unevaluated[##]], HoldAll] @@@ Flatten @* HoldForm /@ xs
+
+idDiagram[xs_List] := With[{ports = makePorts[xs]},
+    Diagram["1", ports, ports, "Shape" -> "CrossWires", "ShowLabel" -> False]
+]
+    
+
+piDiagram[outputs_List, inputs_List] := Diagram["\[Pi]", makePorts[outputs], makePorts[inputs], "Shape" -> "CrossWires", "ShowLabel" -> False]
 
 
 (* compose vertically preserving grid structure *)
 
 Options[DiagramColumn] = Join[{"PortFunction" -> Function[#["Name"]]}, Options[Diagram]]
-DiagramColumn[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{a = x["FlattenInputs"], b = y["FlattenOutputs"], func = OptionValue["PortFunction"], aPorts, bPorts, aOutputs, aInputs, bOutputs, bInputs},
+DiagramColumn[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
+    a = x["FlattenInputs"], b = y["FlattenOutputs"],
+    func = OptionValue["PortFunction"],
+    aPorts, bPorts,
+    outputs, inputs
+},
 	aPorts = func /@ Through[a["InputPorts"]["Dual"]];
 	bPorts = func /@ b["OutputPorts"];
     If[ ContainsNone[aPorts, bPorts],
@@ -257,27 +268,32 @@ DiagramColumn[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{a = x[
             Return[DiagramRow[{a, b}, opts]]
         ]
     ];
-	With[{
-		idInputs = Unevaluated @@ List @@@ Hold[Evaluate @ Flatten[HoldForm @@ DeleteElements[aPorts, 1 -> bPorts]]],
-		idOutputs = Unevaluated @@ List @@@ Hold[Evaluate @ Flatten[HoldForm @@ DeleteElements[bPorts, 1 -> aPorts]]]
-	},
-		If[idInputs =!= {}, b = DiagramRow[{idDiagram[idInputs], b}, opts]["Flatten"]];
-		If[idOutputs =!= {}, a = DiagramRow[{idDiagram[idOutputs], a}, opts]["Flatten"]];
-	];
-	aOutputs = a["OutputPorts"];
-	aInputs = a["InputPorts"];
-	bOutputs = b["OutputPorts"];
-	bInputs = b["InputPorts"];
+    inputs = DeleteElements[aPorts, 1 -> bPorts];
+    outputs = DeleteElements[bPorts, 1 -> aPorts];
+    If[ inputs =!= {},
+        With[{seqPos = SequencePosition[aPorts, bPorts, 1]},
+            If[ seqPos === {},
+                b = DiagramRow[{idDiagram[inputs], b}, opts]["Flatten"],
+                b = DiagramRow[Insert[idDiagram /@ TakeDrop[inputs, seqPos[[1, 1]] - 1], b, 2], opts]["Flatten"]
+            ]
+        ]
+    ];
+    If[ outputs =!= {},
+        With[{seqPos = SequencePosition[bPorts, aPorts, 1]},
+            If[ seqPos === {},
+                a = DiagramRow[{idDiagram[outputs], a}, opts]["Flatten"],
+                a = DiagramRow[Insert[idDiagram /@ TakeDrop[outputs, seqPos[[1, 1]] - 1], a, 2], opts]["Flatten"]
+            ]
+        ]
+        
+    ];
+    aPorts = func /@ Through[a["InputPorts"]["Dual"]];
+    bPorts = func /@ b["OutputPorts"];
 	Which[
-		func /@ Through[aInputs["Dual"]] === func /@ bOutputs,
+		aPorts === bPorts,
 		DiagramComposition[a, b, opts],
-		Sort[func /@ Through[aInputs["Dual"]]] === Sort[func /@ bOutputs],
-		With[{
-			piOutputs = Unevaluated @@ List @@@ Hold[Evaluate @ Flatten[HoldForm @@ func /@ Through[aInputs["Dual"]]]],
-			piInputs = Unevaluated @@ List @@@ Hold[Evaluate @ Flatten[HoldForm @@ func /@ bOutputs]]
-		},
-			DiagramComposition[a, Diagram["\[Pi]", piOutputs, piInputs, "Shape" -> "Wires", "ShowLabel" -> False], b, opts]
-		],
+		Sort[aPorts] === Sort[bPorts],
+        DiagramComposition[a, piDiagram[aPorts, bPorts], b, opts],
 		True,
 		$Failed
 	]
@@ -307,14 +323,14 @@ DiagramRow[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{a = x["Fl
 DiagramRow[xs : {___Diagram}, opts : OptionsPattern[]] := Fold[DiagramRow[{##}, opts] &, xs]
 
 
-DiagramArrange[diagram_Diagram, opts : OptionsPattern[]] := With[{decomp = DiagramDecompose[diagram]},
+DiagramArrange[diagram_Diagram, opts : OptionsPattern[]] := With[{decomp = DiagramDecompose[diagram], defOpts = {"PortFunction" -> Function[#["HoldExpression"]]}},
     Fold[
         ReplaceAt[
             #1,
             {
-                ct_CircleTimes :> DiagramRow[List @@ Flatten[ct], opts],
-                cd_CircleDot :> DiagramColumn[List @@ Flatten[cd], opts],
-                cp_CirclePlus :> DiagramSum[List @@ Flatten[cp], opts]
+                ct_CircleTimes :> DiagramRow[List @@ Flatten[ct], opts, defOpts],
+                cd_CircleDot :> DiagramColumn[List @@ Flatten[cd], opts, defOpts],
+                cp_CirclePlus :> DiagramSum[List @@ Flatten[cp], opts, defOpts]
             },
             #2
         ] &,
@@ -541,6 +557,13 @@ DiagramProp[diagram_, "ArraySymbol"] := DiagramDecompose[diagram] /. {
 
 DiagramProp[d_, "Diagram" | "Graphics", opts : OptionsPattern[]] := DiagramGraphics[d, opts, BaseStyle -> {GraphicsHighlightColor -> Automatic}]
 
+DiagramProp[d_, "Normal"] := If[d["NetworkQ"],
+    With[{g = DiagramsNetGraph[d["SubDiagrams"], "BinarySpiders" -> All, "UnarySpiders" -> False, "RemoveCycles" -> True]},
+        DiagramComposition[##, "PortFunction" -> Function[#["HoldExpression"]]] & @@ AnnotationValue[{g, Reverse[TopologicalSort[g]]}, "Diagram"]
+    ],
+    d
+]
+
 DiagramProp[d_, "PortGraph", opts : OptionsPattern[]] := DiagramsPortGraph[d["SubDiagrams"], opts]
 
 DiagramProp[d_, "Graph", opts : OptionsPattern[]] := DiagramsNetGraph[d["SubDiagrams"], opts]
@@ -567,6 +590,21 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ With[{
             "Triangle" :> transform @ Polygon[{{- w / 2, - h / 2}, {0, h / 2}, {w / 2, - h / 2}} + Threaded[c]],
             "UpsideDownTriangle" :> transform @ Polygon[{{- w / 2, h / 2}, {0, - h / 2}, {w / 2, h / 2}} + Threaded[c]],
             "Circle" :> transform @ Circle[c, {w, h} / 2],
+            "CrossWires" :> With[{
+                points = d["PortArrows", opts],
+                inputs = PositionIndex[Through[Through[d["InputPorts"]["Dual"]]["HoldExpression"]]],
+                outputs = PositionIndex[Through[d["OutputPorts"]["HoldExpression"]]]
+            },
+                Map[
+                    ps |-> Outer[
+                        BSplineCurve[{#1[[1]], 2 * #1[[1]] - #1[[2]], 2 * #2[[1]] - #2[[2]], #2[[1]]}] &,
+                        ps[[2]],
+                        ps[[1]],
+                        1
+                    ],
+                    Values @ Merge[KeyUnion[{inputs, outputs}, {} &], Apply[{points[[2, #1]], points[[1, #2]]} &]]
+                ]
+            ],
             "Wires" :> With[{
                 points = d["PortArrows", opts],
                 inputs = PositionIndex[Through[Through[d["InputPorts"]["Dual"]]["HoldExpression"]]],
