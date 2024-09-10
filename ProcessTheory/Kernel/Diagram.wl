@@ -98,7 +98,7 @@ Diagram[expr : Except[_Association | _Diagram | OptionsPattern[]],
             "InputPorts" -> Comap[Map[Function[p, Port[Unevaluated[p]], HoldFirst], Unevaluated[inputs]], "Dual"],
             opts
         },
-            Join[Options[Diagram], $DiagramHiddenOptions, Options[DiagramGraphics]]
+            Join[Options[Diagram], $DiagramHiddenOptions, Options[DiagramGraphics], Options[DiagramGrid]]
         ]
     ]
 
@@ -110,7 +110,7 @@ Diagram[expr_, output : Except[_List], input : Except[_List], opts___] := Diagra
 
 Diagram[opts : OptionsPattern[]] := Diagram[KeySort[<|
     DeleteDuplicatesBy[First] @ FilterRules[
-        {"DiagramOptions" -> FilterRules[{opts, Values[FilterRules[{opts}, "DiagramOptions"]]}, Options[DiagramGraphics]], opts, Options[Diagram], $DiagramHiddenOptions},
+        {"DiagramOptions" -> FilterRules[{opts, Values[FilterRules[{opts}, "DiagramOptions"]]}, Join[Options[DiagramGraphics], Options[DiagramGrid]]], opts, Options[Diagram], $DiagramHiddenOptions},
         Join[Options[Diagram], $DiagramHiddenOptions]
     ]|>
 ]]
@@ -432,35 +432,55 @@ gridHeight[expr_, prop_ : Automatic] := Replace[expr, {
 }]
 
 
-gridArrange[diagram_Diagram, {width_, height_}, {dx_, dy_}, corner_ : {0, 0}, angle_ : 0] := With[{
-    w = 1 / 1.6 * (1 + dx) * (1 + diagram["MaxArity"]),
-    ratio = Floor[Replace[width, Automatic -> 1] / Max[1, diagram["MaxArity"]]],
-    h = Replace[height, Automatic -> 1] * (1 + dy) - dy
+gridArrange[diagram_Diagram, {width_, height_}, {dx_, dy_}, corner_ : {0, 0}, angle_ : 0] := Block[{
+    arity = diagram["MaxArity"],
+    alignment = diagram["OptionValue"[Alignment]],
+    w, h, ratio, center
 },
-    Sow[{corner + {dx, - dy / 2}, corner + {width * (1 + dx) + dx, height * (1 + dy) - dy / 2}}];
+    w = 1 / 1.6 * (1 + dx) * (1 + arity);
+    h = Replace[height, Automatic -> 1] * (1 + dy) - dy;
+    ratio = If[arity == 0, 0, Floor[Replace[width, Automatic -> 1] / arity]];
+    center = corner + RotationTransform[angle] @ {
+        (1.6 w / 2) ratio +
+            (1 + dx) * Switch[
+                alignment,
+                Left,
+                1 - ratio,
+                Right,
+                width - ratio arity,
+                Center,
+                (1 - ratio + width - ratio arity) / 2
+                ,
+                _,
+                0
+            ],
+        h / 2
+    };
+    Sow[RotationTransform[angle, corner][Rectangle @@ (Threaded[corner] + {{dx, - dy / 2}, {width * (1 + dx) + dx, height * (1 + dy) - dy / 2}})], "Item"];
     Diagram[diagram,
-        "Width" -> Replace[diagram["OptionValue"["Width"]], Automatic :> If[MatchQ[diagram["OptionValue"["Shape"]], "Circle"] || diagram["MaxArity"] == 1, 1, ratio * w]],
+        "Width" -> Replace[diagram["OptionValue"["Width"]], Automatic :> If[MatchQ[diagram["OptionValue"["Shape"]], "Circle"] || arity <= 1, 1, ratio * w]],
         "Height" -> Replace[diagram["OptionValue"["Height"]], Automatic -> h],
-        "Angle" -> diagram["OptionValue"["Angle"]] + angle,
-        "Center" -> corner + RotationTransform[angle] @ {(1.6 w / 2) ratio, h / 2}
+        "Center" -> center
     ]
 ]
 
-gridArrange[grid : CircleTimes[ds___], {width_, height_}, {dx_, dy_}, {xMin_, yMin_}, angle_] := Block[{widths, relativeWidths, newHeight, positions},
+gridArrange[grid : CircleTimes[ds___], {width_, height_}, {dx_, dy_}, corner : {xMin_, yMin_}, angle_] := Block[{widths, relativeWidths, newHeight, positions},
     widths = gridWidth /@ {ds};
     relativeWidths = If[width =!= Automatic, width * widths / Total[widths], widths];
     newHeight = Replace[height, Automatic :> Max[gridHeight /@ {ds}]];
     relativeWidths = FoldPairList[With[{x = Floor[#1 + #2]}, {x, #2 - x}] &, 0, relativeWidths];
     If[width =!= Automatic, relativeWidths[[-1]] = width - Total[Most[relativeWidths]]];
     positions = Prepend[Accumulate[relativeWidths * (1 + dx)], 0];
+    Sow[RotationTransform[angle, corner][Rectangle @@ (Threaded[corner] + {{dx, 3 / 2 dy}, {Total[relativeWidths] * (1 + dx) + dx, - newHeight * (1 + dy) + 3 / 2 dy}})], "Row"];
     MapIndexed[With[{i = #2[[1]]}, gridArrange[#1, {relativeWidths[[i]], newHeight}, {dx, dy}, {xMin, yMin} + RotationTransform[angle] @ {positions[[i]], 0}, angle]] &, grid]
 ]
 
-gridArrange[grid : CircleDot[ds___], {width_, height_}, {dx_, dy_}, {xMin_, yMin_}, angle_] := Block[{heights, newWidth, positions},
+gridArrange[grid : CircleDot[ds___], {width_, height_}, {dx_, dy_}, corner : {xMin_, yMin_}, angle_] := Block[{heights, newWidth, positions},
     heights = gridHeight /@ {ds};
     If[height =!= Automatic, heights = height * heights / Total[heights]];
     newWidth = Replace[width, Automatic :> Max[gridWidth /@ {ds}]];
     positions = Prepend[Accumulate[heights * (1 + dy)], 0];
+    Sow[RotationTransform[angle, corner][Rectangle @@ (Threaded[corner] + {{dx, 3 / 2 dy}, {newWidth * (1 + dx) + dx, - Total[heights] * (1 + dy) + 3 / 2 dy}})], "Column"];
     MapIndexed[With[{i = #2[[1]]}, gridArrange[#1, {newWidth, heights[[i]]}, {dx, dy}, {xMin, yMin} + RotationTransform[angle] @ {0, - positions[[i]]}, angle]] &, grid]
 ]
 
@@ -478,10 +498,18 @@ gridInputPositions[CircleDot[ds___, d_], pos_] := gridInputPositions[d, Append[p
 gridInputPositions[grid_] := gridInputPositions[grid, {}]
 
 
-Options[DiagramGrid] = Join[{"HorizontalGapSize" -> 1, "VerticalGapSize" -> 1, "Rotate" -> 0, "WireArrows" -> False, Dividers -> None}, Options[DiagramGraphics], Options[Graphics]]
+Options[DiagramGrid] = Join[{
+    "HorizontalGapSize" -> 1,
+    "VerticalGapSize" -> 1,
+    "Rotate" -> 0,
+    "WireArrows" -> False,
+    Dividers -> None,
+    Alignment -> Left
+}, Options[DiagramGraphics], Options[Graphics]
+]
 DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
     grid = DiagramDecompose[DiagramArrange[diagram]],
-    width, height, corners,
+    width, height, items, rows, columns,
     outputPositions, inputPositions, positions, wires,
     vGapSize = OptionValue["VerticalGapSize"],
     hGapSize = OptionValue["HorizontalGapSize"],
@@ -491,7 +519,9 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
 	width = gridWidth[grid];
 	height = gridHeight[grid];
 
-    corners = Reap[grid = gridArrange[grid, {hGapSize, vGapSize}, angle]][[2, 1]];
+    grid = grid /. d_Diagram :> Diagram[d, "Angle" -> d["OptionValue"["Angle"]] + angle, Alignment -> OptionValue[Alignment]];
+
+    {items, rows, columns} = Lookup[Reap[grid = gridArrange[grid, {hGapSize, vGapSize}, angle], _, Rule][[2]], {"Item", "Row", "Column"}];
 
     outputPositions = gridOutputPositions[grid];
     inputPositions = gridInputPositions[grid];
@@ -533,7 +563,9 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
             d_Diagram :> DiagramGraphics[d, diagramOptions],
             All
         ],
-        Graphics[{wires, If[MatchQ[OptionValue[Dividers], Automatic | All | True], {FaceForm[None], EdgeForm[Directive[Thin, Black]], Rectangle @@@ corners}, Nothing]}],
+        Graphics[{wires, FaceForm[None], EdgeForm[Directive[Thin, Black]],
+            Switch[OptionValue[Dividers], All | Automatic, items, True, {rows, columns}, _, Nothing]
+        }],
         FilterRules[{opts}, Options[Graphics]],
         BaseStyle -> {
             GraphicsHighlightColor -> Automatic
@@ -646,7 +678,7 @@ DiagramProp[d_, "Arrange", opts : OptionsPattern[]] := DiagramArrange[d, opts]
 
 DiagramProp[d_, "Grid", opts : OptionsPattern[]] := DiagramGrid[d["Arrange"], opts]
 
-DiagramProp[d_, "OptionValue"[opt_], opts : OptionsPattern[]] := OptionValue[{opts, d["DiagramOptions"], Options[DiagramGraphics]}, opt]
+DiagramProp[d_, "OptionValue"[opt_], opts : OptionsPattern[]] := OptionValue[{opts, d["DiagramOptions"], Options[DiagramGraphics], Options[DiagramGrid]}, opt]
 
 DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
     w = Replace[d["OptionValue"["Width"], opts], Automatic -> 1],
