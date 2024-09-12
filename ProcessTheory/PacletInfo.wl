@@ -27,11 +27,7 @@ PacletObject[
         "Root" -> "Kernel",
         "Context" -> {
 			"ProcessTheoryLoader`",
-			"ProcessTheory`",
-			"Utilities`",
-			"Port`",
-			"Diagram`",
-			"Circuit`"
+			"ProcessTheory`"
 		}
       }
     }

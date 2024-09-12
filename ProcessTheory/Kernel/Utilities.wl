@@ -1,8 +1,11 @@
-BeginPackage["ProcessTheory`Utilities`"];
+BeginPackage["ProcessTheory`Utilities`", {"ProcessTheory`Port`"}];
 
 
 fillAutomatic
 reverseTree
+
+idDiagram
+piDiagram
 
 
 Begin["ProcessTheory`Utilities`Private`"];
@@ -25,6 +28,15 @@ reverseTree[tree_] := Replace[Unevaluated[tree], {
     SuperStar[x_] :> SuperStar[reverseTree[x]],
     (head : CircleTimes | CirclePlus)[xs___] :> head @@ Reverse[reverseTree /@ {xs}]
 }]
+
+
+makePorts[xs_List] := Function[Null, Port[Unevaluated[##]], HoldAll] @@@ Flatten @* HoldForm /@ Replace[xs, SuperStar[HoldForm[x_]] :> HoldForm[SuperStar[x]], 1]
+
+idDiagram[xs_List] := With[{ports = makePorts[xs]},
+    Diagram["1", ports, ports, "Shape" -> "CrossWires", "ShowLabel" -> False]
+]
+    
+piDiagram[outputs_List, inputs_List] := Diagram["\[Pi]", makePorts[outputs], makePorts[inputs], "Shape" -> "CrossWires", "ShowLabel" -> False]
 
 
 End[];
