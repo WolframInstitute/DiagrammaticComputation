@@ -289,6 +289,10 @@ DiagramColumn[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
 	Which[
 		aPorts === bPorts,
 		DiagramComposition[a, b, opts],
+		aPorts === Reverse[bPorts] && a["WireQ"],
+        DiagramComposition[DiagramReverse[a], b, opts],
+        aPorts === Reverse[bPorts] && b["WireQ"],
+        DiagramComposition[a, DiagramReverse[b], opts],
 		Sort[aPorts] === Sort[bPorts],
         DiagramComposition[a, piDiagram[aPorts, bPorts], b, opts],
 		True,
@@ -687,6 +691,8 @@ DiagramProp[d_, "Arrange", opts : OptionsPattern[]] := DiagramArrange[d, opts]
 DiagramProp[d_, "Grid", opts : OptionsPattern[]] := DiagramGrid[d["Arrange"], FilterRules[{opts, d["DiagramOptions"]}, Options[DiagramGrid]]]
 
 DiagramProp[d_, "OptionValue"[opt_], opts : OptionsPattern[]] := OptionValue[{opts, d["DiagramOptions"], Options[DiagramGraphics], Options[DiagramGrid]}, opt]
+
+DiagramProp[d_, "WireQ"] := MatchQ[d["OptionValue"["Shape"]], "Wire" | "WiresQ"]
 
 DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
     w = Replace[d["OptionValue"["Width"], opts], Automatic -> 1],
