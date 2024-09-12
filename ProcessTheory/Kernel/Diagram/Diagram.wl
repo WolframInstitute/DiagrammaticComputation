@@ -713,7 +713,15 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
         AnnotationRules -> Join[
             Thread[diagramVertices -> List /@ Thread["Diagram" -> MapIndexed[
                 Diagram[#1,
-                    "OutputPorts" -> (MapThread[Replace[#1, HoldForm[x_] :> Port[Unevaluated[Interpretation[x, #2]]]] &, {Through[#1["OutputPorts"]["Name"]], Thread[{#2[[1]], 1, Range[#1["OutputArity"]]}]}]),
+                    "OutputPorts" -> (MapThread[
+                        FirstCase[edges,
+                            DirectedEdge[#2[[1]], tgtIdx_, {_, _, {2, _, portIdx_}}] :> With[{tgt = diagrams[[tgtIdx]]["InputPorts"][[portIdx]]["Name"]},
+                                Replace[tgt, HoldForm[x_] :> Port[Unevaluated[Interpretation[x, {tgtIdx, 2, portIdx}]]]]
+                            ],
+                            Replace[#1, HoldForm[x_] :> Port[Unevaluated[Interpretation[x, #2]]]]
+                        ] &,
+                        {Through[#1["OutputPorts"]["Name"]], Thread[{#2[[1]], 1, Range[#1["OutputArity"]]}]}
+                    ]),
                     "InputPorts" -> (MapThread[Replace[#1, HoldForm[x_] :> Port[Unevaluated[Interpretation[x, #2]]]["Dual"]] &, {Through[#1["InputPorts"]["Name"]], Thread[{#2[[1]], 2, Range[#1["InputArity"]]}]}])
                 ] &,
                 diagrams
