@@ -146,9 +146,7 @@ DiagramFlip[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
     "Expression" :> DiagramFlip[d],
     "OutputPorts" -> d["InputPorts"],
     "InputPorts" -> d["OutputPorts"],
-    "Shape" -> GeometricTransformation[Diagram[d, "Angle" -> 0, "Reflect" -> False]["Shape"], ReflectionTransform[{0, 1}]],
-    "Angle" -> d["OptionValue"["Angle"]],
-    "Reflect" -> d["OptionValue"["Reflect"]]
+    "DiagramOptions" -> d["DiagramOptions"]
 ]
 
 DiagramReverse[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
@@ -156,9 +154,7 @@ DiagramReverse[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
     "Expression" :> DiagramReverse[d],
     "OutputPorts" -> Reverse[Through[d["OutputPorts"]["Reverse"]]],
     "InputPorts" -> Reverse[Through[d["InputPorts"]["Reverse"]]],
-    "Shape" -> GeometricTransformation[Diagram[d, "Angle" -> 0, "Reflect" -> False]["Shape"], ReflectionTransform[{1, 0}]],
-    "Angle" -> d["OptionValue"["Angle"]],
-    "Reflect" -> d["OptionValue"["Reflect"]]
+    "DiagramOptions" -> d["DiagramOptions"]
 ]
 
 
@@ -221,7 +217,7 @@ DiagramComposition[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
 
 (* network of diagrams exposing free ports *)
 
-Options[DiagramNetwork] = Options[Diagram]
+Options[DiagramNetwork] = Join[{"PortFunction" -> Function[#["Name"]]}, Options[Diagram]]
 DiagramNetwork[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
     subDiagrams = If[#["NetworkQ"], Splice[#["SubDiagrams"]], #] & /@ {ds}
 },
@@ -229,7 +225,7 @@ DiagramNetwork[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
         opts,
         "Expression" :> DiagramNetwork[##] & @@ subDiagrams,
 
-        Block[{graph = DiagramsGraph[subDiagrams], diagrams = Through[subDiagrams["Flatten"]], freeWires, edges},
+        Block[{graph = DiagramsGraph[subDiagrams, FilterRules[{opts}, Options[DiagramsGraph]]], diagrams = Through[subDiagrams["Flatten"]], freeWires, edges},
             freeWires = Cases[Pick[VertexList[graph], VertexDegree[graph], 1], _HoldForm];
             edges = EdgeList[graph];
             {
@@ -593,6 +589,16 @@ DiagramProp[HoldPattern[Diagram[data_Association]], prop_] /; KeyExistsQ[data, p
 
 DiagramProp[d_, "HoldExpression"] := Extract[d["Data"], "Expression", HoldForm]
 
+collectUnaries[(head : DiagramDual | DiagramFlip | DiagramReverse)[d_Diagram]] := Prepend[collectUnaries[d["HoldExpression"]], head]
+collectUnaries[HoldForm[d_]] := collectUnaries[Unevaluated[d]]
+collectUnaries[_] := {}
+
+DiagramProp[d_, "DualQ"] := OddQ[Count[collectUnaries[d["HoldExpression"]], DiagramDual]]
+
+DiagramProp[d_, "FlipQ"] := OddQ[Count[collectUnaries[d["HoldExpression"]], DiagramFlip]]
+
+DiagramProp[d_, "ReverseQ"] := OddQ[Count[collectUnaries[d["HoldExpression"]], DiagramReverse]]
+
 DiagramProp[d_, "ProductQ"] := MatchQ[d["HoldExpression"], HoldForm[_DiagramProduct]]
 
 DiagramProp[d_, "SumQ"] := MatchQ[d["HoldExpression"], HoldForm[_DiagramSum]]
@@ -687,10 +693,9 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
     h = Replace[d["OptionValue"["Height"], opts], Automatic -> 1],
     c = d["OptionValue"["Center"], opts],
     a = d["OptionValue"["Angle"], opts],
-    r = d["OptionValue"["Reflect"], opts],
     transform, primitives
 },
-    transform = GeometricTransformation[#, RotationTransform[a, c] @* If[TrueQ[r], ReflectionTransform[{1, 0}, c], Identity]] &;
+    transform = GeometricTransformation[#, RotationTransform[a, c] @* If[d["FlipQ"], ReflectionTransform[{0, 1}, c], Identity] @* If[d["ReverseQ"], ReflectionTransform[{1, 0}, c], Identity]] &;
     primitives = Replace[
         d["OptionValue"["Shape"], opts],
         {
@@ -727,7 +732,8 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
                 ps = Catenate[d["PortArrows", opts]]
             },
                 BSplineCurve[{ps[[1, 1]], 2 * ps[[1, 1]] - ps[[1, 2]], c, 2 * #[[1]] - #[[2]], #[[1]]}] & /@ Rest[ps]
-            ]
+            ],
+            shape_ :> transform @ GeometricTransformation[shape, TranslationTransform[c]]
         }
     ];
     If[ MatchQ[d["OptionValue"["Outline"], opts], Automatic | True],
@@ -741,10 +747,9 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := With[{
     h = Replace[d["OptionValue"["Height"], opts], Automatic -> 1],
     c = d["OptionValue"["Center"], opts],
     a = d["OptionValue"["Angle"], opts],
-    r = d["OptionValue"["Reflect"], opts],
     shape = d["OptionValue"["Shape"], opts]
 }, {
-    transform = RotationTransform[a, c] @* If[TrueQ[r], ReflectionTransform[{1, 0}, c], Identity]
+    transform = RotationTransform[a, c]
 },
     Switch[shape,
         "Circle",
@@ -785,7 +790,6 @@ Options[DiagramGraphics] = Join[{
     "Width" -> Automatic,
     "Height" -> Automatic,
     "Angle" -> 0,
-    "Reflect" -> False,
     "ShowLabel" -> Automatic,
     "PortArrows" -> Automatic,
     "PortLabels" -> Automatic,
