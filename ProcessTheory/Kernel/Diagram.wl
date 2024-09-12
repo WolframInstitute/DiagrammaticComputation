@@ -38,7 +38,7 @@ $DiagramProperties = Join[
     {
         "Properties", "HoldExpression", "ProductQ", "SumQ", "CompositionQ", "NetworkQ", "SubDiagrams",
         "Ports", "Arity", "FlattenOutputs", "FlattenInputs", "Flatten", "View", "Name", "ArraySymbol", "Shape",
-        "Diagram", "Graph", "Grid"
+        "Diagram", "PortGraph", "Graph", "NetGraph", "Grid"
     }
 ];
 
@@ -98,7 +98,7 @@ Diagram[expr : Except[_Association | _Diagram | OptionsPattern[]],
             "InputPorts" -> Comap[Map[Function[p, Port[Unevaluated[p]], HoldFirst], Unevaluated[inputs]], "Dual"],
             opts
         },
-            Join[Options[Diagram], $DiagramHiddenOptions, Options[DiagramGraphics], Options[DiagramGrid]]
+            Join[Options[Diagram], $DiagramHiddenOptions, Options[DiagramGraphics], Options[DiagramsNetGraph], Options[DiagramGrid]]
         ]
     ]
 
@@ -110,7 +110,7 @@ Diagram[expr_, output : Except[_List], input : Except[_List], opts___] := Diagra
 
 Diagram[opts : OptionsPattern[]] := Diagram[KeySort[<|
     DeleteDuplicatesBy[First] @ FilterRules[
-        {"DiagramOptions" -> FilterRules[{opts, Values[FilterRules[{opts}, "DiagramOptions"]]}, Join[Options[DiagramGraphics], Options[DiagramGrid]]], opts, Options[Diagram], $DiagramHiddenOptions},
+        {"DiagramOptions" -> FilterRules[{opts, Values[FilterRules[{opts}, "DiagramOptions"]]}, Join[Options[DiagramGraphics], Options[DiagramsNetGraph], Options[DiagramGrid]]], opts, Options[Diagram], $DiagramHiddenOptions},
         Join[Options[Diagram], $DiagramHiddenOptions]
     ]|>
 ]]
@@ -670,13 +670,15 @@ DiagramProp[d_, "Normal"] := If[d["NetworkQ"],
     d
 ]
 
-DiagramProp[d_, "PortGraph", opts : OptionsPattern[]] := DiagramsPortGraph[d["SubDiagrams"], opts]
+DiagramProp[d_, "PortGraph", opts : OptionsPattern[]] := DiagramDecompose[d] /. net_List :> DiagramsPortGraph[net, opts]
 
-DiagramProp[d_, "Graph", opts : OptionsPattern[]] := DiagramsNetGraph[d["SubDiagrams"], opts]
+DiagramProp[d_, "Graph", opts : OptionsPattern[]] := DiagramDecompose[d] /. net_List :> DiagramsGraph[net, opts]
+
+DiagramProp[d_, "NetGraph", opts : OptionsPattern[]] := DiagramDecompose[d] /. net_List :> DiagramsNetGraph[net, FilterRules[{opts, d["DiagramOptions"]}, Options[DiagramsNetGraph]]]
 
 DiagramProp[d_, "Arrange", opts : OptionsPattern[]] := DiagramArrange[d, opts]
 
-DiagramProp[d_, "Grid", opts : OptionsPattern[]] := DiagramGrid[d["Arrange"], opts]
+DiagramProp[d_, "Grid", opts : OptionsPattern[]] := DiagramGrid[d["Arrange"], FilterRules[{opts, d["DiagramOptions"]}, Options[DiagramGrid]]]
 
 DiagramProp[d_, "OptionValue"[opt_], opts : OptionsPattern[]] := OptionValue[{opts, d["DiagramOptions"], Options[DiagramGraphics], Options[DiagramGrid]}, opt]
 
@@ -836,7 +838,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
 ]]
 
 Diagram /: MakeBoxes[diagram : Diagram[_Association] ? DiagramQ, form_] := With[{boxes = ToBoxes[Show[
-    If[diagram["NetworkQ"], diagram["Graph"], diagram["Graphics"]], BaseStyle -> {GraphicsHighlightColor -> Magenta}], form]},
+    If[diagram["NetworkQ"], diagram["NetGraph"], diagram["Graphics"]], BaseStyle -> {GraphicsHighlightColor -> Magenta}], form]},
     InterpretationBox[boxes, diagram]
 ]
 
@@ -864,9 +866,10 @@ DiagramsPortGraph[diagrams : {___Diagram ? DiagramQ}, opts : OptionsPattern[]] :
     (With[{vs = Through[#["HoldExpression"]]}, Graph[vs, UndirectedEdge @@@ Subsets[vs, {2}]]] & /@ Through[diagrams["Ports"]])
 
 
-Options[DiagramsGraph] = Options[Graph];
+Options[DiagramsGraph] = Join[{"PortFunction" -> Function[#["Name"]]}, Options[Graph]];
 DiagramsGraph[diagrams : {___Diagram ? DiagramQ}, opts : OptionsPattern[]] := Block[{
-    ports = Thread[{Through[#["OutputPorts"]], Through[#["InputPorts"]]}] & @ Through[diagrams["Flatten"]],
+    ports = Thread[{Through[#["OutputPorts"]], Through[#["InputPorts"]["Dual"]] & /@ #}] & @ Through[diagrams["Flatten"]],
+    portFunction = OptionValue["PortFunction"],
     graph, embedding
 },
     graph = Graph[
@@ -876,7 +879,7 @@ DiagramsGraph[diagrams : {___Diagram ? DiagramQ}, opts : OptionsPattern[]] := Bl
         ],
         Flatten[
             MapIndexed[
-                With[{diagram = #2[[1]], port = #2, wire = #1["Name"]},
+                With[{diagram = #2[[1]], port = #2, wire = portFunction[#1]},
                     Switch[port[[2]], 1, {DirectedEdge[diagram, port], DirectedEdge[port, wire]}, 2, {DirectedEdge[port, diagram], DirectedEdge[wire, port]}]
                 ] &,
                 ports,
@@ -957,6 +960,7 @@ Options[DiagramsNetGraph] = Join[{
     "Scale" -> Automatic,
     "ArrowSize" -> 0.01,
     "SpiderRadius" -> 0.2,
+    "Orientation" -> Automatic,
     "UnarySpiders" -> True,
     "BinarySpiders" -> True,
     "RemoveCycles" -> False
@@ -967,7 +971,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
 	diagramVertices = VertexList[graph, _Integer], vertices, edges, netGraph,
     spiderVertices, spiderDiagrams,
 	diagrams, outDegrees, inDegrees,
-	embedding, orientations,
+	embedding, orientations, orientation = OptionValue["Orientation"],
 	scale = Replace[OptionValue["Scale"], Automatic -> .75],
     arrowSize = OptionValue["ArrowSize"],
     rad = OptionValue["SpiderRadius"],
@@ -980,16 +984,24 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
 	If[Length[diagrams] == 0, Return[Graphics[FilterRules[Join[{opts}, Options[graph]], Options[Graphics]]]]];
 	embedding = AssociationThread[VertexList[graph], GraphEmbedding[graph]];
 	If[EdgeCount[graph] == 0 && VertexCount[graph] > 1, embedding = ScalingTransform[{1, .5} / Max[#2 - #1 & @@@ CoordinateBounds[embedding]], Mean[embedding]][embedding]];
-	orientations = Map[
-        Normalize[Lookup[#, 1] - Lookup[#, 2]] &,
-		Values @ <|
-            # -> <|1 -> {0, 1 / 2}, 2 -> {0, - 1 / 2}|> & /@ Range[Length[diagrams]],
-            KeyValueMap[
-                With[{center = Lookup[embedding, #1]}, #1 -> <|<|1 -> center, 2 -> center|>, #2|>] &,
-                GroupBy[VertexList[graph, {__Integer}], First, Mean /@ GroupBy[#, #[[2]] &, Lookup[embedding, #] &] &]
-            ]
-        |>
-	];
+	orientations = Switch[
+        orientation,
+        Automatic,
+        Map[
+            Normalize[Lookup[#, 1] - Lookup[#, 2]] &,
+            Values @ <|
+                # -> <|1 -> {0, 1 / 2}, 2 -> {0, - 1 / 2}|> & /@ diagramVertices,
+                KeyValueMap[
+                    With[{center = Lookup[embedding, #1]}, #1 -> <|<|1 -> center, 2 -> center|>, #2|>] &,
+                    GroupBy[VertexList[graph, {__Integer}], First, Mean /@ GroupBy[#, #[[2]] &, Lookup[embedding, #] &] &]
+                ]
+            |>
+        ],
+        {_ ? NumericQ, _ ? NumericQ},
+        ConstantArray[orientation, Length[diagramVertices]],
+        _,
+        ConstantArray[{0, 1}, Length[diagramVertices]]
+    ];
 	{outDegrees, inDegrees} = AssociationThread[VertexList[graph] -> #] & /@ Through[{VertexOutDegree, VertexInDegree}[graph]];
 	{spiderVertices, spiderDiagrams} = Replace[{{} -> {{}, {}}, sow_List :> Thread[sow]}] @ First[Reap[
 		edges = Map[v |->
@@ -1003,7 +1015,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
                         Diagram[v,
                             Replace[v, HoldForm[x_] :> Port[Unevaluated @ Interpretation[x, #]]] & /@ out,
                             Replace[v, HoldForm[x_] :> Port[Unevaluated @ Interpretation[x, #]]] & /@ in,
-                            If[Length[ports] == 2, {"Shape" -> "Wire", "ShowLabel" -> False}, "Shape" -> "Circle"]
+                            If[Length[ports] == 2, {"Shape" -> "Wire", "ShowLabel" -> False}, {"Shape" -> "Circle", "ShowLabel" -> wireLabelsQ}]
                         ]
                     }];
                     Splice @ Catenate @ {
@@ -1129,7 +1141,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
 			},
 			1
 		],
-		VertexLabels -> (# -> Placed[ClickToCopy[#, #], Center] & /@ spiderVertices),
+		VertexLabels -> (# -> If[wireLabelsQ, Placed[ClickToCopy[#, #], Center], None] & /@ spiderVertices),
 		BaseStyle -> {FormatType -> StandardForm}
 	]
 ]
