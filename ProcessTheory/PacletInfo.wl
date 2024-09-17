@@ -20,8 +20,8 @@ PacletObject[
 			"System`DiagramSum",
 			"System`DiagramComposition",
 			"System`DiagramNetwork",
-			"System`DiagramColumn",
-			"System`DiagramRow",
+			"System`ColumnDiagram",
+			"System`RowDiagram",
 			"System`DiagramGrid"
 		},
         "Root" -> "Kernel",

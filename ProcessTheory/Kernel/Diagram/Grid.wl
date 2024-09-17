@@ -1,7 +1,7 @@
 BeginPackage["ProcessTheory`Diagram`Grid`", {"ProcessTheory`Diagram`", "ProcessTheory`Utilities`"}];
 
-DiagramColumn
-DiagramRow
+ColumnDiagram
+RowDiagram
 DiagramGrid
 
 DiagramArrange
@@ -12,8 +12,8 @@ Begin["ProcessTheory`Diagram`Grid`Private`"];
 
 (* compose vertically preserving grid structure *)
 
-Options[DiagramColumn] = Join[{"PortFunction" -> Function[#["Name"]]}, Options[Diagram]]
-DiagramColumn[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
+Options[ColumnDiagram] = Join[{"PortFunction" -> Function[#["Name"]]}, Options[Diagram]]
+ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
     a = x["FlattenInputs"], b = y["FlattenOutputs"],
     func = OptionValue["PortFunction"],
     aPorts, bPorts,
@@ -24,15 +24,15 @@ DiagramColumn[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
     If[ ContainsNone[aPorts, bPorts],
         If[ aPorts === {} && bPorts === {},
             Return[DiagramComposition[a, b, opts]],
-            Return[DiagramRow[{a, b}, opts]]
+            Return[RowDiagram[{a, b}, opts]]
         ]
     ];
     inputs = DeleteElements[aPorts, 1 -> bPorts];
     If[ inputs =!= {},
         With[{seqPos = SequencePosition[aPorts, bPorts, 1]},
             If[ seqPos === {},
-                b = DiagramRow[{idDiagram[inputs], b}, opts]["Flatten"],
-                b = DiagramRow[{If[#1 === {}, Nothing, idDiagram[#1]], b, If[#2 === {}, Nothing, idDiagram[#2]]} & @@ TakeDrop[inputs, seqPos[[1, 1]] - 1], opts]["Flatten"]
+                b = RowDiagram[{idDiagram[inputs], b}, opts]["Flatten"],
+                b = RowDiagram[{If[#1 === {}, Nothing, idDiagram[#1]], b, If[#2 === {}, Nothing, idDiagram[#2]]} & @@ TakeDrop[inputs, seqPos[[1, 1]] - 1], opts]["Flatten"]
             ]
         ];
         bPorts = func /@ b["OutputPorts"];
@@ -41,8 +41,8 @@ DiagramColumn[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
     If[ outputs =!= {},
         With[{seqPos = SequencePosition[bPorts, aPorts, 1]},
             If[ seqPos === {},
-                a = DiagramRow[{idDiagram[outputs], a}, opts]["Flatten"],
-                a = DiagramRow[{If[#1 === {}, Nothing, idDiagram[#1]], a, If[#2 === {}, Nothing, idDiagram[#2]]} & @@ TakeDrop[outputs, seqPos[[1, 1]] - 1], opts]["Flatten"]
+                a = RowDiagram[{idDiagram[outputs], a}, opts]["Flatten"],
+                a = RowDiagram[{If[#1 === {}, Nothing, idDiagram[#1]], a, If[#2 === {}, Nothing, idDiagram[#2]]} & @@ TakeDrop[outputs, seqPos[[1, 1]] - 1], opts]["Flatten"]
             ]
         ]
         
@@ -63,13 +63,13 @@ DiagramColumn[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
 	]
 ]
 
-DiagramColumn[xs : {___Diagram}, opts : OptionsPattern[]] := Fold[DiagramColumn[{##}, opts] &, xs]
+ColumnDiagram[xs : {___Diagram}, opts : OptionsPattern[]] := Fold[ColumnDiagram[{##}, opts] &, xs]
 
 
 (* compose horizontally preserving height *)
 
-Options[DiagramRow] = Join[{"PortFunction" -> Function[#["Name"]]}, Options[Diagram]]
-DiagramRow[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{a = x["FlattenInputs"], b = y["FlattenOutputs"], func = OptionValue["PortFunction"], aPorts, bPorts, ha, hb},
+Options[RowDiagram] = Join[{"PortFunction" -> Function[#["Name"]]}, Options[Diagram]]
+RowDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{a = x["FlattenInputs"], b = y["FlattenOutputs"], func = OptionValue["PortFunction"], aPorts, bPorts, ha, hb},
 	aPorts = func /@ Through[a["InputPorts"]["Dual"]];
 	bPorts = func /@ b["OutputPorts"];
     ha = decompositionHeight[a];
@@ -84,7 +84,7 @@ DiagramRow[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{a = x["Fl
     ]
 ]
 
-DiagramRow[xs : {___Diagram}, opts : OptionsPattern[]] := Fold[DiagramRow[{##}, opts] &, xs]
+RowDiagram[xs : {___Diagram}, opts : OptionsPattern[]] := Fold[RowDiagram[{##}, opts] &, xs]
 
 
 DiagramArrange[diagram_Diagram, opts : OptionsPattern[]] := With[{grid = DiagramDecompose[diagram]},
@@ -92,17 +92,17 @@ DiagramArrange[diagram_Diagram, opts : OptionsPattern[]] := With[{grid = Diagram
         ReplaceAt[
             #1,
             {
-                ct_CircleTimes :> DiagramRow[List @@ Flatten[ct], opts],
-                cd_CircleDot :> DiagramColumn[List @@ Flatten[cd], opts],
+                ct_CircleTimes :> RowDiagram[List @@ Flatten[ct], opts],
+                cd_CircleDot :> ColumnDiagram[List @@ Flatten[cd], opts],
                 cp_CirclePlus :> DiagramSum[List @@ Flatten[cp], opts],
-                net_List :> With[{g = DiagramsNetGraph[net, "BinarySpiders" -> True, "UnarySpiders" -> False, "RemoveCycles" -> True]},
-                    DiagramColumn[AnnotationValue[{g, Reverse[TopologicalSort[g]]}, "Diagram"], "PortFunction" -> Function[#["HoldExpression"]]]
+                net_List :> With[{g = DiagramsNetGraph[net, "BinarySpiders" -> All, "UnarySpiders" -> False, "RemoveCycles" -> True, FilterRules[{opts, diagram["DiagramOptions"]}, Options[DiagramsNetGraph]]]},
+                    ColumnDiagram[AnnotationValue[{g, Reverse[TopologicalSort[g]]}, "Diagram"], "PortFunction" -> Function[#["HoldExpression"]]]
                 ]
             },
             #2
         ] &,
         grid,
-        Join[ReverseSort[Position[grid, _CircleTimes | _CircleDot | _CirclePlus]], Position[grid, _List]] 
+        ReverseSort[Position[grid, _CircleTimes | _CircleDot | _CirclePlus | _List]]
     ]
 ]
 
@@ -170,8 +170,8 @@ DiagramDecompose[diagram_Diagram ? DiagramQ] := With[{ports = {#["OutputPorts"],
     }]
 ]
 
-gridTranspose[CircleTimes[ds___CircleDot]] := CircleDot @@ ResourceFunction["GeneralizedMapThread"][DiagramDecompose[DiagramRow[Diagram /@ {##}]] &, List @@@ {ds}]
-gridTranspose[CircleDot[ds___CircleTimes]] := CircleTimes @@ ResourceFunction["GeneralizedMapThread"][DiagramDecompose[DiagramColumn[Diagram /@ {##}]] & , List @@@ {ds}]
+gridTranspose[CircleTimes[ds___CircleDot]] := CircleDot @@ ResourceFunction["GeneralizedMapThread"][DiagramDecompose[RowDiagram[Diagram /@ {##}]] &, List @@@ {ds}]
+gridTranspose[CircleDot[ds___CircleTimes]] := CircleTimes @@ ResourceFunction["GeneralizedMapThread"][DiagramDecompose[ColumnDiagram[Diagram /@ {##}]] & , List @@@ {ds}]
 gridTranspose[ct_CircleTimes] := CircleDot[ct]
 gridTranspose[cd_CircleDot] := CircleTimes[cd]
 gridTranspose[d_] := d
