@@ -75,11 +75,15 @@ LambdaDiagrams[f_[x_], depth_] := Block[{fDiagram, xDiagram = DiagramNetwork @@ 
 LambdaDiagrams[x_, _] := {Diagram[x, Unique["x"], "Shape" -> "UpsideDownTriangle"]}
 
 
-LambdaDiagram::missing = "Lambda package is not loaded. Please install the package with PacletInstall[\"Wolfram/Lambda\"]";
+ToDiagram::missing = "Lambda package is not loaded. Please install the package with \!\(\*TemplateBox[List[StyleBox[TagBox[RowBox[List[\"PacletInstall\", \
+\"[\", \
+\"\\\"Wolfram/Lambda\\\"\", \"]\"]], HoldForm], \"Hyperlink\", \
+Rule[StripOnInput, False]], RowBox[List[\"PacletInstall\", \"[\", \
+\"\\\"Wolfram/Lambda\\\"\", \"]\"]]], \"ClickToCopy2\"]\)";
 
 Options[NetGraphDiagramNetwork] = Options[DiagramNetwork];
 LambdaDiagram[expr_, depth_Integer : 0, opts : OptionsPattern[]] := Module[{lambdaIdx = 1},
-	Check[Needs["Wolfram`Lambda`"], Message[LambdaDiagram::missing]; Return[$Failed]];
+	Quiet[Check[Needs["Wolfram`Lambda`"], Message[ToDiagram::missing]; Return[$Failed]], {Get::noopen, Needs::nocont}];
 	DiagramNetwork[##, opts, "ShowPortLabels" -> False, "PortLabels" -> False, "ShowWireLabels" -> False] & @@ 
 		Map[
 			If[#["Name"] === HoldForm["\[Lambda]"], Diagram[#, "Expression" -> Style["\[Lambda]", 16, Bold, ColorData[109][lambdaIdx++]]], #] &,
