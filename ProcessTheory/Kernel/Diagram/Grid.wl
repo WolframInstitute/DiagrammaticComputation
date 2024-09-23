@@ -160,7 +160,7 @@ matchPorts[CircleTimes[ds___], {outputPorts_, inputPorts_}] := CircleTimes @@ Ma
     }
 ]
 
-DiagramDecompose[diagram_Diagram ? DiagramQ] := With[{ports = {#["OutputPorts"], #["InputPorts"]} & @ diagram["Flatten"]},
+DiagramDecompose[diagram_Diagram ? DiagramQ] :=
     Replace[diagram["HoldExpression"], {
         HoldForm[DiagramProduct[ds___]] :> DiagramDecompose /@ CircleTimes[ds],
         HoldForm[DiagramComposition[ds___]] :> DiagramDecompose /@ CircleDot[ds],
@@ -168,7 +168,6 @@ DiagramDecompose[diagram_Diagram ? DiagramQ] := With[{ports = {#["OutputPorts"],
         HoldForm[DiagramNetwork[ds___]] :> DiagramDecompose /@ {ds},
         _ :> diagram
     }]
-]
 
 gridTranspose[CircleTimes[ds___CircleDot]] := CircleDot @@ ResourceFunction["GeneralizedMapThread"][DiagramDecompose[RowDiagram[Diagram /@ {##}]] &, List @@@ {ds}]
 gridTranspose[CircleDot[ds___CircleTimes]] := CircleTimes @@ ResourceFunction["GeneralizedMapThread"][DiagramDecompose[ColumnDiagram[Diagram /@ {##}]] & , List @@@ {ds}]

@@ -1,16 +1,32 @@
-BeginPackage["ProcessTheory`Diagram`ToDiagram`"];
+BeginPackage["ProcessTheory`Diagram`ToDiagram`", {"ProcessTheory`Port`"}];
 
 ToDiagram
 
 Begin["ProcessTheory`Diagram`ToDiagram`Private`"];
 
 
-ToDiagram[ng_NetGraph, opts : OptionsPattern[NetGraphDiagramNetwork]] := NetGraphDiagramNetwork[ng, opts]
+ToDiagram[g_Graph, opts : OptionsPattern[GraphDiagram]] := GraphDiagram[g, opts]
+ToDiagram[hg : {___List} | _WolframInstitute`Hypergraph`Hypergraph, opts : OptionsPattern[HypergraphDiagram]] := HypergraphDiagram[hg, opts]
+ToDiagram[ng_NetGraph, opts : OptionsPattern[NetGraphDiagram]] := NetGraphDiagram[ng, opts]
+ToDiagram[sm_SystemModel, opts : OptionsPattern[SystemModelDiagram]] := SystemModelDiagram[sm, {}, opts]
 ToDiagram[expr_, opts : OptionsPattern[LambdaDiagram]] := LambdaDiagram[expr, opts]
 
 
-Options[NetGraphDiagramNetwork] = Options[DiagramNetwork];
-NetGraphDiagramNetwork[ng_NetGraph, opts : OptionsPattern[]] := Block[{
+Options[GraphDiagram] = Options[DiagramNetwork];
+GraphDiagram[g_Graph, opts : OptionsPattern[]] := 
+	DiagramNetwork[##, opts] & @@ (Diagram[#, EdgeList[g, _[#, __]], EdgeList[g, _[_, #, ___]]] & /@ VertexList[g])
+
+
+Options[HypergraphDiagram] = Options[DiagramNetwork];
+HypergraphDiagram[hg : {___List}, opts : OptionsPattern[]] :=
+	DiagramNetwork[##, opts] & @@ MapIndexed[Diagram[#2[[1]], #1, "Shape" -> "Circle"] &, hg]
+HypergraphDiagram[hg_WolframInstitute`Hypergraph`Hypergraph, opts : OptionsPattern[]] :=
+	DiagramNetwork[##, opts] & @@ MapIndexed[Diagram[If[#1[[2]] === None, #2[[1]], #1[[2]]], Replace[#1[[1]], (e_ -> _) :> e], "Shape" -> "Circle"] &, Lookup[AbsoluteOptions[hg], EdgeLabels]]
+
+
+
+Options[NetGraphDiagram] = Options[DiagramNetwork];
+NetGraphDiagram[ng_NetGraph, opts : OptionsPattern[]] := Block[{
 	layers = Information[ng, "LayersList"],
 	freeOutputPorts, freeInputPorts, outputPorts, inputPorts,
 	edges, rules,
@@ -49,6 +65,47 @@ NetGraphDiagramNetwork[ng_NetGraph, opts : OptionsPattern[]] := Block[{
 ]
 
 
+Options[SystemModelDiagram] = Options[DiagramNetwork];
+SystemModelDiagram[sm_SystemModel, path_, opts : OptionsPattern[]] := Block[{name = sm[[1]], components, connections, parameters, transforms},
+	{components, connections, parameters, transforms} = Quiet @ Check[sm /@ {"Components", "Connections", "ParameterNames", "Diagram"}, {{}, {}, {}, {}}, SystemModel::nomod];
+	connections = Rule @@@ Map[StringSplit[#, "."] &, connections, {2}];
+	parameters = HoldForm[Evaluate[Information[#, "Identifier"]]] & /@ parameters;
+	transforms = Cases[
+		transforms,
+		Annotation[Tooltip[{Rotate[Scale[Translate[_, tr_], scale__], rot__], ___}, c_], _] :>
+			c -> {{rot}, {scale}, tr},
+		All
+	];
+	If[ components === {},
+		Port[Interpretation[Last[path], path], name],
+		With[{assoc = Association @ Map[Apply[#1 -> SystemModelDiagram[#2, Append[path, #1]] &], components]},
+			If[ AllTrue[assoc, PortQ],
+				With[{ports = <|True -> {}, False -> {}, GroupBy[Values[assoc], MemberQ[parameters, #["Name"]] &]|>}, Diagram[Interpretation[Show[sm["Thumbnail"], ImageSize -> 16], sm["ModelName"]], ports[False], ports[True]]],
+				If[Length[assoc] == 1, #, DiagramNetwork[##,
+					opts,
+					"PortFunction" -> With[{c = Replace[connections, (lhs_ -> rhs_) :> Append[lhs, x___] -> Append[rhs, x], 1]},
+						Replace[#["Expression"], Interpretation[_, p_] | PortDual[Interpretation[_, p_]] :> HoldForm[Evaluate @ Replace[p, c]]] &
+					],
+					"LabelFunction" -> Function[Evaluate[ClickToCopy[Show[sm["Thumbnail"], ImageSize -> 32], #["View"]]]],
+					"ShowWireLabels" -> False,
+					"Orientation" -> None,
+					PlotLabel -> name
+				]] & @@ KeyValueMap[
+					Diagram[
+						If[DiagramQ[#2], #2, If[MemberQ[parameters, #2["Name"]], Diagram[#2, {}, #2, "Shape" -> "Triangle"], Diagram[#2, #2, "Shape" -> "UpsideDownTriangle"]]],
+						"Width" -> 20,
+						"Height" -> 20,
+						"Angle" -> Lookup[transforms, #1, 0, #[[1, 1]] &],
+						"Center" ->  Lookup[transforms, #1, {0, 0}, #[[3]] &]
+					] &,
+					assoc
+				]
+			]
+		]
+	]
+]
+
+
 LambdaDiagrams[Interpretation["\[Lambda]", tag_][body_][arg_], depth_] := Block[{bodyDiagram, argDiagram = DiagramNetwork @@ LambdaDiagrams[arg, depth], out},
 	out = argDiagram["OutputPorts"][[1]];
 	bodyDiagram = DiagramNetwork @@ LambdaDiagrams[body /. Interpretation[v_Integer, tag] :> Interpretation[v, Evaluate @ out], depth + 1];
@@ -81,7 +138,7 @@ ToDiagram::missing = "Lambda package is not loaded. Please install the package w
 Rule[StripOnInput, False]], RowBox[List[\"PacletInstall\", \"[\", \
 \"\\\"Wolfram/Lambda\\\"\", \"]\"]]], \"ClickToCopy2\"]\)";
 
-Options[NetGraphDiagramNetwork] = Options[DiagramNetwork];
+Options[LambdaDiagram] = Options[DiagramNetwork];
 LambdaDiagram[expr_, depth_Integer : 0, opts : OptionsPattern[]] := Module[{lambdaIdx = 1},
 	Quiet[Check[Needs["Wolfram`Lambda`"], Message[ToDiagram::missing]; Return[$Failed]], {Get::noopen, Needs::nocont}];
 	DiagramNetwork[##, opts, "ShowPortLabels" -> False, "PortLabels" -> False, "ShowWireLabels" -> False] & @@ 

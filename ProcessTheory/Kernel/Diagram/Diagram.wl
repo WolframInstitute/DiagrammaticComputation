@@ -221,7 +221,7 @@ DiagramNetwork[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
 },
     Diagram[
         opts,
-        "Expression" :> DiagramNetwork[##] & @@ subDiagrams,
+        "Expression" :> DiagramNetwork[ds],
 
         Block[{graph = DiagramsGraph[subDiagrams, FilterRules[{opts}, Options[DiagramsGraph]]], diagrams = Through[subDiagrams["Flatten"]], freeWires, edges},
             freeWires = Cases[Pick[VertexList[graph], VertexDegree[graph], 1], _HoldForm];
@@ -272,6 +272,11 @@ DiagramProp[d_, "CompositionQ"] := MatchQ[d["HoldExpression"], HoldForm[_Diagram
 
 DiagramProp[d_, "NetworkQ"] := MatchQ[d["HoldExpression"], HoldForm[_DiagramNetwork]]
 
+DiagramProp[d_, "Head"] := Replace[d["HoldExpression"], {
+    HoldForm[(head : DiagramDual | DiagramFlip | DiagramReverse | DiagramProduct | DiagramSum | DiagramComposition | DiagramNetwork)[___]] :> head,
+    _ -> Null
+}]
+
 DiagramProp[d_, "SubDiagrams"] := Replace[d["HoldExpression"], {
     HoldForm[(DiagramDual | DiagramFlip | DiagramReverse | DiagramProduct | DiagramSum | DiagramComposition | DiagramNetwork)[ds___]] :> {ds},
     _ -> {}
@@ -292,6 +297,11 @@ DiagramProp[d_, "FlattenOutputs"] := Diagram[d, "OutputPorts" -> Catenate[Throug
 DiagramProp[d_, "FlattenInputs"] := Diagram[d, "InputPorts" -> Catenate[Through[d["InputPorts"]["ProductList"]]]]
 
 DiagramProp[d_, "Flatten"] := d["FlattenOutputs"]["FlattenInputs"]
+
+DiagramProp[d_, "FlattenNetworks"] := If[d["NetworkQ"],
+    Diagram[d, "Expression" :> DiagramNetwork[##] & @@ (If[#["NetworkQ"], Splice[#["SubDiagrams"]], #] & /@ Through[d["SubDiagrams"]["FlattenNetworks"]])],
+    With[{ds = d["SubDiagrams"]}, If[ds === {}, d, Diagram[d, "Expression" -> d["Head"] @@ Through[ds["FlattenNetworks"]]]]]
+]
 
 DiagramProp[d_, "View"] := With[{
     holdExpr = Replace[d["HoldExpression"],
@@ -332,7 +342,7 @@ DiagramProp[diagram_, "ArraySymbol"] := DiagramDecompose[diagram] /. {
     OverTilde -> ConjugateTranspose
 }
 
-DiagramProp[d_, "Diagram" | "Graphics", opts : OptionsPattern[]] := DiagramGraphics[d, opts, BaseStyle -> {GraphicsHighlightColor -> Automatic}]
+DiagramProp[d_, "Diagram" | "Graphics", opts : OptionsPattern[]] := DiagramGraphics[d, FilterRules[{opts}, Options[DiagramGraphics]], BaseStyle -> {GraphicsHighlightColor -> Automatic}]
 
 DiagramProp[d_, "Normal"] := If[d["NetworkQ"],
     With[{g = DiagramsNetGraph[d["SubDiagrams"], "BinarySpiders" -> All, "UnarySpiders" -> False, "RemoveCycles" -> True, FilterRules[d["DiagramOptions"], Options[DiagramsNetGraph]]]},
@@ -341,11 +351,11 @@ DiagramProp[d_, "Normal"] := If[d["NetworkQ"],
     d
 ]
 
-DiagramProp[d_, "PortGraph", opts : OptionsPattern[]] := DiagramDecompose[d] /. net_List :> DiagramsPortGraph[net, opts]
+DiagramProp[d_, "PortGraph", opts : OptionsPattern[]] := DiagramsPortGraph[d["SubDiagrams"], opts]
 
-DiagramProp[d_, "Graph", opts : OptionsPattern[]] := DiagramDecompose[d] /. net_List :> DiagramsGraph[net, opts]
+DiagramProp[d_, "Graph", opts : OptionsPattern[]] := DiagramsGraph[d["SubDiagrams"], opts]
 
-DiagramProp[d_, "NetGraph", opts : OptionsPattern[]] := DiagramDecompose[d] /. net_List :> DiagramsNetGraph[Diagram /@ net, FilterRules[{opts, d["DiagramOptions"]}, Options[DiagramsNetGraph]]]
+DiagramProp[d_, "NetGraph", opts : OptionsPattern[]] := DiagramsNetGraph[d["SubDiagrams"], FilterRules[{opts, d["DiagramOptions"]}, Options[DiagramsNetGraph]]]
 
 DiagramProp[d_, "Arrange", opts : OptionsPattern[]] := DiagramArrange[d, opts]
 
@@ -458,6 +468,7 @@ Options[DiagramGraphics] = Join[{
     "Height" -> Automatic,
     "Angle" -> 0,
     "ShowLabel" -> Automatic,
+    "LabelFunction" -> Automatic,
     "PortArrows" -> Automatic,
     "PortLabels" -> Automatic,
     "Outline" -> None
@@ -468,18 +479,21 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
     arities = {diagram["OutputArity"], diagram["InputArity"]}
 }, {
     portArrows = fillAutomatic[diagram["OptionValue"["PortArrows"], opts], arities, True],
-    portLabels = fillAutomatic[diagram["OptionValue"["PortLabels"], opts], arities, Automatic]
+    portLabels = fillAutomatic[diagram["OptionValue"["PortLabels"], opts], arities, Automatic],
+    labelFunction = diagram["OptionValue"["LabelFunction"]]
 }, Graphics[{
     EdgeForm[Black], FaceForm[Transparent], 
     Confirm @ diagram["Shape", opts],
     Text[
-        ClickToCopy[
-            If[ MatchQ[diagram["OptionValue"["ShowLabel"], opts], None | False],
-                "",
-                Replace[diagram["HoldExpression"], expr_ :> (expr //. d_Diagram ? DiagramQ :> RuleCondition[d["HoldExpression"]])]
-            ],
-            diagram["View"]
-        ],
+        Replace[labelFunction,
+            Automatic :> Function[ClickToCopy[
+                If[ MatchQ[#["OptionValue"["ShowLabel"], opts], None | False],
+                    "",
+                    Replace[#["HoldExpression"], expr_ :> (expr //. d_Diagram ? DiagramQ :> RuleCondition[d["HoldExpression"]])]
+                ],
+                #["View"]
+            ]]
+        ] @ diagram,
         diagram["OptionValue"["Center"], opts]
     ],
     Arrowheads[Small],
@@ -487,13 +501,15 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
         MapThread[{x, p, arrow, label} |-> {
             If[ MatchQ[arrow, None | False],
                 Nothing,
-                {If[MatchQ[arrow, True | Automatic], Nothing, arrow], Arrow[If[x["DualQ"], Reverse, Identity] @ p]}
+                Replace[{arrow}, 
+                    {Placed[a_, xp : {{_, _}, {_, _}} : p]} | {a_, xp_ : p} :> {If[MatchQ[a, True | Automatic], Nothing, a], Arrow[If[x["DualQ"], Reverse, Identity] @ xp]}
+                ]
             ],
             If[ MatchQ[label, None | False],
                 Nothing,
-                Replace[label, Placed[l_, pos_] | l_ :> Text[
+                Replace[{{arrow}, label}, {{Placed[_, xp : {{_, _}, {_, _}}]} | {_, xp_ : p}, Placed[l_, pos_] | l_} :> Text[
                         ClickToCopy[l /. Automatic -> If[x["DualQ"], x["Dual"], x], x["View"]],
-                        With[{v = p[[-1]] - p[[1]], s = PadLeft[Flatten[Replace[{pos}, {} -> {0, 2}]], 2, 0]}, p[[1]] + s[[2]] * v + s[[1]] * RotationTransform[angle][v]]
+                        With[{v = xp[[-1]] - xp[[1]], s = PadLeft[Flatten[Replace[{pos}, {} -> {0, 2}]], 2, 0]}, xp[[1]] + s[[2]] * v + s[[1]] * RotationTransform[angle][v]]
                     ]
                 ]
             ]
@@ -635,9 +651,12 @@ Options[DiagramsNetGraph] = Join[{
     "UnarySpiders" -> True,
     "BinarySpiders" -> True,
     "RemoveCycles" -> False
-}, Options[DiagramGraphics], Options[Graph]];
+}, Options[DiagramsGraph], Options[DiagramGraphics], Options[Graph]];
 DiagramsNetGraph[diagrams : {___Diagram ? DiagramQ}, opts : OptionsPattern[]] :=
-    DiagramsNetGraph[DiagramsGraph[diagrams, FilterRules[{opts}, GraphLayout]], FilterRules[{opts}, Except[GraphLayout]]]
+    DiagramsNetGraph[
+        DiagramsGraph[diagrams, FilterRules[{opts}, {GraphLayout, FilterRules[Options[DiagramsGraph], Except[Options[Graph]]]}]],
+        FilterRules[{opts}, Except[GraphLayout]]
+    ]
 DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
 	diagramVertices = VertexList[graph, _Integer], vertices, edges, netGraph,
     spiderVertices, spiderDiagrams,
