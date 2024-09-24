@@ -9,6 +9,7 @@ ToDiagram[g_Graph, opts : OptionsPattern[GraphDiagram]] := GraphDiagram[g, opts]
 ToDiagram[hg : {___List} | _WolframInstitute`Hypergraph`Hypergraph, opts : OptionsPattern[HypergraphDiagram]] := HypergraphDiagram[hg, opts]
 ToDiagram[ng_NetGraph, opts : OptionsPattern[NetGraphDiagram]] := NetGraphDiagram[ng, opts]
 ToDiagram[sm_SystemModel, opts : OptionsPattern[SystemModelDiagram]] := SystemModelDiagram[sm, {}, opts]
+ToDiagram[qc_Wolfram`QuantumFramework`QuantumCircuitOperator, opts : OptionsPattern[QuantumCircuitDiagram]] := QuantumCircuitDiagram[qc, opts]
 ToDiagram[expr_, opts : OptionsPattern[LambdaDiagram]] := LambdaDiagram[expr, opts]
 
 
@@ -22,7 +23,6 @@ HypergraphDiagram[hg : {___List}, opts : OptionsPattern[]] :=
 	DiagramNetwork[##, opts] & @@ MapIndexed[Diagram[#2[[1]], #1, "Shape" -> "Circle"] &, hg]
 HypergraphDiagram[hg_WolframInstitute`Hypergraph`Hypergraph, opts : OptionsPattern[]] :=
 	DiagramNetwork[##, opts] & @@ MapIndexed[Diagram[If[#1[[2]] === None, #2[[1]], #1[[2]]], Replace[#1[[1]], (e_ -> _) :> e], "Shape" -> "Circle"] &, Lookup[AbsoluteOptions[hg], EdgeLabels]]
-
 
 
 Options[NetGraphDiagram] = Options[DiagramNetwork];
@@ -147,6 +147,11 @@ LambdaDiagram[expr_, depth_Integer : 0, opts : OptionsPattern[]] := Module[{lamb
 			LambdaDiagrams[Wolfram`Lambda`TagLambda[expr], depth]
 		]
 ]
+
+
+
+QuantumCircuitDiagram[qc_Wolfram`QuantumFramework`QuantumCircuitOperator, opts : OptionsPattern[]] :=
+	DiagramComposition @@ (Diagram[Interpretation[#["CircuitDiagram", "WireLabels" -> None, "ShowEmptyWires" -> False, "ShowGateLabels" -> False, "ShowMeasurementWire" -> False, ImageSize -> 16], #], #["OutputOrder"], #["InputOrder"]] & /@ Reverse[qc["Sort"]["NormalOperators"]])
 
 
 End[];
