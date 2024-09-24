@@ -424,34 +424,43 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := With[{
     h = Replace[d["OptionValue"["Height"], opts], Automatic -> 1],
     c = d["OptionValue"["Center"], opts],
     a = d["OptionValue"["Angle"], opts],
-    shape = d["OptionValue"["Shape"], opts]
+    shape = d["OptionValue"["Shape"], opts],
+    arities = {d["OutputArity"], d["InputArity"]}
 }, {
+    arrows = fillAutomatic[d["OptionValue"["PortArrows"], opts], arities, True],
     transform = RotationTransform[a, c]
 },
-    Switch[shape,
-        "Circle",
-        {
-            transform @ Map[
-                {1 / 2 {w Cos[#], h Sin[#]}, 3 / 4 {w Cos[#], h Sin[#]}} + Threaded[c] &,
-                Range[Pi, 0, - Pi / (d["OutputArity"] + 1)][[2 ;; -2]]
-            ],
-            transform @ Map[
-                {1 / 2 {w Cos[#], h Sin[#]}, 3 / 4 {w Cos[#], h Sin[#]}} + Threaded[c] &,
-                Range[Pi, 2 Pi, Pi / (d["InputArity"] + 1)][[2 ;; -2]]
-            ]
-        },
-        _,
-        {
-            transform @ Map[
-                {{(- 1 / 2 + #) w, h / 2}, {(- 1 / 2 + #) w, 3 / 4 h}} + Threaded[c] &,
-                Range[-.3, 1.3, 1.6 / (d["OutputArity"] + 1)][[2 ;; -2]]
-            ],
-            transform @ Map[
-                {{(- 1 / 2 + #) w, - h / 2}, {(- 1 / 2 + #) w, - 3 / 4 h}} + Threaded[c] &,
-                Range[-.3, 1.3, 1.6 / (d["InputArity"] + 1)][[2 ;; -2]]
-            ]
-        }
-    ]
+    {
+        transform @ MapThread[
+            Replace[#3, {
+                Placed[_, p : {{_, _}, {_, _}}] :> p,
+                _ :> Replace[shape, {
+                    "Circle" :> {1 / 2 {w Cos[#1], h Sin[#1]}, 3 / 4 {w Cos[#1], h Sin[#1]}} + Threaded[c],
+                    _ :> {{(- 1 / 2 + #2) w, h / 2}, {(- 1 / 2 + #2) w, 3 / 4 h}} + Threaded[c]
+                }]
+            }] &,
+            {
+                Range[Pi, 0, - Pi / (d["OutputArity"] + 1)][[2 ;; -2]],
+                Range[-.3, 1.3, 1.6 / (d["OutputArity"] + 1)][[2 ;; -2]],
+                arrows[[1]]
+            }
+        ]
+        ,
+        transform @ MapThread[
+            Replace[#3, {
+                Placed[_, p : {{_, _}, {_, _}}] :> p,
+                _ :> Replace[shape, {
+                    "Circle" :> {1 / 2 {w Cos[#1], h Sin[#1]}, 3 / 4 {w Cos[#1], h Sin[#1]}} + Threaded[c],
+                    _ :> {{(- 1 / 2 + #2) w, - h / 2}, {(- 1 / 2 + #2) w, - 3 / 4 h}} + Threaded[c]
+                }]
+            }] &,
+            {
+                Range[Pi, 0, - Pi / (d["InputArity"] + 1)][[2 ;; -2]],
+                Range[-.3, 1.3, 1.6 / (d["InputArity"] + 1)][[2 ;; -2]],
+                arrows[[2]]
+            }
+        ]
+    }
 ]
 
 
@@ -478,7 +487,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
     points = diagram["PortArrows", opts],
     arities = {diagram["OutputArity"], diagram["InputArity"]}
 }, {
-    portArrows = fillAutomatic[diagram["OptionValue"["PortArrows"], opts], arities, True],
+    portArrows = Replace[fillAutomatic[diagram["OptionValue"["PortArrows"], opts], arities, True], Placed[x_, _] :> x, {2}],
     portLabels = fillAutomatic[diagram["OptionValue"["PortLabels"], opts], arities, Automatic],
     labelFunction = diagram["OptionValue"["LabelFunction"]]
 }, Graphics[{
@@ -501,15 +510,13 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
         MapThread[{x, p, arrow, label} |-> {
             If[ MatchQ[arrow, None | False],
                 Nothing,
-                Replace[{arrow}, 
-                    {Placed[a_, xp : {{_, _}, {_, _}} : p]} | {a_, xp_ : p} :> {If[MatchQ[a, True | Automatic], Nothing, a], Arrow[If[x["DualQ"], Reverse, Identity] @ xp]}
-                ]
+                {If[MatchQ[arrow, True | Automatic], Nothing, arrow], Arrow[If[x["DualQ"], Reverse, Identity] @ p]}
             ],
             If[ MatchQ[label, None | False],
                 Nothing,
-                Replace[{{arrow}, label}, {{Placed[_, xp : {{_, _}, {_, _}}]} | {_, xp_ : p}, Placed[l_, pos_] | l_} :> Text[
+                Replace[label, Placed[l_, pos_] | l_ :> Text[
                         ClickToCopy[l /. Automatic -> If[x["DualQ"], x["Dual"], x], x["View"]],
-                        With[{v = xp[[-1]] - xp[[1]], s = PadLeft[Flatten[Replace[{pos}, {} -> {0, 2}]], 2, 0]}, xp[[1]] + s[[2]] * v + s[[1]] * RotationTransform[angle][v]]
+                        With[{v = p[[-1]] - p[[1]], s = PadLeft[Flatten[Replace[{pos}, {} -> {0, 2}]], 2, 0]}, p[[1]] + s[[2]] * v + s[[1]] * RotationTransform[angle][v]]
                     ]
                 ]
             ]
@@ -790,7 +797,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
 					normal2 = RotationTransform[{{0, 1}, orientation2}] @ normal2;
 					With[{
                         a = VectorSymbol["p", 2], b = VectorSymbol["q", 2],
-                        lindep = TrueQ[Quiet[Chop[Det[{normal1, normal2}]]] == 0]
+                        lindep = v == w && TrueQ[Quiet[Chop[Det[{normal1, normal2}]]] == 0]
                     },
 						Function[Evaluate @ {
 							Arrowheads[{
