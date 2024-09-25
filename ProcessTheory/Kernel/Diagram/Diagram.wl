@@ -873,7 +873,10 @@ ToDiagramNetwork[CircleDot[ds__], pos_, opts : OptionsPattern[]] := With[{portFu
 ]
 ToDiagramNetwork[{ds___}, pos_, opts : OptionsPattern[]] := Catenate[ToDiagramNetwork[#, pos, "Unique" -> False, opts] & /@ {ds}]
 
-ToDiagramNetwork[d_Diagram, opts : OptionsPattern[]] := DiagramNetwork[##, d["DiagramOptions"]] & @@ ToDiagramNetwork[d["Decompose"], {}, opts]
+ToDiagramNetwork[d_Diagram, opts : OptionsPattern[]] := If[d["NetworkQ"],
+    Diagram[d, opts],
+    DiagramNetwork[##, d["DiagramOptions"]] & @@ ToDiagramNetwork[d["Decompose"], {}, opts]
+]
 
 
 End[];
