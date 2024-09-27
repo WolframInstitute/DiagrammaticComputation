@@ -35,7 +35,9 @@ wirePoints[{from_, to_, box1_, box2_}] := Block[{
 
 renderWire[arg_] := {Arrowheads[{{Automatic, .5}}], Arrow[BSplineCurve @ wirePoints[arg]]}
 
-DiagramDraw[diagram_ : <||>] := DynamicModule[{
+
+Options[DiagramDraw] = Options[Graphics]
+DiagramDraw[diagram_ : <||>, opts : OptionsPattern[]] := DynamicModule[{
 	boxes = Lookup[diagram, "Boxes", <||>],
 	wires = Lookup[diagram, "Wires", {}],
 	actions = {}, do,undo,
@@ -87,6 +89,7 @@ DiagramDraw[diagram_ : <||>] := DynamicModule[{
 						If[wire =!= None, renderWire[wire]],
 						renderWire[{boxes[[Key[#[[1, 1]]], 2, #[[1, 2]]]], boxes[[Key[#[[2, 1]]], 2, #[[2, 2]]]], boxes[[Key[#[[1, 1]]], 1]], boxes[[Key[#[[2, 1]]], 1]]}] & /@ wires
 					}],
+						FilterRules[{opts}, Options[Graphics]],
 						ImageSize -> {512, 512},
 						PlotRange -> {{0, 1}, {0, 1}},
 						Frame -> True,

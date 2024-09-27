@@ -7,7 +7,7 @@ Begin["ProcessTheory`Diagram`ToDiagram`Private`"];
 
 ToDiagram[g_Graph, opts : OptionsPattern[GraphDiagram]] := GraphDiagram[g, opts]
 ToDiagram[hg : {___List} | _WolframInstitute`Hypergraph`Hypergraph, opts : OptionsPattern[HypergraphDiagram]] := HypergraphDiagram[hg, opts]
-ToDiagram[ng_NetGraph, opts : OptionsPattern[NetGraphDiagram]] := NetGraphDiagram[ng, opts]
+ToDiagram[ng_NetGraph, opts : OptionsPattern[NetGraphDiagram]] := NetGraphDiagram[NetFlatten[ng], opts]
 ToDiagram[sm_SystemModel, opts : OptionsPattern[SystemModelDiagram]] := SystemModelDiagram[sm, {}, opts]
 ToDiagram[qc_Wolfram`QuantumFramework`QuantumCircuitOperator, opts : OptionsPattern[QuantumCircuitDiagram]] := QuantumCircuitDiagram[qc, opts]
 ToDiagram[expr_, opts : OptionsPattern[LambdaDiagram]] := LambdaDiagram[expr, opts]
@@ -27,7 +27,7 @@ HypergraphDiagram[hg_WolframInstitute`Hypergraph`Hypergraph, opts : OptionsPatte
 
 Options[NetGraphDiagram] = Options[DiagramNetwork];
 NetGraphDiagram[ng_NetGraph, opts : OptionsPattern[]] := Block[{
-	layers = Information[ng, "LayersList"],
+	layers = Information[ng, "Layers"],
 	freeOutputPorts, freeInputPorts, outputPorts, inputPorts,
 	edges, rules,
 	diagrams
@@ -39,21 +39,20 @@ NetGraphDiagram[ng_NetGraph, opts : OptionsPattern[]] := Block[{
 	edges = NeuralNetworks`NetGraphEdges[ng] /. {
 		NetPort[port_] /; KeyExistsQ[freeInputPorts, port] :> Length[layers] + Length[freeOutputPorts] + Lookup[freeInputPorts, port],
 		NetPort[port_] /; KeyExistsQ[freeOutputPorts, port] :> Length[layers] + Lookup[freeOutputPorts, port],
-		NetPort[{layerIdx_Integer, port_String}] :> Block[{
-			layer = layers[[layerIdx]], outputQ
-		},
-			outputQ = KeyExistsQ[outputPorts[[layerIdx]], port];
-			{layerIdx, If[outputQ, 1, 2], Lookup[If[outputQ, outputPorts[[layerIdx]], inputPorts[[layerIdx]]], port, 1]}
+		NetPort[{x_, port_String}] :> Block[{key = Key[{x}], outputQ},
+			layer = Lookup[layers, key];
+			outputQ = KeyExistsQ[Lookup[outputPorts, key], port];
+			{x, If[outputQ, 1, 2], Lookup[If[outputQ, Lookup[outputPorts, key], Lookup[inputPorts, key]], port, 1]}
 		]
 	};
 	edges = Replace[edges, {
-		(idx1_Integer -> idx2_Integer) :> {idx1, 1, 1} -> {idx2, 2, 1},
-		(idx_Integer -> port_) :> {idx, 1, 1} -> port,
-		(port_ -> idx_Integer) :> port -> {idx, 2, 1}
+		(idx1 : _Integer | _String -> idx2 : _Integer | _String) :> {idx1, 1, 1} -> {idx2, 2, 1},
+		(idx : _Integer | _String  -> port_List) :> {idx, 1, 1} -> port,
+		(port_ -> idx : _Integer | _String) :> port -> {idx, 2, 1}
 	}, 1];
 	rules = Reverse /@ edges;
 	
-	diagrams = MapIndexed[With[{i = #2[[1]]},
+	diagrams = MapIndexed[With[{i = #2[[1, 1, 1]]},
 		Diagram[
 			Interpretation[Replace[#, _[assoc_,___] :> Graphics @ NeuralNetworks`Private`GetPanelIcon[assoc]], #],
 			MapIndexed[Interpretation @@ {{i, 1, #2[[1]]}, Construct @@ #1} &, Normal @ Information[#, "OutputPorts"]],

@@ -95,7 +95,7 @@ DiagramArrange[diagram_Diagram, opts : OptionsPattern[]] := With[{grid = Diagram
                 ct_CircleTimes :> RowDiagram[List @@ Flatten[ct], opts],
                 cd_CircleDot :> ColumnDiagram[List @@ Flatten[cd], opts],
                 cp_CirclePlus :> DiagramSum[List @@ Flatten[cp], opts],
-                net_List :> With[{g = DiagramsNetGraph[net, "BinarySpiders" -> All, "UnarySpiders" -> False, "RemoveCycles" -> True, FilterRules[{opts, diagram["DiagramOptions"]}, Options[DiagramsNetGraph]]]},
+                net_List :> With[{g = DiagramsNetGraph[net, FilterRules[{opts, diagram["DiagramOptions"]}, Options[DiagramsNetGraph]], "BinarySpiders" -> True, "UnarySpiders" -> False, "RemoveCycles" -> True]},
                     ColumnDiagram[AnnotationValue[{g, Reverse[TopologicalSort[g]]}, "Diagram"], "PortFunction" -> Function[#["HoldExpression"]]]
                 ]
             },
