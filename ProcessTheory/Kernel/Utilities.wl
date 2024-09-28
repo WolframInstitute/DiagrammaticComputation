@@ -7,6 +7,8 @@ reverseTree
 idDiagram
 piDiagram
 
+tag
+
 
 Begin["ProcessTheory`Utilities`Private`"];
 
@@ -37,6 +39,12 @@ idDiagram[xs_List] := With[{ports = makePorts[xs]},
 ]
     
 piDiagram[outputs_List, inputs_List] := Diagram["\[Pi]", makePorts[outputs], makePorts[inputs], "Shape" -> "CrossWires", "ShowLabel" -> False]
+
+
+tag[expr_, tag_] := Replace[expr, {
+    HoldForm[Interpretation[x_, y_]] | Interpretation[x_, y_] :> Interpretation[x, y -> tag],
+    HoldForm[x_] | x_ :> Interpretation[x, tag]
+}]
 
 
 End[];
