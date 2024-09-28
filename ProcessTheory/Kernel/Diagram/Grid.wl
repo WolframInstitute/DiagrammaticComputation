@@ -186,10 +186,9 @@ gridWidth[expr_, prop_ : Automatic] := Replace[expr, {
 decompositionHeight[d_Diagram, args___] := gridHeight[DiagramDecompose[d], args]
 
 gridHeight[expr_, prop_ : Automatic] := Replace[expr, {
-    d_Diagram :> Replace[prop, {Automatic -> 1, _ :> d[prop]}],
+    d_Diagram :> Replace[prop, {Automatic -> 1, _ :> Replace[d[prop], Except[_Integer] -> 1]}],
     (CircleTimes | CirclePlus)[ds___] :> Max[gridHeight[#, prop] & /@ {ds}],
-    CircleDot[ds___] :> Total[gridHeight[#, prop] & /@ {ds}],
-    CircleMinus[ds___] :> {ds}
+    CircleDot[ds___] :> Total[gridHeight[#, prop] & /@ {ds}]
 }]
 
 
@@ -199,28 +198,25 @@ gridArrange[diagram_Diagram, {width_, height_}, {dx_, dy_}, corner_ : {0, 0}, an
     w, h, ratio, center
 },
     w = 1 / 1.6 * (1 + dx) * (1 + arity);
-    h = Replace[height, Automatic -> 1] * (1 + dy) - dy;
-    ratio = If[arity == 0, 0, Floor[Replace[width, Automatic -> 1] / arity]];
+    h = Replace[height, Automatic -> 1];
+    ratio = If[arity == 0, 0, Floor[Replace[width, Automatic -> arity] / arity]];
     center = corner + RotationTransform[angle] @ {
         (1.6 w / 2) ratio +
-            (1 + dx) * Switch[
-                alignment,
-                Left,
-                1 - ratio,
-                Right,
-                width - ratio arity,
-                Center,
-                (1 - ratio + width - ratio arity) / 2
-                ,
-                _,
-                0
-            ],
-        h / 2
+            (1 + dx) * Replace[
+                alignment, {
+                Automatic | Left :> 1 - ratio,
+                Right :> width - ratio arity,
+                Center :> (1 - ratio + width - ratio arity) / 2,
+                x_ ? NumericQ :> x,
+                Scaled[x_ ? NumericQ] :> (1 - x) * (1 - ratio) + x * (width - ratio arity),
+                _ -> 0
+            }],
+        - h / 2
     };
-    Sow[RotationTransform[angle, corner][Rectangle @@ (Threaded[corner] + {{dx, - dy / 2}, {width * (1 + dx) + dx, height * (1 + dy) - dy / 2}})], "Item"];
+    Sow[RotationTransform[angle, corner][Rectangle @@ (Threaded[corner] + {{dx, 0}, {width * (1 + dx) + dx, - h}})], "Item"];
     Diagram[diagram,
         "Width" -> Replace[diagram["OptionValue"["Width"]], Automatic :> If[MatchQ[diagram["OptionValue"["Shape"]], "Circle"] || arity <= 1, 1, ratio * w]],
-        "Height" -> Replace[diagram["OptionValue"["Height"]], Automatic -> h],
+        "Height" -> Replace[diagram["OptionValue"["Height"]], Automatic -> h - dy],
         "Center" -> center
     ]
 ]
@@ -228,20 +224,20 @@ gridArrange[diagram_Diagram, {width_, height_}, {dx_, dy_}, corner_ : {0, 0}, an
 gridArrange[grid : CircleTimes[ds___], {width_, height_}, {dx_, dy_}, corner : {xMin_, yMin_}, angle_] := Block[{widths, relativeWidths, newHeight, positions},
     widths = gridWidth /@ {ds};
     relativeWidths = If[width =!= Automatic, width * widths / Total[widths], widths];
-    newHeight = Replace[height, Automatic :> Max[gridHeight /@ {ds}]];
+    newHeight = Replace[height, Automatic :> gridHeight[grid, "OptionValue"["Height"]] + dy * gridHeight[grid]];
     relativeWidths = FoldPairList[With[{x = Floor[#1 + #2]}, {x, #2 - x}] &, 0, relativeWidths];
     If[width =!= Automatic, relativeWidths[[-1]] = width - Total[Most[relativeWidths]]];
     positions = Prepend[Accumulate[relativeWidths * (1 + dx)], 0];
-    Sow[RotationTransform[angle, corner][Rectangle @@ (Threaded[corner] + {{dx, 3 / 2 dy}, {Total[relativeWidths] * (1 + dx) + dx, - newHeight * (1 + dy) + 3 / 2 dy}})], "Row"];
+    Sow[RotationTransform[angle, corner][Rectangle @@ (Threaded[corner] + {{dx, 0}, {Total[relativeWidths] * (1 + dx) + dx, - newHeight}})], "Row"];
     MapIndexed[With[{i = #2[[1]]}, gridArrange[#1, {relativeWidths[[i]], newHeight}, {dx, dy}, {xMin, yMin} + RotationTransform[angle] @ {positions[[i]], 0}, angle]] &, grid]
 ]
 
 gridArrange[grid : CircleDot[ds___], {width_, height_}, {dx_, dy_}, corner : {xMin_, yMin_}, angle_] := Block[{heights, newWidth, positions},
-    heights = gridHeight /@ {ds};
+    heights = gridHeight[#, "OptionValue"["Height"]] + gridHeight[#] * dy & /@ {ds};
     If[height =!= Automatic, heights = height * heights / Total[heights]];
-    newWidth = Replace[width, Automatic :> Max[gridWidth /@ {ds}]];
-    positions = Prepend[Accumulate[heights * (1 + dy)], 0];
-    Sow[RotationTransform[angle, corner][Rectangle @@ (Threaded[corner] + {{dx, 3 / 2 dy}, {newWidth * (1 + dx) + dx, - Total[heights] * (1 + dy) + 3 / 2 dy}})], "Column"];
+    newWidth = Replace[width, Automatic :> gridWidth[grid]];
+    positions = Prepend[Accumulate[heights], 0];
+    Sow[RotationTransform[angle, corner][Rectangle @@ (Threaded[corner] + {{dx, 0}, {newWidth * (1 + dx) + dx, - Total[heights]}})], "Column"];
     MapIndexed[With[{i = #2[[1]]}, gridArrange[#1, {newWidth, heights[[i]]}, {dx, dy}, {xMin, yMin} + RotationTransform[angle] @ {0, - positions[[i]]}, angle]] &, grid]
 ]
 
@@ -265,7 +261,7 @@ Options[DiagramGrid] = Join[{
     "Rotate" -> 0,
     "WireArrows" -> False,
     Dividers -> None,
-    Alignment -> Left
+    Alignment -> Automatic
 }, Options[DiagramArrange], Options[DiagramDecompose], Options[DiagramGraphics], Options[Graphics]
 ]
 DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
@@ -280,7 +276,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
 	width = gridWidth[grid];
 	height = gridHeight[grid];
 
-    grid = grid /. d_Diagram :> Diagram[d, "Angle" -> d["OptionValue"["Angle"]] + angle, Alignment -> OptionValue[Alignment]];
+    grid = grid /. d_Diagram :> Diagram[d, "Angle" -> d["OptionValue"["Angle"]] + angle, Alignment -> Replace[d["OptionValue"[Alignment]], Automatic -> OptionValue[Alignment]]];
 
     {items, rows, columns} = Lookup[Reap[grid = gridArrange[grid, {hGapSize, vGapSize}, angle], _, Rule][[2]], {"Item", "Row", "Column"}];
 
