@@ -35,7 +35,7 @@ $DiagramProperties = Join[
     Keys[Options[Diagram]],
     {
         "Properties", "HoldExpression", "ProductQ", "SumQ", "CompositionQ", "NetworkQ", "SubDiagrams",
-        "Ports", "Arity", "FlattenOutputs", "FlattenInputs", "Flatten", "View", "Name", "ArraySymbol", "Shape",
+        "Ports", "Arity", "FlattenOutputs", "FlattenInputs", "Flatten", "View", "Name", "Tensor", "Shape",
         "Diagram", "PortGraph", "Graph", "NetGraph", "Grid"
     }
 ];
@@ -228,7 +228,7 @@ DiagramNetwork[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
             edges = EdgeList[graph];
             {
                 "OutputPorts" -> Cases[edges, DirectedEdge[{diagramId_, 1, portId_}, Alternatives @@ freeWires] :> diagrams[[diagramId]]["OutputPorts"][[portId]]],
-                "InputPorts" -> Cases[edges, DirectedEdge[Alternatives @@ freeWires, {diagramId_, 2, portId_}] :> diagrams[[diagramId]]["InputPorts"][[portId]]["Dual"]]
+                "InputPorts" -> Cases[edges, DirectedEdge[Alternatives @@ freeWires, {diagramId_, 2, portId_}] :> diagrams[[diagramId]]["InputPorts"][[portId]]]
             }
         ]
     ]
@@ -332,15 +332,19 @@ DiagramProp[d_, "Name"] := Replace[
 
 DiagramProp[diagram_, "Decompose"] := DiagramDecompose[diagram]
 
-DiagramProp[diagram_, "ArraySymbol"] := DiagramDecompose[diagram] /. {
-    d_Diagram :> Switch[d["Arity"], 1, VectorSymbol, 2, MatrixSymbol, _, ArraySymbol][d["HoldExpression"], Through[d["Ports"]["Name"]]],
-    CircleTimes -> TensorProduct,
-    CirclePlus -> Plus,
-    CircleDot -> Dot,
-    SuperStar -> Conjugate,
-    OverBar -> Transpose,
-    OverTilde -> ConjugateTranspose
-}
+
+DiagramTensor[diagram_Diagram] := Replace[diagram["HoldExpression"], {
+	HoldForm[DiagramDual[d_]] :> Conjugate[DiagramTensor[d]],
+	HoldForm[DiagramComposition[ds___]] :> Dot @@ (ArrayReshape[DiagramTensor[#], {Times @@ Through[#["OutputPorts"]["Name"]], Times @@ Through[#["InputPorts"]["Name"]]}] & /@ {ds}),HoldForm[DiagramProduct[ds___]] :> TensorProduct @@ (DiagramTensor /@ {ds}),
+	HoldForm[DiagramSum[ds___]] :> Plus @@ (DiagramTensor /@ {ds}),
+	HoldForm[DiagramNetwork[ds___]] :> With[{portFunction = diagram["OptionValue"["PortFunction"]], ports = Through[{ds}["Ports"]]},
+	TensorContract[TensorProduct @@ DiagramTensor /@ {ds}, {}]
+],
+		_ :> Switch[diagram["Arity"], 1, VectorSymbol, 2, MatrixSymbol, _, ArraySymbol][diagram["HoldExpression"], Through[diagram["Ports"]["Name"]]]
+	}
+]
+
+DiagramProp[diagram_, "Tensor" | "ArraySymbol"] := DiagramTensor[diagram]
 
 DiagramProp[d_, "Diagram" | "Graphics", opts : OptionsPattern[]] := DiagramGraphics[d, FilterRules[{opts}, Options[DiagramGraphics]], BaseStyle -> {GraphicsHighlightColor -> Automatic}]
 
@@ -355,7 +359,7 @@ DiagramProp[d_, "PortGraph", opts : OptionsPattern[]] := DiagramsPortGraph[d["Su
 
 DiagramProp[d_, "Graph", opts : OptionsPattern[]] := DiagramsGraph[d["SubDiagrams"], opts]
 
-DiagramProp[d_, "Network", opts : OptionsPattern[]] := ToDiagramNetwork[d, FilterRules[{opts}, Options[ToDiagramNetwork]]]
+DiagramProp[d_, "Network", opts : OptionsPattern[]] := ToDiagramNetwork[d, FilterRules[{opts, d["DiagramOptions"]}, Options[ToDiagramNetwork]]]
 
 DiagramProp[d_, "NetGraph", opts : OptionsPattern[]] := DiagramsNetGraph[d["Network"]["SubDiagrams"], FilterRules[{opts, d["DiagramOptions"]}, Options[DiagramsNetGraph]]]
 
@@ -363,7 +367,7 @@ DiagramProp[d_, "Arrange", opts : OptionsPattern[]] := DiagramArrange[d, opts]
 
 DiagramProp[d_, "Grid", opts : OptionsPattern[]] := DiagramGrid[DiagramArrange[d, FilterRules[{opts}, Options[DiagramArrange]]], FilterRules[{opts, d["DiagramOptions"]}, Options[DiagramGrid]]]
 
-DiagramProp[d_, "OptionValue"[opt_], opts : OptionsPattern[]] := OptionValue[{opts, d["DiagramOptions"], Options[DiagramGraphics], Options[DiagramGrid]}, opt]
+DiagramProp[d_, "OptionValue"[opt_], opts : OptionsPattern[]] := OptionValue[{opts, d["DiagramOptions"], Options[DiagramGraphics], Options[DiagramGrid], Options[DiagramsNetGraph]}, opt]
 
 DiagramProp[d_, "WireQ"] := MatchQ[d["OptionValue"["Shape"]], "Wire" | "WiresQ"]
 
@@ -865,7 +869,12 @@ Options[ToDiagramNetwork] = Join[{"PortFunction" -> (#["Name"] &), "Unique" -> T
 
 ToDiagramNetwork[d_Diagram, opts : OptionsPattern[]] := If[d["NetworkQ"],
     Diagram[d, opts],
-    DiagramNetwork[##, FilterRules[{opts, d["DiagramOptions"]}, Options[DiagramNetwork]], "PortFunction" -> (#["HoldExpression"] &)] & @@ ToDiagramNetwork[d["Decompose"], {}, <||>, opts]
+    With[{net = DiagramNetwork[##, FilterRules[{opts, d["DiagramOptions"]}, Options[DiagramNetwork]], "PortFunction" -> (#["HoldExpression"] &)], portFunction = OptionValue["PortFunction"]},
+        Diagram[net,
+            "OutputPorts" -> Permute[net["OutputPorts"], FindPermutation[Through[net["OutputPorts"]["HoldExpression"]][[All, 1, 1]], portFunction /@ d["OutputPorts"]]],
+            "InputPorts" -> Permute[net["InputPorts"], FindPermutation[Through[Through[net["InputPorts"]["Dual"]]["HoldExpression"]][[All, 1, 1]], portFunction /@ Through[d["InputPorts"]["Dual"]]]]
+        ]
+    ] & @@ ToDiagramNetwork[d["Decompose"], {}, <||>, opts]
 ]
 
 ToDiagramNetwork[d_Diagram, pos_, ports_Association, opts : OptionsPattern[]] := With[{portFunction = OptionValue["PortFunction"], uniqueQ = TrueQ[OptionValue["Unique"]]}, {
@@ -879,12 +888,72 @@ ToDiagramNetwork[(CircleTimes | CirclePlus)[ds___], pos_, ports_Association, opt
 
 ToDiagramNetwork[CircleDot[ds__], pos_, ports_Association, opts : OptionsPattern[]] :=
 	Fold[
-		{DiagramNetwork @@ Join[#1[[1]]["SubDiagrams"], ToDiagramNetwork[#2, Append[pos, #1[[2]]], <|ports, #["HoldExpression"][[1, 1]] -> # & /@ #1[[1]]["InputPorts"]|>, opts]], #1[[2]] + 1} &,
+		{
+            DiagramNetwork[##, FilterRules[{opts}, Options[DiagramNetwork]], "PortFunction" -> (#["HoldExpression"] &)] & @@
+                Join[#1[[1]]["SubDiagrams"], ToDiagramNetwork[#2, Append[pos, #1[[2]]], <|ports, #["HoldExpression"][[1, 1]] -> # & /@ Through[#1[[1]]["InputPorts"]["Dual"]]|>, opts]],
+            #1[[2]] + 1
+        } &,
 		{Diagram[], 1},
 		{ds}
 	][[1]]["SubDiagrams"]
 
 ToDiagramNetwork[{ds___}, pos_, ports_Association, opts : OptionsPattern[]] := Catenate[ToDiagramNetwork[#, pos, ports, "Unique" -> False, opts] & /@ {ds}]
+
+
+DiagramTensor[diagram_Diagram] := Replace[diagram["HoldExpression"], {
+	HoldForm[DiagramDual[d_]] :> Conjugate[DiagramTensor[d]]
+	,
+	HoldForm[DiagramFlip[d_]] :> Transpose[DiagramTensor[d], FindPermutation[Catenate[Reverse @ TakeDrop[Range[diagram["Arity"]], diagram["OutputArity"]]]]]
+	,
+	HoldForm[DiagramReverse[d_]] :> Transpose[DiagramTensor[d]]
+	,
+	HoldForm[DiagramComposition[ds___]] :> Dot @@ (
+		If[ #["OutputArity"] == #["InputArity"] == 1
+			,
+			DiagramTensor[#]
+			,
+			ArrayReshape[DiagramTensor[#], {Times @@ Through[#["OutputPorts"]["Name"]], Times @@ Through[#["InputPorts"]["Name"]]}]
+		] & /@ {ds}
+	)
+	,
+	HoldForm[DiagramProduct[ds___]] :> With[{
+		tensors = If[ #["OutputArity"] == #["InputArity"] == 1
+			,
+			DiagramTensor[#]
+			,
+			ArrayReshape[DiagramTensor[#], {Times @@ Through[#["OutputPorts"]["Name"]], Times @@ Through[#["InputPorts"]["Name"]]}]
+		] & /@ {ds}
+	}
+	,
+		ArrayReshape[
+			KroneckerProduct @@ tensors
+			,
+			Join[Catenate[Through[#["OutputPorts"]["Name"]] & /@ {ds}], Catenate[Through[#["InputPorts"]["Name"]] & /@ {ds}]]
+		]
+	]
+	,
+	HoldForm[DiagramSum[ds___]] :> Plus @@ (DiagramTensor /@ {ds})
+	,
+	HoldForm[DiagramNetwork[ds___]] :> Block[{
+		portFunction = diagram["OptionValue"["PortFunction"]],
+		freePorts, ports, contraction, permutation
+	},
+		freePorts = Join[portFunction /@ diagram["OutputPorts"], portFunction[#["Dual"]] & /@ diagram["InputPorts"]];
+		ports = Catenate @ MapThread[Join, {Map[portFunction, Through[{ds}["OutputPorts"]], {2}], Map[portFunction[#["Dual"]] &, Through[{ds}["InputPorts"]], {2}]}];
+		contraction = Values @ Select[PositionIndex[ports], Length[#] > 1 &];
+		permutation = FindPermutation[Delete[ports, List /@ Catenate[contraction]], freePorts];
+		Transpose[
+			TensorContract[
+				TensorProduct @@ DiagramTensor /@ {ds},
+				contraction
+			],
+			permutation
+		]
+	]
+	,
+	_ :> Switch[diagram["Arity"], 1, VectorSymbol, 2, MatrixSymbol, _, ArraySymbol][diagram["HoldExpression"], Through[diagram["Ports"]["Name"]]]
+}]
+
 
 
 End[];

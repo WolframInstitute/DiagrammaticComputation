@@ -90,12 +90,12 @@ RowDiagram[xs : {___Diagram}, opts : OptionsPattern[]] := Fold[RowDiagram[{##}, 
 Options[DiagramArrange] = {"Network" -> True}
 
 DiagramArrange[diagram_Diagram, opts : OptionsPattern[]] := Replace[diagram["HoldExpression"], {
-    HoldForm[DiagramProduct[ds___]] :> RowDiagram[DiagramArrange[#, opts] & /@ {ds}, diagram["DiagramOptions"]],
-    HoldForm[DiagramComposition[ds___]] :> ColumnDiagram[DiagramArrange[#, opts] & /@ {ds}, diagram["DiagramOptions"]],
-    HoldForm[DiagramSum[ds___]] :> DiagramSum[DiagramArrange[#, opts] & /@ {ds}, diagram["DiagramOptions"]],
+    HoldForm[DiagramProduct[ds___]] :> RowDiagram[DiagramArrange[#, opts] & /@ {ds}, FilterRules[diagram["DiagramOptions"], Options[RowDiagram]]],
+    HoldForm[DiagramComposition[ds___]] :> ColumnDiagram[DiagramArrange[#, opts] & /@ {ds}, FilterRules[diagram["DiagramOptions"], Options[ColumnDiagram]]],
+    HoldForm[DiagramSum[ds___]] :> DiagramSum[DiagramArrange[#, opts] & /@ {ds}, FilterRules[diagram["DiagramOptions"], Options[DiagramSum]]],
     HoldForm[DiagramNetwork[ds___]] :> If[TrueQ[OptionValue["Network"]],
         With[{g = DiagramsNetGraph[DiagramArrange[#, opts] & /@ {ds}, FilterRules[diagram["DiagramOptions"], Options[DiagramsNetGraph]], "BinarySpiders" -> True, "UnarySpiders" -> False, "RemoveCycles" -> True]},
-            ColumnDiagram[AnnotationValue[{g, Reverse[TopologicalSort[g]]}, "Diagram"], "PortFunction" -> Function[#["HoldExpression"]], diagram["DiagramOptions"]]
+            ColumnDiagram[AnnotationValue[{g, Reverse[TopologicalSort[g]]}, "Diagram"], "PortFunction" -> Function[#["HoldExpression"]], FilterRules[diagram["DiagramOptions"], Options[ColumnDiagram]]]
         ],
         DiagramNetwork[##, diagram["DiagramOptions"]] & @@ (DiagramArrange[#, opts] & /@ {ds})
     ],

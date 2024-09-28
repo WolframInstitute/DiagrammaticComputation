@@ -149,8 +149,15 @@ LambdaDiagram[expr_, depth_Integer : 0, opts : OptionsPattern[]] := Module[{lamb
 
 
 
-QuantumCircuitDiagram[qc_Wolfram`QuantumFramework`QuantumCircuitOperator, opts : OptionsPattern[]] :=
-	DiagramComposition @@ (Diagram[Interpretation[#["CircuitDiagram", "WireLabels" -> None, "ShowEmptyWires" -> False, "ShowGateLabels" -> False, "ShowMeasurementWire" -> False, ImageSize -> 16], #], #["OutputOrder"], #["InputOrder"]] & /@ Reverse[qc["Sort"]["NormalOperators"]])
+QuantumCircuitDiagram[qc_Wolfram`QuantumFramework`QuantumCircuitOperator, opts : OptionsPattern[]] := With[{d = DiagramComposition[##, "PortFunction" -> (#["HoldExpression"] &)] & @@ (
+	Diagram[
+		Interpretation[#["CircuitDiagram", "WireLabels" -> None, "ShowEmptyWires" -> False, "ShowGateLabels" -> False, "ShowMeasurementWire" -> False, ImageSize -> 16], #],
+		KeyValueMap[Interpretation[#2, #1] &, #["OutputOrderDimensions"]],
+		KeyValueMap[Interpretation[#2, #1] &, #["InputOrderDimensions"]]
+	] & /@ Reverse[qc["Sort"]["NormalOperators"]])
+},
+	Diagram[d, "OutputPorts" -> SortBy[d["OutputPorts"], #["Name"] &], "InputPorts" -> SortBy[d["InputPorts"], #["Name"] &]]
+]
 
 
 End[];
