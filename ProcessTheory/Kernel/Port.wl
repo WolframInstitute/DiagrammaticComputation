@@ -119,7 +119,7 @@ PortProp[HoldPattern[Port[data_Association]], prop_] /; KeyExistsQ[data, prop] :
 
 PortProp[p_, "HoldExpression"] := Extract[p["Data"], "Expression", HoldForm]
 
-PortProp[p_, "Name"] := Replace[p["HoldExpression"], HoldForm[PortDual[Interpretation[x_, _]] | PortDual[x_] | Interpretation[x_, _] | x_] :> HoldForm[x]]
+PortProp[p_, "Name"] := Replace[p["HoldExpression"], HoldForm[PortDual[Interpretation[HoldForm[x_] | x_, _]] | PortDual[x_] | Interpretation[HoldForm[x_] | x_, _] | x_] :> HoldForm[x]]
 
 PortProp[p_, "Options"] := Normal[KeyDrop[p["Data"], "Expression"]]
 
