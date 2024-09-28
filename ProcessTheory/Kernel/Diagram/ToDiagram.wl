@@ -117,11 +117,11 @@ LambdaDiagrams[Interpretation["\[Lambda]", tag_][body_][arg_], depth_] := Block[
 	]
 ] 
 LambdaDiagrams[Interpretation["\[Lambda]", tag_][body_], depth_] := With[{bodyDiagrams = LambdaDiagrams[body, depth]}, Join[{Diagram["\[Lambda]", tag, \[FormalX][tag], "Shape" -> "Circle"]}, bodyDiagrams]]
-LambdaDiagrams[Interpretation[_Integer, f_][Interpretation[_Integer, x_]], _] :=  {Diagram["\[Application]", Unique["x"], {f, x}, "Shape" -> "Triangle"]}
-LambdaDiagrams[Interpretation[_Integer, tag : _Port | _Symbol][arg_], depth_] :=  With[{argDiagram = DiagramNetwork @@ LambdaDiagrams[arg, depth]},
-	{Diagram["\[Application]", Unique["x"], {tag, argDiagram["OutputPorts"][[1]]}, "Shape" -> "Triangle"], argDiagram}
+LambdaDiagrams[Interpretation[_Integer, f_][Interpretation[_Integer, x_]], _] := {Diagram["\[Application]", Unique["x"], {f, x}, "Shape" -> "Triangle"]}
+LambdaDiagrams[Interpretation[_Integer, tag : _Port | _Symbol][arg_], depth_] := With[{argDiagram = DiagramNetwork @@ LambdaDiagrams[arg, depth]},
+	Join[{Diagram["\[Application]", Unique["x"], {tag, argDiagram["OutputPorts"][[1]]}, "Shape" -> "Triangle"]}, argDiagram["SubDiagrams"]]
 ]
-LambdaDiagrams[Interpretation[v_Integer, tag : _Port | _Symbol], _] := With[{port = Port[tag]}, {Diagram["", \[FormalO][port["Name"]], port, "Shape" -> "Wire"]}]
+LambdaDiagrams[Interpretation[v_Integer, tag : _Port | _Symbol], _] := With[{port = Port[tag]}, {Diagram["", \[FormalO][port["Name"]], port, "Shape" -> "Circle"]}]
 LambdaDiagrams[i_Interpretation[_Integer, _], _] := {}
 LambdaDiagrams[f_[x_], depth_] := Block[{fDiagram, xDiagram = DiagramNetwork @@ LambdaDiagrams[x, depth], out},
 	out = xDiagram["OutputPorts"][[1]];
