@@ -361,7 +361,7 @@ DiagramProp[d_, "NetGraph", opts : OptionsPattern[]] := DiagramsNetGraph[ToDiagr
 
 DiagramProp[d_, "Arrange", opts : OptionsPattern[]] := DiagramArrange[d, opts]
 
-DiagramProp[d_, "Grid", opts : OptionsPattern[]] := DiagramGrid[d["Arrange"], FilterRules[{opts, d["DiagramOptions"]}, Options[DiagramGrid]]]
+DiagramProp[d_, "Grid", opts : OptionsPattern[]] := DiagramGrid[DiagramArrange[d, FilterRules[{opts}, Options[DiagramArrange]]], FilterRules[{opts, d["DiagramOptions"]}, Options[DiagramGrid]]]
 
 DiagramProp[d_, "OptionValue"[opt_], opts : OptionsPattern[]] := OptionValue[{opts, d["DiagramOptions"], Options[DiagramGraphics], Options[DiagramGrid]}, opt]
 

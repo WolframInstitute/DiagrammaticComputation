@@ -87,24 +87,20 @@ RowDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{a = x["Fl
 RowDiagram[xs : {___Diagram}, opts : OptionsPattern[]] := Fold[RowDiagram[{##}, opts] &, xs]
 
 
-DiagramArrange[diagram_Diagram, opts : OptionsPattern[]] := With[{grid = DiagramDecompose[diagram]},
-    Fold[
-        ReplaceAt[
-            #1,
-            {
-                ct_CircleTimes :> RowDiagram[List @@ Flatten[ct], opts],
-                cd_CircleDot :> ColumnDiagram[List @@ Flatten[cd], opts],
-                cp_CirclePlus :> DiagramSum[List @@ Flatten[cp], opts],
-                net_List :> With[{g = DiagramsNetGraph[net, FilterRules[{opts, diagram["DiagramOptions"]}, Options[DiagramsNetGraph]], "BinarySpiders" -> True, "UnarySpiders" -> False, "RemoveCycles" -> True]},
-                    ColumnDiagram[AnnotationValue[{g, Reverse[TopologicalSort[g]]}, "Diagram"], "PortFunction" -> Function[#["HoldExpression"]]]
-                ]
-            },
-            #2
-        ] &,
-        grid,
-        ReverseSort[Position[grid, _CircleTimes | _CircleDot | _CirclePlus | _List]]
-    ]
-]
+Options[DiagramArrange] = {"Network" -> True}
+
+DiagramArrange[diagram_Diagram, opts : OptionsPattern[]] := Replace[diagram["HoldExpression"], {
+    HoldForm[DiagramProduct[ds___]] :> RowDiagram[DiagramArrange[#, opts] & /@ {ds}, diagram["DiagramOptions"]],
+    HoldForm[DiagramComposition[ds___]] :> ColumnDiagram[DiagramArrange[#, opts] & /@ {ds}, diagram["DiagramOptions"]],
+    HoldForm[DiagramSum[ds___]] :> DiagramSum[DiagramArrange[#, opts] & /@ {ds}, diagram["DiagramOptions"]],
+    HoldForm[DiagramNetwork[ds___]] :> If[TrueQ[OptionValue["Network"]],
+        With[{g = DiagramsNetGraph[DiagramArrange[#, opts] & /@ {ds}, FilterRules[diagram["DiagramOptions"], Options[DiagramsNetGraph]], "BinarySpiders" -> True, "UnarySpiders" -> False, "RemoveCycles" -> True]},
+            ColumnDiagram[AnnotationValue[{g, Reverse[TopologicalSort[g]]}, "Diagram"], "PortFunction" -> Function[#["HoldExpression"]], diagram["DiagramOptions"]]
+        ],
+        DiagramNetwork[##, diagram["DiagramOptions"]] & @@ (DiagramArrange[#, opts] & /@ {ds})
+    ],
+    _ :> diagram
+}]
 
 
 matchPorts[d_Diagram, {outputPorts_, inputPorts_}] := Diagram[d,
@@ -160,12 +156,15 @@ matchPorts[CircleTimes[ds___], {outputPorts_, inputPorts_}] := CircleTimes @@ Ma
     }
 ]
 
-DiagramDecompose[diagram_Diagram ? DiagramQ] :=
+
+Options[DiagramDecompose] = {"Network" -> True}
+
+DiagramDecompose[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] :=
     Replace[diagram["HoldExpression"], {
-        HoldForm[DiagramProduct[ds___]] :> DiagramDecompose /@ CircleTimes[ds],
-        HoldForm[DiagramComposition[ds___]] :> DiagramDecompose /@ CircleDot[ds],
-        HoldForm[DiagramSum[ds___]] :> DiagramDecompose /@ CirclePlus[ds],
-        HoldForm[DiagramNetwork[ds___]] :> DiagramDecompose /@ {ds},
+        HoldForm[DiagramProduct[ds___]] :> (DiagramDecompose[#, opts] & /@ CircleTimes[ds]),
+        HoldForm[DiagramComposition[ds___]] :> (DiagramDecompose[#, opts] & /@ CircleDot[ds]),
+        HoldForm[DiagramSum[ds___]] :> (DiagramDecompose[#, opts] & /@ CirclePlus[ds]),
+        HoldForm[DiagramNetwork[ds___]] :> If[TrueQ[OptionValue["Network"]], DiagramDecompose[#, opts] & /@ {ds}, diagram],
         _ :> diagram
     }]
 
@@ -267,10 +266,10 @@ Options[DiagramGrid] = Join[{
     "WireArrows" -> False,
     Dividers -> None,
     Alignment -> Left
-}, Options[DiagramGraphics], Options[Graphics]
+}, Options[DiagramArrange], Options[DiagramDecompose], Options[DiagramGraphics], Options[Graphics]
 ]
 DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
-    grid = DiagramDecompose[DiagramArrange[diagram]],
+    grid = DiagramDecompose[DiagramArrange[diagram, FilterRules[{opts}, Options[DiagramArrange]]], FilterRules[{opts}, Options[DiagramDecompose]]],
     width, height, items, rows, columns,
     outputPositions, inputPositions, positions, wires,
     vGapSize = OptionValue["VerticalGapSize"],
