@@ -434,12 +434,13 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := With[{
     arities = {d["OutputArity"], d["InputArity"]}
 }, {
     arrows = fillAutomatic[d["OptionValue"["PortArrows"], opts], arities, True],
-    transform = RotationTransform[a, c]
+    transform = RotationTransform[a, c],
+    placeArrow = Replace[{Right -> {{1 / 2, 0}, {1, 0}}, Left -> {{- 1 / 2, 0}, {- 1, 0}}, Top -> {{0, 1 / 2}, {0, 1}}, Bottom -> {{0, - 1 / 2}, {0, - 1}}}]
 },
     {
         transform @ MapThread[
             Replace[#3, {
-                Placed[_, p : {{_, _}, {_, _}}] :> p,
+                Placed[_, p_] :> placeArrow[p],
                 _ :> Replace[shape, {
                     "Circle" :> {1 / 2 {w Cos[#1], h Sin[#1]}, 3 / 4 {w Cos[#1], h Sin[#1]}} + Threaded[c],
                     _ :> {{(- 1 / 2 + #2) w, h / 2}, {(- 1 / 2 + #2) w, 3 / 4 h}} + Threaded[c]
@@ -454,7 +455,7 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := With[{
         ,
         transform @ MapThread[
             Replace[#3, {
-                Placed[_, p : {{_, _}, {_, _}}] :> p,
+                Placed[_, p_] :> placeArrow[p],
                 _ :> Replace[shape, {
                     "Circle" :> {1 / 2 {w Cos[#1], h Sin[#1]}, 3 / 4 {w Cos[#1], h Sin[#1]}} + Threaded[c],
                     _ :> {{(- 1 / 2 + #2) w, - h / 2}, {(- 1 / 2 + #2) w, - 3 / 4 h}} + Threaded[c]
@@ -522,7 +523,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
                 Nothing,
                 Replace[label, Placed[l_, pos_] | l_ :> Text[
                         ClickToCopy[l /. Automatic -> If[x["DualQ"], x["Dual"], x], x["View"]],
-                        With[{v = p[[-1]] - p[[1]], s = PadLeft[Flatten[Replace[{pos}, {} -> {0, 2}]], 2, 0]}, p[[1]] + s[[2]] * v + s[[1]] * RotationTransform[angle][v]]
+                        With[{v = p[[-1]] - p[[1]], s = PadLeft[Flatten[Replace[{pos}, {{Right} -> {2, 0}, {Left} -> {- 2, 0}, {Top} -> {0, 2}, {Bottom} -> {0, - 2}, {} -> {0, 2}}]], 2, 0]}, p[[1]] + s[[2]] * v + s[[1]] * RotationTransform[angle][v]]
                     ]
                 ]
             ]
