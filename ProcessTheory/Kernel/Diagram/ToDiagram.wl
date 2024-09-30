@@ -123,10 +123,11 @@ LambdaDiagrams[Interpretation[_Integer, tag : _Port | _Symbol][arg_], depth_] :=
 ]
 LambdaDiagrams[Interpretation[v_Integer, tag : _Port | _Symbol], _] := With[{port = Port[tag]}, {Diagram["", \[FormalO][port["Name"]], port, "Shape" -> "Circle"]}]
 LambdaDiagrams[i_Interpretation[_Integer, _], _] := {}
-LambdaDiagrams[f_[x_], depth_] := Block[{fDiagram, xDiagram = DiagramNetwork @@ LambdaDiagrams[x, depth], out},
-	out = xDiagram["OutputPorts"][[1]];
+LambdaDiagrams[f_[xs___], depth_] := Block[{fDiagram, xDiagrams = DiagramNetwork @@ LambdaDiagrams[#, depth] & /@ {xs}, out},
+	out = Catenate[Through[xDiagrams["OutputPorts"]]];
 	fDiagram = DiagramNetwork @@ LambdaDiagrams[f /. Interpretation[_Integer, var_Integer] :> Interpretation[var, Evaluate @ out], depth];
-	Join[fDiagram["SubDiagrams"], {Diagram["\[Application]", Unique["x"], {fDiagram["OutputPorts"][[1]], out}, "Shape" -> "Triangle"]}, xDiagram["SubDiagrams"]]
+	Join[fDiagram["SubDiagrams"], {Diagram["\[Application]", Unique["x"], Join[fDiagram["OutputPorts"], out], "Shape" -> "Triangle"]},
+		Catenate[Through[xDiagrams["SubDiagrams"]]]]
 ]
 LambdaDiagrams[x_, _] := {Diagram[x, Unique["x"], "Shape" -> "UpsideDownTriangle"]}
 
