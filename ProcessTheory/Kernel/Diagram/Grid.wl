@@ -192,28 +192,29 @@ gridHeight[expr_, prop_ : Automatic] := Replace[expr, {
 }]
 
 
-gridArrange[diagram_Diagram, {width_, height_}, {dx_, dy_}, corner_ : {0, 0}, angle_ : 0] := Block[{
+gridArrange[diagram_Diagram, {autoWidth_, autoHeight_}, {dx_, dy_}, corner_ : {0, 0}, angle_ : 0] := Block[{
     arity = diagram["MaxArity"],
     alignment = diagram["OptionValue"[Alignment]],
+    width = Replace[autoWidth, Automatic -> arity],
     w, h, ratio, center
 },
     w = 1 / 1.6 * (1 + dx) * (1 + arity);
-    h = Replace[height, Automatic -> 1];
-    ratio = If[arity == 0, 0, Floor[Replace[width, Automatic -> arity] / arity]];
+    h = Replace[autoHeight, Automatic -> 1];
+    ratio = If[arity == 0, 0, Floor[width / arity]];
     center = corner + RotationTransform[angle] @ {
         (1.6 w / 2) ratio +
-            (1 + dx) * Replace[
+            (1 + dx) * (Replace[
                 alignment, {
                 Automatic | Left :> 1 - ratio,
-                Right :> width - ratio arity,
-                Center :> (1 - ratio + width - ratio arity) / 2,
+                Right :> width - ratio * arity,
+                Center :> (1 - ratio + width - ratio * arity) / 2,
                 x_ ? NumericQ :> x,
                 Scaled[x_ ? NumericQ] :> (1 - x) * (1 - ratio) + x * (width - ratio arity),
                 _ -> 0
-            }],
+            }] - 1 / 2),
         - h / 2
     };
-    Sow[RotationTransform[angle, corner][Rectangle @@ (Threaded[corner] + {{dx, 0}, {width * (1 + dx) + dx, - h}})], "Item"];
+    Sow[RotationTransform[angle, corner][Rectangle @@ (Threaded[corner] + {{0, 0}, {width * (1 + dx), - h}})], "Item"];
     Diagram[diagram,
         "Width" -> Replace[diagram["OptionValue"["Width"]], Automatic :> If[MatchQ[diagram["OptionValue"["Shape"]], "Circle"] || arity <= 1, 1, ratio * w]],
         "Height" -> Replace[diagram["OptionValue"["Height"]], Automatic -> h - dy],
