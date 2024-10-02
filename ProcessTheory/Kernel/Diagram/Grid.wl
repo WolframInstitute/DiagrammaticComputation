@@ -229,7 +229,7 @@ gridArrange[grid : CircleTimes[ds___], {width_, height_}, {dx_, dy_}, corner : {
     relativeWidths = FoldPairList[With[{x = Floor[#1 + #2]}, {x, #2 - x}] &, 0, relativeWidths];
     If[width =!= Automatic, relativeWidths[[-1]] = width - Total[Most[relativeWidths]]];
     positions = Prepend[Accumulate[relativeWidths * (1 + dx)], 0];
-    Sow[RotationTransform[angle, corner][Rectangle @@ (Threaded[corner] + {{dx, 0}, {Total[relativeWidths] * (1 + dx) + dx, - newHeight}})], "Row"];
+    Sow[RotationTransform[angle, corner][Rectangle @@ (Threaded[corner] + {{0, 0}, {Total[relativeWidths] * (1 + dx), - newHeight}})], "Row"];
     MapIndexed[With[{i = #2[[1]]}, gridArrange[#1, {relativeWidths[[i]], newHeight}, {dx, dy}, {xMin, yMin} + RotationTransform[angle] @ {positions[[i]], 0}, angle]] &, grid]
 ]
 
@@ -238,7 +238,7 @@ gridArrange[grid : CircleDot[ds___], {width_, height_}, {dx_, dy_}, corner : {xM
     If[height =!= Automatic, heights = height * heights / Total[heights]];
     newWidth = Replace[width, Automatic :> gridWidth[grid]];
     positions = Prepend[Accumulate[heights], 0];
-    Sow[RotationTransform[angle, corner][Rectangle @@ (Threaded[corner] + {{dx, 0}, {newWidth * (1 + dx) + dx, - Total[heights]}})], "Column"];
+    Sow[RotationTransform[angle, corner][Rectangle @@ (Threaded[corner] + {{0, 0}, {newWidth * (1 + dx), - Total[heights]}})], "Column"];
     MapIndexed[With[{i = #2[[1]]}, gridArrange[#1, {newWidth, heights[[i]]}, {dx, dy}, {xMin, yMin} + RotationTransform[angle] @ {0, - positions[[i]]}, angle]] &, grid]
 ]
 
