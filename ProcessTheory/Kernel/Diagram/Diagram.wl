@@ -84,6 +84,8 @@ Diagram[ds : Except[OptionsPattern[], _List], opts : OptionsPattern[]] := With[{
     Diagram["Expression" :> DiagramNetwork[##], "OutputPorts" -> diagram["OutputPorts"], "InputPorts" -> diagram["InputPorts"], opts] & @@ diagrams
 ]
 
+Diagram[expr_, inputs_List -> outputs_, opts : OptionsPattern[]] := Diagram[expr, outputs, inputs, opts]
+
 Diagram[expr : Except[_Association | _Diagram | OptionsPattern[]],
     outputs : {} | Except[OptionsPattern[], _List] : {},
     inputs : {} | Except[OptionsPattern[], _List] : {},
