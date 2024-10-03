@@ -908,7 +908,7 @@ DiagramTensor[diagram_Diagram] := Replace[diagram["HoldExpression"], {
 	,
 	HoldForm[DiagramFlip[d_]] :> Transpose[DiagramTensor[d], FindPermutation[Catenate[Reverse @ TakeDrop[Range[diagram["Arity"]], diagram["OutputArity"]]]]]
 	,
-	HoldForm[DiagramReverse[d_]] :> Transpose[DiagramTensor[d]]
+	HoldForm[DiagramReverse[d_]] :> Transpose[DiagramTensor[d], FindPermutation[Join[Reverse @ Range[diagram["OutputArity"]], Reverse[diagram["OutputArity"] + Range[diagram["InputArity"]]]]]]
 	,
 	HoldForm[DiagramComposition[ds___]] :> Dot @@ (
 		If[ #["OutputArity"] == #["InputArity"] == 1
