@@ -180,7 +180,8 @@ decompostionWidth[d_Diagram, args___] := gridWidth[DiagramDecompose[d], args]
 gridWidth[expr_, prop_ : Automatic] := Replace[expr, {
     d_Diagram :> Replace[prop, {Automatic :> d["MaxArity"], _ :> d[prop]}],
     CircleTimes[ds___] :> Total[gridWidth[#, prop] & /@ {ds}],
-    (CircleDot | CirclePlus)[ds___] :> Max[gridWidth[#, prop] & /@ {ds}]
+    (CircleDot | CirclePlus)[ds___] :> Max[gridWidth[#, prop] & /@ {ds}],
+    _ -> 1
 }]
 
 decompositionHeight[d_Diagram, args___] := gridHeight[DiagramDecompose[d], args]
@@ -188,7 +189,8 @@ decompositionHeight[d_Diagram, args___] := gridHeight[DiagramDecompose[d], args]
 gridHeight[expr_, prop_ : Automatic] := Replace[expr, {
     d_Diagram :> Replace[prop, {Automatic -> 1, _ :> Replace[d[prop], Except[_Integer] -> 1]}],
     (CircleTimes | CirclePlus)[ds___] :> Max[gridHeight[#, prop] & /@ {ds}],
-    CircleDot[ds___] :> Total[gridHeight[#, prop] & /@ {ds}]
+    CircleDot[ds___] :> Total[gridHeight[#, prop] & /@ {ds}],
+    _ -> 1
 }]
 
 
