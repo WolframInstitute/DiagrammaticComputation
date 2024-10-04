@@ -7,6 +7,8 @@
 System`Private`NewContextPath[{"System`", "ProcessTheory`"}];
 
 ProcessTheory`ProcessTheoryDump`$exported = {
+	System`PortQ,
+	System`Port,
 	System`DiagramQ,
 	System`Diagram,
 	System`ToDiagram,

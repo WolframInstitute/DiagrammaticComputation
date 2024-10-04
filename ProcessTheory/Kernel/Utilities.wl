@@ -1,4 +1,4 @@
-BeginPackage["ProcessTheory`Utilities`", {"ProcessTheory`Port`"}];
+BeginPackage["ProcessTheory`Utilities`"];
 
 
 fillAutomatic
