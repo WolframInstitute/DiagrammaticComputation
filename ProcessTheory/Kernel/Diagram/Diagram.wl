@@ -334,19 +334,7 @@ DiagramProp[d_, "Name"] := Replace[
 
 DiagramProp[diagram_, "Decompose"] := DiagramDecompose[diagram]
 
-
-DiagramTensor[diagram_Diagram] := Replace[diagram["HoldExpression"], {
-	HoldForm[DiagramDual[d_]] :> Conjugate[DiagramTensor[d]],
-	HoldForm[DiagramComposition[ds___]] :> Dot @@ (ArrayReshape[DiagramTensor[#], {Times @@ Through[#["OutputPorts"]["Name"]], Times @@ Through[#["InputPorts"]["Name"]]}] & /@ {ds}),HoldForm[DiagramProduct[ds___]] :> TensorProduct @@ (DiagramTensor /@ {ds}),
-	HoldForm[DiagramSum[ds___]] :> Plus @@ (DiagramTensor /@ {ds}),
-	HoldForm[DiagramNetwork[ds___]] :> With[{portFunction = diagram["OptionValue"["PortFunction"]], ports = Through[{ds}["Ports"]]},
-	TensorContract[TensorProduct @@ DiagramTensor /@ {ds}, {}]
-],
-		_ :> Switch[diagram["Arity"], 1, VectorSymbol, 2, MatrixSymbol, _, ArraySymbol][diagram["HoldExpression"], Through[diagram["Ports"]["Name"]]]
-	}
-]
-
-DiagramProp[diagram_, "Tensor" | "ArraySymbol"] := DiagramTensor[diagram]
+DiagramProp[diagram_, "Tensor" | "ArraySymbol", opts : OptionsPattern[]] := DiagramTensor[diagram, FilterRules[{opts}, Options[DiagramTensor]]]
 
 DiagramProp[d_, "Diagram" | "Graphics", opts : OptionsPattern[]] := DiagramGraphics[d, FilterRules[{opts}, Options[DiagramGraphics]], BaseStyle -> {GraphicsHighlightColor -> Automatic}]
 
@@ -903,10 +891,12 @@ ToDiagramNetwork[CircleDot[ds__], pos_, ports_Association, opts : OptionsPattern
 ToDiagramNetwork[{ds___}, pos_, ports_Association, opts : OptionsPattern[]] := Catenate[ToDiagramNetwork[#, pos, ports, "Unique" -> False, opts] & /@ {ds}]
 
 
-DiagramTensor[diagram_Diagram] := Replace[diagram["HoldExpression"], {
+Options[DiagramTensor] = {"Kronecker" -> False}
+
+DiagramTensor[diagram_Diagram, OptionsPattern[]] := Replace[diagram["HoldExpression"], {
 	HoldForm[DiagramDual[d_]] :> Conjugate[DiagramTensor[d]]
 	,
-	HoldForm[DiagramFlip[d_]] :> Transpose[DiagramTensor[d], FindPermutation[Catenate[Reverse @ TakeDrop[Range[diagram["Arity"]], diagram["OutputArity"]]]]]
+	HoldForm[DiagramFlip[d_]] :> ConjugateTranspose[DiagramTensor[d], FindPermutation[Catenate[Reverse @ TakeDrop[Range[diagram["Arity"]], diagram["OutputArity"]]]]]
 	,
 	HoldForm[DiagramReverse[d_]] :> Transpose[DiagramTensor[d], FindPermutation[Join[Reverse @ Range[diagram["OutputArity"]], Reverse[diagram["OutputArity"] + Range[diagram["InputArity"]]]]]]
 	,
@@ -919,21 +909,31 @@ DiagramTensor[diagram_Diagram] := Replace[diagram["HoldExpression"], {
 		] & /@ {ds}
 	)
 	,
-	HoldForm[DiagramProduct[ds___]] :> With[{
-		tensors = If[ #["OutputArity"] == #["InputArity"] == 1
-			,
-			DiagramTensor[#]
-			,
-			ArrayReshape[DiagramTensor[#], {Times @@ Through[#["OutputPorts"]["Name"]], Times @@ Through[#["InputPorts"]["Name"]]}]
-		] & /@ {ds}
-	}
-	,
-		ArrayReshape[
-			KroneckerProduct @@ tensors
-			,
-			Join[Catenate[Through[#["OutputPorts"]["Name"]] & /@ {ds}], Catenate[Through[#["InputPorts"]["Name"]] & /@ {ds}]]
-		]
-	]
+	HoldForm[DiagramProduct[ds___]] :> If[TrueQ[OptionValue["Kronecker"]],
+        With[{
+            tensors = If[ #["OutputArity"] == #["InputArity"] == 1
+                ,
+                DiagramTensor[#]
+                ,
+                ArrayReshape[DiagramTensor[#], {Times @@ Through[#["OutputPorts"]["Name"]], Times @@ Through[#["InputPorts"]["Name"]]}]
+            ] & /@ {ds}
+        }
+        ,
+            ArrayReshape[
+                KroneckerProduct @@ tensors
+                ,
+                Join[Catenate[Through[#["OutputPorts"]["Name"]] & /@ {ds}], Catenate[Through[#["InputPorts"]["Name"]] & /@ {ds}]]
+            ]
+        ]
+        ,
+        With[{
+            tensors = DiagramTensor /@ {ds},
+            indices = FoldPairList[With[{out = #2["OutputArity"], in = #2["InputArity"]}, {#1 + {Range[out], out + Range[in]}, #1 + out + in}] &, 0, {ds}]
+        }
+        ,
+            Transpose[TensorProduct @@ tensors, FindPermutation[Flatten[indices], Flatten[Reverse /@ indices]]]
+        ]
+    ]
 	,
 	HoldForm[DiagramSum[ds___]] :> Plus @@ (DiagramTensor /@ {ds})
 	,
