@@ -484,7 +484,7 @@ Options[DiagramGraphics] = Join[{
     "Center" -> {0, 0},
     "Width" -> Automatic,
     "Height" -> Automatic,
-    "Angle" -> 0,
+    "Angle" -> Pi,
     "ShowLabel" -> Automatic,
     "LabelFunction" -> Automatic,
     "PortArrows" -> Automatic,
