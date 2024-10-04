@@ -8,7 +8,7 @@ Begin["ProcessTheory`Diagram`ToDiagram`Private`"];
 ToDiagram[g_Graph, opts : OptionsPattern[GraphDiagram]] := GraphDiagram[g, opts]
 ToDiagram[hg : {___List} | _WolframInstitute`Hypergraph`Hypergraph, opts : OptionsPattern[HypergraphDiagram]] := HypergraphDiagram[hg, opts]
 ToDiagram[ng_NetGraph, opts : OptionsPattern[NetGraphDiagram]] := NetGraphDiagram[NetFlatten[ng], opts]
-ToDiagram[sm_SystemModel, opts : OptionsPattern[SystemModelDiagram]] := SystemModelDiagram[sm, {}, opts]
+ToDiagram[sm : HoldPattern[_SystemModel], opts : OptionsPattern[SystemModelDiagram]] := SystemModelDiagram[sm, {}, opts]
 ToDiagram[qc_Wolfram`QuantumFramework`QuantumCircuitOperator, opts : OptionsPattern[QuantumCircuitDiagram]] := QuantumCircuitDiagram[qc, opts]
 ToDiagram[expr_, opts : OptionsPattern[LambdaDiagram]] := LambdaDiagram[expr, opts]
 
@@ -65,7 +65,7 @@ NetGraphDiagram[ng_NetGraph, opts : OptionsPattern[]] := Block[{
 
 
 Options[SystemModelDiagram] = Options[DiagramNetwork];
-SystemModelDiagram[sm_SystemModel, path_, opts : OptionsPattern[]] := Block[{name = sm[[1]], components, connections, parameters, transforms},
+SystemModelDiagram[sm : HoldPattern[_SystemModel], path_, opts : OptionsPattern[]] := Block[{name = sm[[1]], components, connections, parameters, transforms},
 	{components, connections, parameters, transforms} = Quiet @ Check[sm /@ {"Components", "Connections", "ParameterNames", "Diagram"}, {{}, {}, {}, {}}, SystemModel::nomod];
 	connections = Rule @@@ Map[StringSplit[#, "."] &, connections, {2}];
 	parameters = HoldForm[Evaluate[Information[#, "Identifier"]]] & /@ parameters;
