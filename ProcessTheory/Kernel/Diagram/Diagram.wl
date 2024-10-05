@@ -59,39 +59,26 @@ DiagramQ[___] := False
 (* ::Subsection:: *)
 (* Constructors *)
 
-Diagram[SuperStar[d_], opts : OptionsPattern[]] :=
-    With[{diagram = DiagramDual[#]}, Diagram["Expression" :> DiagramDual[#], "OutputPorts" -> diagram["OutputPorts"], "InputPorts" -> diagram["InputPorts"], opts]] & @ Diagram[d]
+Diagram[SuperStar[d_], opts : OptionsPattern[]] := DiagramDual[Diagram[d], opts]
 
-Diagram[OverBar[d_], opts : OptionsPattern[]] :=
-    With[{diagram = DiagramFlip[#]}, Diagram["Expression" :> DiagramFlip[#], "OutputPorts" -> diagram["OutputPorts"], "InputPorts" -> diagram["InputPorts"], opts]] & @ Diagram[d]
+Diagram[OverBar[d_], opts : OptionsPattern[]] := DiagramFlip[Diagram[d], opts]
 
-Diagram[OverTilde[d_], opts : OptionsPattern[]] :=
-    With[{diagram = DiagramReverse[#]}, Diagram["Expression" :> DiagramReverse[#], "OutputPorts" -> diagram["OutputPorts"], "InputPorts" -> diagram["InputPorts"], opts]] & @ Diagram[d]
+Diagram[OverTilde[d_], opts : OptionsPattern[]] := DiagramReverse[Diagram[d], opts]
 
-Diagram[CircleTimes[ds___], opts : OptionsPattern[]] := With[{diagrams = Diagram /@ {ds}}, {diagram = DiagramProduct @@ diagrams},
-    Diagram["Expression" :> DiagramProduct[##], "OutputPorts" -> diagram["OutputPorts"], "InputPorts" -> diagram["InputPorts"], opts] & @@ diagrams
-]
+Diagram[CircleTimes[ds___], opts : OptionsPattern[]] := DiagramProduct[##, opts] & @@ (Diagram /@ {ds})
 
-Diagram[CirclePlus[ds___], opts : OptionsPattern[]] := With[{diagrams = Diagram /@ {ds}}, {diagram = DiagramSum @@ diagrams},
-    Diagram["Expression" :> DiagramSum[##], "OutputPorts" -> diagram["OutputPorts"], "InputPorts" -> diagram["InputPorts"], opts] & @@ diagrams
-]
+Diagram[CirclePlus[ds___], opts : OptionsPattern[]] := DiagramSum[##, opts] & @@ (Diagram /@ {ds})
 
-Diagram[CircleDot[ds___], opts : OptionsPattern[]] := With[{diagrams = Diagram /@ {ds}}, {diagram = DiagramComposition @@ diagrams},
-    Diagram["Expression" :> DiagramComposition[##], "OutputPorts" -> diagram["OutputPorts"], "InputPorts" -> diagram["InputPorts"], opts] & @@ diagrams
-]
+Diagram[CircleDot[ds___], opts : OptionsPattern[]] := DiagramComposition[##, opts] & @@ (Diagram /@ {ds})
 
-Diagram[ds : Except[OptionsPattern[], _List], opts : OptionsPattern[]] := With[{diagrams = Diagram /@ ds}, {diagram = DiagramNetwork @@ diagrams},
-    Diagram["Expression" :> DiagramNetwork[##], "OutputPorts" -> diagram["OutputPorts"], "InputPorts" -> diagram["InputPorts"], opts] & @@ diagrams
-]
+Diagram[ds : Except[OptionsPattern[], _List], opts : OptionsPattern[]] := DiagramNetwork[##, opts] & @@ (Diagram /@ ds)
 
-Diagram[expr_, inputs_List -> outputs_, opts : OptionsPattern[]] := Diagram[expr, outputs, inputs, opts]
-
-Diagram[expr : Except[_Association | _Diagram | OptionsPattern[]],
-    outputs : {} | Except[OptionsPattern[], _List] : {},
-    inputs : {} | Except[OptionsPattern[], _List] : {},
+Diagram[expr : {} | Except[_Association | _Diagram | OptionsPattern[]],
+    inputs_List,
+    outputs_List,
     opts : OptionsPattern[]
 ] :=
-    Diagram[
+    Diagram[    
         FilterRules[{
             "Expression" :> expr,
             "OutputPorts" -> Map[Function[p, Port[Unevaluated[p]], HoldFirst], Unevaluated[outputs]],
@@ -102,11 +89,17 @@ Diagram[expr : Except[_Association | _Diagram | OptionsPattern[]],
         ]
     ]
 
-Diagram[expr_, output : Except[_List], args___] := Diagram[Unevaluated[expr], Unevaluated[{output}], args]
+Diagram[expr_, inputs_List, output : Except[_List | OptionsPattern[]], opts : OptionsPattern[]] := Diagram[Unevaluated[expr], Unevaluated[inputs], Unevaluated[{output}], opts]
 
-Diagram[expr_, outputs_List, input : Except[_List | OptionsPattern[]], opts___] := Diagram[Unevaluated[expr], Unevaluated[outputs], Unevaluated[{input}], opts]
+Diagram[expr_, input : Except[_List], outputs_List, opts : OptionsPattern[]] := Diagram[Unevaluated[expr], Unevaluated[{input}], Unevaluated[outputs], opts]
 
-Diagram[expr_, output : Except[_List], input : Except[_List], opts___] := Diagram[Unevaluated[expr], Unevaluated[{output}], Unevaluated[{input}], opts]
+Diagram[expr_, input : Except[_List], output : Except[_List | OptionsPattern[]], opts : OptionsPattern[]] := Diagram[Unevaluated[expr], Unevaluated[{input}], Unevaluated[{output}], opts]
+
+Diagram[expr_, output : Except[_List | OptionsPattern[]], opts : OptionsPattern[]] := Diagram[Unevaluated[expr], {}, Unevaluated[{output}], opts]
+
+Diagram[expr_, outputs : Except[OptionsPattern[], _List], opts : OptionsPattern[]] := Diagram[Unevaluated[expr], {}, Unevaluated[outputs], opts]
+
+Diagram[expr : Except[_Association | _Diagram | OptionsPattern[]], opts : OptionsPattern[]] := Diagram[Unevaluated[expr], {}, {}, opts]
 
 Diagram[opts : OptionsPattern[]] := Diagram[KeySort[<|
     DeleteDuplicatesBy[First] @ FilterRules[
@@ -119,10 +112,10 @@ Diagram[opts : OptionsPattern[]] := Diagram[KeySort[<|
 (* overwrite ports *)
 
 Diagram[d_ ? DiagramQ,
-    outputs : Inherited | {} | Except[OptionsPattern[], _List] : Inherited,
-    inputs : Inherited | {} | Except[OptionsPattern[], _List] : Inherited,
+    inputs : Inherited | {} | Except[OptionsPattern[]] : Inherited,
+    outputs : Inherited | {} | Except[OptionsPattern[]] : Inherited,
     opts : OptionsPattern[]
-] := Diagram[Unevaluated @@ d["HoldExpression"], Replace[outputs, Inherited :> d["OutputPorrts"]], Replace[inputs, Inherited :> d["InputPorrts"]], opts]
+] := Diagram[Unevaluated @@ d["HoldExpression"], Replace[inputs, Inherited :> d["InputPorts"]], Replace[outputs, Inherited :> d["OutputPorts"]], opts]
 
 
 (* merge options *)
@@ -229,8 +222,8 @@ DiagramNetwork[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
             freeWires = Cases[Pick[VertexList[graph], VertexDegree[graph], 1], _HoldForm];
             edges = EdgeList[graph];
             {
-                "OutputPorts" -> Cases[edges, DirectedEdge[{diagramId_, 1, portId_}, Alternatives @@ freeWires] :> diagrams[[diagramId]]["OutputPorts"][[portId]]],
-                "InputPorts" -> Cases[edges, DirectedEdge[Alternatives @@ freeWires, {diagramId_, 2, portId_}] :> diagrams[[diagramId]]["InputPorts"][[portId]]]
+                "InputPorts" -> Cases[edges, DirectedEdge[Alternatives @@ freeWires, {diagramId_, 1, portId_}] :> diagrams[[diagramId]]["InputPorts"][[portId]]],
+                "OutputPorts" -> Cases[edges, DirectedEdge[{diagramId_, 2, portId_}, Alternatives @@ freeWires] :> diagrams[[diagramId]]["OutputPorts"][[portId]]]
             }
         ]
     ]
@@ -314,7 +307,7 @@ DiagramProp[d_, "View"] := With[{
     inputs = Replace[Through[Through[d["InputPorts"]["Dual"]]["Label"]], {p : Except[HoldForm[_List | _Interpretation]]} :> p],
     opts = d["DiagramOptions"]
 },
-    Function[expr, If[opts === {}, Defer[Diagram[expr, outputs, inputs]], Defer[Diagram[expr, outputs, inputs, ##]] & @@ opts] //. HoldForm[x_] :> x, HoldFirst] @@ holdExpr
+    Function[expr, If[opts === {}, Defer[Diagram[expr, inputs, outputs]], Defer[Diagram[expr, inputs, outputs, ##]] & @@ opts] //. HoldForm[x_] :> x, HoldFirst] @@ holdExpr
 ]
 
 DiagramProp[d_, "Name"] := Replace[
@@ -372,9 +365,9 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
     primitives = Replace[
         d["OptionValue"["Shape"], opts],
         {
-            Automatic :> transform @ Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c, RoundingRadius -> {{Left, Top} -> .1 (w + h)}],
-            "Triangle" :> transform @ Polygon[{{- w / 2, - h / 2}, {0, h / 2}, {w / 2, - h / 2}} + Threaded[c]],
-            "UpsideDownTriangle" :> transform @ Polygon[{{- w / 2, h / 2}, {0, - h / 2}, {w / 2, h / 2}} + Threaded[c]],
+            Automatic :> transform @ Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c, RoundingRadius -> {{Right, Bottom} -> .1 (w + h)}],
+            "Triangle" :> transform @ Polygon[{{- w / 2, h / 2}, {0, - h / 2}, {w / 2, h / 2}} + Threaded[c]],
+            "UpsideDownTriangle" :> transform @ Polygon[{{- w / 2, - h / 2}, {0, h / 2}, {w / 2, - h / 2}} + Threaded[c]],
             "Circle" :> transform @ Circle[c, {w, h} / 2],
             "CrossWires" :> With[{
                 points = d["PortArrows", opts],
@@ -421,14 +414,14 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := With[{
     c = d["OptionValue"["Center"], opts],
     a = d["OptionValue"["Angle"], opts],
     shape = d["OptionValue"["Shape"], opts],
-    arities = {d["OutputArity"], d["InputArity"]}
+    arities = {d["InputArity"], d["OutputArity"]}
 }, {
     arrows = fillAutomatic[d["OptionValue"["PortArrows"], opts], arities, True],
     transform = RotationTransform[a, c],
     placeArrow = Replace[{Right -> {{1 / 2, 0}, {1, 0}}, Left -> {{- 1 / 2, 0}, {- 1, 0}}, Top -> {{0, 1 / 2}, {0, 1}}, Bottom -> {{0, - 1 / 2}, {0, - 1}}}]
 },
     {
-        transform @ MapThread[
+         transform @ MapThread[
             Replace[#3, {
                 Placed[_, p_] :> placeArrow[p],
                 _ :> Replace[shape, {
@@ -437,8 +430,8 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := With[{
                 }]
             }] &,
             {
-                Range[Pi, 0, - Pi / (d["OutputArity"] + 1)][[2 ;; -2]],
-                Range[-.3, 1.3, 1.6 / (d["OutputArity"] + 1)][[2 ;; -2]],
+                Range[Pi, 0, - Pi / (d["InputArity"] + 1)][[2 ;; -2]],
+                Range[-.3, 1.3, 1.6 / (d["InputArity"] + 1)][[2 ;; -2]],
                 arrows[[1]]
             }
         ]
@@ -452,8 +445,8 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := With[{
                 }]
             }] &,
             {
-                Range[Pi, 2 Pi, Pi / (d["InputArity"] + 1)][[2 ;; -2]],
-                Range[-.3, 1.3, 1.6 / (d["InputArity"] + 1)][[2 ;; -2]],
+                Range[Pi, 2 Pi, Pi / (d["OutputArity"] + 1)][[2 ;; -2]],
+                Range[-.3, 1.3, 1.6 / (d["OutputArity"] + 1)][[2 ;; -2]],
                 arrows[[2]]
             }
         ]
@@ -482,7 +475,7 @@ Options[DiagramGraphics] = Join[{
 
 DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[{
     points = diagram["PortArrows", opts],
-    arities = {diagram["OutputArity"], diagram["InputArity"]}
+    arities = {diagram["InputArity"], diagram["OutputArity"]}
 }, {
     portArrows = Replace[fillAutomatic[diagram["OptionValue"["PortArrows"], opts], arities, True], Placed[x_, _] :> x, {2}],
     portLabels = fillAutomatic[diagram["OptionValue"["PortLabels"], opts], arities, Automatic],
@@ -520,7 +513,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
         },
            {ports, ps, arrows, labels}
         ],
-        {{diagram["OutputPorts"], diagram["InputPorts"]}, points, portArrows, portLabels, {- Pi / 2, Pi / 2}}
+        {{diagram["InputPorts"], diagram["OutputPorts"]}, points, portArrows, portLabels, {Pi / 2, - Pi / 2}}
     ]
 },
     FilterRules[{opts, diagram["DiagramOptions"]}, Options[Graphics]],
@@ -559,7 +552,7 @@ DiagramsPortGraph[diagrams : {___Diagram ? DiagramQ}, opts : OptionsPattern[]] :
 
 Options[DiagramsGraph] = Join[{"PortFunction" -> Function[#["Name"]]}, Options[Graph]];
 DiagramsGraph[diagrams : {___Diagram ? DiagramQ}, opts : OptionsPattern[]] := Block[{
-    ports = Thread[{Through[#["OutputPorts"]], Through[#["InputPorts"]["Dual"]] & /@ #}] & @ Through[diagrams["Flatten"]],
+    ports = Thread[{Through[#["InputPorts"]["Dual"]] & /@ #, Through[#["OutputPorts"]]}] & @ Through[diagrams["Flatten"]],
     portFunction = OptionValue["PortFunction"],
     graph, embedding
 },
@@ -571,7 +564,7 @@ DiagramsGraph[diagrams : {___Diagram ? DiagramQ}, opts : OptionsPattern[]] := Bl
         Flatten[
             MapIndexed[
                 With[{diagram = #2[[1]], port = #2, wire = portFunction[#1]},
-                    Switch[port[[2]], 1, {DirectedEdge[diagram, port], DirectedEdge[port, wire]}, 2, {DirectedEdge[port, diagram], DirectedEdge[wire, port]}]
+                    Switch[port[[2]], 1, {DirectedEdge[port, diagram], DirectedEdge[wire, port]}, 2, {DirectedEdge[diagram, port], DirectedEdge[port, wire]}]
                 ] &,
                 ports,
                 {3}
@@ -627,14 +620,14 @@ RemoveDiagramsNetGraphCycles[inputNet_ ? DirectedGraphQ, opts : OptionsPattern[G
             Diagram["Cup", {port, port["Dual"]}, "Shape" -> "Wire", "ShowLabel" -> False]
         ]];
 		AppendTo[capDiagrams, With[{port = Lookup[diagrams, edge[[1]]]["OutputPorts"][[edge[[3, 1, 3]]]]},
-            Diagram["Cap", {}, {port, port["Dual"]}, "Shape" -> "Wire", "ShowLabel" -> False]
+            Diagram["Cap", {port, port["Dual"]}, {}, "Shape" -> "Wire", "ShowLabel" -> False]
         ]];
 		net = EdgeDelete[net, {edge}];
 		net = VertexAdd[net, {cap, cup}];
         net = EdgeAdd[net, {
-			DirectedEdge[cup, cap, {{1, 2, 1}, {2, 2, 1}}],
-			DirectedEdge[cup, edge[[2]], {{1, 2, 2}, {2, edge[[3, -1, 2]], edge[[3, -1, 3]]}}],
-			DirectedEdge[edge[[1]], cap, {{1, edge[[3, 1, 2]], edge[[3, 1, 3]]}, {2, 2, 2}}]
+			DirectedEdge[cup, cap, {{2, 2, 1}, {1, 2, 1}}],
+			DirectedEdge[cup, edge[[2]], {{2, 2, 2}, {1, edge[[3, -1, 2]], edge[[3, -1, 3]]}}],
+			DirectedEdge[edge[[1]], cap, {{2, edge[[3, 1, 2]], edge[[3, 1, 3]]}, {1, 2, 2}}]
 		}];
 	];
 	Graph[net, opts,
@@ -701,29 +694,29 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
 	{spiderVertices, spiderDiagrams} = Replace[{{} -> {{}, {}}, sow_List :> Thread[sow]}] @ First[Reap[
 		edges = Map[v |->
 			Block[{in = VertexInComponent[graph, v, {1}], out = VertexOutComponent[graph, v, {1}], ports},
-				ports = Join[out, in];
+				ports = Join[in, out];
 				If[ Length[ports] > 2 ||
                     Length[ports] == 1 && MatchQ[unarySpiders, True] ||
                     Length[ports] == 2 && (MatchQ[binarySpiders, All | Full] || MatchQ[binarySpiders, True] && SameQ @@ ports[[All, 2]])
                     ,
 					Sow[{v,
                         Diagram[v,
-                            Port[tag[v, #]] & /@ out,
                             Port[tag[v, #]] & /@ in,
+                            Port[tag[v, #]] & /@ out,
                             If[Length[ports] == 2, {"Shape" -> "Wire", "ShowLabel" -> False}, {"Shape" -> "Circle", "ShowLabel" -> wireLabelsQ}]
                         ]
                     }];
                     Splice @ Catenate @ {
-                        MapIndexed[DirectedEdge[#[[1]], v, {{1, Lookup[outDegrees, #[[1]]], #[[3]]}, {2, Length[in], #2[[1]]}}] &, in],
-                        MapIndexed[DirectedEdge[v, #[[1]], {{1, Length[out], #2[[1]]}, {2, Lookup[inDegrees, #[[1]]], #[[3]]}}] &, out]
+                        MapIndexed[DirectedEdge[#[[1]], v, {{2, Lookup[outDegrees, #[[1]]], #[[3]]}, {1, Length[in], #2[[1]]}}] &, in],
+                        MapIndexed[DirectedEdge[v, #[[1]], {{2, Length[out], #2[[1]]}, {1, Lookup[inDegrees, #[[1]]], #[[3]]}}] &, out]
                     }
                     ,
 					If[ Length[ports] < 2,
                         Nothing,
                         Block[{src, tgt, srcDegree, tgtDegree},
-                            {src, tgt} = If[ ports[[1, 2]] == 1, {ports[[1]], ports[[2]]}, {ports[[2]], ports[[1]]}];
-                            srcDegree = If[ src[[2]] == 1, outDegrees, inDegrees][src[[1]]];
-                            tgtDegree = If[ tgt[[2]] == 1, outDegrees, inDegrees][tgt[[1]]];
+                            {src, tgt} = If[ ports[[1, 2]] == 1, {ports[[2]], ports[[1]]}, {ports[[1]], ports[[2]]}];
+                            srcDegree = If[ src[[2]] == 1, inDegrees, outDegrees][src[[1]]];
+                            tgtDegree = If[ tgt[[2]] == 1, inDegrees, outDegrees][tgt[[1]]];
                             DirectedEdge[src[[1]], tgt[[1]], {{src[[2]], srcDegree, src[[3]]}, v, {tgt[[2]], tgtDegree, tgt[[3]]}}]
                         ]
                     ]
@@ -739,16 +732,16 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
                 Diagram[#1,
                     "OutputPorts" -> MapThread[
                         FirstCase[edges,
-                            DirectedEdge[#2[[1]], tgtIdx_, {{1, _, #2[[3]]}, _, {2, _, portIdx_}}] :> With[{tgt = portFunction @ diagrams[[tgtIdx]]["InputPorts"][[portIdx]]["Dual"]},
-                                Port[tag[tgt, {tgtIdx, 2, portIdx}]]
+                            DirectedEdge[#2[[1]], tgtIdx_, {{2, _, #2[[3]]}, _, {1, _, portIdx_}}] :> With[{tgt = portFunction @ diagrams[[tgtIdx]]["InputPorts"][[portIdx]]["Dual"]},
+                                Port[tag[tgt, {tgtIdx, 1, portIdx}]]
                             ],
                             Port[tag[#1, #2]]
                         ] &,
-                        {portFunction /@ #1["OutputPorts"], Thread[{#2[[1]], 1, Range[#1["OutputArity"]]}]}
+                        {portFunction /@ #1["OutputPorts"], Thread[{#2[[1]], 2, Range[#1["OutputArity"]]}]}
                     ],
                     "InputPorts" -> MapThread[
                         Port[tag[#1, #2]]["Dual"] &,
-                        {portFunction /@ Through[#1["InputPorts"]["Dual"]], Thread[{#2[[1]], 2, Range[#1["InputArity"]]}]}
+                        {portFunction /@ Through[#1["InputPorts"]["Dual"]], Thread[{#2[[1]], 1, Range[#1["InputArity"]]}]}
                     ]
                 ] &,
                 diagrams
@@ -784,8 +777,8 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
                     port1, port2,
                     points1, points2
 				},
-                    port1 = diagram1[Replace[i, {1 -> "OutputPorts", 2 -> "InputPorts"}]][[p]];
-                    port2 = diagram2[Replace[j, {1 -> "OutputPorts", 2 -> "InputPorts"}]][[q]];
+                    port1 = diagram1[Replace[i, {1 -> "InputPorts", 2 -> "OutputPorts"}]][[p]];
+                    port2 = diagram2[Replace[j, {1 -> "InputPorts", 2 -> "OutputPorts"}]][[q]];
                     points1 = diagram1["PortArrows"][[i, p]];
                     points2 = diagram2["PortArrows"][[j, q]];
                     point1 = points1[[1]] * scale;
@@ -829,7 +822,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
                     diagram = diagrams[[v]],
                     port, points
 				},
-                    port = diagram[Replace[i, {1 -> "OutputPorts", 2 -> "InputPorts"}]][[p]];
+                    port = diagram[Replace[i, {1 -> "InputPorts", 2 -> "OutputPorts"}]][[p]];
                     points = diagram["PortArrows"][[i, p]];
                     point = points[[1]] * scale;
                     normal = (points[[-1]] - points[[1]]) * scale * 3;

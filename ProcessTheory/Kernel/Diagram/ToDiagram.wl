@@ -15,7 +15,7 @@ ToDiagram[expr_, opts : OptionsPattern[LambdaDiagram]] := LambdaDiagram[expr, op
 
 Options[GraphDiagram] = Options[DiagramNetwork];
 GraphDiagram[g_Graph, opts : OptionsPattern[]] := 
-	DiagramNetwork[##, opts] & @@ (Diagram[#, EdgeList[g, _[#, __]], EdgeList[g, _[_, #, ___]]] & /@ VertexList[g])
+	DiagramNetwork[##, opts] & @@ (Diagram[#, EdgeList[g, _[_, #, ___]], EdgeList[g, _[#, __]]] & /@ VertexList[g])
 
 
 Options[HypergraphDiagram] = Options[DiagramNetwork];
@@ -37,26 +37,26 @@ NetGraphDiagram[ng_NetGraph, opts : OptionsPattern[]] := Block[{
 	outputPorts = First /@ PositionIndex[Information[#, "OutputPortNames"]] & /@ layers;
 	inputPorts = First /@ PositionIndex[Information[#, "InputPortNames"]] & /@ layers;
 	edges = NeuralNetworks`NetGraphEdges[ng] /. {
-		NetPort[port_] /; KeyExistsQ[freeInputPorts, port] :> Length[layers] + Length[freeOutputPorts] + Lookup[freeInputPorts, port],
-		NetPort[port_] /; KeyExistsQ[freeOutputPorts, port] :> Length[layers] + Lookup[freeOutputPorts, port],
+		NetPort[port_] /; KeyExistsQ[freeOutputPorts, port] :> Length[layers] + Length[freeInputPorts] + Lookup[freeOutputPorts, port],
+		NetPort[port_] /; KeyExistsQ[freeInputPorts, port] :> Length[layers] + Lookup[freeInputPorts, port],
 		NetPort[{x_, port_String}] :> Block[{key = Key[{x}], outputQ},
 			layer = Lookup[layers, key];
 			outputQ = KeyExistsQ[Lookup[outputPorts, key], port];
-			{x, If[outputQ, 1, 2], Lookup[If[outputQ, Lookup[outputPorts, key], Lookup[inputPorts, key]], port, 1]}
+			{x, If[outputQ, 2, 1], Lookup[If[outputQ, Lookup[outputPorts, key], Lookup[inputPorts, key]], port, 2]}
 		]
 	};
 	edges = Replace[edges, {
-		(idx1 : _Integer | _String -> idx2 : _Integer | _String) :> {idx1, 1, 1} -> {idx2, 2, 1},
-		(idx : _Integer | _String  -> port_List) :> {idx, 1, 1} -> port,
-		(port_ -> idx : _Integer | _String) :> port -> {idx, 2, 1}
+		(idx1 : _Integer | _String -> idx2 : _Integer | _String) :> {idx1, 2, 1} -> {idx2, 1, 1},
+		(idx : _Integer | _String  -> port_List) :> {idx, 2, 1} -> port,
+		(port_ -> idx : _Integer | _String) :> port -> {idx, 1, 1}
 	}, 1];
 	rules = Reverse /@ edges;
 	
 	diagrams = MapIndexed[With[{i = #2[[1, 1, 1]]},
 		Diagram[
 			Interpretation[Replace[#, _[assoc_,___] :> Graphics @ NeuralNetworks`Private`GetPanelIcon[assoc]], #],
-			MapIndexed[Interpretation @@ {{i, 1, #2[[1]]}, Construct @@ #1} &, Normal @ Information[#, "OutputPorts"]],
-			MapIndexed[Interpretation @@ {Replace[{i, 2, #2[[1]]}, rules], Construct @@ #1} &, Normal @ Information[#, "InputPorts"]]
+			MapIndexed[Interpretation @@ {Replace[{i, 1, #2[[1]]}, rules], Construct @@ #1} &, Normal @ Information[#, "InputPorts"]],
+			MapIndexed[Interpretation @@ {{i, 2, #2[[1]]}, Construct @@ #1} &, Normal @ Information[#, "OutputPorts"]]
 		]] &,
 		layers
 	];
@@ -79,7 +79,7 @@ SystemModelDiagram[sm : HoldPattern[_SystemModel], path_, opts : OptionsPattern[
 		Port[Interpretation[Last[path], path], name],
 		With[{assoc = Association @ Map[Apply[#1 -> SystemModelDiagram[#2, Append[path, #1]] &], components]},
 			If[ AllTrue[assoc, PortQ],
-				With[{ports = <|True -> {}, False -> {}, GroupBy[Values[assoc], MemberQ[parameters, #["Name"]] &]|>}, Diagram[Interpretation[Show[sm["Thumbnail"], ImageSize -> 16], sm["ModelName"]], ports[False], ports[True]]],
+				With[{ports = <|True -> {}, False -> {}, GroupBy[Values[assoc], MemberQ[parameters, #["Name"]] &]|>}, Diagram[Interpretation[Show[sm["Thumbnail"], ImageSize -> 16], sm["ModelName"]], ports[True], ports[False]]],
 				If[Length[assoc] == 1, #, DiagramNetwork[##,
 					opts,
 					"PortFunction" -> With[{c = Replace[connections, (lhs_ -> rhs_) :> Append[lhs, x___] -> Append[rhs, x], 1]},
@@ -91,7 +91,7 @@ SystemModelDiagram[sm : HoldPattern[_SystemModel], path_, opts : OptionsPattern[
 					PlotLabel -> name
 				]] & @@ KeyValueMap[
 					Diagram[
-						If[DiagramQ[#2], #2, If[MemberQ[parameters, #2["Name"]], Diagram[#2, {}, #2, "Shape" -> "Triangle"], Diagram[#2, #2, "Shape" -> "UpsideDownTriangle"]]],
+						If[DiagramQ[#2], #2, If[MemberQ[parameters, #2["Name"]], Diagram[#2, #2, {}, "Shape" -> "Triangle"], Diagram[#2, #2, "Shape" -> "UpsideDownTriangle"]]],
 						"Width" -> 20,
 						"Height" -> 20,
 						"Angle" -> Lookup[transforms, #1, 0, #[[1, 1]] &],
@@ -110,23 +110,23 @@ LambdaDiagrams[Interpretation["\[Lambda]", tag_][body_][arg_], depth_] := Block[
 	bodyDiagram = DiagramNetwork @@ LambdaDiagrams[body /. Interpretation[v_Integer, tag] :> Interpretation[v, Evaluate @ out], depth + 1];
 	Join[
 		{
-			Diagram["\[Lambda]", tag, \[FormalX][tag], "Shape" -> "Circle"],
-			Diagram["\[Application]", \[FormalX][tag], {bodyDiagram["OutputPorts"][[1]], out}, "Shape" -> "Triangle"]
+			Diagram["\[Lambda]", \[FormalX][tag], tag, "Shape" -> "Circle"],
+			Diagram["\[Application]", {bodyDiagram["OutputPorts"][[1]], out}, \[FormalX][tag], "Shape" -> "Triangle"]
 		},
 		bodyDiagram["SubDiagrams"], argDiagram["SubDiagrams"]
 	]
 ] 
-LambdaDiagrams[Interpretation["\[Lambda]", tag_][body_], depth_] := With[{bodyDiagrams = LambdaDiagrams[body, depth]}, Join[{Diagram["\[Lambda]", tag, \[FormalX][tag], "Shape" -> "Circle"]}, bodyDiagrams]]
-LambdaDiagrams[Interpretation[_Integer, f_][Interpretation[_Integer, x_]], _] := {Diagram["\[Application]", Unique["x"], {f, x}, "Shape" -> "Triangle"]}
+LambdaDiagrams[Interpretation["\[Lambda]", tag_][body_], depth_] := With[{bodyDiagrams = LambdaDiagrams[body, depth]}, Join[{Diagram["\[Lambda]", \[FormalX][tag], tag, "Shape" -> "Circle"]}, bodyDiagrams]]
+LambdaDiagrams[Interpretation[_Integer, f_][Interpretation[_Integer, x_]], _] := {Diagram["\[Application]", {f, x}, Unique["x"], "Shape" -> "Triangle"]}
 LambdaDiagrams[Interpretation[_Integer, tag : _Port | _Symbol][arg_], depth_] := With[{argDiagram = DiagramNetwork @@ LambdaDiagrams[arg, depth]},
-	Join[{Diagram["\[Application]", Unique["x"], {tag, argDiagram["OutputPorts"][[1]]}, "Shape" -> "Triangle"]}, argDiagram["SubDiagrams"]]
+	Join[{Diagram["\[Application]", {tag, argDiagram["OutputPorts"][[1]]}, Unique["x"], "Shape" -> "Triangle"]}, argDiagram["SubDiagrams"]]
 ]
-LambdaDiagrams[Interpretation[v_Integer, tag : _Port | _Symbol], _] := With[{port = Port[tag]}, {Diagram["", \[FormalO][port["Name"]], port, "Shape" -> "Circle"]}]
+LambdaDiagrams[Interpretation[v_Integer, tag : _Port | _Symbol], _] := With[{port = Port[tag]}, {Diagram["", port, \[FormalO][port["Name"]], "Shape" -> "Circle"]}]
 LambdaDiagrams[i_Interpretation[_Integer, _], _] := {}
 LambdaDiagrams[f_[xs___], depth_] := Block[{fDiagram, xDiagrams = DiagramNetwork @@ LambdaDiagrams[#, depth] & /@ {xs}, out},
 	out = Catenate[Through[xDiagrams["OutputPorts"]]];
 	fDiagram = DiagramNetwork @@ LambdaDiagrams[f /. Interpretation[_Integer, var_Integer] :> Interpretation[var, Evaluate @ out], depth];
-	Join[fDiagram["SubDiagrams"], {Diagram["\[Application]", Unique["x"], Join[fDiagram["OutputPorts"], out], "Shape" -> "Triangle"]},
+	Join[fDiagram["SubDiagrams"], {Diagram["\[Application]", Join[fDiagram["OutputPorts"], out], Unique["x"], "Shape" -> "Triangle"]},
 		Catenate[Through[xDiagrams["SubDiagrams"]]]]
 ]
 LambdaDiagrams[x_, _] := {Diagram[x, Unique["x"], "Shape" -> "UpsideDownTriangle"]}
