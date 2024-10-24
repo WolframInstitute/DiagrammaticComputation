@@ -38,7 +38,7 @@ idDiagram[xs_List] := With[{ports = makePorts[xs]},
     Diagram["1", ports, ports, "Shape" -> "CrossWires", "ShowLabel" -> False]
 ]
     
-piDiagram[inputs_List, outputs_List] := Diagram["\[Pi]", makePorts[inputs], makePorts[outputs], "Shape" -> "CrossWires", "ShowLabel" -> False]
+piDiagram[inputs_List, outputs_List] := Diagram[Interpretation["\[Pi]", Evaluate[FindPermutation[inputs, outputs]]], makePorts[inputs], makePorts[outputs], "Shape" -> "CrossWires", "ShowLabel" -> False]
 
 
 tag[expr_, tag_] := Replace[expr, {

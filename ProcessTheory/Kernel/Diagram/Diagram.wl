@@ -884,31 +884,35 @@ ToDiagramNetwork[CircleDot[ds__], pos_, ports_Association, opts : OptionsPattern
 ToDiagramNetwork[{ds___}, pos_, ports_Association, opts : OptionsPattern[]] := Catenate[ToDiagramNetwork[#, pos, ports, "Unique" -> False, opts] & /@ {ds}]
 
 
-Options[DiagramTensor] = {"Kronecker" -> False}
+Options[DiagramTensor] = {"Kronecker" -> False, "ArrayDot" -> True}
 
-DiagramTensor[diagram_Diagram, OptionsPattern[]] := Replace[diagram["HoldExpression"], {
-	HoldForm[DiagramDual[d_]] :> Conjugate[DiagramTensor[d]]
+DiagramTensor[diagram_Diagram, opts : OptionsPattern[]] := Replace[diagram["HoldExpression"], {
+	HoldForm[DiagramDual[d_]] :> Conjugate[DiagramTensor[d, opts]]
 	,
-	HoldForm[DiagramFlip[d_]] :> ConjugateTranspose[DiagramTensor[d], FindPermutation[Catenate[Reverse @ TakeDrop[Range[diagram["Arity"]], diagram["OutputArity"]]]]]
+	HoldForm[DiagramFlip[d_]] :> ConjugateTranspose[DiagramTensor[d, opts], FindPermutation[Catenate[Reverse @ TakeDrop[Range[diagram["Arity"]], diagram["OutputArity"]]]]]
 	,
-	HoldForm[DiagramReverse[d_]] :> Transpose[DiagramTensor[d], FindPermutation[Join[Reverse @ Range[diagram["OutputArity"]], Reverse[diagram["OutputArity"] + Range[diagram["InputArity"]]]]]]
+	HoldForm[DiagramReverse[d_]] :> Transpose[DiagramTensor[d, opts], FindPermutation[Join[Reverse @ Range[diagram["OutputArity"]], Reverse[diagram["OutputArity"] + Range[diagram["InputArity"]]]]]]
 	,
-	HoldForm[DiagramComposition[ds___]] :> Dot @@ (
-		If[ #["OutputArity"] == #["InputArity"] == 1
-			,
-			DiagramTensor[#]
-			,
-			ArrayReshape[DiagramTensor[#], {Times @@ Through[#["OutputPorts"]["Name"]], Times @@ Through[#["InputPorts"]["Name"]]}]
-		] & /@ {ds}
-	)
+	HoldForm[DiagramComposition[ds___]] :> If[TrueQ[OptionValue["ArrayDot"]],
+        Fold[ArrayDot[If[DiagramQ[#1], DiagramTensor[#1, opts], #1], DiagramTensor[#2, opts], #2["OutputArity"]] &, {ds}]
+        ,
+        Dot @@ (
+            If[ #["OutputArity"] == #["InputArity"] == 1
+                ,
+                DiagramTensor[#, opts]
+                ,
+                ArrayReshape[DiagramTensor[#, opts], {Times @@ Through[#["OutputPorts"]["Name"]], Times @@ Through[#["InputPorts"]["Name"]]}]
+            ] & /@ {ds}
+	    )
+    ]
 	,
 	HoldForm[DiagramProduct[ds___]] :> If[TrueQ[OptionValue["Kronecker"]],
         With[{
             tensors = If[ #["OutputArity"] == #["InputArity"] == 1
                 ,
-                DiagramTensor[#]
+                DiagramTensor[#, opts]
                 ,
-                ArrayReshape[DiagramTensor[#], {Times @@ Through[#["OutputPorts"]["Name"]], Times @@ Through[#["InputPorts"]["Name"]]}]
+                ArrayReshape[DiagramTensor[#, opts], {Times @@ Through[#["OutputPorts"]["Name"]], Times @@ Through[#["InputPorts"]["Name"]]}]
             ] & /@ {ds}
         }
         ,
@@ -920,15 +924,15 @@ DiagramTensor[diagram_Diagram, OptionsPattern[]] := Replace[diagram["HoldExpress
         ]
         ,
         With[{
-            tensors = DiagramTensor /@ {ds},
+            tensors = DiagramTensor[#, opts] & /@ {ds},
             indices = FoldPairList[With[{out = #2["OutputArity"], in = #2["InputArity"]}, {#1 + {Range[out], out + Range[in]}, #1 + out + in}] &, 0, {ds}]
         }
         ,
-            Transpose[TensorProduct @@ tensors, FindPermutation[Flatten[indices], Flatten[Reverse /@ indices]]]
+            Transpose[TensorProduct @@ tensors, FindPermutation[Flatten[Thread[indices]]]]
         ]
     ]
 	,
-	HoldForm[DiagramSum[ds___]] :> Plus @@ (DiagramTensor /@ {ds})
+	HoldForm[DiagramSum[ds___]] :> Plus @@ (DiagramTensor[#, opts] & /@ {ds})
 	,
 	HoldForm[DiagramNetwork[ds___]] :> Block[{
 		portFunction = diagram["OptionValue"["PortFunction"]],
@@ -940,14 +944,19 @@ DiagramTensor[diagram_Diagram, OptionsPattern[]] := Replace[diagram["HoldExpress
 		permutation = FindPermutation[Delete[ports, List /@ Catenate[contraction]], freePorts];
 		Transpose[
 			TensorContract[
-				TensorProduct @@ DiagramTensor /@ {ds},
+				TensorProduct @@ (DiagramTensor[#, opts] & /@ {ds}),
 				contraction
 			],
 			permutation
 		]
 	]
 	,
-	_ :> Switch[diagram["Arity"], 1, VectorSymbol, 2, MatrixSymbol, _, ArraySymbol][diagram["HoldExpression"], Through[diagram["Ports"]["Name"]]]
+	_ :>
+        Replace[diagram["HoldExpression"], {
+            HoldForm["1"] -> SymbolicIdentityArray[Through[diagram["OutputPorts"]["Name"]]],
+            HoldForm[Interpretation["\[Pi]", perm_Cycles]] :> Transpose[SymbolicIdentityArray[Through[diagram["OutputPorts"]["Name"]]], perm],
+            expr_ :> Switch[diagram["Arity"], 1, VectorSymbol, 2, MatrixSymbol, _, ArraySymbol][expr, Through[diagram["Ports"]["Name"]]]
+        }]
 }]
 
 
