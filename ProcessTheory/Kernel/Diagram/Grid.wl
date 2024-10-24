@@ -27,7 +27,7 @@ ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
     If[ ContainsNone[aPorts, bPorts],
         If[ aPorts === {} && bPorts === {},
             Return[DiagramComposition[b, a, FilterRules[{opts}, Options[DiagramComposition]]]],
-            Return[RowDiagram[{a, b}, FilterRules[{opts}, Options[RowDiagram]]]]
+            Return[RowDiagram[{b, a}, FilterRules[{opts}, Options[RowDiagram]]]]
         ]
     ];
     inputs = DeleteElements[bPorts, 1 -> aPorts];

@@ -83,7 +83,7 @@ SystemModelDiagram[sm : HoldPattern[_SystemModel], path_, opts : OptionsPattern[
 				If[Length[assoc] == 1, #, DiagramNetwork[##,
 					opts,
 					"PortFunction" -> With[{c = Replace[connections, (lhs_ -> rhs_) :> Append[lhs, x___] -> Append[rhs, x], 1]},
-						Replace[#["Expression"], Interpretation[_, p_] | PortDual[Interpretation[_, p_]] :> HoldForm[Evaluate @ Replace[p, c]]] &
+						Replace[#["HoldExpression"], HoldForm[Interpretation[_, p_] | PortDual[Interpretation[_, p_]]] :> HoldForm[Evaluate @ Replace[p, c]]] &
 					],
 					"LabelFunction" -> Function[Evaluate[ClickToCopy[Show[sm["Thumbnail"], ImageSize -> 32], #["View"]]]],
 					"ShowWireLabels" -> False,
