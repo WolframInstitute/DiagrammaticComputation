@@ -381,7 +381,7 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
                         ps[[1]],
                         1
                     ],
-                    Values @ Merge[KeyUnion[{inputs, outputs}, {} &], Apply[{points[[2, #1]], points[[1, #2]]} &]]
+                    Values @ Merge[KeyUnion[{inputs, outputs}, {} &], Apply[{points[[1, #1]], points[[2, #2]]} &]]
                 ]
             ],
             "Wires" :> With[{
@@ -391,7 +391,7 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
             },
                 Map[
                     ps |-> BSplineCurve[{ps[[1, 1]], 2 * ps[[1, 1]] - ps[[1, 2]], If[Length[ps] == 2, Nothing, c], 2 * #[[1]] - #[[2]], #[[1]]}] & /@ Rest[ps],
-                    Values @ Merge[KeyUnion[{inputs, outputs}, {} &], Apply[Join[points[[2, #1]], points[[1, #2]]] &]]
+                    Values @ Merge[KeyUnion[{inputs, outputs}, {} &], Apply[Join[points[[1, #1]], points[[2, #2]]] &]]
                 ]
             ],
             "Wire" :> With[{
