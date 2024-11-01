@@ -301,6 +301,15 @@ DiagramProp[d_, "FlattenNetworks"] := If[d["NetworkQ"],
     With[{ds = d["SubDiagrams"]}, If[ds === {}, d, Diagram[d, "Expression" -> d["Head"] @@ Through[ds["FlattenNetworks"]]]]]
 ]
 
+DiagramProp[d_, "Split", n_Integer, dualQ : _ ? BooleanQ : True] := Block[{m = If[n >= 0, n, d["Arity"] + n], outputs, inputs, dual = If[dualQ, PortDual, Identity]},
+    outputs = TakeDrop[d["OutputPorts"], UpTo[m]];
+    inputs = TakeDrop[d["InputPorts"], UpTo[Max[0, m - d["OutputArity"]]]];
+    Diagram[d,
+        "OutputPorts" -> Join[outputs[[1]], dual /@ inputs[[1]]],
+        "InputPorts" -> Join[dual /@ outputs[[2]], inputs[[2]]]
+    ]
+    ]
+
 DiagramProp[d_, "View"] := With[{
     holdExpr = Replace[d["HoldExpression"],
         HoldForm[(head : DiagramDual | DiagramFlip | DiagramReverse | DiagramProduct | DiagramSum | DiagramComposition | DiagramNetwork)[ds___]] :>
