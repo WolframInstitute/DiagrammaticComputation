@@ -16,7 +16,9 @@ Begin["ProcessTheory`Port`Private`"];
 
 Port::usage = "Port[expr] represents a symbolic port for diagram inputs and outputs"
 
-Options[Port] = {"Type" -> \[FormalCapitalT]};
+$DefaultPortType = \[FormalCapitalT]
+
+Options[Port] = {"Type" -> $DefaultPortType};
 
 $PortHiddenOptions = {"Expression" -> "1"}
 
@@ -139,9 +141,9 @@ PortProp[p_, "Label"] := ReplaceAll[
 ]
 
 PortProp[p_, "View"] := With[{
-    label = p["Label"]
+    label = p["Label"], type = p["Type"]
 },
-    Defer[Port[label]] //. HoldForm[x_] :> x
+    If[type === $DefaultPortType, Defer[Port[label]], Defer[Port[label, type]]] //. HoldForm[x_] :> x
 ]
 
 PortProp[p_, "Dual"] := PortDual[p]

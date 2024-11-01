@@ -30,18 +30,15 @@ Begin["ProcessTheory`Diagram`Private`"];
 
 Diagram::usage = "Diagram[expr] represents a symbolic diagram with input and output ports"
 
-Options[Diagram] = {};
+Options[Diagram] := Sort @ DeleteDuplicatesBy[First] @ Join[Options[DiagramGraphics], Options[DiagramGrid], Options[DiagramNetGraph]];
 
 $DiagramHiddenOptions = {"Expression" -> None, "OutputPorts" -> {}, "InputPorts" -> {}, "DiagramOptions" -> {}};
 
-$DiagramProperties = Sort @ Join[
-    Keys[Options[Diagram]],
-    {
-        "Properties", "HoldExpression", "ProductQ", "SumQ", "CompositionQ", "NetworkQ", "SubDiagrams",
-        "Ports", "Arity", "FlattenOutputs", "FlattenInputs", "Flatten", "View", "Name", "Tensor", "Function", "Shape",
-        "Diagram", "PortGraph", "Graph", "NetGraph", "Grid"
-    }
-];
+$DiagramProperties = Sort @ {
+    "Properties", "HoldExpression", "ProductQ", "SumQ", "CompositionQ", "NetworkQ", "SubDiagrams",
+    "Ports", "PortArrows", "Arity", "FlattenOutputs", "FlattenInputs", "Flatten", "View", "Name", "Tensor", "Function", "Shape",
+    "Diagram", "PortGraph", "Graph", "NetGraph", "Grid"
+}
 
 
 (* ::Subsection:: *)
@@ -106,8 +103,8 @@ Diagram[expr : Except[_Association | _Diagram | OptionsPattern[]], opts : Option
 
 Diagram[opts : OptionsPattern[]] := Diagram[KeySort[<|
     DeleteDuplicatesBy[First] @ FilterRules[
-        {"DiagramOptions" -> FilterRules[{opts, Values[FilterRules[{opts}, "DiagramOptions"]]}, Join[Options[DiagramGraphics], Options[DiagramsNetGraph], Options[DiagramGrid]]], opts, Options[Diagram], $DiagramHiddenOptions},
-        Join[Options[Diagram], $DiagramHiddenOptions]
+        {"DiagramOptions" -> FilterRules[{opts, Values[FilterRules[{opts}, "DiagramOptions"]]}, Options[Diagram]], opts, $DiagramHiddenOptions},
+        Join[$DiagramHiddenOptions]
     ]|>
 ]]
 
@@ -248,7 +245,7 @@ DiagramProp[_, "Properties"] := Sort[$DiagramProperties]
 
 DiagramProp[HoldPattern[Diagram[data_]], "Data"] := data
 
-DiagramProp[HoldPattern[Diagram[data_Association]], prop_] /; KeyExistsQ[data, prop] := Lookup[data, prop]
+DiagramProp[HoldPattern[Diagram[data_Association]], prop_] /; ! MemberQ[prop, $DiagramProperties] && KeyExistsQ[data, prop] := Lookup[data, prop]
 
 DiagramProp[d_, "HoldExpression"] := Extract[d["Data"], "Expression", HoldForm]
 
@@ -280,7 +277,7 @@ DiagramProp[d_, "SubDiagrams"] := Replace[d["HoldExpression"], {
     _ -> {}
 }]
 
-DiagramProp[d_, "Ports"] := Join[d["OutputPorts"], d["InputPorts"]]
+DiagramProp[d_, "Ports", dualQ : _ ? BooleanQ : False] := Join[d["OutputPorts"], If[dualQ, PortDual, Identity] /@ d["InputPorts"]]
 
 DiagramProp[d_, "OutputArity"] := Length[d["OutputPorts"]]
 
@@ -315,8 +312,8 @@ DiagramProp[d_, "View"] := With[{
         HoldForm[(head : DiagramDual | DiagramFlip | DiagramReverse | DiagramProduct | DiagramSum | DiagramComposition | DiagramNetwork)[ds___]] :>
             head @@@ HoldForm[Evaluate[Flatten[Defer @@ (Function[Null, If[DiagramQ[#], #, Defer[#]], HoldFirst] /@ Unevaluated[{ds}])]]]
     ],
-    outputs = Replace[Through[d["OutputPorts"]["Label"]], {p : Except[HoldForm[_List | _Interpretation]]} :> p],
-    inputs = Replace[Through[Through[d["InputPorts"]["Dual"]]["Label"]], {p : Except[HoldForm[_List | _Interpretation]]} :> p],
+    outputs = Replace[Through[d["OutputPorts"]["View"]], {p : Except[HoldForm[_List | _Interpretation]]} :> p],
+    inputs = Replace[Through[Through[d["InputPorts"]["Dual"]]["View"]], {p : Except[HoldForm[_List | _Interpretation]]} :> p],
     opts = d["DiagramOptions"]
 },
     Function[expr, If[opts === {}, Defer[Diagram[expr, inputs, outputs]], Defer[Diagram[expr, inputs, outputs, ##]] & @@ opts] //. HoldForm[x_] :> x, HoldFirst] @@ holdExpr
