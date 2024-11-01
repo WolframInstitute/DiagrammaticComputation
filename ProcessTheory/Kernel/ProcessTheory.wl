@@ -22,7 +22,9 @@ ProcessTheory`ProcessTheoryDump`$exported = {
 	System`ColumnDiagram,
 	System`RowDiagram,
 	System`DiagramGrid,
-	System`DiagramDraw
+	System`DiagramDraw,
+	System`DiagramFunction,
+	System`DiagramTensor
 };
 
 Unprotect /@ ProcessTheory`ProcessTheoryDump`$exported;

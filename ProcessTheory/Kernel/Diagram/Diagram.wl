@@ -18,6 +18,9 @@ DiagramsPortGraph
 DiagramsGraph
 DiagramsNetGraph
 
+DiagramTensor
+DiagramFunction
+
 
 Begin["ProcessTheory`Diagram`Private`"];
 
@@ -31,11 +34,11 @@ Options[Diagram] = {};
 
 $DiagramHiddenOptions = {"Expression" -> None, "OutputPorts" -> {}, "InputPorts" -> {}, "DiagramOptions" -> {}};
 
-$DiagramProperties = Join[
+$DiagramProperties = Sort @ Join[
     Keys[Options[Diagram]],
     {
         "Properties", "HoldExpression", "ProductQ", "SumQ", "CompositionQ", "NetworkQ", "SubDiagrams",
-        "Ports", "Arity", "FlattenOutputs", "FlattenInputs", "Flatten", "View", "Name", "Tensor", "Shape",
+        "Ports", "Arity", "FlattenOutputs", "FlattenInputs", "Flatten", "View", "Name", "Tensor", "Function", "Shape",
         "Diagram", "PortGraph", "Graph", "NetGraph", "Grid"
     }
 ];
@@ -328,6 +331,8 @@ DiagramProp[d_, "Name"] := Replace[
 DiagramProp[diagram_, "Decompose"] := DiagramDecompose[diagram]
 
 DiagramProp[diagram_, "Tensor" | "ArraySymbol", opts : OptionsPattern[]] := DiagramTensor[diagram, FilterRules[{opts}, Options[DiagramTensor]]]
+
+DiagramProp[diagram_, "Function", opts : OptionsPattern[]] := DiagramFunction[diagram, FilterRules[{opts}, Options[DiagramFunction]]]
 
 DiagramProp[d_, "Diagram" | "Graphics", opts : OptionsPattern[]] := DiagramGraphics[d, FilterRules[{opts}, Options[DiagramGraphics]], BaseStyle -> {GraphicsHighlightColor -> Automatic}]
 
@@ -959,6 +964,39 @@ DiagramTensor[diagram_Diagram, opts : OptionsPattern[]] := Replace[diagram["Hold
         }]
 }]
 
+
+
+Options[DiagramFunction] = {"IndexedOutput" -> True, "PortFunction" -> None};
+
+DiagramFunction[diagram_Diagram, opts : OptionsPattern[]] := Replace[diagram["HoldExpression"], {
+	HoldForm[DiagramDual[d_]] :> DiagramFunction[d, opts]
+	,
+	HoldForm[DiagramFlip[d_]] :> InverseFunction[DiagramFunction[d, opts]]
+	,
+	HoldForm[DiagramReverse[d_]] :> Reverse @* DiagramFunction[d, opts] @* Reverse
+	,
+	HoldForm[DiagramComposition[ds___]] :> Composition @@ (DiagramFunction[#, opts] & /@ {ds})
+	,
+	HoldForm[DiagramProduct[ds___]] :> With[{args = TakeDrop[Slot /@ Range[Total[#]], #] & @ Through[{ds}["InputArity"]] /. \[FormalX] -> #},
+		Function @@ If[TrueQ[OptionValue["IndexedOutput"]], Map[Catenate], Identity] @ WaitAll /@ List @@@
+			Hold @ Evaluate @ Flatten[Hold @@ MapThread[If[Length[#2] == 1, With[{x = #2[[1]]}, Hold[ParallelSubmit[#1[x]]]], Hold[ParallelSubmit[#1 @@ #2]]] &, {DiagramFunction[#, opts] & /@ {ds}, args}]]
+	]
+	,
+	HoldForm[DiagramSum[ds___]] :> (DiagramFunction[#, opts] & /@ {ds})
+	,
+	_ :> With[{
+		f = Replace[diagram["HoldExpression"],
+			HoldForm[anno_Annotation] :> Lookup[Options[anno], "Function", diagram["HoldExpression"]]
+		]
+	},
+		If[ TrueQ[OptionValue["IndexedOutput"]],
+			With[{return = Table[Indexed[#, i], {i, diagram["OutputArity"]}]},
+				Function[Function[return] @ f[##]]
+			],
+			f
+		]
+	]
+}]
 
 
 End[];

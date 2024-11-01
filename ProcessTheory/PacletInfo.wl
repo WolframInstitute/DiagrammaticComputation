@@ -23,7 +23,9 @@ PacletObject[
 			"System`ColumnDiagram",
 			"System`RowDiagram",
 			"System`DiagramGrid",
-			"System`DiagramDraw"
+			"System`DiagramDraw",
+			"System`DiagramFunction",
+			"System`DiagramTensor"
 		},
         "Root" -> "Kernel",
         "Context" -> {
