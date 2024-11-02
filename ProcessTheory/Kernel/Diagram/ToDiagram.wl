@@ -6,6 +6,7 @@ Begin["ProcessTheory`Diagram`ToDiagram`Private`"];
 
 
 ToDiagram[g_Graph, opts : OptionsPattern[GraphDiagram]] := GraphDiagram[g, opts]
+ToDiagram[t_Tree, opts : OptionsPattern[TreeDiagram]] := TreeDiagram[t, opts]
 ToDiagram[hg : {___List} | _WolframInstitute`Hypergraph`Hypergraph, opts : OptionsPattern[HypergraphDiagram]] := HypergraphDiagram[hg, opts]
 ToDiagram[ng_NetGraph, opts : OptionsPattern[NetGraphDiagram]] := NetGraphDiagram[NetFlatten[ng], opts]
 ToDiagram[sm : HoldPattern[_SystemModel], opts : OptionsPattern[SystemModelDiagram]] := SystemModelDiagram[sm, {}, opts]
@@ -16,6 +17,21 @@ ToDiagram[expr_, opts : OptionsPattern[LambdaDiagram]] := LambdaDiagram[expr, op
 Options[GraphDiagram] = Options[DiagramNetwork];
 GraphDiagram[g_Graph, opts : OptionsPattern[]] := 
 	DiagramNetwork[##, opts] & @@ (Diagram[#, EdgeList[g, _[_, #, ___]], EdgeList[g, _[#, __]]] & /@ VertexList[g])
+
+
+Options[treeDiagram] = Options[Tree];
+treeDiagram[t_Tree, pos_List, opts : OptionsPattern[]] := Block[{data = TreeData[t], children = Replace[TreeChildren[t], None -> {}], diagram},
+	If[	children === {}
+		,
+		Diagram[data, {pos}, {}]
+		,
+		diagram = DiagramProduct @@ MapIndexed[treeDiagram[#1, Join[pos, #2], opts] &, children];
+		DiagramComposition[diagram, Diagram[data, {pos}, diagram["InputPorts"]], opts]
+	]
+]
+
+Options[TreeDiagram] = Options[treeDiagram];
+TreeDiagram[t_Tree, opts : OptionsPattern[]] := treeDiagram[t, {}, opts]
 
 
 Options[HypergraphDiagram] = Options[DiagramNetwork];
