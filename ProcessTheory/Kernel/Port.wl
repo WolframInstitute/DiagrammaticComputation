@@ -101,6 +101,7 @@ Port[expr : Except[_Association], type : Except[OptionsPattern[]], opts : Option
 
 Port[opts : OptionsPattern[]] := Port[KeySort[<|DeleteDuplicatesBy[First] @ FilterRules[{opts, Options[Port], $PortHiddenOptions}, Join[Options[Port], $PortHiddenOptions]]|>]]
 
+Port[{}] := Port["Expression" :> {}]
 
 (* ::Section:: *)
 (* Properties *)

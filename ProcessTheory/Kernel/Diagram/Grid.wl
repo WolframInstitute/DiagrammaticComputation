@@ -7,6 +7,8 @@ DiagramGrid
 DiagramArrange
 DiagramDecompose
 
+matchPorts
+
 Begin["ProcessTheory`Diagram`Grid`Private`"];
 
 
@@ -166,6 +168,11 @@ matchPorts[CircleTimes[ds___], {outputPorts_, inputPorts_}] := CircleTimes @@ Ma
         ]
     }
 ]
+
+matchPorts[Conjugate[d_], {outputPorts_, inputPorts_}] := Conjugate[matchPorts[d, {outputPorts, inputPorts}]]
+
+matchPorts[Transpose[d_, perm_ : None], {outputPorts_, inputPorts_}] :=
+    Transpose[matchPorts[d, TakeDrop[Permute[Join[outputPorts, inputPorts], InversePermutation[Replace[perm, None -> {1, 2}]]], Length[outputPorts]]], perm]
 
 
 Options[DiagramDecompose] = {"Network" -> True}

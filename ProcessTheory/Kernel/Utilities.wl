@@ -34,11 +34,12 @@ reverseTree[tree_] := Replace[Unevaluated[tree], {
 
 makePorts[xs_List] := Function[Null, Port[Unevaluated[##]], HoldAll] @@@ Flatten @* HoldForm /@ Replace[xs, SuperStar[HoldForm[x_]] :> HoldForm[SuperStar[x]], 1]
 
-idDiagram[xs_List] := With[{ports = makePorts[xs]},
-    Diagram["1", ports, ports, "Shape" -> "CrossWires", "ShowLabel" -> False]
+idDiagram[xs_List, opts___] := With[{ports = makePorts[xs]},
+    Diagram["1", ports, ports, opts, "Shape" -> "CrossWires", "ShowLabel" -> False]
 ]
     
-piDiagram[inputs_List, outputs_List] := Diagram[Interpretation["\[Pi]", Evaluate[FindPermutation[inputs, outputs]]], makePorts[inputs], makePorts[outputs], "Shape" -> "CrossWires", "ShowLabel" -> False]
+piDiagram[inputs_List, outputs_List, opts___] :=
+    Diagram[Interpretation["\[Pi]", Evaluate[FindPermutation[inputs, outputs]]], makePorts[inputs], makePorts[outputs], opts, "Shape" -> "CrossWires", "ShowLabel" -> False]
 
 
 tag[expr_, tag_] := Replace[expr, {
