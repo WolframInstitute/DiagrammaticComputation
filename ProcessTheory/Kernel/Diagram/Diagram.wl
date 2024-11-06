@@ -31,7 +31,7 @@ Begin["ProcessTheory`Diagram`Private`"];
 
 Diagram::usage = "Diagram[expr] represents a symbolic diagram with input and output ports"
 
-Options[Diagram] := Sort @ DeleteDuplicatesBy[First] @ Join[Options[DiagramGraphics], Options[DiagramGrid], Options[DiagramNetGraph]];
+Options[Diagram] := Sort @ DeleteDuplicatesBy[First] @ Join[Options[DiagramGraphics], Options[DiagramGrid], Options[DiagramsNetGraph]];
 
 $DiagramHiddenOptions = {"Expression" -> None, "OutputPorts" -> {}, "InputPorts" -> {}, "DiagramOptions" -> {}};
 
@@ -104,7 +104,7 @@ Diagram[expr : Except[_Association | _Diagram | OptionsPattern[]], opts : Option
 
 Diagram[opts : OptionsPattern[]] := Diagram[KeySort[<|
     DeleteDuplicatesBy[First] @ FilterRules[
-        {"DiagramOptions" -> FilterRules[{opts, Values[FilterRules[{opts}, "DiagramOptions"]]}, Options[Diagram]], opts, $DiagramHiddenOptions},
+        {"DiagramOptions" -> DeleteDuplicatesBy[First] @ FilterRules[{opts, Values[FilterRules[{opts}, "DiagramOptions"]]}, Options[Diagram]], opts, $DiagramHiddenOptions},
         Join[$DiagramHiddenOptions]
     ]|>
 ]]
@@ -211,7 +211,7 @@ DiagramComposition[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
 
 (* network of diagrams exposing free ports *)
 
-Options[DiagramNetwork] := Join[{"PortFunction" -> Function[#["Name"]]}, Options[Diagram], Options[DiagramsNetGraph]]
+Options[DiagramNetwork] := DeleteDuplicatesBy[First] @ Join[{"PortFunction" -> Function[#["Name"]]}, Options[Diagram], Options[DiagramsNetGraph]]
 DiagramNetwork[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
     subDiagrams = If[#["NetworkQ"], Splice[#["SubDiagrams"]], #] & /@ {ds}
 },
@@ -493,7 +493,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
 }, {
     portArrows = Replace[fillAutomatic[diagram["OptionValue"["PortArrows"], opts], arities, True], Placed[x_, _] :> x, {2}],
     portLabels = fillAutomatic[diagram["OptionValue"["PortLabels"], opts], arities, Automatic],
-    labelFunction = diagram["OptionValue"["LabelFunction"]]
+    labelFunction = diagram["OptionValue"["LabelFunction"], opts]
 }, Graphics[{
     EdgeForm[Black], FaceForm[Transparent], 
     Confirm @ diagram["Shape", opts],
@@ -770,7 +770,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
 		VertexShapeFunction -> Join[
 			Thread[diagramVertices ->
 				MapThread[{diagram, orientation} |-> With[{
-						shape = First @ diagram["Graphics", "PortLabels" -> If[portLabelsQ, Automatic, None], "PortArrows" -> None, opts],
+						shape = First @ diagram["Graphics", "PortLabels" -> If[portLabelsQ, Automatic, None], "PortArrows" -> None, "LabelFunction" -> Function[Rotate[#["HoldExpression"], Pi]], opts],
 						transform = RotationTransform[{{0, 1}, orientation}] @* ScalingTransform[scale {1, 1}]
 					},
 						Function[{
@@ -877,7 +877,8 @@ ToDiagramNetwork[d_Diagram, opts : OptionsPattern[]] := If[d["NetworkQ"],
 ToDiagramNetwork[d_Diagram, pos_, ports_Association, opts : OptionsPattern[]] := With[{portFunction = OptionValue["PortFunction"], uniqueQ = TrueQ[OptionValue["Unique"]]}, {
 	Diagram[d,
 		"OutputPorts" -> MapIndexed[Port[Lookup[ports, #1, Interpretation[#1, Evaluate[If[uniqueQ, Join[pos, {1}, #2], pos] -> #1]]]] &, portFunction /@ d["OutputPorts"]],
-		"InputPorts" -> MapIndexed[Port[Interpretation[#1, Evaluate[If[uniqueQ, Join[pos, {2}, #2], pos] -> #1]]]["Dual"] &, portFunction /@ Through[d["InputPorts"]["Dual"]]]
+		"InputPorts" -> MapIndexed[Port[Interpretation[#1, Evaluate[If[uniqueQ, Join[pos, {2}, #2], pos] -> #1]]]["Dual"] &, portFunction /@ Through[d["InputPorts"]["Dual"]]],
+        opts
 	]
 }
 ]
