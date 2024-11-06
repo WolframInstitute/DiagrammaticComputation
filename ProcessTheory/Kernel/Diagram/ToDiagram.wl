@@ -8,7 +8,7 @@ Begin["ProcessTheory`Diagram`ToDiagram`Private`"];
 ToDiagram[g_Graph, opts : OptionsPattern[GraphDiagram]] := GraphDiagram[g, opts]
 ToDiagram[t_Tree, opts : OptionsPattern[TreeDiagram]] := TreeDiagram[t, opts]
 ToDiagram[hg : {___List} | _WolframInstitute`Hypergraph`Hypergraph, opts : OptionsPattern[HypergraphDiagram]] := HypergraphDiagram[hg, opts]
-ToDiagram[ng_NetGraph, opts : OptionsPattern[NetGraphDiagram]] := NetGraphDiagram[NetFlatten[ng], opts]
+ToDiagram[ng : HoldPattern[_NetGraph], opts : OptionsPattern[NetGraphDiagram]] := NetGraphDiagram[NetFlatten[ng], opts]
 ToDiagram[sm : HoldPattern[_SystemModel], opts : OptionsPattern[SystemModelDiagram]] := SystemModelDiagram[sm, {}, opts]
 ToDiagram[qc_Wolfram`QuantumFramework`QuantumCircuitOperator, opts : OptionsPattern[QuantumCircuitDiagram]] := QuantumCircuitDiagram[qc, opts]
 ToDiagram[expr_, opts : OptionsPattern[LambdaDiagram]] := LambdaDiagram[expr, opts]
@@ -42,7 +42,7 @@ HypergraphDiagram[hg_WolframInstitute`Hypergraph`Hypergraph, opts : OptionsPatte
 
 
 Options[NetGraphDiagram] = Options[DiagramNetwork];
-NetGraphDiagram[ng_NetGraph, opts : OptionsPattern[]] := Block[{
+NetGraphDiagram[ng : HoldPattern[_NetGraph], opts : OptionsPattern[]] := Block[{
 	layers = Information[ng, "Layers"],
 	freeOutputPorts, freeInputPorts, outputPorts, inputPorts,
 	edges, rules,

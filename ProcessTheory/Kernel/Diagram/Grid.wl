@@ -169,9 +169,9 @@ matchPorts[CircleTimes[ds___], {outputPorts_, inputPorts_}] := CircleTimes @@ Ma
     }
 ]
 
-matchPorts[Conjugate[d_], {outputPorts_, inputPorts_}] := Conjugate[matchPorts[d, {outputPorts, inputPorts}]]
+matchPorts[HoldPattern[Conjugate[d_]], {outputPorts_, inputPorts_}] := Conjugate[matchPorts[d, {outputPorts, inputPorts}]]
 
-matchPorts[Transpose[d_, perm_ : None], {outputPorts_, inputPorts_}] :=
+matchPorts[HoldPattern[Transpose[d_, perm_ : None]], {outputPorts_, inputPorts_}] :=
     Transpose[matchPorts[d, TakeDrop[Permute[Join[outputPorts, inputPorts], InversePermutation[Replace[perm, None -> {1, 2}]]], Length[outputPorts]]], perm]
 
 
@@ -267,9 +267,9 @@ gridArrange[grid : CircleDot[ds___], {width_, height_}, {dx_, dy_}, corner : {xM
     MapIndexed[With[{i = #2[[1]]}, gridArrange[#1, {newWidth, heights[[i]]}, {dx, dy}, {xMin, yMin} + RotationTransform[angle] @ {0, positions[[i]]}, angle]] &, grid]
 ]
 
-gridArrange[Conjugate[d_], args___] := gridArrange[d /. diagram_Diagram :> DiagramDual[diagram], args]
+gridArrange[HoldPattern[Conjugate[d_]], args___] := gridArrange[d /. diagram_Diagram :> DiagramDual[diagram], args]
 
-gridArrange[Transpose[d_, perm___], args___] := (Sow[{perm}, "Transpose"]; gridArrange[d, args])
+gridArrange[HoldPattern[Transpose[d_, perm___]], args___] := (Sow[{perm}, "Transpose"]; gridArrange[d, args])
 
 gridArrange[grid_, gapSizes_, angle_] := gridArrange[grid, {Automatic, Automatic}, gapSizes, {0, 0}, angle]
 
