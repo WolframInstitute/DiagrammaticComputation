@@ -20,7 +20,7 @@ ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
     func = OptionValue["PortFunction"],
     a, b,
     aPorts, bPorts,
-    outputs, inputs
+    rowOpts = FilterRules[{opts}, Options[RowDiagram]]
 },
     a = x["FlattenOutputs"];
     b = y["FlattenInputs"];
@@ -29,29 +29,29 @@ ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
     If[ ContainsNone[aPorts, bPorts],
         If[ aPorts === {} && bPorts === {},
             Return[DiagramComposition[b, a, FilterRules[{opts}, Options[DiagramComposition]]]],
-            Return[RowDiagram[{b, a}, FilterRules[{opts}, Options[RowDiagram]]]]
+            Return[RowDiagram[{b, a}, rowOpts]]
         ]
     ];
-    inputs = DeleteElements[bPorts, 1 -> aPorts];
-    If[ inputs =!= {},
-        With[{seqPos = SequencePosition[bPorts, aPorts, 1]},
-            If[ seqPos === {}
-                ,
-                a = RowDiagram[{idDiagram[inputs], a}, FilterRules[{opts}, Options[RowDiagram]]]["Flatten"]
-                ,
-                a = RowDiagram[{If[#1 === {}, Nothing, idDiagram[#1]], a, If[#2 === {}, Nothing, idDiagram[#2]]} & @@ TakeDrop[inputs, seqPos[[1, 1]] - 1], FilterRules[{opts}, Options[RowDiagram]]]["Flatten"]
+    Replace[SequenceAlignment[bPorts, aPorts], {
+        {left : {l_, {}} | {{}, l_} : {}, {__}, right : {r_, {}} | {{}, r_} : {}} :> (
+            Which[
+                MatchQ[left, {_, {}}],
+                a = RowDiagram[{idDiagram[l], a}, rowOpts]["Flatten"],
+                MatchQ[left, {{}, _}],
+                b = RowDiagram[{idDiagram[l], b}, rowOpts]["Flatten"]
+            ];
+            Which[
+                MatchQ[right, {_, {}}],
+                a = RowDiagram[{a, idDiagram[r]}, rowOpts]["Flatten"],
+                MatchQ[right, {{}, _}],
+                b = RowDiagram[{b, idDiagram[r]}, rowOpts]["Flatten"]
             ]
-        ];
-        aPorts = func /@ a["OutputPorts"];
-    ];
-    outputs = DeleteElements[aPorts, 1 -> bPorts];
-    If[ outputs =!= {},
-        With[{seqPos = SequencePosition[aPorts, bPorts, 1]},
-            If[ seqPos === {},
-                b = RowDiagram[{idDiagram[outputs], b}, FilterRules[{opts}, Options[RowDiagram]]]["Flatten"],
-                b = RowDiagram[{If[#1 === {}, Nothing, idDiagram[#1]], b, If[#2 === {}, Nothing, idDiagram[#2]]} & @@ TakeDrop[outputs, seqPos[[1, 1]] - 1], FilterRules[{opts}, Options[RowDiagram]]]["Flatten"]
-            ]
+        ),
+        _ :> With[{ins = DeleteElements[bPorts, 1 -> aPorts], outs = DeleteElements[aPorts, 1 -> bPorts]},
+            If[ins =!= {}, a = RowDiagram[{idDiagram[ins], a}, rowOpts]["Flatten"]];
+            If[outs =!= {}, b = RowDiagram[{idDiagram[outs], b}, rowOpts]["Flatten"]]
         ]
+    }
     ];
 	aPorts = func /@ a["OutputPorts"];
 	bPorts = func /@ Through[b["InputPorts"]["Dual"]];
