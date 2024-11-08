@@ -159,6 +159,9 @@ DiagramReverse[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
 
 
 Options[DiagramSum] = Options[Diagram]
+
+DiagramSum[d_Diagram, opts : OptionsPattern[]] := Diagram[d, opts]
+
 DiagramSum[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{subDiagrams = If[#["SumQ"], Splice[#["SubDiagrams"]], #] & /@ {ds}},
     Diagram[
         opts,
@@ -171,6 +174,9 @@ DiagramSum[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{subDiagram
 (* horizontal product *)
 
 Options[DiagramProduct] = Options[Diagram]
+
+DiagramProduct[d_Diagram, opts : OptionsPattern[]] := Diagram[d, opts]
+
 DiagramProduct[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{subDiagrams = If[#["ProductQ"], Splice[#["SubDiagrams"]], #] & /@ {ds}},
     Diagram[
         opts,
@@ -194,6 +200,9 @@ collectPorts[ports_List] := If[ports === {}, {},
 ]
 
 Options[DiagramComposition] = Join[{"PortFunction" -> Function[#["Name"]]}, Options[Diagram]]
+
+DiagramComposition[d_Diagram, opts : OptionsPattern[]] := Diagram[d, opts]
+
 DiagramComposition[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
     subDiagrams = If[#["CompositionQ"], Splice[#["SubDiagrams"]], #] & /@ {ds},
     func = OptionValue["PortFunction"]
