@@ -220,14 +220,15 @@ gridHeight[expr_, prop_ : Automatic] := Replace[expr, {
 gridArrange[diagram_Diagram, {autoWidth_, autoHeight_}, {dx_, dy_}, corner_ : {0, 0}, angle_ : 0] := Block[{
     arity = diagram["MaxArity"],
     alignment = diagram["OptionValue"[Alignment]],
-    width = Replace[autoWidth, Automatic -> arity],
-    w, h, ratio, center
+    spacing = diagram["OptionValue"["Spacing"]],
+    width, w, h, ratio, center
 },
-    w = 1 / 1.6 * (1 + dx) * (1 + arity);
+    width = Replace[autoWidth, Automatic -> arity];
+    w = 1 / spacing * (1 + dx) * (1 + arity);
     h = Replace[autoHeight, Automatic -> 1];
     ratio = If[arity == 0, 0, Floor[width / arity]];
     center = corner + RotationTransform[angle] @ {
-        (1.6 w / 2) ratio +
+        (spacing * w / 2) ratio +
             (1 + dx) * (Replace[
                 alignment, {
                 Automatic | Left :> 1 - ratio,
@@ -292,6 +293,7 @@ Options[DiagramGrid] = Join[{
     "VerticalGapSize" -> 1,
     "Rotate" -> 0,
     "WireArrows" -> False,
+    Spacings -> 1.6,
     Dividers -> None,
     Alignment -> Automatic
 }, Options[DiagramArrange], Options[DiagramDecompose], Options[DiagramGraphics], Options[Graphics]
@@ -303,12 +305,13 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
     vGapSize = OptionValue["VerticalGapSize"],
     hGapSize = OptionValue["HorizontalGapSize"],
     angle = Replace[OptionValue["Rotate"], {Left -> - Pi / 2, Right -> Pi / 2, Bottom | True | Up -> Pi, None | False | Top | Down -> 0}],
+    spacing = OptionValue[Spacings],
     diagramOptions = FilterRules[{opts}, Except[Options[Graphics], Options[DiagramGraphics]]]
 },
 	width = gridWidth[grid];
 	height = gridHeight[grid];
 
-    grid = grid /. d_Diagram :> Diagram[d, "Angle" -> d["OptionValue"["Angle"]] + angle, Alignment -> Replace[d["OptionValue"[Alignment]], Automatic -> OptionValue[Alignment]]];
+    grid = grid /. d_Diagram :> Diagram[d, "Angle" -> d["OptionValue"["Angle"]] + angle, "Spacing" -> spacing, Alignment -> Replace[d["OptionValue"[Alignment]], Automatic -> OptionValue[Alignment]]];
 
     (* TODO: do something with transpositions *)
     {items, rows, columns, transposes} = Lookup[Reap[grid = gridArrange[grid, {hGapSize, vGapSize}, angle], _, Rule][[2]], {"Item", "Row", "Column", "Transpose"}];

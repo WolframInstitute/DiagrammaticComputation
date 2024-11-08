@@ -436,6 +436,7 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := With[{
     h = Replace[d["OptionValue"["Height"], opts], Automatic -> 1],
     c = d["OptionValue"["Center"], opts],
     a = d["OptionValue"["Angle"], opts],
+    s = d["OptionValue"["Spacing"], opts],
     shape = d["OptionValue"["Shape"], opts],
     arities = {d["InputArity"], d["OutputArity"]}
 }, {
@@ -454,7 +455,7 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := With[{
             }] &,
             {
                 Range[Pi, 0, - Pi / (d["InputArity"] + 1)][[2 ;; -2]],
-                Range[-.3, 1.3, 1.6 / (d["InputArity"] + 1)][[2 ;; -2]],
+                Range[(1 - s) / 2, (s + 1) / 2, s / (d["InputArity"] + 1)][[2 ;; -2]],
                 arrows[[1]]
             }
         ]
@@ -469,7 +470,7 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := With[{
             }] &,
             {
                 Range[Pi, 2 Pi, Pi / (d["OutputArity"] + 1)][[2 ;; -2]],
-                Range[-.3, 1.3, 1.6 / (d["OutputArity"] + 1)][[2 ;; -2]],
+                Range[(1 - s) / 2, (s + 1) / 2, s / (d["OutputArity"] + 1)][[2 ;; -2]],
                 arrows[[2]]
             }
         ]
@@ -489,6 +490,7 @@ Options[DiagramGraphics] = Join[{
     "Width" -> Automatic,
     "Height" -> Automatic,
     "Angle" -> 0,
+    "Spacing" -> 1.6,
     "ShowLabel" -> Automatic,
     "LabelFunction" -> Automatic,
     "PortArrows" -> Automatic,
