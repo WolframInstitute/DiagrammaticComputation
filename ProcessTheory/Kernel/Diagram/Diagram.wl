@@ -18,6 +18,9 @@ DiagramsPortGraph
 DiagramsGraph
 DiagramsNetGraph
 
+DiagramSplit
+DiagramPermute
+
 DiagramTensor
 TensorDiagram
 DiagramFunction
@@ -192,8 +195,8 @@ DiagramProduct[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{subDia
 collectPorts[ports_List] := If[ports === {}, {},
     Fold[
         {
-            Join[#2[[1]], DeleteElements[#1[[1]], #2[[2]]]],
-            Join[#1[[2]], DeleteElements[#2[[2]], #1[[1]]]]
+            Join[#2[[1]], DeleteElements[#1[[1]], 1 -> #2[[2]]]],
+            Join[#1[[2]], DeleteElements[#2[[2]], 1 -> #1[[1]]]]
         } &,
         ports
     ]
@@ -371,7 +374,7 @@ DiagramProp[d_, "NetGraph", opts : OptionsPattern[]] := DiagramsNetGraph[d["Netw
 
 DiagramProp[d_, "Arrange", opts : OptionsPattern[]] := DiagramArrange[d, opts]
 
-DiagramProp[d_, "Grid", opts : OptionsPattern[]] := DiagramGrid[DiagramArrange[d, FilterRules[{opts}, Options[DiagramArrange]]], FilterRules[{opts, d["DiagramOptions"]}, Options[DiagramGrid]]]
+DiagramProp[d_, "Grid", opts : OptionsPattern[]] := DiagramGrid[d, opts]
 
 DiagramProp[d_, "OptionValue"[opt_], opts : OptionsPattern[]] := OptionValue[{opts, d["DiagramOptions"], Options[DiagramGraphics], Options[DiagramGrid], Options[DiagramsNetGraph]}, opt]
 
@@ -382,20 +385,22 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
     h = Replace[d["OptionValue"["Height"], opts], Automatic -> 1],
     c = d["OptionValue"["Center"], opts],
     a = d["OptionValue"["Angle"], opts],
+    func = d["OptionValue"["PortFunction"], opts],
     transform, primitives
 },
     transform = GeometricTransformation[#, RotationTransform[a, c] @* If[d["FlipQ"], ReflectionTransform[{0, 1}, c], Identity] @* If[d["ReverseQ"], ReflectionTransform[{1, 0}, c], Identity]] &;
     primitives = Replace[
         d["OptionValue"["Shape"], opts],
         {
-            Automatic :> transform @ Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c, RoundingRadius -> {{Right, Bottom} -> .1 (w + h)}],
+            Automatic :> transform @ Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c],
+            "RoundedRectangle" :> transform @ Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c, RoundingRadius -> {{Right, Bottom} -> .1 (w + h)}],
             "Triangle" :> transform @ Polygon[{{- w / 2, h / 2}, {0, - h / 2}, {w / 2, h / 2}} + Threaded[c]],
             "UpsideDownTriangle" :> transform @ Polygon[{{- w / 2, - h / 2}, {0, h / 2}, {w / 2, - h / 2}} + Threaded[c]],
             "Circle" :> transform @ Circle[c, {w, h} / 2],
             "CrossWires" :> With[{
                 points = d["PortArrows", opts],
-                inputs = PositionIndex[Through[Through[d["InputPorts"]["Dual"]]["HoldExpression"]]],
-                outputs = PositionIndex[Through[d["OutputPorts"]["HoldExpression"]]]
+                inputs = PositionIndex[func /@ Through[d["InputPorts"]["Dual"]]],
+                outputs = PositionIndex[func /@ d["OutputPorts"]]
             },
                 Map[
                     ps |-> Outer[
@@ -409,13 +414,20 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
             ],
             "Wires" :> With[{
                 points = d["PortArrows", opts],
-                inputs = PositionIndex[Through[Through[d["InputPorts"]["Dual"]]["HoldExpression"]]],
-                outputs = PositionIndex[Through[d["OutputPorts"]["HoldExpression"]]]
+                inputs = PositionIndex[func /@ Through[d["InputPorts"]["Dual"]]],
+                outputs = PositionIndex[func /@ d["OutputPorts"]]
             },
                 Map[
                     ps |-> BSplineCurve[{ps[[1, 1]], 2 * ps[[1, 1]] - ps[[1, 2]], If[Length[ps] == 2, Nothing, c], 2 * #[[1]] - #[[2]], #[[1]]}] & /@ Rest[ps],
                     Values @ Merge[KeyUnion[{inputs, outputs}, {} &], Apply[Join[points[[1, #1]], points[[2, #2]]] &]]
                 ]
+            ],
+            "Wires"[wires_] :> With[{
+                ps = Catenate[d["PortArrows", opts]]
+            },
+                With[{p = ps[[First[#]]]},
+                    BSplineCurve[{p[[1]], 2 * p[[1]] - p[[2]], 2 * #[[1]] - #[[2]], #[[1]]}] & /@ ps[[Rest[#]]]
+                ] & /@ wires
             ],
             "Wire" :> With[{
                 ps = Catenate[d["PortArrows", opts]]
@@ -512,7 +524,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
         Replace[labelFunction,
             Automatic :> Function[ClickToCopy[
                 If[ MatchQ[#["OptionValue"["ShowLabel"], opts], None | False],
-                    "",
+                    "\t\t\t",
                     Replace[#["HoldExpression"], expr_ :> (expr //. d_Diagram ? DiagramQ :> RuleCondition[d["HoldExpression"]])]
                 ],
                 #["View"]
@@ -991,52 +1003,100 @@ diagramTensor[diagram_Diagram, opts : OptionsPattern[]] := Replace[diagram["Hold
         }]
 }]
 
+DiagramSplit[diagram_Diagram, n : _Integer | Infinity | - Infinity : Infinity, dualQ : _ ? BooleanQ : True, flipQ : _ ? BooleanQ : False] := With[
+    {d = diagram["Flatten"], dual = If[dualQ, PortDual, Identity]},
+    {outs = d["OutputArity"], ins = d["InputArity"], m = If[n >= 0, Min[d["Arity"], n], Max[d["Arity"] + n, 0]]}
+,
+	Which[
+		m < outs,
+        With[{outputs = TakeDrop[d["OutputPorts"], UpTo[m]]},
+            DiagramComposition[
+                If[ flipQ,
+                    Diagram["\[DoubleStruckCapitalI]", Join[d["OutputPorts"], dual /@ outputs[[2]]], outputs[[1]],
+                        "Shape" -> "Wires"[Join[Thread[{Range[m], 2 outs - m + Range[m]}], Thread[{outs - m + Range[outs - m], outs + Range[outs - m]}]]], "ShowLabel" -> False
+                    ],
+                    Diagram["\[DoubleStruckCapitalI]", Join[dual /@ outputs[[2]], d["OutputPorts"]], outputs[[1]],
+                        "Shape" -> "Wires"[Join[Thread[{Range[outs - m], outs + Range[outs - m]}], Thread[{outs - m + Range[m], 2 outs - m + Range[m]}]]], "ShowLabel" -> False
+                    ]
+                ],
+                d,
+                "PortFunction" -> Function[#["HoldExpression"]]
+            ]
+        ],
+		m > outs,
+        With[{inputs = TakeDrop[Through[d["InputPorts"]["Dual"]], UpTo[m - outs]]},
+		    DiagramComposition[
+                d,
+                If[ flipQ,
+                    Diagram["\[DoubleStruckCapitalI]", inputs[[2]], Join[dual /@ inputs[[1]], Through[d["InputPorts"]["Dual"]]],
+                        "Shape" -> "Wires"[Join[
+                            Thread[{ins - (m - outs) + Range[m - outs], ins + Range[m - outs]}],
+                            Thread[{Range[ins - (m - outs)], ins + (m - outs) + Range[ins - (m - outs)]}]
+                        ]],
+                        "ShowLabel" -> False
+                    ],
+                    Diagram["\[DoubleStruckCapitalI]", inputs[[2]], Join[Through[d["InputPorts"]["Dual"]], dual /@ inputs[[1]]],
+                        "Shape" -> "Wires"[Join[
+                            Thread[{Range[ins - (m - outs)], ins + Range[ins - (m - outs)]}],
+                            Thread[{ins - (m - outs) + Range[m - outs], 2 ins - (m - outs) + Range[m - outs]}]
+                        ]],
+                        "ShowLabel" -> False
+                    ]
+                ],
+                "PortFunction" -> Function[#["HoldExpression"]]
+            ]
+        ],
+		True,
+		d
+	]
+]
+
+DiagramPermute[diagram_Diagram, perm_] := Enclose @ With[{d = diagram["Flatten"]}, {ports = d["Ports"], newDiagram = DiagramSplit[d]}, {newPorts = ConfirmBy[Permute[ports, perm], ListQ]},
+	If[ ports === newPorts,
+		newDiagram,
+		DiagramComposition[piDiagram[ports, newPorts], newDiagram, "PortFunction" -> (#["HoldExpression"] &)]
+	]
+]
+
 
 Options[TensorDiagram] = Options[Diagram]
 
 splitPattern = _Integer | Infinity | -Infinity
 
-TensorDiagram[HoldPattern[VectorSymbol[v_, d_, dom_ : None]], k : splitPattern : 1, opts : OptionsPattern[]] :=
-	Diagram[Annotation[v, "Domain" -> Replace[dom, None -> Sequence[]]], Port[v, Superscript[Replace[dom, None -> Reals], d]], opts]["Split", k]
+TensorDiagram[HoldPattern[VectorSymbol[v_, d_, dom_ : None]], opts : OptionsPattern[]] :=
+	Diagram[Annotation[v, "Domain" -> Replace[dom, None -> Sequence[]]], Port[v, Superscript[Replace[dom, None -> Reals], d]], opts]
 
-TensorDiagram[HoldPattern[MatrixSymbol[a_, {m_, n_}, dom_ : None, sym_ : Sequence[]]], k : splitPattern : 1, opts : OptionsPattern[]] :=
-	Diagram[
+TensorDiagram[HoldPattern[MatrixSymbol[a_, {m_, n_}, dom_ : None, sym_ : Sequence[]]], opts : OptionsPattern[]] :=
+    Diagram[
         Annotation[a, "Domain" -> Replace[dom, None -> Sequence[]], "Symmetry" -> sym],
-        Port[Indexed[a, 2], Superscript[Replace[dom, None -> Reals], n]],
-        Port[Indexed[a, 1], Superscript[Replace[dom, None -> Reals], m]],
+        {Port[Indexed[a, 1], Superscript[Replace[dom, None -> Reals], m]], Port[Indexed[a, 2], Superscript[Replace[dom, None -> Reals], n]]},
         opts
-    ]["Split", k]
+    ]
 
-TensorDiagram[HoldPattern[ArraySymbol[a_, ns_List : {}, dom_ : None, sym_ : Sequence[]]], k : splitPattern : 1, opts : OptionsPattern[]] :=
-	Diagram[
+TensorDiagram[HoldPattern[ArraySymbol[a_, ns_List : {}, dom_ : None, sym_ : Sequence[]]], opts : OptionsPattern[]] :=
+    Diagram[
         Annotation[a, "Domain" -> Replace[dom, None -> Sequence[]], "Symmetry" -> sym],
         MapIndexed[Port[Indexed[a, #2], Superscript[Replace[dom, None -> Reals], #1]] &, ns],
         opts
-    ]["Split", k]
-
-TensorDiagram[HoldPattern[KroneckerProduct[ts___]], k : splitPattern : Infinity] := DiagramProduct @@ (TensorDiagram /@ {ts})
-
-TensorDiagram[HoldPattern[TensorProduct[ts___]], k : splitPattern : Infinity] := DiagramProduct @@ FoldPairList[With[{d = TensorDiagram[#2, #1]}, {d, Max[0, k - d["OutputArity"]]}] &, k, {ts}]
-
-TensorDiagram[HoldPattern[Dot[ts___]]] := DiagramComposition @@ (TensorDiagram /@ {ts})
-
-TensorDiagram[HoldPattern[ArrayDot[a_, b_, l_]], k : splitPattern : 0] := With[{x = TensorDiagram[a, k], y = TensorDiagram[b, l]},
-    Which[
-        x["InputArity"] == l,
-        DiagramComposition[x, y],
-        x["InputArity"] > l,
-	    DiagramComposition[x, DiagramProduct[idDiagram[Take[x["InputPorts"], x["InputArity"] - l]], y]],
-        x["InputArity"] < l,
-        DiagramComposition[DiagramProduct[idDiagram[Take[y["OutputPorts"], l - x["InputArity"]]], x], y]
     ]
+
+TensorDiagram[HoldPattern[KroneckerProduct[ts___]]] := DiagramProduct @@ (TensorDiagram /@ {ts})
+
+TensorDiagram[HoldPattern[TensorProduct[ts___]]] := DiagramProduct @@ (DiagramSplit[TensorDiagram[#], Infinity] & /@ {ts})
+
+TensorDiagramDot[a_, b_, k_] := With[{x = DiagramSplit[a, -k, False, True], y = DiagramSplit[b, k, False, True]},
+    DiagramComposition[x, DiagramMatchPorts[y, {PortDual /@ x["InputPorts"], Automatic}]["Flatten"], "PortFunction" -> (#["HoldExpression"] &)]
 ]
 
-TensorDiagram[HoldPattern[Transpose[a_, perm_ : {1, 2}]], k : splitPattern : Infinity] := With[{x = TensorDiagram[a, k]["Flatten"]},
-	(* Diagram[x, "OutputPorts" -> #1, "InputPorts" -> (PortDual /@ #2)] & @@ TakeDrop[Permute[x["Ports", True], Replace[perm, None /; x["Arity"] > 1 -> {2, 1}]], x["OutputArity"]] *)
-    DiagramComposition[piDiagram[x["Ports"], Permute[x["Ports"], perm], "Shape" -> "Wire"], x]
-]
+TensorDiagram[HoldPattern[Dot[ts__]]] := Fold[TensorDiagramDot[##, 1] &, TensorDiagram /@ {ts}]
 
-TensorDiagram[SymbolicIdentityArray[ns_List], k : splitPattern : 0] := Diagram["1", Join[#, #] & @ (Interpretation[#, Evaluate[Unique["i"]]] & /@ ns), "Shape" -> "Wires", "PortLabels" -> None]["Split", k]
+TensorDiagram[HoldPattern[ArrayDot[a_, b_, k_]]] := TensorDiagramDot[TensorDiagram[a], TensorDiagram[b], k]
+
+TensorDiagram[HoldPattern[Transpose[a_, perm_ : {1, 2}]]] := DiagramPermute[TensorDiagram[a], perm]
+
+TensorDiagram[SymbolicIdentityArray[ns_List]] := Diagram["\[DoubleStruckCapitalI]", Join[#, #] & @ (Interpretation[#, Evaluate[Unique["i"]]] & /@ ns), "Shape" -> "Wires", "PortLabels" -> None]
+
+TensorDiagram[scalar_] := Diagram[scalar]
 
 
 

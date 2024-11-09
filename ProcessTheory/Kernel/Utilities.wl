@@ -35,12 +35,12 @@ reverseTree[tree_] := Replace[Unevaluated[tree], {
 makePorts[xs_List] := Function[Null, Port[Unevaluated[##]], HoldAll] @@@ Flatten @* HoldForm /@ Replace[xs, SuperStar[HoldForm[x_]] :> HoldForm[SuperStar[x]], 1]
 
 idDiagram[xs_List, opts___] := With[{ports = makePorts[xs]},
-    Diagram["1", ports, ports, opts, "Shape" -> "CrossWires", "ShowLabel" -> False]
+    Diagram["1", ports, ports, opts, "Shape" -> "Wires"[Thread[{Range[Length[xs]], Length[xs] + Range[Length[xs]]}]], "ShowLabel" -> False, "PortFunction" -> (#["HoldExpression"] &)]
 ]
     
-piDiagram[inputs_List, outputs_List, opts___] :=
-    Diagram[Interpretation["\[Pi]", Evaluate[FindPermutation[inputs, outputs]]], makePorts[inputs], makePorts[outputs], opts, "Shape" -> "CrossWires", "ShowLabel" -> False]
-
+piDiagram[inputs_List, outputs_List, opts___] := With[{len = Min[Length[inputs], Length[outputs]]}, {perm = FindPermutation[Take[inputs, len], Take[outputs, len]]},
+    Diagram[Interpretation["\[Pi]", perm], makePorts[inputs], makePorts[outputs], opts, "Shape" -> "Wires"[Thread[{Range[len], Length[inputs] + Permute[Range[len], InversePermutation[perm]]}]], "ShowLabel" -> False]
+]
 
 tag[expr_, tag_] := Replace[expr, {
     HoldForm[Interpretation[x_, y_]] | Interpretation[x_, y_] :> Interpretation[x, y -> tag],

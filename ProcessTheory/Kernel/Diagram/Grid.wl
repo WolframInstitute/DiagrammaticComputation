@@ -7,14 +7,14 @@ DiagramGrid
 DiagramArrange
 DiagramDecompose
 
-matchPorts
+DiagramMatchPorts
 
 Begin["ProcessTheory`Diagram`Grid`Private`"];
 
 
 (* compose vertically preserving grid structure *)
 
-Options[ColumnDiagram] = Join[{"PortFunction" -> Function[#["Name"]], "Direction" -> Down}, Options[Diagram]]
+Options[ColumnDiagram] = Join[{"PortFunction" -> Function[#["Name"]], "Direction" -> Top}, Options[Diagram]]
 
 ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
     func = OptionValue["PortFunction"],
@@ -32,7 +32,7 @@ ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
             Return[RowDiagram[{b, a}, rowOpts]]
         ]
     ];
-    Replace[SequenceAlignment[bPorts, aPorts], {
+    Replace[SequenceAlignment[bPorts, aPorts, Method -> "Local"], {
         {left : {l_, {}} | {{}, l_} : {}, {__}, right : {r_, {}} | {{}, r_} : {}} :> (
             Which[
                 MatchQ[left, {_, {}}],
@@ -117,42 +117,12 @@ DiagramArrange[diagram_Diagram, opts : OptionsPattern[]] := Replace[diagram["Hol
 
 
 matchPorts[d_Diagram, {outputPorts_, inputPorts_}] := Diagram[d,
-    If[outputPorts === Automatic, {}, "OutputPorts" -> MapThread[If[#2 === Automatic, #1, #2] &, {d["OutputPorts"], Join[outputPorts, Drop[d["OutputPorts"], Length[outputPorts]]]}]],
-    If[inputPorts === Automatic, {}, "InputPorts" -> MapThread[If[#2 === Automatic, #1, #2] &, {d["InputPorts"], Join[inputPorts, Drop[d["InputPorts"], Length[inputPorts]]]}]]
+    If[outputPorts === Automatic, {}, "OutputPorts" -> MapThread[If[#2 === Automatic, #1, #2] &, {d["OutputPorts"], Join[Port /@ outputPorts, Drop[d["OutputPorts"], Length[outputPorts]]]}]],
+    If[inputPorts === Automatic, {}, "InputPorts" -> MapThread[If[#2 === Automatic, #1, #2] &, {d["InputPorts"], Join[Port /@ inputPorts, Drop[d["InputPorts"], Length[inputPorts]]]}]]
 ]
 
-matchPorts[cd_CircleDot, {outputPorts_, inputPorts_}] := Block[{grid = Reverse[List @@ cd]},
-    grid = Reverse @ FoldPairList[
-        If[ DeleteCases[#1, Automatic] === {},
-            {#2, #1},
-            With[{ds = Extract[#2, gridInputPositions[#2]]},
-                {outputs = Through[Catenate[Through[ds["OutputPorts"]]]["Dual"]], inputs = Catenate[Through[ds["InputPorts"]]]},
-                {leftoverPorts = DeleteElements[#1, inputs]}, 
-                {
-                    matchPorts[#2, {Automatic, DeleteElements[#1, leftoverPorts]}],
-                    ReplacePart[outputs, Thread[Position[Through[outputs["HoldExpression"]], Except[Alternatives @@ Through[leftoverPorts["HoldExpression"]]], {1}, Heads -> False] -> Automatic]]
-                }
-            ]
-        ] &,
-        inputPorts,
-        grid
-    ];
-    CircleDot @@ FoldPairList[
-        If[ DeleteCases[#1, Automatic] === {},
-            {#2, #1},
-            With[{ds = Extract[#2, gridOutputPositions[#2]]},
-                {outputs = Catenate[Through[ds["OutputPorts"]]], inputs = Through[Catenate[Through[ds["InputPorts"]]]["Dual"]]},
-                {leftoverPorts = DeleteElements[#1, outputs]}, 
-                {
-                    matchPorts[#2, {DeleteElements[#1, leftoverPorts], Automatic}],
-                    ReplacePart[inputs, Thread[Position[Through[inputs["HoldExpression"]], Except[Alternatives @@ Through[leftoverPorts["HoldExpression"]]], {1}, Heads -> False] -> Automatic]]
-                }
-            ]
-        ] &,
-        outputPorts,
-        grid
-    ]
-]
+matchPorts[cd_CircleDot, {outputPorts_, inputPorts_}] :=
+    MapAt[matchPorts[#, {Automatic, inputPorts}] &, {-1}] @ MapAt[matchPorts[#, {outputPorts, Automatic}] &, {1}] @ cd
 
 matchPorts[cp_CirclePlus, {outputPorts_, inputPorts_}] := matchPorts[#, {outputPorts, inputPorts}] & /@ cp
 
@@ -173,6 +143,8 @@ matchPorts[HoldPattern[Conjugate[d_]], {outputPorts_, inputPorts_}] := Conjugate
 
 matchPorts[HoldPattern[Transpose[d_, perm_ : None]], {outputPorts_, inputPorts_}] :=
     Transpose[matchPorts[d, TakeDrop[Permute[Join[outputPorts, inputPorts], InversePermutation[Replace[perm, None -> {1, 2}]]], Length[outputPorts]]], perm]
+
+DiagramMatchPorts[d_Diagram, ports_] := Diagram[matchPorts[DiagramDecompose[d], ports], d["DiagramOptions"]]
 
 
 Options[DiagramDecompose] = {"Network" -> True}
@@ -243,7 +215,7 @@ gridArrange[diagram_Diagram, {autoWidth_, autoHeight_}, {dx_, dy_}, corner_ : {0
     Sow[RotationTransform[angle, corner][Rectangle @@ (Threaded[corner] + {{0, 0}, {width * (1 + dx), h}})], "Item"];
     Diagram[diagram,
         "Width" -> Replace[diagram["OptionValue"["Width"]], Automatic :> If[MatchQ[diagram["OptionValue"["Shape"]], "Circle"] || arity <= 1, 1, ratio * w]],
-        "Height" -> Replace[diagram["OptionValue"["Height"]], Automatic -> h - dy],
+        "Height" -> Replace[diagram["OptionValue"["Height"]], Automatic :> Max[h - dy, 1]],
         "Center" -> center
     ]
 ]
@@ -358,7 +330,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
             All
         ],
         Graphics[{wires, FaceForm[None], EdgeForm[Directive[Thin, Black]],
-            Switch[OptionValue[Dividers], All | Automatic, items, True, {rows, columns}, _, Nothing]
+            Switch[OptionValue[Dividers], All | Automatic, items, True, {rows, columns} /. _Missing -> Nothing, _, Nothing]
         }],
         FilterRules[{opts}, Options[Graphics]],
         BaseStyle -> {
