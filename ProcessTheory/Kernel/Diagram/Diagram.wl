@@ -73,7 +73,9 @@ Diagram[CircleTimes[ds___], opts : OptionsPattern[]] := DiagramProduct[##, opts]
 
 Diagram[CirclePlus[ds___], opts : OptionsPattern[]] := DiagramSum[##, opts] & @@ (Diagram /@ {ds})
 
-Diagram[CircleDot[ds___], opts : OptionsPattern[]] := DiagramComposition[##, opts] & @@ (Diagram /@ {ds})
+Diagram[(CircleDot | Composition)[ds___], opts : OptionsPattern[]] := DiagramComposition[##, opts] & @@ (Diagram /@ {ds})
+
+Diagram[HoldPattern[RightComposition[ds___]], opts : OptionsPattern[]] := DiagramComposition[##, opts] & @@ Reverse[Diagram /@ {ds}]
 
 Diagram[ds : Except[OptionsPattern[], _List], opts : OptionsPattern[]] := DiagramNetwork[##, opts] & @@ (Diagram /@ ds)
 
