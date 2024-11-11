@@ -509,6 +509,7 @@ Options[DiagramGraphics] = Join[{
     "LabelFunction" -> Automatic,
     "PortArrows" -> Automatic,
     "PortLabels" -> Automatic,
+    "PortLabelFunction" -> Automatic,
     "Outline" -> None
 }, Options[Graphics]];
 
@@ -518,7 +519,8 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
 }, {
     portArrows = Replace[fillAutomatic[diagram["OptionValue"["PortArrows"], opts], arities, True], Placed[x_, _] :> x, {2}],
     portLabels = fillAutomatic[diagram["OptionValue"["PortLabels"], opts], arities, Automatic],
-    labelFunction = diagram["OptionValue"["LabelFunction"], opts]
+    labelFunction = diagram["OptionValue"["LabelFunction"], opts],
+    portLabelFunction = diagram["OptionValue"["PortLabelFunction"], opts]
 }, Graphics[{
     EdgeForm[Black], FaceForm[Transparent], 
     Confirm @ diagram["Shape", opts],
@@ -544,7 +546,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
             If[ MatchQ[label, None | False],
                 Nothing,
                 Replace[label, Placed[l_, pos_] | l_ :> Text[
-                        ClickToCopy[l /. Automatic -> If[x["DualQ"], x["Dual"], x], x["View"]],
+                        Replace[portLabelFunction, Automatic -> Function[ClickToCopy[#2 /. Automatic :> If[#1["DualQ"], #1["Dual"], #1], #1["View"]]]][x, l],
                         With[{v = p[[-1]] - p[[1]], s = PadLeft[Flatten[Replace[{pos}, {{Right} -> {2, 0}, {Left} -> {- 2, 0}, {Top} -> {0, 2}, {Bottom} -> {0, - 2}, {} -> {0, 2}}]], 2, 0]}, p[[1]] + s[[2]] * v + s[[1]] * RotationTransform[angle][v]]
                     ]
                 ]
