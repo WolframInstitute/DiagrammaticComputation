@@ -79,6 +79,25 @@ Diagram[HoldPattern[RightComposition[ds___]], opts : OptionsPattern[]] := Diagra
 
 Diagram[ds : Except[OptionsPattern[], _List], opts : OptionsPattern[]] := DiagramNetwork[##, opts] & @@ (Diagram /@ ds)
 
+
+(* overwrite ports *)
+
+Diagram[d_ ? DiagramQ, {}, {}, opts : OptionsPattern[]] := Diagram[Unevaluated @@ d["HoldExpression"], {}, {}, opts]
+
+Diagram[d_ ? DiagramQ, inputs_, {}, opts : OptionsPattern[]] := Diagram[Unevaluated @@ d["HoldExpression"], Replace[inputs, Inherited :> d["InputPorts"]], {}, opts]
+
+Diagram[d_ ? DiagramQ, {}, opts : OptionsPattern[]] := Diagram[d, Inherited, {}, opts]
+
+Diagram[d_ ? DiagramQ, output : Except[OptionsPattern[]], opts : OptionsPattern[]] := Diagram[d, Inherited, output, opts]
+
+Diagram[d_ ? DiagramQ, inputs_, outputs : Except[OptionsPattern[]], opts : OptionsPattern[]] :=
+    Diagram[Unevaluated @@ d["HoldExpression"], Replace[inputs, Inherited :> d["InputPorts"]], Replace[outputs, Inherited :> d["OutputPorts"]], opts]
+
+Diagram[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[d, Inherited, Inherited, opts]
+
+
+(* default constructor *)
+
 Diagram[expr : {} | Except[_Association | _Diagram | OptionsPattern[]],
     inputs_List,
     outputs_List,
@@ -113,15 +132,6 @@ Diagram[opts : OptionsPattern[]] := Diagram[KeySort[<|
         Join[$DiagramHiddenOptions]
     ]|>
 ]]
-
-
-(* overwrite ports *)
-
-Diagram[d_ ? DiagramQ,
-    inputs : Inherited | {} | Except[OptionsPattern[]] : Inherited,
-    outputs : Inherited | {} | Except[OptionsPattern[]] : Inherited,
-    opts : OptionsPattern[]
-] := Diagram[Unevaluated @@ d["HoldExpression"], Replace[inputs, Inherited :> d["InputPorts"]], Replace[outputs, Inherited :> d["OutputPorts"]], opts]
 
 
 (* merge options *)
