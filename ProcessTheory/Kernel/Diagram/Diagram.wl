@@ -144,7 +144,12 @@ Diagram[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[Replace[Normal[Merge[
 
 DiagramDual[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
     opts,
-    "Expression" :> DiagramDual[d],
+    Replace[d["HoldExpression"], {
+        _[(head : (DiagramSum | DiagramComposition | DiagramProduct | DiagramNetwork | DiagramReverse | DiagramFlip))[ds___]] :>
+            ("Expression" :> head[##] & @@ (DiagramDual[#, opts] & /@ {ds})),
+        _[DiagramDual[x_]] :> "Expression" :> x,
+        _ :> "Expression" :> DiagramDual[d]
+    }],
     "OutputPorts" -> Through[d["OutputPorts"]["Dual"]],
     "InputPorts" -> Through[d["InputPorts"]["Dual"]],
     "DiagramOptions" -> d["DiagramOptions"]
@@ -152,17 +157,33 @@ DiagramDual[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
 
 DiagramFlip[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
     opts,
-    "Expression" :> DiagramFlip[d],
+    Replace[d["HoldExpression"], {
+        _[DiagramComposition[ds___]] :> ("Expression" :> DiagramComposition[##] & @@ Reverse[DiagramFlip[#, opts] & /@ {ds}]),
+        _[(head : (DiagramSum | DiagramProduct | DiagramNetwork | DiagramReverse | DiagramDual))[ds___]] :>
+            ("Expression" :> head[##] & @@ (DiagramFlip[#, opts] & /@ {ds})),
+        _[DiagramFlip[x_]] :> "Expression" :> x,
+        _ :> "Expression" :> DiagramFlip[d]
+    }],
     "OutputPorts" -> d["InputPorts"],
     "InputPorts" -> d["OutputPorts"],
+    "PortArrows" -> Reverse[fillAutomatic[d["OptionValue"["PortArrows"], opts], d["Arities"], True]],
+    "PortLabels" -> Reverse[fillAutomatic[d["OptionValue"["PortLabels"], opts], d["Arities"], Automatic]],
     "DiagramOptions" -> d["DiagramOptions"]
 ]
 
 DiagramReverse[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
     opts,
-    "Expression" :> DiagramReverse[d],
+    Replace[d["HoldExpression"], {
+        _[DiagramProduct[ds___]] :> ("Expression" :> DiagramProduct[##] & @@ Reverse[DiagramReverse[#, opts] & /@ {ds}]),
+        _[(head : (DiagramSum | DiagramComposition | DiagramNetwork | DiagramFlip | DiagramDual))[ds___]] :>
+            ("Expression" :> head[##] & @@ (DiagramReverse[#, opts] & /@ {ds})),
+        _[DiagramReverse[x_]] :> "Expression" :> x,
+        _ :> "Expression" :> DiagramReverse[d]
+    }],
     "OutputPorts" -> Reverse[Through[d["OutputPorts"]["Reverse"]]],
     "InputPorts" -> Reverse[Through[d["InputPorts"]["Reverse"]]],
+    "PortArrows" -> (Reverse /@ fillAutomatic[d["OptionValue"["PortArrows"], opts], d["Arities"], True]),
+    "PortLabels" -> (Reverse /@ fillAutomatic[d["OptionValue"["PortLabels"], opts], d["Arities"], Automatic]),
     "DiagramOptions" -> d["DiagramOptions"]
 ]
 
@@ -292,6 +313,12 @@ DiagramProp[d_, "CompositionQ"] := MatchQ[d["HoldExpression"], HoldForm[_Diagram
 
 DiagramProp[d_, "NetworkQ"] := MatchQ[d["HoldExpression"], HoldForm[_DiagramNetwork]]
 
+DiagramProp[d_, "Dual", opts___] := DiagramDual[d, opts]
+
+DiagramProp[d_, "Flip", opts___] := DiagramFlip[d, opts]
+
+DiagramProp[d_, "Reverse", opts___] := DiagramReverse[d, opts]
+
 DiagramProp[d_, "Head"] := Replace[d["HoldExpression"], {
     HoldForm[(head : DiagramDual | DiagramFlip | DiagramReverse | DiagramProduct | DiagramSum | DiagramComposition | DiagramNetwork)[___]] :> head,
     _ -> Null
@@ -309,6 +336,8 @@ DiagramProp[d_, "OutputArity"] := Length[d["OutputPorts"]]
 DiagramProp[d_, "InputArity"] := Length[d["InputPorts"]]
 
 DiagramProp[d_, "Arity"] := Length[d["Ports"]]
+
+DiagramProp[d_, "Arities"] := {d["InputArity"], d["OutputArity"]}
 
 DiagramProp[d_, "MaxArity"] := Max[d["OutputArity"], d["InputArity"]]
 

@@ -139,7 +139,7 @@ matchPorts[CircleTimes[ds___], {outputPorts_, inputPorts_}] := CircleTimes @@ Ma
     }
 ]
 
-matchPorts[HoldPattern[Conjugate[d_]], {outputPorts_, inputPorts_}] := Conjugate[matchPorts[d, {outputPorts, inputPorts}]]
+matchPorts[HoldPattern[SuperStar[d_]], {outputPorts_, inputPorts_}] := SuperStar[matchPorts[d, {outputPorts, inputPorts}]]
 
 matchPorts[HoldPattern[Transpose[d_, perm_ : None]], {outputPorts_, inputPorts_}] :=
     Transpose[matchPorts[d, TakeDrop[Permute[Join[outputPorts, inputPorts], InversePermutation[Replace[perm, None -> {1, 2}]]], Length[outputPorts]]], perm]
@@ -157,7 +157,7 @@ DiagramDecompose[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] :=
         HoldForm[DiagramNetwork[ds___]] :> If[TrueQ[OptionValue["Network"]], DiagramDecompose[#, opts] & /@ {ds}, diagram],
         HoldForm[DiagramFlip[d_]] :> Transpose[DiagramDecompose[d, opts], FindPermutation[Join[#1 + Range[#2], Range[#1]]] & @@ {diagram["OutputArity"], diagram["InputArity"]}],
         HoldForm[DiagramReverse[d_]] :> Transpose[DiagramDecompose[d, opts], FindPermutation[Join[Reverse[Range[#1]], Reverse[#1 + Range[#2]]]] & @@ {diagram["OutputArity"], diagram["InputArity"]}],
-        HoldForm[DiagramDual[d_]] :> Conjugate[DiagramDecompose[d, opts]],
+        HoldForm[DiagramDual[d_]] :> SuperStar[DiagramDecompose[d, opts]],
         _ :> diagram
     }]
 
@@ -174,7 +174,7 @@ gridWidth[expr_, prop_ : Automatic] := Replace[expr, {
     d_Diagram :> Replace[prop, {Automatic :> d["MaxArity"], _ :> d[prop]}],
     CircleTimes[ds___] :> Total[gridWidth[#, prop] & /@ {ds}],
     (CircleDot | CirclePlus)[ds___] :> Max[gridWidth[#, prop] & /@ {ds}],
-    (Transpose | Conjugate)[d_, ___] :> gridWidth[d, prop],
+    (Transpose | SuperStar)[d_, ___] :> gridWidth[d, prop],
     _ -> 1
 }]
 
@@ -184,7 +184,7 @@ gridHeight[expr_, prop_ : Automatic] := Replace[expr, {
     d_Diagram :> Replace[prop, {Automatic -> 1, _ :> Replace[d[prop], Except[_Integer] -> 1]}],
     (CircleTimes | CirclePlus)[ds___] :> Max[gridHeight[#, prop] & /@ {ds}],
     CircleDot[ds___] :> Total[gridHeight[#, prop] & /@ {ds}],
-    (Transpose | Conjugate)[d_, ___] :> gridHeight[d, prop],
+    (Transpose | SuperStar)[d_, ___] :> gridHeight[d, prop],
     _ -> 1
 }]
 
@@ -240,7 +240,7 @@ gridArrange[grid : CircleDot[ds___], {width_, height_}, {dx_, dy_}, corner : {xM
     MapIndexed[With[{i = #2[[1]]}, gridArrange[#1, {newWidth, heights[[i]]}, {dx, dy}, {xMin, yMin} + RotationTransform[angle] @ {0, positions[[i]]}, angle]] &, grid]
 ]
 
-gridArrange[HoldPattern[Conjugate[d_]], args___] := gridArrange[d /. diagram_Diagram :> DiagramDual[diagram], args]
+gridArrange[HoldPattern[SuperStar[d_]], args___] := gridArrange[d /. diagram_Diagram :> DiagramDual[diagram], args]
 
 gridArrange[HoldPattern[Transpose[d_, perm___]], args___] := (Sow[{perm}, "Transpose"]; gridArrange[d, args])
 
@@ -250,13 +250,13 @@ gridArrange[grid_, gapSizes_, angle_] := gridArrange[grid, {Automatic, Automatic
 gridOutputPositions[_Diagram, pos_] := {pos}
 gridOutputPositions[CircleTimes[ds___], pos_] := Catenate[MapIndexed[gridOutputPositions[#1, Join[pos, #2]] &, {ds}]]
 gridOutputPositions[CircleDot[d_, ___], pos_] := gridOutputPositions[d, Append[pos, 1]]
-gridOutputPositions[(Transpose | Conjugate)[d_, ___], pos_] := gridOutputPositions[d, pos]
+gridOutputPositions[(Transpose | SuperStar)[d_, ___], pos_] := gridOutputPositions[d, pos]
 gridOutputPositions[grid_] := gridOutputPositions[grid, {}]
 
 gridInputPositions[_Diagram, pos_] := {pos}
 gridInputPositions[CircleTimes[ds___], pos_] := Catenate[MapIndexed[gridInputPositions[#1, Join[pos, #2]] &, {ds}]]
 gridInputPositions[CircleDot[ds___, d_], pos_] := gridInputPositions[d, Append[pos, Length[{ds}] + 1]]
-gridInputPositions[(Transpose | Conjugate)[d_, ___], pos_] := gridInputPositions[d, pos]
+gridInputPositions[(Transpose | SuperStar)[d_, ___], pos_] := gridInputPositions[d, pos]
 gridInputPositions[grid_] := gridInputPositions[grid, {}]
 
 
