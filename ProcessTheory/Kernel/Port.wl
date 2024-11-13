@@ -124,6 +124,8 @@ PortProp[p_, "HoldExpression"] := Extract[p["Data"], "Expression", HoldForm]
 
 PortProp[p_, "Name"] := Replace[p["HoldExpression"], HoldForm[PortDual[Interpretation[HoldForm[x_] | x_, _]] | PortDual[x_] | Interpretation[HoldForm[x_] | x_, _] | x_] :> HoldForm[x]]
 
+PortProp[p_, "HoldName"] := Replace[p["HoldExpression"], HoldForm[PortDual[x_] | x_] :> HoldForm[x]]
+
 PortProp[p_, "Options"] := Normal[KeyDrop[p["Data"], "Expression"]]
 
 PortProp[p_, "Types"] := Through[Flatten[p["PortTree"]]["Type"]]

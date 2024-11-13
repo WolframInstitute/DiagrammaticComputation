@@ -341,11 +341,18 @@ DiagramProp[d_, "Arities"] := {d["InputArity"], d["OutputArity"]}
 
 DiagramProp[d_, "MaxArity"] := Max[d["OutputArity"], d["InputArity"]]
 
-DiagramProp[d_, "FlattenOutputs"] := Diagram[d, "OutputPorts" -> Catenate[Through[d["OutputPorts"]["ProductList"]]]]
+DiagramProp[d_, "FlatOutputPorts"] := Catenate[Through[d["OutputPorts"]["ProductList"]]]
 
-DiagramProp[d_, "FlattenInputs"] := Diagram[d, "InputPorts" -> Catenate[Through[d["InputPorts"]["ProductList"]]]]
+DiagramProp[d_, "FlattenOutputs"] := Diagram[d, "OutputPorts" -> d["FlatOutputPorts"]]
+
+DiagramProp[d_, "FlatInputPorts"] := Catenate[Through[d["InputPorts"]["ProductList"]]]
+
+DiagramProp[d_, "FlattenInputs"] := Diagram[d, "InputPorts" -> d["FlatInputPorts"]]
 
 DiagramProp[d_, "Flatten"] := d["FlattenOutputs"]["FlattenInputs"]
+
+DiagramProp[d_, "FlatPorts"] := Join[d["FlatOutputPorts"], d["FlatInputPorts"]]
+
 
 DiagramProp[d_, "FlattenNetworks"] := If[d["NetworkQ"],
     Diagram[d, "Expression" :> DiagramNetwork[##] & @@ (If[#["NetworkQ"], Splice[#["SubDiagrams"]], #] & /@ Through[d["SubDiagrams"]["FlattenNetworks"]])],
@@ -390,7 +397,7 @@ DiagramProp[d_, "Name"] := Replace[
         }] @@@ HoldForm[Evaluate[Flatten[Defer @@ (Function[Null, If[DiagramQ[#], #["Name"], Defer[#]], HoldFirst] /@ Unevaluated[{ds}])]]]
 ]
 
-DiagramProp[diagram_, "Decompose"] := DiagramDecompose[diagram]
+DiagramProp[diagram_, "Decompose", opts : OptionsPattern[]] := DiagramDecompose[diagram, FilterRules[{opts}, Options[DiagramDecompose]]]
 
 DiagramProp[diagram_, "Tensor" | "ArraySymbol", opts : OptionsPattern[]] := DiagramTensor[diagram, FilterRules[{opts}, Options[DiagramTensor]]]
 
@@ -433,6 +440,7 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
     primitives = Replace[
         d["OptionValue"["Shape"], opts],
         {
+            None -> {},
             Automatic :> transform @ Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c],
             "RoundedRectangle" :> transform @ Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c, RoundingRadius -> {{Right, Bottom} -> .1 (w + h)}],
             "Triangle" :> transform @ Polygon[{{- w / 2, h / 2}, {0, - h / 2}, {w / 2, h / 2}} + Threaded[c]],
@@ -503,7 +511,7 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := With[{
                 Placed[_, p_] :> placeArrow[p],
                 _ :> Replace[shape, {
                     "Circle" :> {1 / 2 {w Cos[#1], h Sin[#1]}, 3 / 4 {w Cos[#1], h Sin[#1]}} + Threaded[c],
-                    _ :> {{(- 1 / 2 + #2) w, h / 2}, {(- 1 / 2 + #2) w, 3 / 4 h}} + Threaded[c]
+                    _ :> {{(- 1 / 2 + #2) w, h / 2}, {(- 1 / 2 + #2) w, h / 2 + 1 / 4}} + Threaded[c]
                 }]
             }] &,
             {
@@ -518,7 +526,7 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := With[{
                 Placed[_, p_] :> placeArrow[p],
                 _ :> Replace[shape, {
                     "Circle" :> {1 / 2 {w Cos[#1], h Sin[#1]}, 3 / 4 {w Cos[#1], h Sin[#1]}} + Threaded[c],
-                    _ :> {{(- 1 / 2 + #2) w, - h / 2}, {(- 1 / 2 + #2) w, - 3 / 4 h}} + Threaded[c]
+                    _ :> {{(- 1 / 2 + #2) w, - h / 2}, {(- 1 / 2 + #2) w, - h / 2 - 1 / 4}} + Threaded[c]
                 }]
             }] &,
             {
