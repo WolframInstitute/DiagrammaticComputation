@@ -14,7 +14,7 @@ Begin["ProcessTheory`Diagram`Grid`Private`"];
 
 (* compose vertically preserving grid structure *)
 
-Options[ColumnDiagram] = Join[{"PortFunction" -> Function[#["Name"]], "Direction" -> Top}, Options[Diagram]]
+Options[ColumnDiagram] = Join[{"PortFunction" -> Function[#["Name"]], "PortOrderingFunction" -> Automatic, "Direction" -> Top}, Options[Diagram]]
 
 ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
     func = OptionValue["PortFunction"],
@@ -33,7 +33,7 @@ ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
         ]
     ];
     Replace[SequenceAlignment[bPorts, aPorts, Method -> "Local"], {
-        {left : {l_, {}} | {{}, l_} : {}, {__}, right : {r_, {}} | {{}, r_} : {}} :> (
+        {left : {l_, {}} | {{}, l_} : {}, {__}, right : {r_, {}} | {{}, r_} : {}} /; ! ({l} =!= {} && {r} =!= {} && IntersectingQ[l, r]) :> (
             Which[
                 MatchQ[left, {_, {}}],
                 a = RowDiagram[{idDiagram[l], a}, rowOpts]["Flatten"],
@@ -198,9 +198,12 @@ circuitArrange[diagram_Diagram, {_, autoHeight_}, {dx_, dy_}, corner_ : {0, 0}, 
     arity = diagram["MaxArity"], inputOrder, outputOrder, min, max,
     alignment = diagram["OptionValue"[Alignment]],
     spacing = diagram["OptionValue"["Spacing"]],
-    width, w, h, ratio, center
+    orderingFunction = Replace[diagram["OptionValue"["PortOrderingFunction"]],
+        Automatic -> Function[Replace[#["HoldName"], {HoldForm[Interpretation[_, (Subscript | Superscript)[_, order_][_]]] :> order, _ -> 0}]]
+    ],
+    width, w, h, center
 },
-    {inputOrder, outputOrder} = Cases[Through[diagram[#]["HoldName"]], HoldForm[Interpretation[_, (Subscript | Superscript)[_, order_][_]]] :> order] & /@ {"InputPorts", "OutputPorts"};
+    {inputOrder, outputOrder} = Replace[{orderingFunction /@ Through[diagram["InputPorts"]["Dual"]], orderingFunction /@ diagram["OutputPorts"]}, Except[_ ? NumericQ] -> 0, {2}];
     {min, max} = MinMax @ Join[inputOrder, outputOrder];
     width = max - min + 1;
     w = Replace[diagram["OptionValue"["Width"]], Automatic :> If[MatchQ[diagram["OptionValue"["Shape"]], "Circle"] || arity <= 1, 1, width]];
@@ -211,8 +214,8 @@ circuitArrange[diagram_Diagram, {_, autoHeight_}, {dx_, dy_}, corner_ : {0, 0}, 
     Diagram[diagram,
         "Width" -> w, "Height" -> h,
         "PortArrows" -> {
-            Placed[Automatic, {{#, center[[2]] + h / 2}, {#, center[[2]] + 3 h / 4}}] & /@ (inputOrder - 1 / 2),
-            Placed[Automatic, {{#, center[[2]] - h / 2}, {#, center[[2]] - 3 h / 4}}] & /@ (outputOrder - 1 / 2) 
+            Placed[Automatic, Threaded[center] + {{#, h / 2}, {#, h / 2 + 1 / 4}}] & /@ (- w / 2 + inputOrder - min + 1 / 2),
+            Placed[Automatic, Threaded[center] + {{#, - h / 2}, {#, - h / 2 - 1 / 4}}] & /@ (- w / 2 + outputOrder - min + 1 / 2) 
         },
         "Center" -> center
     ]
@@ -319,7 +322,12 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
 	width = gridWidth[grid];
 	height = gridHeight[grid];
 
-    grid = grid /. d_Diagram :> Diagram[d, "Angle" -> d["OptionValue"["Angle"]] + angle, "Spacing" -> spacing, Alignment -> Replace[d["OptionValue"[Alignment]], Automatic -> OptionValue[Alignment]]];
+    grid = grid /. d_Diagram :> Diagram[d,
+        "Angle" -> d["OptionValue"["Angle"]] + angle,
+        "Spacing" -> spacing,
+        Alignment -> Replace[d["OptionValue"[Alignment]], Automatic -> OptionValue[Alignment]],
+        "PortOrderingFunction" -> Replace[d["OptionValue"["PortOrderingFunction"]], Automatic -> OptionValue["PortOrderingFunction"]]
+    ];
 
     (* TODO: do something with transpositions *)
     {items, rows, columns, transposes} = Lookup[Reap[grid = gridArrange[grid, {hGapSize, vGapSize}, angle], _, Rule][[2]], {"Item", "Row", "Column", "Transpose"}];
@@ -332,15 +340,15 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
     inputs = Catenate[Through[#["InputPorts"]["Dual"]] & /@ Extract[grid, inputPositions]]; *)
 
     grid = grid //
-        MapAt[Diagram[#, "PortLabels" -> {None, Placed[Automatic, {- 2 / 3, 1}]}, "PortArrows" -> None] &, Complement[positions, outputPositions, inputPositions]] //
-        MapAt[Diagram[#, "PortLabels" -> {None, Automatic}, "PortArrows" -> {None, Automatic}] &, Complement[outputPositions, inputPositions]] //
-        MapAt[Diagram[#, "PortLabels" -> {Automatic, Placed[Automatic, {- 2 / 3, 1}]}, "PortArrows" -> {Automatic, None}] &, Complement[inputPositions, outputPositions]];
+        MapAt[Diagram[#, "PortLabels" -> {None, Placed[Automatic, {- 2 / 3, 1}]}, "PortArrows" -> {Placed[None, Inherited], Placed[None, Inherited]}] &, Complement[positions, outputPositions, inputPositions]] //
+        MapAt[Diagram[#, "PortLabels" -> {None, Inherited}, "PortArrows" -> {Placed[None, Inherited], Inherited}] &, Complement[outputPositions, inputPositions]] //
+        MapAt[Diagram[#, "PortLabels" -> {Inherited, Placed[Automatic, {- 2 / 3, 1}]}, "PortArrows" -> {Inherited, Placed[None, Inherited]}] &, Complement[inputPositions, outputPositions]];
     
     wires = If[wiresQ, gridWires[grid, {}, OptionValue["PortFunction"], OptionValue["WireArrows"], vGapSize], {}];
 
 	Show[
         Cases[grid,
-            d_Diagram :> DiagramGraphics[d, diagramOptions],
+            d_Diagram :> Diagram[d, "DiagramOptions" -> Join[diagramOptions, d["DiagramOptions"]]]["Graphics"],
             All
         ],
         Graphics[{wires, FaceForm[None], EdgeForm[Directive[Thin, Black]],

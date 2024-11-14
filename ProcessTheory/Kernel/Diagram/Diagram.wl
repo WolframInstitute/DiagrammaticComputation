@@ -126,15 +126,31 @@ Diagram[expr_, outputs : Except[OptionsPattern[], _List], opts : OptionsPattern[
 
 Diagram[expr : Except[_Association | _Diagram | OptionsPattern[]], opts : OptionsPattern[]] := Diagram[Unevaluated[expr], {}, {}, opts]
 
+
+(* merge options *)
+
+inheritExpresion[expr_, deps_List, def_ : Automatic] := With[{pos = Position[expr, Inherited]},
+    ReplacePart[expr, DeleteCases[Catenate[(dep |-> (# -> ResourceFunction["LookupPart"][dep, Sequence @@ #, Automatic] & /@ pos)) /@ deps], _ -> Inherited]] /. Inherited -> def
+]
+
+
+mergeOptions[opts_List] := Normal @ GroupBy[opts, First,
+    If[ MatchQ[#[[1, 1]], "PortArrows" | "PortLabels"],
+        Map[
+            With[{len = Max[Length /@ #, 1]}, inheritExpresion[#1, {##2}] & @@ (PadRight[#, len, #] & /@ #)] &,
+            Thread[Developer`ToList /@ PadRight[Developer`ToList[#], 2, #] & /@ #[[All, 2]]]
+        ]
+        ,
+        #[[1, 2]]
+    ] &
+]
+
 Diagram[opts : OptionsPattern[]] := Diagram[KeySort[<|
     DeleteDuplicatesBy[First] @ FilterRules[
-        {"DiagramOptions" -> DeleteDuplicatesBy[First] @ FilterRules[{opts, Values[FilterRules[{opts}, "DiagramOptions"]]}, Options[Diagram]], opts, $DiagramHiddenOptions},
+        {"DiagramOptions" -> mergeOptions @ FilterRules[{opts, Values[FilterRules[{opts}, "DiagramOptions"]]}, Options[Diagram]], opts, $DiagramHiddenOptions},
         Join[$DiagramHiddenOptions]
     ]|>
 ]]
-
-
-(* merge options *)
 
 Diagram[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[Replace[Normal[Merge[{opts, d["Data"]}, List]], head_[k_, {{v_, ___}}] :> head[k, v], 1]]
 
@@ -508,7 +524,7 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := With[{
     {
          transform @ MapThread[
             Replace[#3, {
-                Placed[_, p_] :> placeArrow[p],
+                Placed[_, p : Except[Automatic]] :> placeArrow[p],
                 _ :> Replace[shape, {
                     "Circle" :> {1 / 2 {w Cos[#1], h Sin[#1]}, 3 / 4 {w Cos[#1], h Sin[#1]}} + Threaded[c],
                     _ :> {{(- 1 / 2 + #2) w, h / 2}, {(- 1 / 2 + #2) w, h / 2 + 1 / 4}} + Threaded[c]
@@ -523,7 +539,7 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := With[{
         ,
         transform @ MapThread[
             Replace[#3, {
-                Placed[_, p_] :> placeArrow[p],
+                Placed[_, p : Except[Automatic]] :> placeArrow[p],
                 _ :> Replace[shape, {
                     "Circle" :> {1 / 2 {w Cos[#1], h Sin[#1]}, 3 / 4 {w Cos[#1], h Sin[#1]}} + Threaded[c],
                     _ :> {{(- 1 / 2 + #2) w, - h / 2}, {(- 1 / 2 + #2) w, - h / 2 - 1 / 4}} + Threaded[c]
@@ -564,8 +580,8 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
     points = diagram["PortArrows", opts],
     arities = {diagram["InputArity"], diagram["OutputArity"]}
 }, {
-    portArrows = Replace[fillAutomatic[diagram["OptionValue"["PortArrows"], opts], arities, True], Placed[x_, _] :> x, {2}],
-    portLabels = fillAutomatic[diagram["OptionValue"["PortLabels"], opts], arities, Automatic],
+    portArrows = Replace[fillAutomatic[diagram["OptionValue"["PortArrows"], opts], arities], Placed[x_, _] :> x, {2}],
+    portLabels = fillAutomatic[diagram["OptionValue"["PortLabels"], opts], arities],
     labelFunction = diagram["OptionValue"["LabelFunction"], opts],
     portLabelFunction = diagram["OptionValue"["PortLabelFunction"], opts]
 }, Graphics[{
@@ -945,7 +961,7 @@ ToDiagramNetwork[d_Diagram, opts : OptionsPattern[]] := If[d["NetworkQ"],
             "OutputPorts" -> Permute[net["OutputPorts"], FindPermutation[Through[net["OutputPorts"]["HoldExpression"]][[All, 1, 1]], portFunction /@ d["OutputPorts"]]],
             "InputPorts" -> Permute[net["InputPorts"], FindPermutation[Through[Through[net["InputPorts"]["Dual"]]["HoldExpression"]][[All, 1, 1]], portFunction /@ Through[d["InputPorts"]["Dual"]]]]
         ]
-    ] & @@ ToDiagramNetwork[d["Arrange"]["Decompose"], {}, <||>, opts]
+    ] & @@ ToDiagramNetwork[d["Arrange", opts]["Decompose"], {}, <||>, opts]
 ]
 
 ToDiagramNetwork[d_Diagram, pos_, ports_Association, opts : OptionsPattern[]] := With[{portFunction = OptionValue["PortFunction"], uniqueQ = TrueQ[OptionValue["Unique"]]}, {

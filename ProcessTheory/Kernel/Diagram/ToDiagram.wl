@@ -166,16 +166,16 @@ LambdaDiagram[expr_, depth_Integer : 0, opts : OptionsPattern[]] := Module[{lamb
 
 
 
-QuantumCircuitDiagram[qc_Wolfram`QuantumFramework`QuantumCircuitOperator, opts : OptionsPattern[]] := With[{rules = Rule @@@ EdgeTags[qc["TensorNetwork", "PrependInitial" -> False]]}, {
+QuantumCircuitDiagram[qc_Wolfram`QuantumFramework`QuantumCircuitOperator, opts : OptionsPattern[]] := With[{rules = Rule @@@ EdgeTags @ qc["TensorNetwork"]}, {
 	d = DiagramComposition[##, "PortFunction" -> (#["HoldExpression"] &)] & @@
-		Reverse @ MapIndexed[{op, idx} |-> With[{i = idx[[1]]},
+		Reverse @ MapIndexed[{op, idx} |-> With[{i = idx[[1]], qo = Wolfram`QuantumFramework`QuantumOperator[op]},
 			Diagram[
 				Interpretation[op["CircuitDiagram", "WireLabels" -> None, "ShowEmptyWires" -> False, "ShowGateLabels" -> False, "ShowMeasurementWire" -> False, ImageSize -> 16], op],
-				KeyValueMap[Interpretation[#2, Subscript[i, #1]] &, op["InputOrderDimensions"]],
-				KeyValueMap[Interpretation[#2, Evaluate @ Replace[Superscript[i, #1], rules]] &, op["OutputOrderDimensions"]]
+				KeyValueMap[Interpretation[#1, Subscript[i, #1][#2]] &, qo["InputOrderDimensions"]],
+				KeyValueMap[Interpretation[#1, Evaluate[Replace[Superscript[i, #1], rules][#2]]] &, qo["OutputOrderDimensions"]]
 			]
 		],
-			qc["Sort"]["NormalOperators"]
+			qc["Flatten"]["NormalOperators"]
 		]
 },
 	Diagram[d, "OutputPorts" -> SortBy[d["OutputPorts"], #["Name"] &], "InputPorts" -> SortBy[d["InputPorts"], #["Name"] &]]

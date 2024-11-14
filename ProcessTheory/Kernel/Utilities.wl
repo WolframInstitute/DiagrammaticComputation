@@ -13,8 +13,14 @@ tag
 Begin["ProcessTheory`Utilities`Private`"];
 
 
-fillAutomatic[expr_, arities_List, def_ : Automatic] := MapThread[
-    PadRight[Replace[Replace[#1, x : Except[_List] :> ConstantArray[x, #2]], Automatic -> def, 1], #2, {def}] &,
+fillAutomatic[expr_, arities_List, def_ : Inherited] := MapThread[
+    {list, arity} |-> 
+        Replace[
+            Replace[Replace[list, x : Except[_List] :> ConstantArray[x, arity]], Automatic -> def, 1] //
+                PadRight[#, arity, {Replace[def, Inherited -> SelectFirst[Reverse[#], # =!= Inherited &, Automatic]]}] &,
+            Inherited -> Automatic,
+            1
+        ],
     {
         PadRight[
             Replace[expr, x : Except[_List] :> ConstantArray[x, Length[arities]]],
