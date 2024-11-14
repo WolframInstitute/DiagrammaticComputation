@@ -32,19 +32,19 @@ ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
             Return[RowDiagram[{b, a}, rowOpts]]
         ]
     ];
-    Replace[SequenceAlignment[bPorts, aPorts, Method -> "Local"], {
+    Replace[SequenceAlignment[Reverse[aPorts], Reverse[bPorts], Method -> "Local"], {
         {left : {l_, {}} | {{}, l_} : {}, {__}, right : {r_, {}} | {{}, r_} : {}} /; ! ({l} =!= {} && {r} =!= {} && IntersectingQ[l, r]) :> (
             Which[
                 MatchQ[left, {_, {}}],
-                a = RowDiagram[{idDiagram[l], a}, rowOpts]["Flatten"],
+                b = RowDiagram[{b, idDiagram[l]}, rowOpts]["Flatten"],
                 MatchQ[left, {{}, _}],
-                b = RowDiagram[{idDiagram[l], b}, rowOpts]["Flatten"]
+                a = RowDiagram[{a, idDiagram[l]}, rowOpts]["Flatten"]
             ];
             Which[
                 MatchQ[right, {_, {}}],
-                a = RowDiagram[{a, idDiagram[r]}, rowOpts]["Flatten"],
+                b = RowDiagram[{idDiagram[r], b}, rowOpts]["Flatten"],
                 MatchQ[right, {{}, _}],
-                b = RowDiagram[{b, idDiagram[r]}, rowOpts]["Flatten"]
+                a = RowDiagram[{idDiagram[r], a}, rowOpts]["Flatten"]
             ]
         ),
         _ :> With[{ins = DeleteElements[bPorts, 1 -> aPorts], outs = DeleteElements[aPorts, 1 -> bPorts]},
@@ -277,16 +277,18 @@ gridArrange[HoldPattern[SuperStar[d_]], args___] := gridArrange[d /. diagram_Dia
 
 gridArrange[HoldPattern[Transpose[d_, perm___]], args___] := (Sow[{perm}, "Transpose"]; gridArrange[d, args])
 
+gridArrange[{ds___}, args___] := gridArrange[DiagramNetwork[ds], args]
+
 gridArrange[grid_, gapSizes_, angle_] := gridArrange[grid, {Automatic, Automatic}, gapSizes, {0, 0}, angle]
 
 
-gridOutputPositions[_Diagram, pos_] := {pos}
+gridOutputPositions[_Diagram | _List, pos_] := {pos}
 gridOutputPositions[CircleTimes[ds___], pos_] := Catenate[MapIndexed[gridOutputPositions[#1, Join[pos, #2]] &, {ds}]]
 gridOutputPositions[CircleDot[d_, ___], pos_] := gridOutputPositions[d, Append[pos, 1]]
 gridOutputPositions[(Transpose | SuperStar)[d_, ___], pos_] := gridOutputPositions[d, pos]
 gridOutputPositions[grid_] := gridOutputPositions[grid, {}]
 
-gridInputPositions[_Diagram, pos_] := {pos}
+gridInputPositions[_Diagram | _List, pos_] := {pos}
 gridInputPositions[CircleTimes[ds___], pos_] := Catenate[MapIndexed[gridInputPositions[#1, Join[pos, #2]] &, {ds}]]
 gridInputPositions[CircleDot[ds___, d_], pos_] := gridInputPositions[d, Append[pos, Length[{ds}] + 1]]
 gridInputPositions[(Transpose | SuperStar)[d_, ___], pos_] := gridInputPositions[d, pos]
