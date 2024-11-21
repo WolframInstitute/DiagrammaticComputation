@@ -992,7 +992,7 @@ ToDiagramNetwork[CircleDot[ds__], pos_, ports_, opts : OptionsPattern[]] := With
 	Fold[
 		{
             DiagramNetwork[##, FilterRules[{opts}, Options[DiagramNetwork]], "PortFunction" -> (#["HoldExpression"] &)] & @@
-                Join[#1[[1]]["SubDiagrams"], ToDiagramNetwork[#2, Append[pos, #1[[2]]], Join[ports, portFunction[#] -> # & /@ Through[#1[[1]]["FlatInputPorts"]["Dual"]]], opts]],
+                Join[#1[[1]]["SubDiagrams"], ToDiagramNetwork[#2, Append[pos, #1[[2]]], Join[portFunction[#] -> # & /@ Through[#1[[1]]["FlatInputPorts"]["Dual"]], ports], opts]],
             #1[[2]] + 1
         } &,
 		{Diagram[], 1},
