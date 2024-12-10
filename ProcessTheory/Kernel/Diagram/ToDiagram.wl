@@ -108,8 +108,6 @@ SystemModelDiagram[sm : HoldPattern[_SystemModel], path_, opts : OptionsPattern[
 				]] & @@ KeyValueMap[
 					Diagram[
 						If[DiagramQ[#2], #2, If[MemberQ[parameters, #2["Name"]], Diagram[#2, #2, {}, "Shape" -> "Triangle"], Diagram[#2, #2, "Shape" -> "UpsideDownTriangle"]]],
-						"Width" -> 20,
-						"Height" -> 20,
 						"Angle" -> Lookup[transforms, #1, 0, #[[1, 1]] &],
 						"Center" ->  Lookup[transforms, #1, {0, 0}, #[[3]] &]
 					] &,

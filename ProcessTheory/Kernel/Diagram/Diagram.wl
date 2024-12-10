@@ -244,8 +244,8 @@ DiagramProduct[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{subDia
 collectPorts[ports_List] := If[ports === {}, {},
     Fold[
         {
-            Join[#2[[1]], DeleteElements[#1[[1]], 1 -> #2[[2]]]],
-            Join[#1[[2]], DeleteElements[#2[[2]], 1 -> #1[[1]]]]
+            Join[DeleteElements[#1[[1]], 1 -> #2[[2]]], #2[[1]]],
+            Join[DeleteElements[#2[[2]], 1 -> #1[[1]]], #1[[2]]]
         } &,
         ports
     ]
@@ -604,7 +604,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
         MapThread[{x, p, arrow, label} |-> {
             If[ MatchQ[arrow, None | False],
                 Nothing,
-                {If[MatchQ[arrow, True | Automatic], Nothing, arrow], Arrow[If[x["DualQ"], Reverse, Identity] @ p]}
+                If[MatchQ[arrow, _Function], arrow[p, x], {Replace[arrow, True | Automatic -> Nothing], Arrow[If[x["DualQ"], Reverse, Identity] @ p]}]
             ],
             If[ MatchQ[label, None | False],
                 Nothing,
