@@ -244,8 +244,8 @@ DiagramProduct[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{subDia
 collectPorts[ports_List] := If[ports === {}, {},
     Fold[
         {
-            Join[DeleteElements[#1[[1]], 1 -> #2[[2]]], #2[[1]]],
-            Join[DeleteElements[#2[[2]], 1 -> #1[[1]]], #1[[2]]]
+            Join[#2[[1]], DeleteElements[#1[[1]], 1 -> #2[[2]]]],
+            Join[#1[[2]], DeleteElements[#2[[2]], 1 -> #1[[1]]]]
         } &,
         ports
     ]
@@ -369,11 +369,14 @@ DiagramProp[d_, "Flatten"] := d["FlattenOutputs"]["FlattenInputs"]
 
 DiagramProp[d_, "FlatPorts"] := Join[d["FlatOutputPorts"], d["FlatInputPorts"]]
 
-
 DiagramProp[d_, "FlattenNetworks"] := If[d["NetworkQ"],
     Diagram[d, "Expression" :> DiagramNetwork[##] & @@ (If[#["NetworkQ"], Splice[#["SubDiagrams"]], #] & /@ Through[d["SubDiagrams"]["FlattenNetworks"]])],
     With[{ds = d["SubDiagrams"]}, If[ds === {}, d, Diagram[d, "Expression" -> d["Head"] @@ Through[ds["FlattenNetworks"]]]]]
 ]
+
+DiagramProp[d_, "GridInputPorts"] := GridInputPorts[d]
+
+DiagramProp[d_, "GridOutputPorts"] := GridOutputPorts[d]
 
 DiagramProp[d_, "Split", n : _Integer | Infinity | - Infinity : Infinity, dualQ : _ ? BooleanQ : True] := Block[{
     m = If[n >= 0, n, Max[d["Arity"] + n, 0]], outputs, inputs, dual = If[dualQ, PortDual, Identity]
@@ -442,7 +445,7 @@ DiagramProp[d_, "Grid", opts : OptionsPattern[]] := DiagramGrid[d, opts]
 
 DiagramProp[d_, "OptionValue"[opt_], opts : OptionsPattern[]] := OptionValue[{opts, d["DiagramOptions"], Options[DiagramGraphics], Options[DiagramGrid], Options[DiagramsNetGraph]}, opt]
 
-DiagramProp[d_, "WireQ"] := MatchQ[d["OptionValue"["Shape"]], "Wire" | "WiresQ"]
+DiagramProp[d_, "WireQ"] := MatchQ[d["OptionValue"["Shape"]], "Wire" | "Wires" | "Wires"[_]]
 
 DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
     w = Replace[d["OptionValue"["Width"], opts], Automatic -> 1],
