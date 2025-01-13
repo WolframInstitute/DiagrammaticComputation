@@ -39,15 +39,15 @@ ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
         {left : {l_, {}} | {{}, l_} : {}, {__}, right : {r_, {}} | {{}, r_} : {}} /; ! ({l} =!= {} && {r} =!= {} && IntersectingQ[l, r]) :> (
             Which[
                 MatchQ[left, {_, {}}],
-                b = RowDiagram[{b, idDiagram[l]}, rowOpts]["Flatten"],
+                b = RowDiagram[{b, idDiagram[Reverse[l]]}, rowOpts]["Flatten"],
                 MatchQ[left, {{}, _}],
-                a = RowDiagram[{a, idDiagram[l]}, rowOpts]["Flatten"]
+                a = RowDiagram[{a, idDiagram[Reverse[l]]}, rowOpts]["Flatten"]
             ];
             Which[
                 MatchQ[right, {_, {}}],
-                b = RowDiagram[{idDiagram[r], b}, rowOpts]["Flatten"],
+                b = RowDiagram[{idDiagram[Reverse[r]], b}, rowOpts]["Flatten"],
                 MatchQ[right, {{}, _}],
-                a = RowDiagram[{idDiagram[r], a}, rowOpts]["Flatten"]
+                a = RowDiagram[{idDiagram[Reverse[r]], a}, rowOpts]["Flatten"]
             ]
         ),
         _ :> With[{ins = DeleteElements[bPorts, 1 -> aPorts], outs = DeleteElements[aPorts, 1 -> bPorts]},

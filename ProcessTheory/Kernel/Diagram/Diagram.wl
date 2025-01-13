@@ -259,13 +259,13 @@ DiagramComposition[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
     subDiagrams = If[#["CompositionQ"], Splice[#["SubDiagrams"]], #] & /@ {ds},
     func = OptionValue["PortFunction"]
 }, {
-    ports = collectPorts[{func /@ #["OutputPorts"], func /@ Through[#["InputPorts"]["Dual"]]} & /@ Through[Reverse[{ds}]["Flatten"]]]
+    ports = collectPorts[{func /@ #["OutputPorts"], func /@ Through[Reverse[#["InputPorts"]]["Dual"]]} & /@ Through[Reverse[{ds}]["Flatten"]]]
 },
     Diagram[
         opts,
         "Expression" :> DiagramComposition[##] & @@ subDiagrams,
         "OutputPorts" -> (Port[Unevaluated @@ #] & /@ ports[[1]]),
-        "InputPorts" -> (Port[Unevaluated @@ #]["Dual"] & /@ ports[[2]])
+        "InputPorts" -> (Port[Unevaluated @@ #]["Dual"] & /@ Reverse[ports[[2]]])
     ]
 ]
 
@@ -798,8 +798,8 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
     ];
 	{outDegrees, inDegrees} = AssociationThread[VertexList[graph] -> #] & /@ Through[{VertexOutDegree, VertexInDegree}[graph]];
 	{spiderVertices, spiderDiagrams} = Replace[{{} -> {{}, {}}, sow_List :> Thread[sow]}] @ First[Reap[
-		edges = Map[v |->
-			Block[{in = VertexInComponent[graph, v, {1}], out = VertexOutComponent[graph, v, {1}], ports},
+		edges = Sort @ Map[v |->
+			Block[{in = Sort @ VertexInComponent[graph, v, {1}], out = Sort @ VertexOutComponent[graph, v, {1}], ports},
 				ports = Join[in, out];
 				If[ Length[ports] > 2 ||
                     Length[ports] == 1 && MatchQ[unarySpiders, True] ||
