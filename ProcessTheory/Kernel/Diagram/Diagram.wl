@@ -1185,9 +1185,12 @@ TensorDiagram[scalar_] := Diagram[scalar]
 
 
 
-Options[DiagramFunction] = {"IndexedOutput" -> True, "PortFunction" -> None};
+$FunctionPortsType = "Association" | "List" | "Sequence"
+$FunctionType = $FunctionPortsType -> $FunctionPortsType
 
-DiagramFunction[diagram_Diagram, opts : OptionsPattern[]] := Replace[diagram["HoldExpression"], {
+Options[DiagramFunction] = {"Input" -> "Sequence", "Output" -> "Sequence", "PortFunction" -> Function[ReleaseHold[#["Name"]]]};
+ 
+DiagramFunction[diagram_Diagram, opts : OptionsPattern[]] := Enclose @ Replace[diagram["HoldExpression"], {
 	HoldForm[DiagramDual[d_]] :> DiagramFunction[d, opts]
 	,
 	HoldForm[DiagramFlip[d_]] :> InverseFunction[DiagramFunction[d, opts]]
@@ -1196,24 +1199,50 @@ DiagramFunction[diagram_Diagram, opts : OptionsPattern[]] := Replace[diagram["Ho
 	,
 	HoldForm[DiagramComposition[ds___]] :> Composition @@ (DiagramFunction[#, opts] & /@ {ds})
 	,
-	HoldForm[DiagramProduct[ds___]] :> With[{args = TakeDrop[Slot /@ Range[Total[#]], #] & @ Through[{ds}["InputArity"]] /. \[FormalX] -> #},
-		Function @@ If[TrueQ[OptionValue["IndexedOutput"]], Map[Catenate], Identity] @ WaitAll /@ List @@@
-			Hold @ Evaluate @ Flatten[Hold @@ MapThread[If[Length[#2] == 1, With[{x = #2[[1]]}, Hold[ParallelSubmit[#1[x]]]], Hold[ParallelSubmit[#1 @@ #2]]] &, {DiagramFunction[#, opts] & /@ {ds}, args}]]
-	]
+	HoldForm[DiagramProduct[ds___]] :> With[{args = TakeList[Slot /@ Range[Total[#]], #] & @ Through[{ds}["InputArity"]] /. \[FormalX] -> #},
+		Function @@ Switch[OptionValue["Input"], "List" | "Association", Map[Apply[Join]], "Sequence", Map[Apply[Sequence]]][
+            WaitAll /@ List @@@
+			    Hold @ Evaluate @ Flatten[Hold @@ MapThread[If[Length[#2] == 1, With[{x = #2[[1]]}, Hold[ParallelSubmit[#1[x]]]], Hold[ParallelSubmit[#1 @@ #2]]] &, {DiagramFunction[#, opts] & /@ {ds}, args}]]
+	    ]
+    ]
 	,
 	HoldForm[DiagramSum[ds___]] :> (DiagramFunction[#, opts] & /@ {ds})
 	,
-	_ :> With[{
-		f = Replace[diagram["HoldExpression"],
-			HoldForm[anno_Annotation] :> Lookup[Options[anno], "Function", diagram["HoldExpression"]]
-		]
-	},
-		If[ TrueQ[OptionValue["IndexedOutput"]],
-			With[{return = Table[Indexed[#, i], {i, diagram["OutputArity"]}]},
-				Function[Function[return] @ f[##]]
-			],
-			f
-		]
+	_ :> Block[{f, type, defType, inputMap, outputMap, finalMap, inputPorts, outputPorts, portFunction = OptionValue["PortFunction"]},
+        defType = ConfirmMatch[OptionValue["Input"] -> OptionValue["Output"], $FunctionType];
+        {f, type} = Replace[
+            diagram["HoldExpression"], {
+                HoldForm[anno_Annotation] :> (
+                    {
+                        Lookup[#, "Function", diagram["HoldExpression"]],
+                        Replace[Lookup[#, "Type"], Except[$FunctionType] -> defType]
+                    } & @ Options[anno]
+                ),
+                _ :> {diagram["HoldExpression"], defType}
+            }
+		];
+        inputPorts = portFunction /@ Through[diagram["InputPorts"]["Dual"]];
+        outputPorts = portFunction /@ diagram["OutputPorts"];
+		{inputMap, outputMap, finalMap} = Replace[{
+            {x_, x_, _} -> Identity,
+            {"Association", "List", ports_} :>
+                Function[Evaluate[Slot @* Key /@ ports]],
+            {"List", "Association", ports_} :>
+                Association @@@ Function[Evaluate[MapIndexed[{port, i} |-> port -> Indexed[#, i[[1]]], ports]]],
+            {"Association", "Sequence", ports_} :>
+                With[{slots = Slot @* Key /@ ports}, Function[Sequence @@ slots]],
+            {"Sequence", "Association", ports_} :>
+                Association @@@ Function[Evaluate[MapIndexed[{port, i} |-> port -> Slot[i[[1]]], ports]]],
+            {"Sequence", "List", ports_} :>
+                Function[Evaluate[Slot /@ Range[Length[ports]]]],
+            {"List", "Sequence", ports_} :>
+                With[{slots = Map[i |-> Indexed[#, i], Range[Length[ports]]]}, Function[Sequence @@ slots]]
+        }] /@ {
+            {defType[[1]], type[[1]], inputPorts},
+            {type[[2]], defType[[2]], outputPorts},
+            {defType[[2]], defType[[1]], outputPorts}
+        };
+        finalMap @* outputMap @* f @* inputMap
 	]
 }]
 

@@ -133,7 +133,7 @@ matchPorts[d_Diagram, {outputPorts_, inputPorts_}] := Diagram[d,
     If[inputPorts === Automatic, {}, "InputPorts" -> MapThread[If[#2 === Automatic, #1, #2] &, {d["InputPorts"], Join[Port /@ inputPorts, Drop[d["InputPorts"], Length[inputPorts]]]}]]
 ]
 
-matchPorts[cd_CircleDot, {outputPorts_, inputPorts_}] :=
+matchPorts[CircleDot[ds___, d_], {outputPorts_, inputPorts_}] :=
     MapAt[matchPorts[#, {Automatic, inputPorts}] &, {-1}] @ MapAt[matchPorts[#, {outputPorts, Automatic}] &, {1}] @ cd
 
 matchPorts[cp_CirclePlus, {outputPorts_, inputPorts_}] := matchPorts[#, {outputPorts, inputPorts}] & /@ cp
