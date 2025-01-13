@@ -105,7 +105,7 @@ RowDiagram[xs : {___Diagram}, opts : OptionsPattern[]] := Fold[RowDiagram[{##}, 
 
 setDiagram[diagram1_, diagram2_] := Diagram[diagram1, Function[Null, "Expression" :> ##, HoldAll] @@ diagram2["HoldExpression"]]
 
-Options[DiagramArrange] = Join[{"Network" -> True, "Arrange" -> True}, Options[ColumnDiagram]]
+Options[DiagramArrange] = Join[{"Network" -> True, "Arrange" -> True, "NetworkMethod" -> "Foliation"}, Options[ColumnDiagram]]
 
 DiagramArrange[diagram_Diagram, opts : OptionsPattern[]] := If[(TrueQ[diagram["OptionValue"["Arrange"], opts]] || diagram["NetworkQ"]) && TrueQ[diagram["OptionValue"["Decompose"], opts]],
 Replace[diagram["HoldExpression"], {
@@ -116,7 +116,17 @@ Replace[diagram["HoldExpression"], {
         With[{g = DiagramsNetGraph[DiagramArrange[#, opts] & /@ {ds}, FilterRules[{opts, diagram["DiagramOptions"]}, Options[DiagramsNetGraph]], "BinarySpiders" -> True, "UnarySpiders" -> False, "RemoveCycles" -> True]},
             setDiagram[
                 diagram,
-                ColumnDiagram[AnnotationValue[{g, TopologicalSort[g]}, "Diagram"], "PortFunction" -> Function[#["HoldExpression"]], FilterRules[{opts, diagram["DiagramOptions"]}, Options[ColumnDiagram]]]
+                ColumnDiagram[
+                    Switch[OptionValue["NetworkMethod"],
+                        "TopologicalSort", AnnotationValue[{g, TopologicalSort[g]}, "Diagram"],
+                        "Stratify", RowDiagram[AnnotationValue[{g, Developer`FromPackedArray[#]}, "Diagram"]] & /@ ResourceFunction["VertexStratify"][g],
+                        "Foliation", RowDiagram[AnnotationValue[{g, #}, "Diagram"]] & /@ First[ResourceFunction["GraphFoliations"][g, MaxItems -> 1]],
+                        "RandomFoliation", RowDiagram[AnnotationValue[{g, #}, "Diagram"]] & /@ RandomChoice[ResourceFunction["GraphFoliations"][g]]
+                    ]
+                    ,
+                    "PortFunction" -> Function[#["HoldExpression"]],
+                    FilterRules[{opts, diagram["DiagramOptions"]}, Options[ColumnDiagram]]
+                ]
             ]
         ],
         Diagram[diagram, "Expression" :> DiagramNetwork[##] & @@ (DiagramArrange[#, opts] & /@ {ds})]
