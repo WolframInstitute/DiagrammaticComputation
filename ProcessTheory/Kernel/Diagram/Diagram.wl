@@ -1188,7 +1188,7 @@ TensorDiagram[scalar_] := Diagram[scalar]
 $FunctionPortsType = "Association" | "List" | "Sequence"
 $FunctionType = $FunctionPortsType -> $FunctionPortsType
 
-Options[DiagramFunction] = {"Input" -> "Sequence", "Output" -> "Sequence", "PortFunction" -> Function[ReleaseHold[#["Name"]]]};
+Options[DiagramFunction] = {"Input" -> "Sequence", "Output" -> "List", "Parallel" -> False, "PortFunction" -> Function[ReleaseHold[#["Name"]]]};
  
 DiagramFunction[diagram_Diagram, opts : OptionsPattern[]] := Enclose @ Replace[diagram["HoldExpression"], {
 	HoldForm[DiagramDual[d_]] :> DiagramFunction[d, opts]
@@ -1199,11 +1199,14 @@ DiagramFunction[diagram_Diagram, opts : OptionsPattern[]] := Enclose @ Replace[d
 	,
 	HoldForm[DiagramComposition[ds___]] :> Composition @@ (DiagramFunction[#, opts] & /@ {ds})
 	,
-	HoldForm[DiagramProduct[ds___]] :> With[{args = TakeList[Slot /@ Range[Total[#]], #] & @ Through[{ds}["InputArity"]] /. \[FormalX] -> #},
+	HoldForm[DiagramProduct[ds___]] :> With[{args = TakeList[Slot /@ Range[Total[#]], #] & @ Through[{ds}["InputArity"]]},
 		Function @@ Switch[OptionValue["Input"], "List" | "Association", Map[Apply[Join]], "Sequence", Map[Apply[Sequence]]][
-            WaitAll /@ List @@@
-			    Hold @ Evaluate @ Flatten[Hold @@ MapThread[If[Length[#2] == 1, With[{x = #2[[1]]}, Hold[ParallelSubmit[#1[x]]]], Hold[ParallelSubmit[#1 @@ #2]]] &, {DiagramFunction[#, opts] & /@ {ds}, args}]]
-	    ]
+            If[ TrueQ[OptionValue["Parallel"]],
+                WaitAll /@ List @@@
+                    Hold @ Evaluate @ Flatten[Hold @@ MapThread[If[Length[#2] == 1, With[{x = #2[[1]]}, Hold[ParallelSubmit[#1[x]]]], Hold[ParallelSubmit[#1 @@ #2]]] &, #]] &,
+                List @@@ Hold[Evaluate[Flatten[Hold @@ MapThread[If[Length[#2] == 1, With[{x = #2[[1]]}, Hold[#1[x]]], Hold[#1 @@ #2]] &, #]]]] &
+            ] @ {DiagramFunction[#, "Parallel" -> False, opts] & /@ {ds}, args}
+        ]
     ]
 	,
 	HoldForm[DiagramSum[ds___]] :> (DiagramFunction[#, opts] & /@ {ds})
@@ -1218,6 +1221,8 @@ DiagramFunction[diagram_Diagram, opts : OptionsPattern[]] := Enclose @ Replace[d
                         Replace[Lookup[#, "Type"], Except[$FunctionType] -> defType]
                     } & @ Options[anno]
                 ),
+                HoldForm[Interpretation[_, Identity]] -> {Identity, "List" -> "List"},
+                HoldForm[Interpretation[_, perm_Cycles]] :> {Permute[#, perm] &, "List" -> "List"},
                 _ :> {diagram["HoldExpression"], defType}
             }
 		];
