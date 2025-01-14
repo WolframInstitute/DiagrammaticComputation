@@ -84,14 +84,14 @@ Diagram[ds : Except[OptionsPattern[], _List], opts : OptionsPattern[]] := Diagra
 
 Diagram[d_ ? DiagramQ, {}, {}, opts : OptionsPattern[]] := Diagram[Unevaluated @@ d["HoldExpression"], {}, {}, opts]
 
-Diagram[d_ ? DiagramQ, inputs_, {}, opts : OptionsPattern[]] := Diagram[Unevaluated @@ d["HoldExpression"], Replace[inputs, Inherited :> d["InputPorts"]], {}, opts]
+Diagram[d_ ? DiagramQ, inputs_, {}, opts : OptionsPattern[]] := Diagram[Unevaluated @@ d["HoldExpression"], Replace[inputs, Inherited :> Through[d["InputPorts"]["Dual"]]], {}, opts, d["DiagramOptions"]]
 
 Diagram[d_ ? DiagramQ, {}, opts : OptionsPattern[]] := Diagram[d, Inherited, {}, opts]
 
 Diagram[d_ ? DiagramQ, output : Except[OptionsPattern[]], opts : OptionsPattern[]] := Diagram[d, Inherited, output, opts]
 
 Diagram[d_ ? DiagramQ, inputs_, outputs : Except[OptionsPattern[]], opts : OptionsPattern[]] :=
-    Diagram[Unevaluated @@ d["HoldExpression"], Replace[inputs, Inherited :> d["InputPorts"]], Replace[outputs, Inherited :> d["OutputPorts"]], opts]
+    Diagram[Unevaluated @@ d["HoldExpression"], Replace[inputs, Inherited :> Through[d["InputPorts"]["Dual"]]], Replace[outputs, Inherited :> d["OutputPorts"]], opts, d["DiagramOptions"]]
 
 Diagram[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[d, Inherited, Inherited, opts]
 
@@ -1008,11 +1008,8 @@ ToDiagramNetwork[{ds___}, pos_, ports_, opts : OptionsPattern[]] := Catenate[ToD
 
 portDimension[p_Port] := Replace[p["Type"], {SuperStar[Superscript[_, n_]] | Superscript[_, n_] :> n, _ :> p["Name"]}]
 
-Options[DiagramTensor] = {"Kronecker" -> False, "ArrayDot" -> True}
 
-DiagramTensor[diagram_Diagram, opts : OptionsPattern[]] := diagramTensor[diagram["Arrange"], opts]
-
-Options[diagramTensor] = Options[DiagramTensor]
+Options[diagramTensor] = {"Kronecker" -> False, "ArrayDot" -> True}
 
 diagramTensor[diagram_Diagram, opts : OptionsPattern[]] := Replace[diagram["HoldExpression"], {
 	HoldForm[DiagramDual[d_]] :> Conjugate[diagramTensor[d, opts]]
@@ -1087,6 +1084,11 @@ diagramTensor[diagram_Diagram, opts : OptionsPattern[]] := Replace[diagram["Hold
                 Switch[diagram["Arity"], 1, VectorSymbol, 2, MatrixSymbol, _, ArraySymbol][expr, portDimension /@ diagram["Ports"], OptionValue["Domain"], OptionValue["Symmetry"]]
         }]
 }]
+
+Options[DiagramTensor] = Join[Options[diagramTensor] , Options[DiagramArrange]]
+
+DiagramTensor[diagram_Diagram, opts : OptionsPattern[]] := diagramTensor[DiagramArrange[diagram, FilterRules[{opts}, Options[DiagramArrange]], "Network" -> False], FilterRules[{opts}, Options[diagramTensor]]]
+
 
 DiagramSplit[diagram_Diagram, n : _Integer | Infinity | - Infinity : Infinity, dualQ : _ ? BooleanQ : True, flipQ : _ ? BooleanQ : False] := With[
     {d = diagram["Flatten"], dual = If[dualQ, PortDual, Identity]},
