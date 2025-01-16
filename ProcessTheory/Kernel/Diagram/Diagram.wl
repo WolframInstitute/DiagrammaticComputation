@@ -329,6 +329,8 @@ DiagramProp[d_, "CompositionQ"] := MatchQ[d["HoldExpression"], HoldForm[_Diagram
 
 DiagramProp[d_, "NetworkQ"] := MatchQ[d["HoldExpression"], HoldForm[_DiagramNetwork]]
 
+DiagramProp[d_, "NodeQ"] := ! MatchQ[d["HoldExpression"], HoldForm[_DiagramDual | _DiagramFlip | _DiagramReverse | _DiagramProduct | _DiagramComposition | _DiagramNetwork]]
+
 DiagramProp[d_, "Dual", opts___] := DiagramDual[d, opts]
 
 DiagramProp[d_, "Flip", opts___] := DiagramFlip[d, opts]
