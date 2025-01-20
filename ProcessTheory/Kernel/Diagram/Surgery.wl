@@ -17,12 +17,16 @@ DiagramPattern[expr_, in_, out_] := DiagramPattern[expr, in, out, ___]
 DiagramCases[d_Diagram, patt_] :=
 	Cases[
 		Hold[Evaluate[{#["HoldExpression"], Through[#["InputPorts"]["Name"]], Through[#["OutputPorts"]["Name"]], #["DiagramOptions"], #} & /@ DiagramSubdiagrams[d]]] /. HoldForm[x_] :> x,
-		patt /. {
+		Replace[patt, {
 			HoldPattern[DiagramPattern[expr_, in_, out_, opts___]] :> {expr, in, out, {opts}, diag_} :> diag,
-			HoldPattern[(head : Rule | RuleDelayed)[DiagramPattern[expr_, in_List, out_List, opts___], rhs_]] :> head[{expr, in, out, {opts}, _}, rhs]
-		},
+			HoldPattern[(head : Rule | RuleDelayed)[DiagramPattern[expr_, in_List, out_List, opts___], rhs_]] :> head[{expr, in, out, {opts}, _}, rhs],
+            HoldPattern[(head : Rule | RuleDelayed)[lhs_, rhs_]] :> head[{lhs, __}, rhs],
+            _ :> {patt, ___, diag_} :> diag
+		}],
 		{2}
 	]
+
+DiagramCases[d_Diagram] := DiagramCases[d, _]
 
 End[]
 
