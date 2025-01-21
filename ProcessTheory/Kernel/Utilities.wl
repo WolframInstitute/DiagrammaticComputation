@@ -12,6 +12,8 @@ tag
 collectPorts
 collectPortsListBy
 
+inheritedQ
+
 FirstPositions
 FirstPositionsWithMissing
 
@@ -88,6 +90,9 @@ collectPortsListBy[ports_List, f_] := If[ports === {}, {},
         ports
     ]
 ]
+
+
+inheritedQ = MatchQ[Automatic | Inherited]
 
 
 (* WFR candidates *)
