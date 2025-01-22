@@ -696,7 +696,7 @@ gridFrameWires[CircleDot[ds___, d_], pos_, frameDiagrams_, initPorts_, portFunct
         inputs = Join @@ Extract[d, inputPos, With[{ps = #["InputPorts"]}, Thread[portFunction /@ Through[ps["Dual"]] -> Thread[{Through[ps["DualQ"]], #["PortArrows"][[1]]}]]] &];
         outputs = Join @@ Extract[d, outputPos, With[{ps = #["OutputPorts"]}, Thread[portFunction /@ ps -> Thread[{Through[ps["DualQ"]], #["PortArrows"][[2]]}]]] &];
         merge = mergeRules[ports, inputs];
-        ports = Join[DeleteElements[ports, 1 -> MapAt[First, merge, {All, 2}]], outputs]
+        ports = Join[outputs, DeleteElements[ports, 1 -> MapAt[First, merge, {All, 2}]]]
         ,
         downInputPorts = With[{ps = diagramDown["InputPorts"]}, Thread[portFunction /@ Through[ps["Dual"]] -> Thread[{Through[ps["DualQ"]], diagramDown["PortArrows"][[1]]}]]];
         downOutputPorts = With[{ps = diagramDown["OutputPorts"]}, Thread[portFunction /@ ps -> Thread[{Not /@ Through[ps["DualQ"]], {#1, #1 + (#1 - #2)} & @@@ diagramDown["PortArrows"][[2]]}]]];
@@ -710,8 +710,8 @@ gridFrameWires[CircleDot[ds___, d_], pos_, frameDiagrams_, initPorts_, portFunct
         merge2 = mergeRules[outputs, downOutputPorts];
         merge = Join[merge1, {}];
         ports = Join[
-            DeleteElements[ports, 1 -> MapAt[First, merge1, {All, 2}]],
-            With[{ps = diagramDown["OutputPorts"]}, Thread[portFunction /@ ps -> Thread[{Through[ps["DualQ"]], diagramDown["PortArrows"][[2]]}]]]
+            With[{ps = diagramDown["OutputPorts"]}, Thread[portFunction /@ ps -> Thread[{Through[ps["DualQ"]], diagramDown["PortArrows"][[2]]}]]],
+            DeleteElements[ports, 1 -> MapAt[First, merge1, {All, 2}]]
         ]
     ];
     If[ ! MissingQ[diagramUp] && Length[{ds}] == 0,

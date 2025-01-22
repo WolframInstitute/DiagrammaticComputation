@@ -59,7 +59,7 @@ piDiagram[inputs_List, outputs_List, ins_List, outs_List, opts___] := With[{len 
 piDiagram[inputs_List, outputs_List, opts___] := piDiagram[inputs, outputs, inputs, outputs, opts]
 
 piDiagram[inputs_List, outputs_List, perm_Cycles, opts___] := With[{len = Min[Length[inputs], Length[outputs]]},
-    Diagram[Interpretation["\[Pi]", perm], makePorts[inputs], makePorts[outputs], opts, "ShowLabel" -> False]
+    Diagram[Interpretation["\[Pi]", perm], makePorts[inputs], makePorts[outputs], opts, "Shape" -> "Wires"[Thread[{Range[len], Length[inputs] + Permute[Range[len], InversePermutation[perm]]}]], "ShowLabel" -> False]
 ]
 
 tag[expr_, tag_] := Replace[expr, {
