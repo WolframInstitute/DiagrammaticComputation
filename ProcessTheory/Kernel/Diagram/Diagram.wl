@@ -454,11 +454,13 @@ DiagramProp[d_, "Normal"] := If[d["NetworkQ"],
     d
 ]
 
+DiagramProp[d_, "PortFunction"] := Lookup[d["DiagramOptions"], "PortFunction", (#["Name"] &)]
+
 DiagramProp[d_, "PortGraph", opts : OptionsPattern[]] := DiagramsPortGraph[d["SubDiagrams"], opts]
 
-DiagramProp[d_, "Graph", opts : OptionsPattern[]] := DiagramsGraph[d["SubDiagrams"], opts]
+DiagramProp[d_, "Graph", opts : OptionsPattern[]] := DiagramsGraph[d["SubDiagrams"], opts, "PortFunction" -> d["PortFunction"]]
 
-DiagramProp[d_, "Network", opts : OptionsPattern[]] := ToDiagramNetwork[d, FilterRules[{opts, "PortFunction" -> (#["Name"] &), d["DiagramOptions"]}, Options[ToDiagramNetwork]]]
+DiagramProp[d_, "Network", opts : OptionsPattern[]] := ToDiagramNetwork[d, FilterRules[{opts, d["DiagramOptions"], "PortFunction" -> (#["Name"] &)}, Options[ToDiagramNetwork]]]
 
 DiagramProp[d_, "NetGraph", opts : OptionsPattern[]] := DiagramsNetGraph[d["Network"]["SubDiagrams"], FilterRules[{opts, d["DiagramOptions"]}, Options[DiagramsNetGraph]]]
 
