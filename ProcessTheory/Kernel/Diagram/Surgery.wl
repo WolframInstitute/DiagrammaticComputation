@@ -8,8 +8,8 @@ Begin["ProcessTheory`Diagram`Surgery`Private`"];
 
 DiagramSubdiagrams[d_Diagram] := Prepend[Catenate[DiagramSubdiagrams /@ d["SubDiagrams"]], d]
 
-DiagramPattern[expr_] := DiagramPattern[expr, {}, {}]
-DiagramPattern[expr_, out_] := DiagramPattern[expr, {}, out]
+DiagramPattern[expr_] := DiagramPattern[expr, {___}, {___}]
+DiagramPattern[expr_, out_] := DiagramPattern[expr, {___}, out]
 DiagramPattern[expr_, in : Except[_List], out_, opts___] := DiagramPattern[expr, {in}, out, opts]
 DiagramPattern[expr_, in_, out : Except[_List], opts___] := DiagramPattern[expr, in, {out}, opts]
 DiagramPattern[expr_, in_, out_] := DiagramPattern[expr, in, out, ___]
