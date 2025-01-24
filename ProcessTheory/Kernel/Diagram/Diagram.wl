@@ -237,7 +237,7 @@ DiagramSum[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{subDiagram
         opts,
         "Expression" :> DiagramSum[##] & @@ subDiagrams,
         "OutputPorts" -> Replace[Through[{ds}["OutputPorts"]], {{} -> PortSum[], ps_ :> {PortSum @@ PortProduct @@@ ps}}],
-        "InputPorts" -> Replace[Through[{ds}["InputPorts"]], {{} -> PortSum[]["Dual"], ps_ :> {PortSum @@ PortProduct @@@ ps}}]
+        "InputPorts" -> Replace[Through[{ds}["InputPorts"]], {{} -> PortSum[]["Dual"], ps_ :> {PortDual[PortSum @@ PortDual /@ PortProduct @@@ ps]}}]
     ]
 ]
 

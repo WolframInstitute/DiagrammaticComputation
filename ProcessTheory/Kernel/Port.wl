@@ -2,6 +2,7 @@ BeginPackage["ProcessTheory`Port`", {"ProcessTheory`Utilities`"}];
 
 Port
 PortQ
+EmptyPortQ
 
 PortDual
 PortProduct
@@ -52,6 +53,8 @@ Port["1" | CircleTimes[], ___] := emptyPort["1"]
 
 emptyPort[p_] := Port["Expression" :> p, "Type" -> CircleTimes[]]
 
+EmptyPortQ[p_Port ? PortQ] := p["Type"] === CircleTimes[]
+
 Port["0" | CirclePlus[], ___] := Port["Expression" :> "0", "Type" -> CirclePlus[]]
 
 
@@ -88,8 +91,10 @@ PortSum[ps___Port ? PortQ] := If[Length[{ps}] > 0 && AllTrue[{ps}, #["DualQ"] &]
 
 Port[SuperStar[p_], opts : OptionsPattern[]] := PortDual[Port[Unevaluated[p], opts]]
 
-PortDual[p_Port ? PortQ] := Function[Null, Port["Expression" :> #, "Type" -> Replace[p["Type"], {SuperStar[x_] :> x, x_ :> SuperStar[x]}]], HoldFirst] @@
-    Replace[p["HoldExpression"], {HoldForm[PortDual[q_]] :> HoldForm[q], HoldForm[q_] :> HoldForm[PortDual[q]]}]
+PortDual[p_Port ? PortQ] := If[EmptyPortQ[p], p,
+    Function[Null, Port["Expression" :> #, "Type" -> Replace[p["Type"], {SuperStar[x_] :> x, x_ :> SuperStar[x]}]], HoldFirst] @@
+        Replace[p["HoldExpression"], {HoldForm[PortDual[q_]] :> HoldForm[q], HoldForm[q_] :> HoldForm[PortDual[q]]}]
+]
 
 
 (* merge options *)
