@@ -403,6 +403,15 @@ DiagramProp[d_, "Split", n : _Integer | Infinity | - Infinity : Infinity, dualQ 
     ]
 ]
 
+DiagramProp[d_, "Permute", perm_, dualQ : _ ? BooleanQ : True] := Enclose @ With[
+    {ports = d["Ports"], ordering = ConfirmBy[PermutationList[perm, d["Arity"]], ListQ], dual = If[dualQ, PortDual, Identity]},
+    {newPorts = TakeDrop[MapIndexed[If[Xor[#1 <= d["OutputArity"], #2[[1]] <= d["OutputArity"]], dual, Identity][ports[[#1]]] &, ordering], d["OutputArity"]]},
+    Diagram[d,
+        "OutputPorts" -> newPorts[[1]],
+        "InputPorts" -> newPorts[[2]]
+    ]
+]
+
 DiagramProp[d_, "View"] := With[{
     holdExpr = Replace[d["HoldExpression"],
         HoldForm[(head : DiagramDual | DiagramFlip | DiagramReverse | DiagramProduct | DiagramSum | DiagramComposition | DiagramNetwork)[ds___]] :>
@@ -913,7 +922,17 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
                         {portFunction /@ #2["OutputPorts"], Thread[{#1, 2, Range[#2["OutputArity"]]}]}
                     ],
                     "InputPorts" -> MapThread[
-                        Port[tag[#1, #2]]["Dual"] &,
+                        FirstCase[edges,
+                            DirectedEdge[#2[[1]], tgtIdx_, {{1, _, #2[[3]]}, _, {2, _, portIdx_}}] :> With[{tgt = portFunction @ diagrams[tgtIdx]["OutputPorts"][[portIdx]]},
+                                Port[tag[tgt, {tgtIdx, 2, portIdx}]]
+                            ],
+                            FirstCase[edges,
+                                DirectedEdge[#2[[1]], tgtIdx_, {{1, _, #2[[3]]}, _, {1, _, portIdx_}}] :> With[{tgt = portFunction @ diagrams[tgtIdx]["InputPorts"][[portIdx]]["Dual"]},
+                                    Port[tag[tgt, {tgtIdx, 1, portIdx}]]
+                                ],
+                                Port[tag[#1, #2]]
+                            ]
+                        ]["Dual"] &,
                         {portFunction /@ Through[#2["InputPorts"]["Dual"]], Thread[{#1, 1, Range[#2["InputArity"]]}]}
                     ]
                 ] &,
@@ -1219,12 +1238,15 @@ DiagramSplit[diagram_Diagram, n : _Integer | Infinity | - Infinity : Infinity, d
 	]
 ]
 
-DiagramPermute[diagram_, Cycles[{}]] := diagram
 
-DiagramPermute[diagram_Diagram, perm_] := Enclose @ With[{d = diagram["Flatten"]}, {ports = d["Ports"], newDiagram = DiagramSplit[d]}, {newPorts = ConfirmBy[Permute[ports, perm], ListQ]},
+DiagramPermute[diagram_, Cycles[{}], ___] := diagram
+
+DiagramPermute[diagram_ /; diagram["NodeQ"], perm_, dualQ : _ ? BooleanQ : True] := diagram["Permute", perm, dualQ]
+
+DiagramPermute[diagram_Diagram, perm_, dualQ : _ ? BooleanQ : True] := Enclose @ With[{d = diagram["Flatten"]}, {ports = d["Ports", dualQ], newDiagram = DiagramSplit[d, Infinity, dualQ]}, {newPorts = ConfirmBy[Permute[ports, perm], ListQ]},
 	If[ ports === newPorts,
 		newDiagram,
-		DiagramComposition[piDiagram[ports, newPorts], newDiagram, "PortFunction" -> (#["HoldExpression"] &)]
+		DiagramComposition[piDiagram[ports, newPorts, perm], newDiagram, "PortFunction" -> (#["HoldExpression"] &)]
 	]
 ]
 
