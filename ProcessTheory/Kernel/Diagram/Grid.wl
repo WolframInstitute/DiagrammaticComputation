@@ -222,7 +222,7 @@ Replace[diagram["HoldExpression"], {
 
 DiagramAssignPorts[d_Diagram, ports_] := First @ assignPorts[d, ports]
 
-DiagramAssignPorts[d_Diagram] := DiagramAssignPorts[d, {d["InputPorts"], d["OutputPorts"]}]
+DiagramAssignPorts[d_Diagram] := DiagramAssignPorts[d, {PortDual /@ d["InputPorts"], d["OutputPorts"]}]
 
 
 Options[DiagramDecompose] = {"Network" -> True, "Unary" -> False, "Decompose" -> True, "Ports" -> False, "Diagram" -> False}
@@ -338,7 +338,7 @@ gridArrange[diagram_Diagram -> d_, pos_, {autoWidth_, autoHeight_}, {dx_, dy_}, 
     Sow[pos -> Diagram[Replace[d, None -> diagram],
         "Center" -> RotationTransform[angle, corner][corner + {width * (1 + dx), h} / 2],
         "Width" -> width * (1 + dx),
-        "Height" -> h + dy / 4,
+        "Height" -> h,
         "Shape" -> Automatic
     ], "Item"];
     Diagram[diagram,
@@ -369,7 +369,7 @@ gridArrange[grid : CircleDot[ds___] -> d_, pos_, {width_, height_}, {dx_, dy_}, 
     With[{w = newWidth * (1 + dx), h = Total[heights]},
         Sow[pos -> Diagram[d, "Center" -> RotationTransform[angle, corner][corner + {w, h} / 2], "Width" -> Replace[d["OptionValue"["Width"]], Automatic -> w], "Height" -> Replace[d["OptionValue"["Height"]], Automatic -> h]], "Column"]
     ];
-    MapIndexed[With[{i = #2[[1]]}, gridArrange[#1, Append[pos, i], {newWidth, heights[[i]] - dy / 4}, {dx, dy}, {xMin, yMin} + RotationTransform[angle] @ {0, positions[[i]]}, angle]] &, grid]
+    MapIndexed[With[{i = #2[[1]]}, gridArrange[#1, Append[pos, i], {newWidth, heights[[i]]}, {dx, dy}, {xMin, yMin} + RotationTransform[angle] @ {0, positions[[i]]}, angle]] &, grid]
 ]
 
 gridArrange[HoldPattern[SuperStar[d_]] -> _, args___] := gridArrange[d /. diagram_Diagram :> DiagramDual[diagram], args]
@@ -424,7 +424,6 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
     hGapSize = OptionValue["HorizontalGapSize"],
     angle = Replace[OptionValue["Rotate"], {Left -> - Pi / 2, Right -> Pi / 2, Bottom | True | Up -> Pi, None | False | Top | Down -> 0}],
     spacing = OptionValue[Spacings],
-    outputs, inputs,
     wiresQ = TrueQ[OptionValue["Wires"]],
     diagramOptions = FilterRules[{opts}, Except[Options[Graphics], Options[DiagramGraphics]]],
     portFunction = diagram["PortFunction"],
@@ -448,9 +447,6 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
     outputPositions = gridOutputPositions[grid];
     inputPositions = gridInputPositions[grid];
     positions = Position[grid, _Diagram, All];
-
-    (* outputs = Catenate[#["OutputPorts"] & /@ Extract[grid, outputPositions]];
-    inputs = Catenate[Through[#["InputPorts"]["Dual"]] & /@ Extract[grid, inputPositions]]; *)
 
     grid = grid //
         MapAt[Diagram[#, "PortLabels" -> {None, Placed[Automatic, {- 2 / 3, 1}]}, "PortArrows" -> {Placed[None, Inherited], Placed[None, Inherited]}] &, Complement[positions, outputPositions, inputPositions]] //

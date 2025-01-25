@@ -101,7 +101,7 @@ inheritPorts[port_, oldPorts_List] := inheritPorts[{port}, oldPorts]
 
 Diagram[d_ ? DiagramQ, {}, {}, opts : OptionsPattern[]] := Diagram[Unevaluated @@ d["HoldExpression"], {}, {}, opts, d["DiagramOptions"]]
 
-Diagram[d_ ? DiagramQ, inputs_, {}, opts : OptionsPattern[]] := Diagram[Unevaluated @@ d["HoldExpression"], inheritPorts[inputs, PortDual /@ d["InputPorts"]], {}, opts, d["DiagramOptions"]]
+Diagram[d_ ? DiagramQ, inputs : Except[OptionsPattern[]], {}, opts : OptionsPattern[]] := Diagram[Unevaluated @@ d["HoldExpression"], inheritPorts[inputs, PortDual /@ d["InputPorts"]], {}, opts, d["DiagramOptions"]]
 
 Diagram[d_ ? DiagramQ, {}, opts : OptionsPattern[]] := Diagram[d, Inherited, {}, opts]
 
@@ -757,7 +757,7 @@ DiagramsGraph[diagrams : {___Diagram ? DiagramQ}, opts : OptionsPattern[]] := Bl
         ],
         VertexLabels -> MapAt[Placed[#, Center] &, {All, 2}] @ Join[
             {_ -> Automatic},
-            Thread[Range[Length[diagrams]] -> Through[diagrams["HoldExpression"]]],
+            Thread[Range[Length[diagrams]] -> (#["Graphics", #["DiagramOptions"], "PortLabels" -> None, "PortArrows" -> None, "Shape" -> None] & /@ diagrams)],
             Flatten[MapIndexed[#2 -> #1["Label"] &, ports, {3}], 2]
         ],
         VertexSize -> {_ -> Medium, _Integer -> Large, {__Integer} -> Medium},
@@ -962,7 +962,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
 		VertexShapeFunction -> Join[
 			Thread[diagramVertices ->
 				MapThread[{diagram, orientation} |-> With[{
-						shape = First @ diagram["Graphics", "PortLabels" -> If[portLabelsQ, Automatic, None], "PortArrows" -> None, "LabelFunction" -> Function[Rotate[#["HoldExpression"], Pi]], opts],
+						shape = First @ diagram["Graphics", diagram["DiagramOptions"], "PortLabels" -> If[portLabelsQ, Automatic, None], "PortArrows" -> None, "LabelFunction" -> Function[If[#["NetworkQ"], #, Rotate[#["HoldExpression"], Pi]]]],
 						transform = RotationTransform[{{0, 1}, orientation}] @* ScalingTransform[scale {1, 1}]
 					},
 						Function[{
@@ -1113,6 +1113,8 @@ portDimension[p_Port] := Replace[p["Type"], {SuperStar[Superscript[_, n_]] | Sup
 Options[diagramTensor] = {"Kronecker" -> False, "ArrayDot" -> True}
 
 diagramTensor[diagram_Diagram, opts : OptionsPattern[]] := Replace[diagram["HoldExpression"], {
+	HoldForm[Diagram[d_]] :> diagramTensor[d, opts]
+    ,
 	HoldForm[DiagramDual[d_]] :> Conjugate[diagramTensor[d, opts]]
 	,
 	HoldForm[DiagramFlip[d_]] :> ConjugateTranspose[diagramTensor[d, opts], FindPermutation[Catenate[Reverse @ TakeDrop[Range[diagram["Arity"]], diagram["OutputArity"]]]]]
@@ -1313,7 +1315,7 @@ $FunctionType = $FunctionPortsType -> $FunctionPortsType
 Options[DiagramFunction] = {"Input" -> "Sequence", "Output" -> "List", "Parallel" -> False, "PortFunction" -> Function[#["Name"]]};
  
 DiagramFunction[diagram_Diagram, opts : OptionsPattern[]] := Enclose @ Replace[diagram["HoldExpression"], {
-	HoldForm[DiagramDual[d_]] :> DiagramFunction[d, opts]
+	HoldForm[(Diagram | DiagramDual)[d_]] :> DiagramFunction[d, opts]
 	,
 	HoldForm[DiagramFlip[d_]] :> InverseFunction[DiagramFunction[d, opts]]
 	,

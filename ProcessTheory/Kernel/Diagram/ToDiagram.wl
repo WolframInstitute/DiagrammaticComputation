@@ -26,7 +26,7 @@ treeDiagram[t_Tree, pos_List, opts : OptionsPattern[]] := Block[{data = TreeData
 		Diagram[data, {pos}, {}]
 		,
 		diagram = DiagramProduct @@ MapIndexed[treeDiagram[#1, Join[pos, #2], opts] &, children];
-		DiagramComposition[diagram, Diagram[data, {pos}, diagram["InputPorts"]], opts]
+		DiagramComposition[diagram, Diagram[data, {pos}, PortDual /@ diagram["FlatInputPorts"]], opts]
 	]
 ]
 
@@ -71,12 +71,12 @@ NetGraphDiagram[ng : HoldPattern[_NetGraph], opts : OptionsPattern[]] := Block[{
 	diagrams = MapIndexed[With[{i = #2[[1, 1, 1]]},
 		Diagram[
 			Interpretation[Replace[#, _[assoc_,___] :> Graphics @ NeuralNetworks`Private`GetPanelIcon[assoc]], #],
-			MapIndexed[Interpretation @@ {Replace[{i, 1, #2[[1]]}, rules], Construct @@ #1} &, Normal @ Information[#, "InputPorts"]],
-			MapIndexed[Interpretation @@ {{i, 2, #2[[1]]}, Construct @@ #1} &, Normal @ Information[#, "OutputPorts"]]
+			MapIndexed[Interpretation @@ {Construct @@ #1, Replace[{i, 1, #2[[1]]}, rules]} &, Normal @ Information[#, "InputPorts"]],
+			MapIndexed[Interpretation @@ {Construct @@ #1, {i, 2, #2[[1]]}} &, Normal @ Information[#, "OutputPorts"]]
 		]] &,
 		layers
 	];
-	DiagramNetwork[##, opts] & @@ diagrams
+	DiagramNetwork[##, "PortFunction" -> (#["Apply", HoldForm[Evaluate[#["Expression"][[2]]]] &] &), opts] & @@ diagrams
 ]
 
 
@@ -92,20 +92,20 @@ SystemModelDiagram[sm : HoldPattern[_SystemModel], path_, opts : OptionsPattern[
 		All
 	];
 	If[ components === {},
-		Port[Interpretation[Last[path], path], name],
+		Port[Interpretation[Evaluate[Last[path]], path], name],
 		With[{assoc = Association @ Map[Apply[#1 -> SystemModelDiagram[#2, Append[path, #1]] &], components]},
 			If[ AllTrue[assoc, PortQ],
 				With[{ports = <|True -> {}, False -> {}, GroupBy[Values[assoc], MemberQ[parameters, #["Name"]] &]|>}, Diagram[Interpretation[Show[sm["Thumbnail"], ImageSize -> 16], sm["ModelName"]], ports[True], ports[False]]],
-				If[Length[assoc] == 1, #, DiagramNetwork[##,
+				DiagramNetwork[##,
 					opts,
-					"PortFunction" -> With[{c = Replace[connections, (lhs_ -> rhs_) :> Append[lhs, x___] -> Append[rhs, x], 1]},
-						Replace[#["HoldExpression"], HoldForm[Interpretation[_, p_] | PortDual[Interpretation[_, p_]]] :> HoldForm[Evaluate @ Replace[p, c]]] &
+					"PortFunction" -> With[{c = Replace[connections, (lhs_ -> rhs_) :> (Append[lhs, x___] -> Append[rhs, x]), 1]},
+						#["Apply", Replace[#["HoldName"], HoldForm[Interpretation[_, p_]] :> HoldForm[Evaluate @ Replace[p, c]]] &] &
 					],
 					"LabelFunction" -> Function[Evaluate[ClickToCopy[Show[sm["Thumbnail"], ImageSize -> 32], #["View"]]]],
 					"ShowWireLabels" -> False,
 					"Orientation" -> None,
 					PlotLabel -> name
-				]] & @@ KeyValueMap[
+				] & @@ KeyValueMap[
 					Diagram[
 						If[DiagramQ[#2], #2, If[MemberQ[parameters, #2["Name"]], Diagram[#2, #2, {}, "Shape" -> "Triangle"], Diagram[#2, #2, "Shape" -> "UpsideDownTriangle"]]],
 						"Angle" -> Lookup[transforms, #1, 0, #[[1, 1]] &],
@@ -157,7 +157,7 @@ LambdaDiagram[expr_, depth_Integer : 0, opts : OptionsPattern[]] := Module[{lamb
 	Quiet[Check[Needs["Wolfram`Lambda`"], Message[ToDiagram::missing]; Return[$Failed]], {Get::noopen, Needs::nocont}];
 	DiagramNetwork[##, opts, "ShowPortLabels" -> False, "PortLabels" -> False, "ShowWireLabels" -> False] & @@ 
 		Map[
-			If[#["HoldName"] === HoldForm["\[Lambda]"], Diagram[#, "Expression" -> Style["\[Lambda]", 16, Bold, ColorData[109][lambdaIdx++]]], #] &,
+			If[#["HoldExpression"] === HoldForm["\[Lambda]"], Diagram[#, "Expression" -> Style["\[Lambda]", 16, Bold, ColorData[109][lambdaIdx++]]], #] &,
 			LambdaDiagrams[Wolfram`Lambda`TagLambda[expr], depth]
 		]
 ]
