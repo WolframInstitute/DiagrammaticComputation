@@ -84,7 +84,7 @@ Options[SystemModelDiagram] = Options[DiagramNetwork];
 SystemModelDiagram[sm : HoldPattern[_SystemModel], path_, opts : OptionsPattern[]] := Block[{name = sm[[1]], components, connections, parameters, transforms},
 	{components, connections, parameters, transforms} = Quiet @ Check[sm /@ {"Components", "Connections", "ParameterNames", "Diagram"}, {{}, {}, {}, {}}, SystemModel::nomod];
 	connections = Rule @@@ Map[StringSplit[#, "."] &, connections, {2}];
-	parameters = HoldForm[Evaluate[Information[#, "Identifier"]]] & /@ parameters;
+	parameters = Information[#, "Identifier"] & /@ parameters;
 	transforms = Cases[
 		transforms,
 		Annotation[Tooltip[{Rotate[Scale[Translate[_, tr_], scale__], rot__], ___}, c_], _] :>
@@ -157,7 +157,7 @@ LambdaDiagram[expr_, depth_Integer : 0, opts : OptionsPattern[]] := Module[{lamb
 	Quiet[Check[Needs["Wolfram`Lambda`"], Message[ToDiagram::missing]; Return[$Failed]], {Get::noopen, Needs::nocont}];
 	DiagramNetwork[##, opts, "ShowPortLabels" -> False, "PortLabels" -> False, "ShowWireLabels" -> False] & @@ 
 		Map[
-			If[#["Name"] === HoldForm["\[Lambda]"], Diagram[#, "Expression" -> Style["\[Lambda]", 16, Bold, ColorData[109][lambdaIdx++]]], #] &,
+			If[#["HoldName"] === HoldForm["\[Lambda]"], Diagram[#, "Expression" -> Style["\[Lambda]", 16, Bold, ColorData[109][lambdaIdx++]]], #] &,
 			LambdaDiagrams[Wolfram`Lambda`TagLambda[expr], depth]
 		]
 ]
@@ -165,7 +165,7 @@ LambdaDiagram[expr_, depth_Integer : 0, opts : OptionsPattern[]] := Module[{lamb
 
 
 QuantumCircuitDiagram[qc_Wolfram`QuantumFramework`QuantumCircuitOperator, opts : OptionsPattern[]] := With[{rules = Rule @@@ EdgeTags @ qc["TensorNetwork"]}, {
-	d = DiagramComposition[##, "PortFunction" -> (#["HoldExpression"] &)] & @@
+	d = DiagramComposition @@
 		Reverse @ MapIndexed[{op, idx} |-> With[{i = idx[[1]], qo = Wolfram`QuantumFramework`QuantumOperator[op]},
 			Diagram[
 				Interpretation[op["CircuitDiagram", "WireLabels" -> None, "ShowEmptyWires" -> False, "ShowGateLabels" -> False, "ShowMeasurementWire" -> False, ImageSize -> 16], op],

@@ -11,6 +11,7 @@ DiagramProduct
 DiagramSum
 DiagramComposition
 DiagramNetwork
+SingletonDiagram
 
 DiagramGraphics
 DiagramsFreePorts
@@ -46,6 +47,8 @@ $DiagramProperties = Sort @ {
     "Ports", "PortArrows", "Arity", "FlattenOutputs", "FlattenInputs", "Flatten", "View", "Name", "Tensor", "Function", "Shape",
     "Diagram", "PortGraph", "Graph", "NetGraph", "Grid"
 }
+
+$DefaultPortFunction = Function[#["Apply", #["HoldName"] &]]
 
 
 (* ::Subsection:: *)
@@ -96,7 +99,7 @@ inheritPorts[ports_List, oldPorts_List] := DeleteCases[Inherited] @ MapThread[If
 inheritPorts[port_, oldPorts_List] := inheritPorts[{port}, oldPorts]
 
 
-Diagram[d_ ? DiagramQ, {}, {}, opts : OptionsPattern[]] := Diagram[Unevaluated @@ d["HoldExpression"], {}, {}, opts]
+Diagram[d_ ? DiagramQ, {}, {}, opts : OptionsPattern[]] := Diagram[Unevaluated @@ d["HoldExpression"], {}, {}, opts, d["DiagramOptions"]]
 
 Diagram[d_ ? DiagramQ, inputs_, {}, opts : OptionsPattern[]] := Diagram[Unevaluated @@ d["HoldExpression"], inheritPorts[inputs, PortDual /@ d["InputPorts"]], {}, opts, d["DiagramOptions"]]
 
@@ -256,10 +259,14 @@ DiagramProduct[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{subDia
     ]
 ]
 
+Options[SingletonDiagram] = Options[Diagram]
+
+SingletonDiagram[diagram_Diagram, opts : OptionsPattern[]] := Diagram[diagram, "Expression" :> Diagram[diagram], opts]
+
 
 (* vertical product *)
 
-Options[DiagramComposition] = Join[{"PortFunction" -> Function[#["Name"]]}, Options[Diagram]]
+Options[DiagramComposition] = Join[{"PortFunction" -> $DefaultPortFunction}, Options[Diagram]]
 
 DiagramComposition[d_Diagram, opts : OptionsPattern[]] := Diagram[d, opts]
 
@@ -280,7 +287,7 @@ DiagramComposition[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
 
 (* network of diagrams exposing free ports *)
 
-Options[DiagramNetwork] := DeleteDuplicatesBy[First] @ Join[{"PortFunction" -> Function[#["Name"]]}, Options[Diagram], Options[DiagramsNetGraph]]
+Options[DiagramNetwork] := DeleteDuplicatesBy[First] @ Join[{"PortFunction" -> $DefaultPortFunction}, Options[Diagram], Options[DiagramsNetGraph]]
 DiagramNetwork[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
     subDiagrams = If[#["NetworkQ"], Splice[#["SubDiagrams"]], #] & /@ {ds}
 },
@@ -288,7 +295,7 @@ DiagramNetwork[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
         opts,
         "Expression" :> DiagramNetwork[ds],
 
-        Block[{graph = DiagramsGraph[subDiagrams, FilterRules[{opts}, Options[DiagramsGraph]]], diagrams = Through[subDiagrams["Flatten"]], freeWires, edges},
+        Sequence @@ Block[{graph = DiagramsGraph[subDiagrams, FilterRules[{opts}, Options[DiagramsGraph]]], diagrams = Through[subDiagrams["Flatten"]], freeWires, edges},
             freeWires = Cases[Pick[VertexList[graph], VertexDegree[graph], 1], _HoldForm];
             edges = EdgeList[graph];
             {
@@ -298,6 +305,7 @@ DiagramNetwork[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
         ]
     ]
 ]
+
 
 
 (* ::Subsection:: *)
@@ -337,7 +345,9 @@ DiagramProp[d_, "CompositionQ"] := MatchQ[d["HoldExpression"], HoldForm[_Diagram
 
 DiagramProp[d_, "NetworkQ"] := MatchQ[d["HoldExpression"], HoldForm[_DiagramNetwork]]
 
-DiagramProp[d_, "NodeQ"] := ! MatchQ[d["HoldExpression"], HoldForm[_Diagram | _DiagramDual | _DiagramFlip | _DiagramReverse | _DiagramProduct | _DiagramSum | _DiagramComposition | _DiagramNetwork]]
+$DiagramHeadPattern = Diagram | DiagramDual | DiagramFlip | DiagramReverse | DiagramProduct | DiagramSum | DiagramComposition | DiagramNetwork
+
+DiagramProp[d_, "NodeQ"] := ! MatchQ[d["Head"], $DiagramHeadPattern]
 
 DiagramProp[d_, "Dual", opts___] := DiagramDual[d, opts]
 
@@ -346,12 +356,12 @@ DiagramProp[d_, "Flip", opts___] := DiagramFlip[d, opts]
 DiagramProp[d_, "Reverse", opts___] := DiagramReverse[d, opts]
 
 DiagramProp[d_, "Head"] := Replace[d["HoldExpression"], {
-    HoldForm[(head : DiagramDual | DiagramFlip | DiagramReverse | DiagramProduct | DiagramSum | DiagramComposition | DiagramNetwork)[___]] :> head,
+    With[{headPatt = $DiagramHeadPattern}, HoldForm[(head : headPatt)[___]] :> head],
     _ -> Null
 }]
 
 DiagramProp[d_, "SubDiagrams"] := Replace[d["HoldExpression"], {
-    HoldForm[(DiagramDual | DiagramFlip | DiagramReverse | DiagramProduct | DiagramSum | DiagramComposition | DiagramNetwork)[ds___]] :> {ds},
+    With[{headPatt = $DiagramHeadPattern}, HoldForm[headPatt[ds___]] :> {ds}],
     _ -> {}
 }]
 
@@ -427,8 +437,9 @@ DiagramProp[d_, "View"] := With[{
 DiagramProp[d_, "Name"] := Replace[
     d["HoldExpression"],
 
-    HoldForm[(head : DiagramDual | DiagramFlip | DiagramReverse | DiagramProduct | DiagramSum | DiagramComposition | DiagramNetwork)[ds___]] :>
+    HoldForm[(head : $DiagramHeadPattern)[ds___]] :>
         Replace[head, {
+            Diagram -> Identity,
             DiagramDual -> SuperStar,
             DiagramFlip -> OverBar,
             DiagramReverse -> OverTilde,
@@ -449,18 +460,18 @@ DiagramProp[d_, "Diagram" | "Graphics", opts : OptionsPattern[]] := DiagramGraph
 
 DiagramProp[d_, "Normal"] := If[d["NetworkQ"],
     With[{g = DiagramsNetGraph[d["SubDiagrams"], "BinarySpiders" -> All, "UnarySpiders" -> False, "RemoveCycles" -> True, FilterRules[d["DiagramOptions"], Options[DiagramsNetGraph]]]},
-        DiagramComposition[##, "PortFunction" -> Function[#["HoldExpression"]]] & @@ AnnotationValue[{g, Reverse[TopologicalSort[g]]}, "Diagram"]
+        DiagramComposition @@ AnnotationValue[{g, Reverse[TopologicalSort[g]]}, "Diagram"]
     ],
     d
 ]
 
-DiagramProp[d_, "PortFunction"] := Lookup[d["DiagramOptions"], "PortFunction", (#["Name"] &)]
+DiagramProp[d_, "PortFunction"] := Lookup[d["DiagramOptions"], "PortFunction", $DefaultPortFunction]
 
 DiagramProp[d_, "PortGraph", opts : OptionsPattern[]] := DiagramsPortGraph[d["SubDiagrams"], opts]
 
 DiagramProp[d_, "Graph", opts : OptionsPattern[]] := DiagramsGraph[d["SubDiagrams"], opts, "PortFunction" -> d["PortFunction"]]
 
-DiagramProp[d_, "Network", opts : OptionsPattern[]] := ToDiagramNetwork[d, FilterRules[{opts, d["DiagramOptions"], "PortFunction" -> (#["Name"] &)}, Options[ToDiagramNetwork]]]
+DiagramProp[d_, "Network", opts : OptionsPattern[]] := ToDiagramNetwork[d, FilterRules[{opts}, Options[ToDiagramNetwork]]]
 
 DiagramProp[d_, "NetGraph", opts : OptionsPattern[]] := DiagramsNetGraph[d["Network"]["SubDiagrams"], FilterRules[{opts, d["DiagramOptions"]}, Options[DiagramsNetGraph]]]
 
@@ -723,7 +734,7 @@ SimplifyDiagram[diag_ ? DiagramQ] := With[{portFunction = #["HoldExpression"] &}
 ]
 
 
-Options[DiagramsGraph] = Join[{"Simplify" -> False, "PortFunction" -> Function[#["Name"]]}, Options[Graph]];
+Options[DiagramsGraph] = Join[{"Simplify" -> False, "PortFunction" -> $DefaultPortFunction}, Options[Graph]];
 DiagramsGraph[diagrams : {___Diagram ? DiagramQ}, opts : OptionsPattern[]] := Block[{
     ports = Thread[{Through[#["InputPorts"]["Dual"]] & /@ #, Through[#["OutputPorts"]]}] & @ Through[diagrams["Flatten"]], indexedPorts,
     portFunction = OptionValue["PortFunction"],
@@ -789,16 +800,16 @@ RemoveDiagramsNetGraphCycles[inputNet_ ? DirectedGraphQ, opts : OptionsPattern[G
 	id = Max[VertexList[net, _Integer], 0] + 1;
 
 	While[
-        Length[cycles = FindCycle[net, Infinity, 1]] > 0,
+        Length[cycles = Join[FindCycle[net, Infinity, 1], FirstCase[EdgeList[net], e : _[x_, x_, ___] :> {{e}}, {}, {1}, Heads -> False]]] > 0,
 
 		edge = cycles[[1, -1]];
 		AppendTo[cups, cup = id++];
 		AppendTo[caps, cap = id++];
 		AppendTo[cupDiagrams, With[{port = Lookup[diagrams, edge[[2]]]["InputPorts"][[edge[[3, -1, 3]]]]},
-            Diagram["\[DoubleStruckCapitalI]", {port, port["Dual"]}, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False]
+            Diagram["\[DoubleStruckCapitalI]", {PortDual[port], port}, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False]
         ]];
 		AppendTo[capDiagrams, With[{port = Lookup[diagrams, edge[[1]]]["OutputPorts"][[edge[[3, 1, 3]]]]},
-            Diagram["\[DoubleStruckCapitalI]", {port, port["Dual"]}, {}, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False]
+            Diagram["\[DoubleStruckCapitalI]", {port, PortDual[port]}, {}, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False]
         ]];
 		net = EdgeDelete[net, {edge}];
 		net = VertexAdd[net, {cap, cup}];
@@ -820,7 +831,7 @@ Options[DiagramsNetGraph] = Join[{
     "ShowPortLabels" -> False,
     "ShowWireLabels" -> True,
     "Scale" -> Automatic,
-    "ArrowSize" -> 0.01,
+    "ArrowSize" -> Small, 
     "SpiderRadius" -> 0.2,
     "Orientation" -> Automatic,
     "UnarySpiders" -> True,
@@ -1043,19 +1054,19 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
 DiagramsFreePorts[diagrams : {___Diagram ? DiagramQ}] := Keys @ Select[CountsBy[Catenate[Through[Through[diagrams["Flatten"]]["Ports"]]], #["HoldExpression"] &], EqualTo[1]]
 
 
-Options[ToDiagramNetwork] = Options[toDiagramNetwork] = Join[{"PortFunction" -> (#["Name"] &), "Unique" -> True}, Options[DiagramNetwork]];
+Options[ToDiagramNetwork] = Options[toDiagramNetwork] = Join[{"Unique" -> True}, Options[DiagramNetwork]];
 
 ToDiagramNetwork[d_Diagram, opts : OptionsPattern[]] := If[d["NetworkQ"],
-    Diagram[d, opts],
-    With[{net = DiagramNetwork[##, "PortFunction" -> (#["HoldExpression"] &), FilterRules[{opts, d["DiagramOptions"]}, Options[DiagramNetwork]]], portFunction = OptionValue["PortFunction"]},
-        Diagram[net,
-            "OutputPorts" -> Permute[net["OutputPorts"], FindPermutation[Through[net["OutputPorts"]["HoldExpression"]][[All, 1, 1]], portFunction /@ d["OutputPorts"]]],
-            "InputPorts" -> Permute[net["InputPorts"], FindPermutation[Through[Through[net["InputPorts"]["Dual"]]["HoldExpression"]][[All, 1, 1]], portFunction /@ Through[d["InputPorts"]["Dual"]]]]
-        ]
-    ] & @@ toDiagramNetwork[If[TrueQ[OptionValue["Arrange"]], d["Arrange", opts], d]["Decompose", "Unary" -> True], {}, {}, opts]
+    Diagram[d, Inherited, Inherited, FilterRules[{opts}, Options[Diagram]]]
+    ,
+    Diagram[d,
+        "Expression" :> DiagramNetwork[##],
+        "PortFunction" -> $DefaultPortFunction,
+        FilterRules[{opts}, Options[Diagram]]
+    ] & @@ toDiagramNetwork[If[TrueQ[OptionValue["Arrange"]], d["Arrange", opts], d]["Decompose", "Unary" -> True, "Diagram" -> True], {}, {}, FilterRules[{opts}, Options[toDiagramNetwork]]]
 ]
 
-toDiagramNetwork[d_Diagram, pos_, ports_, opts : OptionsPattern[]] := Block[{portFunction = OptionValue["PortFunction"], uniqueQ = TrueQ[OptionValue["Unique"]], mports = ports, port}, {
+toDiagramNetwork[d_Diagram -> None, pos_, ports_, opts : OptionsPattern[]] := Block[{portFunction = OptionValue["PortFunction"], uniqueQ = TrueQ[OptionValue["Unique"]], mports = ports, port}, {
 	Diagram[d,
 		"OutputPorts" -> MapIndexed[
             Port @ If[ KeyExistsQ[mports, #1],
@@ -1063,27 +1074,27 @@ toDiagramNetwork[d_Diagram, pos_, ports_, opts : OptionsPattern[]] := Block[{por
                 mports = DeleteElements[mports, 1 -> {port}];
                 port[[2]]
                 ,
-                Interpretation[#1, Evaluate[If[uniqueQ, Join[pos, {1}, #2], pos] -> #1]]
+                Interpretation[#1, Evaluate[If[uniqueQ, Join[pos, {2}, #2], pos] -> #1]]
             ] &,
             portFunction /@ d["FlatOutputPorts"]
         ],
-		"InputPorts" -> MapIndexed[Port[Interpretation[#1, Evaluate[If[uniqueQ, Join[pos, {2}, #2], pos] -> #1]]]["Dual"] &, portFunction /@ Through[d["FlatInputPorts"]["Dual"]]],
-        opts
+		"InputPorts" -> MapIndexed[Port[Interpretation[#1, Evaluate[If[uniqueQ, Join[pos, {1}, #2], pos] -> #1]]]["Dual"] &, portFunction /@ Through[d["FlatInputPorts"]["Dual"]]],
+        FilterRules[{opts}, Options[Diagram]]
 	]
 }
 ]
 
-toDiagramNetwork[CirclePlus[ds___], pos_, ports_, opts : OptionsPattern[]] :=
-    Catenate @ MapIndexed[toDiagramNetwork[#1, Join[pos, #2], ports, opts] &, {ds}]
+toDiagramNetwork[CirclePlus[ds___] -> d_, pos_, ports_, opts : OptionsPattern[]] :=
+    Catenate @ MapIndexed[toDiagramNetwork[#1, Join[pos, #2], ports, "Unique" -> True, "PortFunction" -> d["PortFunction"], opts] &, {ds}]
 
-toDiagramNetwork[CircleTimes[ds___], pos_, ports_, opts : OptionsPattern[]] :=
-    Catenate @ FoldPairList[With[{net = Reap[toDiagramNetwork[#2, Append[pos, #1[[1]]], #1[[2]], opts], "Port"]}, {net[[1]], {#1[[1]] + 1, DeleteElements[#1[[2]], 1 -> Catenate[net[[2]]]]}}] &, {1, ports}, {ds}]
+toDiagramNetwork[CircleTimes[ds___] -> d_, pos_, ports_, opts : OptionsPattern[]] :=
+    Catenate @ FoldPairList[With[{net = Reap[toDiagramNetwork[#2, Append[pos, #1[[1]]], #1[[2]], "Unique" -> True, "PortFunction" -> d["PortFunction"], opts], "Port"]}, {net[[1]], {#1[[1]] + 1, DeleteElements[#1[[2]], 1 -> Catenate[net[[2]]]]}}] &, {1, ports}, {ds}]
 
-toDiagramNetwork[CircleDot[ds__], pos_, ports_, opts : OptionsPattern[]] := With[{portFunction = OptionValue["PortFunction"]},
+toDiagramNetwork[CircleDot[ds__] -> d_, pos_, ports_, opts : OptionsPattern[]] := With[{portFunction = (#["Apply", #["HoldName"][[1, 1]] &] &)},
 	Fold[
 		{
             DiagramNetwork[##, "PortFunction" -> (#["HoldExpression"] &), FilterRules[{opts}, Options[DiagramNetwork]]] & @@
-                Join[#1[[1]]["SubDiagrams"], toDiagramNetwork[#2, Append[pos, #1[[2]]], Join[portFunction[#] -> # & /@ Through[#1[[1]]["FlatInputPorts"]["Dual"]], ports], opts]],
+                Join[#1[[1]]["SubDiagrams"], toDiagramNetwork[#2, Append[pos, #1[[2]]], Join[portFunction[#] -> # & /@ Through[#1[[1]]["FlatInputPorts"]["Dual"]], ports], "PortFunction" -> d["PortFunction"], "Unique" -> True, opts]],
             #1[[2]] + 1
         } &,
 		{Diagram[], 1},
@@ -1091,9 +1102,9 @@ toDiagramNetwork[CircleDot[ds__], pos_, ports_, opts : OptionsPattern[]] := With
 	][[1]]["SubDiagrams"]
 ]
 
-toDiagramNetwork[{ds___}, pos_, ports_, opts : OptionsPattern[]] := Catenate[toDiagramNetwork[#, pos, ports, "Unique" -> False, opts] & /@ {ds}]
+toDiagramNetwork[{ds___} -> d_, pos_, ports_, opts : OptionsPattern[]] := Catenate[toDiagramNetwork[#, pos, ports, "Unique" -> False, "PortFunction" -> d["PortFunction"], opts] & /@ {ds}]
 
-toDiagramNetwork[(Transpose | SuperStar)[d_, ___], pos_, ports_, opts : OptionsPattern[]] := toDiagramNetwork[d, pos, ports, opts]
+toDiagramNetwork[(Transpose | SuperStar)[diag_, ___] -> d_, pos_, ports_, opts : OptionsPattern[]] := toDiagramNetwork[diag, pos, ports, "Unique" -> True, "PortFunction" -> d["PortFunction"], opts]
 
 
 portDimension[p_Port] := Replace[p["Type"], {SuperStar[Superscript[_, n_]] | Superscript[_, n_] :> n, _ :> p["Name"]}]
@@ -1208,8 +1219,7 @@ DiagramSplit[diagram_Diagram, n : _Integer | Infinity | - Infinity : Infinity, d
                         "Shape" -> "Wires"[Join[Thread[{Range[outs - m], outs + Range[outs - m]}], Thread[{outs - m + Range[m], 2 outs - m + Range[m]}]]], "ShowLabel" -> False
                     ]
                 ],
-                d,
-                "PortFunction" -> Function[#["HoldExpression"]]
+                d
             ]
         ],
 		m > outs,
@@ -1231,8 +1241,7 @@ DiagramSplit[diagram_Diagram, n : _Integer | Infinity | - Infinity : Infinity, d
                         ]],
                         "ShowLabel" -> False
                     ]
-                ],
-                "PortFunction" -> Function[#["HoldExpression"]]
+                ]
             ]
         ],
 		True,
@@ -1248,7 +1257,7 @@ DiagramPermute[diagram_ /; diagram["NodeQ"], perm_, dualQ : _ ? BooleanQ : True]
 DiagramPermute[diagram_Diagram, perm_, dualQ : _ ? BooleanQ : True] := Enclose @ With[{d = diagram["Flatten"]}, {ports = d["Ports", dualQ], newDiagram = DiagramSplit[d, Infinity, dualQ]}, {newPorts = ConfirmBy[Permute[ports, perm], ListQ]},
 	If[ ports === newPorts,
 		newDiagram,
-		DiagramComposition[piDiagram[ports, newPorts, perm], newDiagram, "PortFunction" -> (#["HoldExpression"] &)]
+		DiagramComposition[piDiagram[ports, newPorts, perm], newDiagram]
 	]
 ]
 
@@ -1279,7 +1288,7 @@ TensorDiagram[HoldPattern[KroneckerProduct[ts___]], opts : OptionsPattern[]] := 
 TensorDiagram[HoldPattern[TensorProduct[ts___]], opts : OptionsPattern[]] := DiagramProduct @@ (DiagramSplit[TensorDiagram[#, opts], Infinity] & /@ {ts})
 
 TensorDiagramDot[a_, b_, k_] := With[{x = DiagramSplit[a, -k, True, True], y = DiagramSplit[b, k, True, True]},
-    DiagramComposition[x, DiagramAssignPorts[y, {Inherited, PortDual /@ x["InputPorts"]}]["Flatten"], "PortFunction" -> (#["HoldExpression"] &)]
+    DiagramComposition[x, DiagramAssignPorts[y, {Inherited, PortDual /@ x["InputPorts"]}]["Flatten"]]
 ]
 
 TensorDiagram[HoldPattern[Dot[ts__]], opts : OptionsPattern[]] := Fold[TensorDiagramDot[##, 1] &, TensorDiagram[#, opts] & /@ {ts}]
@@ -1301,7 +1310,7 @@ TensorDiagram[scalar_, opts : OptionsPattern[]] := Diagram[scalar, {}, {}, Filte
 $FunctionPortsType = "Association" | "List" | "Sequence"
 $FunctionType = $FunctionPortsType -> $FunctionPortsType
 
-Options[DiagramFunction] = {"Input" -> "Sequence", "Output" -> "List", "Parallel" -> False, "PortFunction" -> Function[ReleaseHold[#["Name"]]]};
+Options[DiagramFunction] = {"Input" -> "Sequence", "Output" -> "List", "Parallel" -> False, "PortFunction" -> Function[#["Name"]]};
  
 DiagramFunction[diagram_Diagram, opts : OptionsPattern[]] := Enclose @ Replace[diagram["HoldExpression"], {
 	HoldForm[DiagramDual[d_]] :> DiagramFunction[d, opts]

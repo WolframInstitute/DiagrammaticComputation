@@ -100,8 +100,8 @@ inheritedQ = MatchQ[Automatic | Inherited]
 FirstPositions[list1_ ? ListQ, list2_ ? ListQ] := Block[{list = list2, result = {}, i = 1, pos},
     Do[
         If[list === {}, Break[]];
-        pos = FirstPosition[list, value];
-        If[! MissingQ[pos], AppendTo[result, {i}]; list //= Delete[pos]];
+        pos = FirstPosition[list, value, None, {1}, Heads -> False];
+        If[pos =!= None, AppendTo[result, {i}]; list //= Delete[pos]];
         i++
         ,
         {value, list1}
@@ -114,8 +114,8 @@ FirstPositionsWithMissing[list1_ ? ListQ, list2_ ? ListQ] := Block[{
 },
     Do[
         If[list === {}, Break[]];
-        pos = FirstPosition[list, value];
-        If[! MissingQ[pos], result[[Extract[idx, pos]]] = {i}; list //= Delete[pos]; idx //= Delete[pos]];
+        pos = FirstPosition[list, value, None, {1}, Heads -> False];
+        If[pos =!= None, result[[Extract[idx, pos]]] = {i}; list //= Delete[pos]; idx //= Delete[pos]];
         i++
         ,
         {value, list1}

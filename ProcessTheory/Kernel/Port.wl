@@ -106,7 +106,7 @@ Port[p_ ? PortQ, opts : OptionsPattern[]] := Port[Replace[Normal[Merge[{opts, p[
 
 Port[expr : Except[_Association | _Port | OptionsPattern[]], opts : OptionsPattern[]] := Port[FilterRules[{"Expression" :> expr, opts}, Join[Options[Port], $PortHiddenOptions]]]
 
-Port[expr : Except[_Association], type : Except[OptionsPattern[]], opts : OptionsPattern[]] := Port[expr, "Type" -> type, opts]
+Port[expr : Except[_Association], type : Except[OptionsPattern[]], opts : OptionsPattern[]] := Port[Port[expr], "Type" -> type, opts]
 
 Port[opts : OptionsPattern[]] := Port[KeySort[<|DeleteDuplicatesBy[First] @ FilterRules[{opts, Options[Port], $PortHiddenOptions}, Join[Options[Port], $PortHiddenOptions]]|>]]
 
@@ -131,9 +131,9 @@ PortProp[HoldPattern[Port[data_Association]], prop_] /; KeyExistsQ[data, prop] :
 
 PortProp[p_, "HoldExpression"] := Extract[p["Data"], "Expression", HoldForm]
 
-PortProp[p_, "Name"] := Replace[p["HoldExpression"], HoldForm[PortDual[Interpretation[HoldForm[x_] | x_, _]] | PortDual[x_] | Interpretation[HoldForm[x_] | x_, _] | x_] :> HoldForm[x]]
-
 PortProp[p_, "HoldName"] := Replace[p["HoldExpression"], HoldForm[PortDual[x_] | x_] :> HoldForm[x]]
+
+PortProp[p_, "Name"] := Replace[p["HoldName"], HoldForm[Interpretation[HoldForm[x_] | x_, _] | x_] :> x]
 
 PortProp[p_, "Options"] := Normal[KeyDrop[p["Data"], "Expression"]]
 
