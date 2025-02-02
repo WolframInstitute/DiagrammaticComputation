@@ -1,12 +1,23 @@
 BeginPackage["ProcessTheory`Diagram`Surgery`", {"ProcessTheory`Diagram`", "ProcessTheory`Utilities`"}];
 
+DiagramSubdiagrams
+DiagramPositions
 DiagramPattern
 DiagramCases
+DiagramPosition
+DiagramMap
 
 
 Begin["ProcessTheory`Diagram`Surgery`Private`"];
 
 DiagramSubdiagrams[d_Diagram] := Prepend[Catenate[DiagramSubdiagrams /@ d["SubDiagrams"]], d]
+
+DiagramPositions[d_Diagram, lvl : (_Integer ? NonNegative) | Infinity : Infinity] := With[{subDiagrams = d["SubDiagrams"]},
+    If[ lvl > 0 && Length[subDiagrams] > 0,
+        Join @@ Prepend[<|{} -> d|>] @ MapIndexed[{diag, idx} |-> KeyMap[Join[idx, #] &, DiagramPositions[diag, lvl - 1]], subDiagrams],
+        <|{} -> d|>
+    ]
+]
 
 DiagramPattern[expr_] := DiagramPattern[expr, {___}, {___}]
 DiagramPattern[expr_, out_] := DiagramPattern[expr, {___}, out]
@@ -27,6 +38,32 @@ DiagramCases[d_Diagram, patt_] :=
 	]
 
 DiagramCases[d_Diagram] := DiagramCases[d, _]
+
+
+DiagramPosition[d_Diagram, patt_, lvl : (_Integer ? NonNegative) | Infinity : Infinity] :=
+	Keys @ Select[
+		DiagramPositions[d, lvl],
+		MatchQ[
+            Replace[patt, {
+                HoldPattern[DiagramPattern[expr_, in_, out_, opts___]] :> HoldPattern[diag_Diagram /;
+                    MatchQ[Hold[Evaluate[{diag["HoldExpression"], Through[diag["InputPorts"]["Name"]], Through[diag["OutputPorts"]["Name"]], diag["DiagramOptions"]}]] /. HoldForm[x_] :> x, Hold[{expr, in, out, {opts}}]]
+                ]
+		    }]
+        ]
+	]
+
+DiagramPosition[d_Diagram] := DiagramPosition[d, _Diagram]
+
+
+DiagramMap[f_, d_Diagram, lvl : (_Integer ? NonNegative) | Infinity : Infinity] := If[lvl > 0,
+    Replace[d["HoldExpression"], {
+        _[(head : $DiagramHeadPattern)[ds___]] :> Diagram[d, "Expression" :> head[##] & @@ Map[DiagramMap[f, #, lvl - 1] &, {ds}]],
+        _ :> Diagram[f[d]]
+    }]
+    ,
+    Diagram[f[d]]
+]
+
 
 End[]
 
