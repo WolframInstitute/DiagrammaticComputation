@@ -1,4 +1,4 @@
-BeginPackage["ProcessTheory`Diagram`DiagramDraw`", {"ProcessTheory`Port`"}];
+BeginPackage["ProcessTheory`Diagram`DiagramDraw`", {"ProcessTheory`Port`", "ProcessTheory`Diagram`"}];
 
 DiagramDraw
 
@@ -178,13 +178,14 @@ DiagramDraw[diagram_ : <||>, opts : OptionsPattern[]] := DynamicModule[{
 					CopyToClipboard[<|"Boxes" -> boxes, "Wires" -> wires|>]
 				],
 				Button["Copy Diagram",
-					CopyToClipboard[DiagramNetwork[##, "UnarySpiders" -> False, "BinarySpiders" -> False, "Orientation" -> False, VertexCoordinates -> MapIndexed[#2[[1]] -> Mean @ #1[[1]] &, Values[boxes]]] & @@
+					CopyToClipboard[DiagramNetwork[##, "UnarySpiders" -> False, "BinarySpiders" -> False, "Orientation" -> False, "ShowWireLabels" -> False, VertexCoordinates -> MapIndexed[#2[[1]] -> Mean @ #1[[1]] &, Values[boxes]]] & @@
 						KeyValueMap[
 							Diagram[#1,
-								Replace[#1 /@ Range[Length[#2[[2]]]], Append[Rule @@@ Apply[Construct, wires, {2}], p_ :> PortDual[p]], 1],
+								Replace[#1 /@ Range[Length[#2[[2]]]], Rule @@@ Apply[Construct, wires, {2}], 1],
 								"Width" -> Abs[#2[[1, 2, 1]] - #2[[1, 1, 1]]],
 								"Height" -> Abs[#2[[1, 2, 2]] - #2[[1, 1, 2]]],
-								"PortArrows" -> {(point |-> Placed[Automatic, {point - Mean[#2[[1]]], point - Mean[#2[[1]]] + 0.05 connectorNormal[#2[[1]], point]}]) /@ #2[[2]]}
+								"LabelFunction" -> ("" &),
+								"PortArrows" -> {(point |-> Placed[None, {point - Mean[#2[[1]]], point - Mean[#2[[1]]] + 0.05 connectorNormal[#2[[1]], point]}]) /@ #2[[2]]}
 							] &,
 							boxes
 						]
