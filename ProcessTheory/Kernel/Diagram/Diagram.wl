@@ -190,21 +190,26 @@ Diagram[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[Replace[Normal[Merge[
 (* ::Subsubsection:: *)
 (* Unary ops *)
 
-DiagramDual[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
+Options[DiagramDual] := Join[{"Singleton" -> True}, Options[Diagram]]
+
+DiagramDual[d_ ? DiagramQ, opts : OptionsPattern[]] := If[d["DualQ"], First[d["SubDiagrams"]], Diagram[
     d,
     opts,
     Replace[d["HoldExpression"], {
         _[(head : (Diagram | DiagramSum | DiagramComposition | DiagramProduct | DiagramNetwork | DiagramReverse | DiagramFlip))[ds___]] :>
             ("Expression" :> head[##] & @@ (DiagramDual[#, opts] & /@ {ds})),
         _[DiagramDual[x_]] :> "Expression" :> x,
-        _ :> "Expression" :> DiagramDual[d]
+        _ :> If[TrueQ[OptionValue["Singleton"]], "Expression" :> DiagramDual[d], Function[Null, "Expression" :> #, HoldAll] @@ d["HoldExpression"]]
     }],
     "OutputPorts" -> Through[d["OutputPorts"]["Dual"]],
     "InputPorts" -> Through[d["InputPorts"]["Dual"]],
     "DiagramOptions" -> d["DiagramOptions"]
 ]
+]
 
-DiagramFlip[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
+Options[DiagramFlip] := Join[{"Singleton" -> True}, Options[Diagram]]
+
+DiagramFlip[d_ ? DiagramQ, opts : OptionsPattern[]] := If[d["FlipQ"], First[d["SubDiagrams"]], Diagram[
     d,
     opts,
     Replace[d["HoldExpression"], {
@@ -212,7 +217,7 @@ DiagramFlip[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
         _[(head : (Diagram | DiagramSum | DiagramProduct | DiagramNetwork | DiagramReverse | DiagramDual))[ds___]] :>
             ("Expression" :> head[##] & @@ (DiagramFlip[#, opts] & /@ {ds})),
         _[DiagramFlip[x_]] :> "Expression" :> x,
-        _ :> "Expression" :> DiagramFlip[d]
+        _ :> If[TrueQ[OptionValue["Singleton"]], "Expression" :> DiagramFlip[d], Function[Null, "Expression" :> #, HoldAll] @@ d["HoldExpression"]]
     }],
     "OutputPorts" -> d["InputPorts"],
     "InputPorts" -> d["OutputPorts"],
@@ -220,8 +225,11 @@ DiagramFlip[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
     "PortLabels" -> Reverse[fillAutomatic[d["OptionValue"["PortLabels"], opts], d["Arities"], Automatic]],
     "DiagramOptions" -> d["DiagramOptions"]
 ]
+]
 
-DiagramReverse[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
+Options[DiagramReverse] := Join[{"Singleton" -> True}, Options[Diagram]]
+
+DiagramReverse[d_ ? DiagramQ, opts : OptionsPattern[]] := If[d["ReverseQ"], First[d["SubDiagrams"]], Diagram[
     d,
     opts,
     Replace[d["HoldExpression"], {
@@ -229,13 +237,14 @@ DiagramReverse[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
         _[(head : (Diagram | DiagramSum | DiagramComposition | DiagramNetwork | DiagramFlip | DiagramDual))[ds___]] :>
             ("Expression" :> head[##] & @@ (DiagramReverse[#, opts] & /@ {ds})),
         _[DiagramReverse[x_]] :> "Expression" :> x,
-        _ :> "Expression" :> DiagramReverse[d]
+        _ :> If[TrueQ[OptionValue["Singleton"]], "Expression" :> DiagramReverse[d], Function[Null, "Expression" :> #, HoldAll] @@ d["HoldExpression"]]
     }],
     "OutputPorts" -> Reverse[Through[d["OutputPorts"]["Reverse"]]],
     "InputPorts" -> Reverse[Through[d["InputPorts"]["Reverse"]]],
     "PortArrows" -> (Reverse /@ fillAutomatic[d["OptionValue"["PortArrows"], opts], d["Arities"], True]),
     "PortLabels" -> (Reverse /@ fillAutomatic[d["OptionValue"["PortLabels"], opts], d["Arities"], Automatic]),
     "DiagramOptions" -> d["DiagramOptions"]
+]
 ]
 
 
