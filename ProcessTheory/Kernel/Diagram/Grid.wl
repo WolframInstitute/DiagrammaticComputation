@@ -18,7 +18,7 @@ Begin["ProcessTheory`Diagram`Grid`Private`"];
 
 (* compose vertically preserving grid structure *)
 
-Options[ColumnDiagram] = Join[{"PortOrderingFunction" -> Automatic, "Direction" -> Down}, Options[Diagram]]
+Options[ColumnDiagram] := Join[{"PortOrderingFunction" -> Automatic, "Direction" -> Down}, Options[Diagram]]
 
 ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
     func = OptionValue["PortFunction"],
@@ -89,7 +89,7 @@ ColumnDiagram[xs : {___Diagram}, opts : OptionsPattern[]] := If[
 
 (* compose horizontally preserving height *)
 
-Options[RowDiagram] = Options[ColumnDiagram]
+Options[RowDiagram] := Options[ColumnDiagram]
 RowDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Block[{a = x["FlattenInputs"], b = y["FlattenOutputs"], aPorts, bPorts, ha, hb},
 	aPorts = Through[a["InputPorts"]["Dual"]];
 	bPorts = b["OutputPorts"];
@@ -111,7 +111,7 @@ RowDiagram[xs : {___Diagram}, opts : OptionsPattern[]] := Fold[RowDiagram[{##}, 
 setDiagram[diagram1_, diagram2_] := Diagram[diagram1, Function[Null, "Expression" :> ##, HoldAll] @@ diagram2["HoldExpression"], "PortFunction" -> diagram2["PortFunction"]]
 
 
-Options[DiagramArrange] = Join[{"Network" -> True, "Arrange" -> True, "NetworkMethod" -> "Foliation", "AssignPorts" -> True}, Options[ColumnDiagram]]
+Options[DiagramArrange] := Join[{"Network" -> True, "Arrange" -> True, "NetworkMethod" -> "Foliation", "AssignPorts" -> True}, Options[ColumnDiagram]]
 
 DiagramArrange[diagram_Diagram, opts : OptionsPattern[]] := If[(TrueQ[diagram["OptionValue"["Arrange"], opts]] || diagram["NetworkQ"]) && TrueQ[diagram["OptionValue"["Decompose"], opts]],
 Replace[diagram["HoldExpression"], {
@@ -420,14 +420,16 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
     grid,
     width, height, items, rows, columns, transposes,
     outputPositions, inputPositions, positions,
-    vGapSize = OptionValue["VerticalGapSize"],
-    hGapSize = OptionValue["HorizontalGapSize"],
-    angle = Replace[OptionValue["Rotate"], {Left -> - Pi / 2, Right -> Pi / 2, Bottom | True | Up -> Pi, None | False | Top | Down -> 0}],
-    spacing = OptionValue[Spacings],
-    wiresQ = TrueQ[OptionValue["Wires"]],
+    vGapSize = diagram["OptionValue"["VerticalGapSize"], opts],
+    hGapSize = diagram["OptionValue"["HorizontalGapSize"], opts],
+    angle = Replace[diagram["OptionValue"["Rotate"], opts], {Left -> - Pi / 2, Right -> Pi / 2, Bottom | True | Up -> Pi, None | False | Top | Down -> 0}],
+    spacing = diagram["OptionValue"[Spacings], opts],
+    wiresQ = TrueQ[diagram["OptionValue"["Wires"], opts]],
     diagramOptions = FilterRules[{opts}, Except[Options[Graphics], Options[DiagramGraphics]]],
     portFunction = diagram["PortFunction"],
-    wireArrows = OptionValue["WireArrows"],
+    wireArrows = diagram["OptionValue"["WireArrows"], opts],
+    frames = diagram["OptionValue"["Frames"], opts],
+    alignment = diagram["OptionValue"[Alignment], opts],
     dividers
 },
     grid = DiagramDecompose[DiagramArrange[diagram, FilterRules[{opts}, Options[DiagramArrange]]], "Diagram" -> True, "Unary" -> True, FilterRules[{opts}, Options[DiagramDecompose]]];
@@ -437,8 +439,8 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
     grid = grid /. d_Diagram :> Diagram[d,
         "Angle" -> d["OptionValue"["Angle"]] + angle,
         "Spacing" -> spacing,
-        Alignment -> Replace[d["OptionValue"[Alignment]], Automatic -> OptionValue[Alignment]],
-        "PortOrderingFunction" -> Replace[d["OptionValue"["PortOrderingFunction"]], Automatic -> OptionValue["PortOrderingFunction"]]
+        Alignment -> Replace[d["OptionValue"[Alignment]], Automatic -> alignment],
+        "PortOrderingFunction" -> Replace[d["OptionValue"["PortOrderingFunction"]], Automatic :> diagram["OptionValue"["PortOrderingFunction"], opts]]
     ];
 
     (* TODO: do something with transpositions *)
@@ -456,7 +458,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
     
     dividers = {
         FaceForm[None], EdgeForm[Directive[Thin, Black]],
-        Switch[OptionValue[Dividers],
+        Switch[diagram["OptionValue"[Dividers], opts],
             All | Automatic, #["Graphics", "LabelFunction" -> ("" &), "PortArrows" -> None, "PortLabels" -> None][[1]] & /@ items[[All, 2]],
             True, #["Graphics", "LabelFunction" -> ("" &), "PortArrows" -> None, "PortLabels" -> None][[1]] & /@ Catenate[{rows, columns} /. _Missing -> Nothing][[All, 2]],
             _, Nothing
@@ -464,7 +466,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
     };
 
     Graphics[
-        Switch[OptionValue["Frames"],
+        Switch[frames,
             All | Automatic,
             With[{subDiagrams = #[[1]] -> Diagram[#[[2]], "LabelFunction" -> ("" &),
                     "PortLabels" -> Placed[Automatic, {0, 0}],
@@ -472,7 +474,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
                     "Width" -> Min[1, 0.95 ^ (Length[#[[1]]] / 2)] #[[2]]["OptionValue"["Width"]],
                     "Height" -> If[#[[1]] === {}, 1.1, Min[1, 0.85 ^ (Length[#[[1]]] / 2)]] #[[2]]["OptionValue"["Height"]]
                 ] & /@ If[
-                    OptionValue["Frames"] === Automatic,
+                    frames === Automatic,
                     DeleteCases[
                         (pos_ -> d_Diagram) /; With[{portFunction = d["PortFunction"]}, 
                             portFunction /@ PortDual /@ d["FlatInputPorts"] === Catenate[Extract[grid, {pos}, portFunction /@ PortDual /@ GridInputPorts[#] &]] &&

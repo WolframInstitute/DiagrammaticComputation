@@ -306,6 +306,8 @@ PermutationDiagram[inputs_List -> outputs_List, opts___] := PermutationDiagram[i
 
 PermutationDiagram[inputs_List -> outputs_List, perm_Cycles, opts___] := PermutationDiagram[inputs, outputs, perm, opts]
 
+PermutationDiagram[inputs_List, perm_Cycles, opts___] := PermutationDiagram[inputs, Permute[inputs, perm], perm, opts]
+
 PermutationDiagram[inputs_List, outputs_List, perm_Cycles, opts___] := With[{len = Min[Length[inputs], Length[outputs]]},
     Diagram[Interpretation["\[Pi]", perm], makePorts[inputs], makePorts[outputs], opts, "Shape" -> "Wires"[Thread[{Range[len], Length[inputs] + Permute[Range[len], InversePermutation[perm]]}]], "ShowLabel" -> False]
 ]
