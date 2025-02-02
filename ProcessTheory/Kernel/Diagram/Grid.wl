@@ -227,18 +227,18 @@ DiagramAssignPorts[d_Diagram] := DiagramAssignPorts[d, {PortDual /@ d["InputPort
 
 Options[DiagramDecompose] = {"Network" -> True, "Unary" -> False, "Decompose" -> True, "Ports" -> False, "Diagram" -> False}
 
-DiagramDecompose[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := If[TrueQ[diagram["OptionValue"["Decompose"], opts]],
+DiagramDecompose[diagram_Diagram ? DiagramQ, lvl : (_Integer ? NonNegative) | Infinity : Infinity, opts : OptionsPattern[]] := If[TrueQ[diagram["OptionValue"["Decompose"], opts]] && lvl > 0,
     Replace[diagram["HoldExpression"], {
-        HoldForm[Diagram[d_]] :> {DiagramDecompose[d, opts]},
-        HoldForm[DiagramProduct[ds___]] :> (DiagramDecompose[#, opts] & /@ CircleTimes[ds]),
-        HoldForm[DiagramComposition[ds___]] :> (DiagramDecompose[#, opts] & /@ CircleDot[ds]),
-        HoldForm[DiagramSum[ds___]] :> (DiagramDecompose[#, opts] & /@ CirclePlus[ds]),
-        HoldForm[DiagramNetwork[ds___]] :> If[TrueQ[OptionValue["Network"]], DiagramDecompose[#, opts] & /@ {ds}, diagram],
+        HoldForm[Diagram[d_]] :> {DiagramDecompose[d, lvl - 1, opts]},
+        HoldForm[DiagramProduct[ds___]] :> (DiagramDecompose[#, lvl - 1, opts] & /@ CircleTimes[ds]),
+        HoldForm[DiagramComposition[ds___]] :> (DiagramDecompose[#, lvl - 1, opts] & /@ CircleDot[ds]),
+        HoldForm[DiagramSum[ds___]] :> (DiagramDecompose[#, lvl - 1, opts] & /@ CirclePlus[ds]),
+        HoldForm[DiagramNetwork[ds___]] :> If[TrueQ[OptionValue["Network"]], DiagramDecompose[#, lvl - 1, opts] & /@ {ds}, diagram],
         If[ TrueQ[OptionValue["Unary"]],
             Splice @ {
-                HoldForm[DiagramFlip[d_]] :> Transpose[DiagramDecompose[d, opts], FindPermutation[Join[#1 + Range[#2], Range[#1]]] & @@ {diagram["OutputArity"], diagram["InputArity"]}],
-                HoldForm[DiagramReverse[d_]] :> Transpose[DiagramDecompose[d, opts], FindPermutation[Join[Reverse[Range[#1]], Reverse[#1 + Range[#2]]]] & @@ {diagram["OutputArity"], diagram["InputArity"]}],
-                HoldForm[DiagramDual[d_]] :> SuperStar[DiagramDecompose[d, opts]]
+                HoldForm[DiagramFlip[d_]] :> Transpose[DiagramDecompose[d, lvl - 1, opts], FindPermutation[Join[#1 + Range[#2], Range[#1]]] & @@ {diagram["OutputArity"], diagram["InputArity"]}],
+                HoldForm[DiagramReverse[d_]] :> Transpose[DiagramDecompose[d, lvl - 1, opts], FindPermutation[Join[Reverse[Range[#1]], Reverse[#1 + Range[#2]]]] & @@ {diagram["OutputArity"], diagram["InputArity"]}],
+                HoldForm[DiagramDual[d_]] :> SuperStar[DiagramDecompose[d, lvl - 1, opts]]
             },
             Nothing
         ],
