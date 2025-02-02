@@ -42,20 +42,20 @@ ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
         {left : {l_, {}} | {{}, l_} : {}, {__}, right : {r_, {}} | {{}, r_} : {}} /; ! ({l} =!= {} && {r} =!= {} && IntersectingQ[l, r]) :> (
             Which[
                 MatchQ[left, {_, {}}],
-                b = RowDiagram[{b, idDiagram[Take[as, - Length[l]]]}]["Flatten"],
+                b = RowDiagram[{b, IdentityDiagram[Take[as, - Length[l]]]}]["Flatten"],
                 MatchQ[left, {{}, _}],
-                a = RowDiagram[{a, idDiagram[Take[bs, - Length[l]]]}]["Flatten"]
+                a = RowDiagram[{a, IdentityDiagram[Take[bs, - Length[l]]]}]["Flatten"]
             ];
             Which[
                 MatchQ[right, {_, {}}],
-                b = RowDiagram[{idDiagram[Take[as, Length[r]]], b}]["Flatten"],
+                b = RowDiagram[{IdentityDiagram[Take[as, Length[r]]], b}]["Flatten"],
                 MatchQ[right, {{}, _}],
-                a = RowDiagram[{idDiagram[Take[bs, Length[r]]], a}]["Flatten"]
+                a = RowDiagram[{IdentityDiagram[Take[bs, Length[r]]], a}]["Flatten"]
             ]
         ),
         _ :> With[{ins = Delete[bs, FirstPositions[bPorts, aPorts]], outs = Delete[as, FirstPositions[aPorts, bPorts]]},
-            If[ins =!= {}, a = RowDiagram[{idDiagram[ins], a}]["Flatten"]];
-            If[outs =!= {}, b = RowDiagram[{idDiagram[outs], b}]["Flatten"]]
+            If[ins =!= {}, a = RowDiagram[{IdentityDiagram[ins], a}]["Flatten"]];
+            If[outs =!= {}, b = RowDiagram[{IdentityDiagram[outs], b}]["Flatten"]]
         ]
     }
     ];
@@ -71,7 +71,7 @@ ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
         aPorts === Reverse[bPorts] && b["WireQ"],
         DiagramComposition[DiagramReverse[b], a, FilterRules[{opts}, Options[DiagramComposition]]],
 		Sort[aPorts] === Sort[bPorts],
-        DiagramComposition[b, piDiagram[as, bs, aPorts, bPorts], a, FilterRules[{opts}, Options[DiagramComposition]]],
+        DiagramComposition[b, PermutationDiagram[as -> bs, aPorts -> bPorts], a, FilterRules[{opts}, Options[DiagramComposition]]],
 		True,
 		$Failed
 	]
@@ -97,9 +97,9 @@ RowDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Block[{a = x["Fla
     hb = decompositionHeight[b];
     Which[
         ha > hb,
-        DiagramProduct[a, DiagramComposition[##, FilterRules[{opts}, Options[DiagramComposition]]] & @@ Append[ConstantArray[idDiagram[bPorts], ha - hb], b], FilterRules[{opts}, Options[DiagramProduct]]],
+        DiagramProduct[a, DiagramComposition[##, FilterRules[{opts}, Options[DiagramComposition]]] & @@ Append[ConstantArray[IdentityDiagram[bPorts], ha - hb], b], FilterRules[{opts}, Options[DiagramProduct]]],
         ha < hb,
-        DiagramProduct[DiagramComposition[##, FilterRules[{opts}, Options[DiagramComposition]]] & @@ Prepend[ConstantArray[idDiagram[aPorts], hb - ha], a], b, FilterRules[{opts}, Options[DiagramProduct]]],
+        DiagramProduct[DiagramComposition[##, FilterRules[{opts}, Options[DiagramComposition]]] & @@ Prepend[ConstantArray[IdentityDiagram[aPorts], hb - ha], a], b, FilterRules[{opts}, Options[DiagramProduct]]],
         True,
         DiagramProduct[a, b, FilterRules[{opts}, Options[DiagramProduct]]]
     ]

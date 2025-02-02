@@ -96,6 +96,8 @@ PortDual[p_Port ? PortQ] := If[EmptyPortQ[p], p,
         Replace[p["HoldExpression"], {HoldForm[PortDual[q_]] :> HoldForm[q], HoldForm[q_] :> HoldForm[PortDual[q]]}]
 ]
 
+PortDual[expr_] := PortDual[Port[expr]]
+
 
 (* merge options *)
 

@@ -12,6 +12,8 @@ DiagramSum
 DiagramComposition
 DiagramNetwork
 SingletonDiagram
+IdentityDiagram
+PermutationDiagram
 
 DiagramGraphics
 DiagramsFreePorts
@@ -85,6 +87,10 @@ Diagram[(CircleDot | Composition)[ds___], opts : OptionsPattern[]] := DiagramCom
 
 Diagram[HoldPattern[RightComposition[ds___]], opts : OptionsPattern[]] := DiagramComposition[##, opts] & @@ Reverse[Diagram /@ {ds}]
 
+Diagram["Identity"[args___], opts : OptionsPattern[]] := IdentityDiagram[args, opts]
+
+Diagram["Permutation"[args___], opts : OptionsPattern[]] := PermutationDiagram[args, opts]
+
 Diagram[ds : Except[OptionsPattern[], _List], opts : OptionsPattern[]] := DiagramNetwork[##, opts] & @@ (Diagram /@ ds)
 
 Diagram[grid : $DiagramGrid -> _, opts : OptionsPattern[]] := Diagram[grid, opts]
@@ -126,10 +132,10 @@ Diagram[expr : {} | Except[_Association | _Diagram | OptionsPattern[]],
 ] :=
     Diagram[    
         FilterRules[{
+            opts,
             "Expression" :> expr,
             "OutputPorts" -> Map[Function[p, Port[Unevaluated[p]], HoldFirst], Unevaluated[outputs]],
-            "InputPorts" -> Comap[Map[Function[p, Port[Unevaluated[p]], HoldFirst], Unevaluated[inputs]], "Dual"],
-            opts
+            "InputPorts" -> Comap[Map[Function[p, Port[Unevaluated[p]], HoldFirst], Unevaluated[inputs]], "Dual"]
         },
             Join[Options[Diagram], $DiagramHiddenOptions, Options[DiagramGraphics], Options[DiagramsNetGraph], Options[DiagramGrid]]
         ]
@@ -263,6 +269,27 @@ Options[SingletonDiagram] = Options[Diagram]
 
 SingletonDiagram[diagram_Diagram, opts : OptionsPattern[]] := Diagram[diagram, "Expression" :> Diagram[diagram], opts]
 
+
+Options[IdentityDiagram] = Options[PermutationDiagram] = Options[Diagram]
+
+IdentityDiagram[xs_List, opts : OptionsPattern[]] := With[{ports = makePorts[xs]},
+    Diagram[Interpretation["1", Identity], ports, ports, opts, "Shape" -> "Wires"[Thread[{Range[Length[xs]], Length[xs] + Range[Length[xs]]}]], "ShowLabel" -> False, "PortFunction" -> (#["HoldExpression"] &)]
+]
+    
+PermutationDiagram[inputs_List -> outputs_List, ins_List -> outs_List, opts___] := Enclose @ With[
+    {len = Min[Length[ins], Length[outs]]},
+    {perm = ConfirmBy[FindPermutation[Take[ins, len], Take[outs, len]], PermutationCyclesQ]}
+    ,
+    PermutationDiagram[inputs, outputs, perm, opts, "Shape" -> "Wires"[Thread[{Range[len], Length[inputs] + Permute[Range[len], InversePermutation[perm]]}]]]
+]
+
+PermutationDiagram[inputs_List -> outputs_List, opts___] := PermutationDiagram[inputs -> outputs, inputs -> outputs, opts]
+
+PermutationDiagram[inputs_List -> outputs_List, perm_Cycles, opts___] := PermutationDiagram[inputs, outputs, perm, opts]
+
+PermutationDiagram[inputs_List, outputs_List, perm_Cycles, opts___] := With[{len = Min[Length[inputs], Length[outputs]]},
+    Diagram[Interpretation["\[Pi]", perm], makePorts[inputs], makePorts[outputs], opts, "Shape" -> "Wires"[Thread[{Range[len], Length[inputs] + Permute[Range[len], InversePermutation[perm]]}]], "ShowLabel" -> False]
+]
 
 (* vertical product *)
 
@@ -1259,7 +1286,7 @@ DiagramPermute[diagram_ /; diagram["NodeQ"], perm_, dualQ : _ ? BooleanQ : True]
 DiagramPermute[diagram_Diagram, perm_, dualQ : _ ? BooleanQ : True] := Enclose @ With[{d = diagram["Flatten"]}, {ports = d["Ports", dualQ], newDiagram = DiagramSplit[d, Infinity, dualQ]}, {newPorts = ConfirmBy[Permute[ports, perm], ListQ]},
 	If[ ports === newPorts,
 		newDiagram,
-		DiagramComposition[piDiagram[ports, newPorts, perm], newDiagram]
+		DiagramComposition[PermutationDiagram[ports -> newPorts, perm], newDiagram]
 	]
 ]
 
@@ -1302,7 +1329,7 @@ TensorDiagram[HoldPattern[Transpose[a_, perm_ : {1, 2}]], opts : OptionsPattern[
 TensorDiagram[SymbolicIdentityArray[ns_List], opts : OptionsPattern[]] := Diagram["\[DoubleStruckCapitalI]", Join[#, #] & @ (Interpretation[#, Evaluate[Unique["i"]]] & /@ ns), "Shape" -> "Wires"[Thread[{Range[#], # + Range[#]}] & @ Length[ns]], "ShowLabel" -> False]
 
 TensorDiagram[TensorContract[x_, indices : {{_Integer, _Integer} ...}], opts : OptionsPattern[]] := With[{d = DiagramSplit[TensorDiagram[x, opts], Infinity]}, {perm = FindPermutation[Join[Catenate[indices], Complement[Range[d["OutputArity"]], Catenate[indices]]]]},
-    DiagramComposition[RowDiagram[Diagram["\[DoubleStruckCapitalI]", d["OutputPorts"][[#]], {}, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False] & /@ indices], piDiagram[d["OutputPorts"], Permute[d["OutputPorts"], perm], perm], d]
+    DiagramComposition[RowDiagram[Diagram["\[DoubleStruckCapitalI]", d["OutputPorts"][[#]], {}, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False] & /@ indices], PermutationDiagram[d["OutputPorts"] -> Permute[d["OutputPorts"], perm], perm], d]
 ]
 
 TensorDiagram[scalar_, opts : OptionsPattern[]] := Diagram[scalar, {}, {}, FilterRules[{opts}, Options[Diagram]]]

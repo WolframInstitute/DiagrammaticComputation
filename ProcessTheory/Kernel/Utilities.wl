@@ -4,8 +4,7 @@ BeginPackage["ProcessTheory`Utilities`"];
 fillAutomatic
 reverseTree
 
-idDiagram
-piDiagram
+makePorts
 
 tag
 
@@ -48,19 +47,6 @@ reverseTree[tree_] := Replace[Unevaluated[tree], {
 
 makePorts[xs_List] := Function[Null, Port[Unevaluated[##]], HoldAll] @@@ Flatten @* HoldForm /@ Replace[xs, SuperStar[HoldForm[x_]] :> HoldForm[SuperStar[x]], 1]
 
-idDiagram[xs_List, opts___] := With[{ports = makePorts[xs]},
-    Diagram[Interpretation["1", Identity], ports, ports, opts, "Shape" -> "Wires"[Thread[{Range[Length[xs]], Length[xs] + Range[Length[xs]]}]], "ShowLabel" -> False, "PortFunction" -> (#["HoldExpression"] &)]
-]
-    
-piDiagram[inputs_List, outputs_List, ins_List, outs_List, opts___] := With[{len = Min[Length[ins], Length[outs]]}, {perm = FindPermutation[Take[ins, len], Take[outs, len]]},
-    piDiagram[inputs, outputs, perm, opts, "Shape" -> "Wires"[Thread[{Range[len], Length[inputs] + Permute[Range[len], InversePermutation[perm]]}]]]
-]
-
-piDiagram[inputs_List, outputs_List, opts___] := piDiagram[inputs, outputs, inputs, outputs, opts]
-
-piDiagram[inputs_List, outputs_List, perm_Cycles, opts___] := With[{len = Min[Length[inputs], Length[outputs]]},
-    Diagram[Interpretation["\[Pi]", perm], makePorts[inputs], makePorts[outputs], opts, "Shape" -> "Wires"[Thread[{Range[len], Length[inputs] + Permute[Range[len], InversePermutation[perm]]}]], "ShowLabel" -> False]
-]
 
 tag[expr_, tag_] := Replace[expr, {
     HoldForm[Interpretation[x_, y_]] | Interpretation[x_, y_] :> Interpretation[x, y -> tag],

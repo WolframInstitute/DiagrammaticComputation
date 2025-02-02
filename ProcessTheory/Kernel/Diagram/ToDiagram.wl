@@ -1,4 +1,4 @@
-BeginPackage["ProcessTheory`Diagram`ToDiagram`", {"ProcessTheory`Port`"}];
+BeginPackage["ProcessTheory`Diagram`ToDiagram`", {"ProcessTheory`Utilities`", "ProcessTheory`Port`", "ProcessTheory`Diagram`"}];
 
 ToDiagram
 
@@ -11,6 +11,7 @@ ToDiagram[hg : {___List} | _WolframInstitute`Hypergraph`Hypergraph, opts : Optio
 ToDiagram[ng : HoldPattern[_NetGraph], opts : OptionsPattern[NetGraphDiagram]] := NetGraphDiagram[NetFlatten[ng], opts]
 ToDiagram[sm : HoldPattern[_SystemModel], opts : OptionsPattern[SystemModelDiagram]] := SystemModelDiagram[sm, {}, opts]
 ToDiagram[qc_Wolfram`QuantumFramework`QuantumCircuitOperator, opts : OptionsPattern[QuantumCircuitDiagram]] := QuantumCircuitDiagram[qc, opts]
+ToDiagram[perm_Cycles, opts : OptionsPattern[Diagram]] := With[{inputs = Range[PermutationLength[perm]]}, PermutationDiagram[inputs -> Permute[inputs, perm], perm, opts]]
 ToDiagram[expr_, opts : OptionsPattern[LambdaDiagram]] := LambdaDiagram[expr, opts]
 
 
