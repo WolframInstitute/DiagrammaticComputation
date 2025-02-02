@@ -31,6 +31,9 @@ DiagramTensor
 TensorDiagram
 DiagramFunction
 
+$DiagramHeadPattern
+$DiagramDefaultGraphics
+
 
 Begin["ProcessTheory`Diagram`Private`"];
 
@@ -51,6 +54,8 @@ $DiagramProperties = Sort @ {
 }
 
 $DefaultPortFunction = Function[#["Apply", #["HoldName"] &]]
+
+$DiagramDefaultGraphics = Automatic
 
 
 (* ::Subsection:: *)
@@ -477,7 +482,7 @@ DiagramProp[d_, "Name"] := Replace[
         }] @@@ HoldForm[Evaluate[Flatten[Defer @@ (Function[Null, If[DiagramQ[#], #["Name"], Defer[#]], HoldFirst] /@ Unevaluated[{ds}])]]]
 ]
 
-DiagramProp[diagram_, "Decompose", opts : OptionsPattern[]] := DiagramDecompose[diagram, FilterRules[{opts}, Options[DiagramDecompose]]]
+DiagramProp[diagram_, "Decompose", args___] := DiagramDecompose[diagram, args]
 
 DiagramProp[diagram_, "Tensor" | "ArraySymbol", opts : OptionsPattern[]] := DiagramTensor[diagram, FilterRules[{opts}, Options[DiagramTensor]]]
 
@@ -695,7 +700,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
 ]]
 
 Diagram /: MakeBoxes[diagram : Diagram[_Association] ? DiagramQ, form_] := With[{boxes = ToBoxes[Show[
-    If[diagram["NetworkQ"], diagram["NetGraph"], diagram["Graphics"]], BaseStyle -> {GraphicsHighlightColor -> Magenta}], form]},
+    If[diagram["NetworkQ"], diagram["NetGraph"], Replace[$DiagramDefaultGraphics, {"Grid" :> diagram["Grid"], f_Function :> f[diagram], _ :> diagram["Graphics"]}]], BaseStyle -> {GraphicsHighlightColor -> Magenta}], form]},
     InterpretationBox[boxes, diagram]
 ]
 
