@@ -425,21 +425,21 @@ DiagramProp[d_, "Arities"] := {d["InputArity"], d["OutputArity"]}
 
 DiagramProp[d_, "MaxArity"] := Max[d["OutputArity"], d["InputArity"]]
 
-DiagramProp[d_, "FlatOutputPorts"] := Catenate[Through[d["OutputPorts"]["ProductList"]]]
+DiagramProp[d_, "FlatOutputPorts", args___] := Catenate[Through[d["OutputPorts"]["ProductList", args]]]
 
-DiagramProp[d_, "FlattenOutputs"] := Diagram[d, "OutputPorts" -> d["FlatOutputPorts"]]
+DiagramProp[d_, "FlattenOutputs", args___] := Diagram[d, "OutputPorts" -> d["FlatOutputPorts", args]]
 
-DiagramProp[d_, "FlatInputPorts"] := Catenate[Through[d["InputPorts"]["ProductList"]]]
+DiagramProp[d_, "FlatInputPorts", args___] := Catenate[Through[d["InputPorts"]["ProductList", args]]]
 
-DiagramProp[d_, "FlattenInputs"] := Diagram[d, "InputPorts" -> d["FlatInputPorts"]]
+DiagramProp[d_, "FlattenInputs", args___] := Diagram[d, "InputPorts" -> d["FlatInputPorts", args]]
 
-DiagramProp[d_, "FlatOutputArity"] := Length[d["FlatOutputPorts"]]
+DiagramProp[d_, "FlatOutputArity", args___] := Length[d["FlatOutputPorts", args]]
 
-DiagramProp[d_, "FlatInputArity"] := Length[d["FlatInputPorts"]]
+DiagramProp[d_, "FlatInputArity", args___] := Length[d["FlatInputPorts", args]]
 
-DiagramProp[d_, "Flatten"] := d["FlattenOutputs"]["FlattenInputs"]
+DiagramProp[d_, "Flatten", args___] := d["FlattenOutputs", args]["FlattenInputs", args]
 
-DiagramProp[d_, "FlatPorts"] := Join[d["FlatOutputPorts"], d["FlatInputPorts"]]
+DiagramProp[d_, "FlatPorts", args___] := Join[d["FlatOutputPorts", args], d["FlatInputPorts", args]]
 
 DiagramProp[d_, "FlattenNetworks"] := If[d["NetworkQ"],
     Diagram[d, "Expression" :> DiagramNetwork[##] & @@ (If[#["NetworkQ"], Splice[#["SubDiagrams"]], #] & /@ Through[d["SubDiagrams"]["FlattenNetworks"]])],

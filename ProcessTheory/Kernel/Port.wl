@@ -183,17 +183,21 @@ PortProp[p_, "PortTree"] :=
         _ :> p
     }]
 
-PortProp[p_, "ProductList"] := Replace[p["HoldExpression"], {
-    HoldForm[PortProduct[ps___]] :> Catenate[Through[{ps}["ProductList"]]],
-    HoldForm[PortDual[PortProduct[ps___]]] :> Through[Catenate[Through[{ps}["ProductList"]]]["Dual"]],
+PortProp[p_, "ProductList", lvl : (_Integer ? NonNegative) | Infinity : Infinity] := If[lvl > 0, Replace[p["HoldExpression"], {
+    HoldForm[PortProduct[ps___]] :> Catenate[Through[{ps}["ProductList", lvl - 1]]],
+    HoldForm[PortDual[PortProduct[ps___]]] :> Through[Catenate[Through[{ps}["ProductList", lvl - 1]]]["Dual"]],
     _ :> {p}
-}]
+}],
+    {p}
+]
 
-PortProp[p_, "SumList"] := Replace[p["HoldExpression"], {
+PortProp[p_, "SumList", lvl : (_Integer ? NonNegative) | Infinity : Infinity] :=  If[lvl > 0, Replace[p["HoldExpression"], {
     HoldForm[PortSum[ps___]] :> Catenate[Through[{ps}["SumList"]]],
     HoldForm[PortDual[PortSum[ps___]]] :> Through[Catenate[Through[{ps}["SumList"]]]["Dual"]],
     _ :> {p}
-}]
+}],
+    {p}
+]
 
 PortProp[p_, "Apply", f_] := p["PortTree"] /. port_Port :> f[port]
 

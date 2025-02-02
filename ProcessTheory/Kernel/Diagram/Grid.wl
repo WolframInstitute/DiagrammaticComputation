@@ -102,7 +102,7 @@ RowDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Block[{a = x["Fla
         DiagramProduct[DiagramComposition[##, FilterRules[{opts}, Options[DiagramComposition]]] & @@ Prepend[ConstantArray[IdentityDiagram[aPorts], hb - ha], a], b, FilterRules[{opts}, Options[DiagramProduct]]],
         True,
         DiagramProduct[a, b, FilterRules[{opts}, Options[DiagramProduct]]]
-    ]
+    ]["Flatten", 1]
 ]
 
 RowDiagram[xs : {___Diagram}, opts : OptionsPattern[]] := Fold[RowDiagram[{##}, opts] &, xs]
