@@ -18,7 +18,7 @@ Begin["ProcessTheory`Diagram`Grid`Private`"];
 
 (* compose vertically preserving grid structure *)
 
-Options[ColumnDiagram] = Join[{"PortOrderingFunction" -> Automatic, "Direction" -> Top}, Options[Diagram]]
+Options[ColumnDiagram] = Join[{"PortOrderingFunction" -> Automatic, "Direction" -> Down}, Options[Diagram]]
 
 ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
     func = OptionValue["PortFunction"],
@@ -372,9 +372,9 @@ gridArrange[grid : CircleDot[ds___] -> d_, pos_, {width_, height_}, {dx_, dy_}, 
     MapIndexed[With[{i = #2[[1]]}, gridArrange[#1, Append[pos, i], {newWidth, heights[[i]]}, {dx, dy}, {xMin, yMin} + RotationTransform[angle] @ {0, positions[[i]]}, angle]] &, grid]
 ]
 
-gridArrange[HoldPattern[SuperStar[d_]] -> _, args___] := gridArrange[d /. diagram_Diagram :> DiagramDual[diagram], args]
+gridArrange[HoldPattern[SuperStar[d_]] -> diag_, args___] := gridArrange[CircleTimes[d] -> diag, args]
 
-gridArrange[HoldPattern[Transpose[d_, perm___]] -> _, args___] := (Sow[{perm}, "Transpose"]; gridArrange[d, args])
+gridArrange[HoldPattern[Transpose[d_, perm___]] -> diag_, args___] := (Sow[{perm}, "Transpose"]; gridArrange[CircleTimes[d] -> diag, args])
 
 gridArrange[ds_List -> d_, args___] := If[Length[ds] == 1,
     gridArrange[CircleTimes[ds[[1]]] -> d, args],
@@ -398,10 +398,10 @@ gridInputPositions[(Transpose | SuperStar)[d_, ___], pos_] := gridInputPositions
 gridInputPositions[grid_ -> _, pos_] := gridInputPositions[grid, Append[pos, 1]]
 gridInputPositions[grid_] := gridInputPositions[grid, {}]
 
-GridInputPorts[d_Diagram] := If[d["NodeQ"], d["InputPorts"], GridInputPorts[If[d["NetworkQ"], d["Arrange"], d]["Decompose"]]]
+GridInputPorts[d_Diagram] := If[d["NodeQ"], d["InputPorts"], GridInputPorts[If[d["NetworkQ"], d["Arrange"], d]["Decompose", "Unary" -> True]]]
 GridInputPorts[grid_] := Catenate[Extract[grid, gridInputPositions[grid], #["InputPorts"] &]]
 
-GridOutputPorts[d_Diagram] := If[d["NodeQ"], d["OutputPorts"], GridOutputPorts[If[d["NetworkQ"], d["Arrange"], d]["Decompose"]]]
+GridOutputPorts[d_Diagram] := If[d["NodeQ"], d["OutputPorts"], GridOutputPorts[If[d["NetworkQ"], d["Arrange"], d]["Decompose", "Unary" -> True]]]
 GridOutputPorts[grid_] := Catenate[Extract[grid, gridOutputPositions[grid], #["OutputPorts"] &]]
 
 Options[DiagramGrid] = Join[{
@@ -430,7 +430,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
     wireArrows = OptionValue["WireArrows"],
     dividers
 },
-    grid = DiagramDecompose[DiagramArrange[diagram, FilterRules[{opts}, Options[DiagramArrange]]], "Diagram" -> True, FilterRules[{opts}, Options[DiagramDecompose]]];
+    grid = DiagramDecompose[DiagramArrange[diagram, FilterRules[{opts}, Options[DiagramArrange]]], "Diagram" -> True, "Unary" -> True, FilterRules[{opts}, Options[DiagramDecompose]]];
     width = gridWidth[grid];
     height = gridHeight[grid];
 
@@ -507,21 +507,6 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
                     dividers
                 }
             ],
-            (* True,
-            With[{subDiagrams = DeleteDuplicates[
-                    SortBy[Catenate[{rows, columns} /. _Missing -> Nothing], First],
-                    MatchQ[#1[[1]], Append[#2[[1]], ___]] || MatchQ[#2[[1]], Append[#1[[1]], ___]] &][[All, 2]
-                ]
-            },
-                {
-                    Cases[grid,
-                        d_Diagram :> Diagram[d, "DiagramOptions" -> Join[diagramOptions, d["DiagramOptions"]]]["Graphics"][[1]],
-                        All
-                    ],
-                    #["Graphics", "LabelFunction" -> ("" &)][[1]] & /@ subDiagrams,
-                    dividers
-                }
-            ], *)
             _,
             {
                 Cases[grid,
@@ -533,6 +518,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
             }
         ],
         FilterRules[{opts}, Options[Graphics]],
+        FormatType -> StandardForm,
         BaseStyle -> {
             GraphicsHighlightColor -> Automatic
         }

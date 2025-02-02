@@ -58,7 +58,7 @@ collectPorts[ports_List] := If[ports === {}, {},
     Fold[
         {
             Join[#2[[1]], DeleteElements[#1[[1]], 1 -> #2[[2]]]],
-            Join[#1[[2]], DeleteElements[#2[[2]], 1 -> #1[[1]]]]
+            Join[DeleteElements[#2[[2]], 1 -> #1[[1]]], #1[[2]]]
         } &,
         ports
     ]
@@ -69,7 +69,7 @@ collectPortsListBy[ports_List, f_] := If[ports === {}, {},
         With[{fout1 = f /@ out1, fin2 = f /@ in2},
             {
                 Join[out2, Delete[out1, FirstPositions[fout1, fin2]]],
-                Join[in1, Delete[in2, FirstPositions[fin2, fout1]]]
+                Join[Delete[in2, FirstPositions[fin2, fout1]], in1]
             }
         ]
     ],

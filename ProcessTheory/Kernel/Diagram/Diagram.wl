@@ -55,7 +55,7 @@ $DiagramProperties = Sort @ {
 
 $DefaultPortFunction = Function[#["Apply", #["HoldName"] &]]
 
-$DiagramDefaultGraphics = Automatic
+$DiagramDefaultGraphics = If[#["SingletonNodeQ"], #["Graphics"], #["Grid"]] &
 
 
 (* ::Subsection:: *)
@@ -191,9 +191,10 @@ Diagram[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[Replace[Normal[Merge[
 (* Unary ops *)
 
 DiagramDual[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
+    d,
     opts,
     Replace[d["HoldExpression"], {
-        _[(head : (DiagramSum | DiagramComposition | DiagramProduct | DiagramNetwork | DiagramReverse | DiagramFlip))[ds___]] :>
+        _[(head : (Diagram | DiagramSum | DiagramComposition | DiagramProduct | DiagramNetwork | DiagramReverse | DiagramFlip))[ds___]] :>
             ("Expression" :> head[##] & @@ (DiagramDual[#, opts] & /@ {ds})),
         _[DiagramDual[x_]] :> "Expression" :> x,
         _ :> "Expression" :> DiagramDual[d]
@@ -204,10 +205,11 @@ DiagramDual[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
 ]
 
 DiagramFlip[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
+    d,
     opts,
     Replace[d["HoldExpression"], {
         _[DiagramComposition[ds___]] :> ("Expression" :> DiagramComposition[##] & @@ Reverse[DiagramFlip[#, opts] & /@ {ds}]),
-        _[(head : (DiagramSum | DiagramProduct | DiagramNetwork | DiagramReverse | DiagramDual))[ds___]] :>
+        _[(head : (Diagram | DiagramSum | DiagramProduct | DiagramNetwork | DiagramReverse | DiagramDual))[ds___]] :>
             ("Expression" :> head[##] & @@ (DiagramFlip[#, opts] & /@ {ds})),
         _[DiagramFlip[x_]] :> "Expression" :> x,
         _ :> "Expression" :> DiagramFlip[d]
@@ -220,10 +222,11 @@ DiagramFlip[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
 ]
 
 DiagramReverse[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
+    d,
     opts,
     Replace[d["HoldExpression"], {
         _[DiagramProduct[ds___]] :> ("Expression" :> DiagramProduct[##] & @@ Reverse[DiagramReverse[#, opts] & /@ {ds}]),
-        _[(head : (DiagramSum | DiagramComposition | DiagramNetwork | DiagramFlip | DiagramDual))[ds___]] :>
+        _[(head : (Diagram | DiagramSum | DiagramComposition | DiagramNetwork | DiagramFlip | DiagramDual))[ds___]] :>
             ("Expression" :> head[##] & @@ (DiagramReverse[#, opts] & /@ {ds})),
         _[DiagramReverse[x_]] :> "Expression" :> x,
         _ :> "Expression" :> DiagramReverse[d]
@@ -287,6 +290,8 @@ PermutationDiagram[inputs_List -> outputs_List, ins_List -> outs_List, opts___] 
     ,
     PermutationDiagram[inputs, outputs, perm, opts, "Shape" -> "Wires"[Thread[{Range[len], Length[inputs] + Permute[Range[len], InversePermutation[perm]]}]]]
 ]
+
+PermutationDiagram[outputs_List, opts___] := PermutationDiagram[Sort[outputs] -> outputs, opts]
 
 PermutationDiagram[inputs_List -> outputs_List, opts___] := PermutationDiagram[inputs -> outputs, inputs -> outputs, opts]
 
@@ -380,6 +385,8 @@ DiagramProp[d_, "NetworkQ"] := MatchQ[d["HoldExpression"], HoldForm[_DiagramNetw
 $DiagramHeadPattern = Diagram | DiagramDual | DiagramFlip | DiagramReverse | DiagramProduct | DiagramSum | DiagramComposition | DiagramNetwork
 
 DiagramProp[d_, "NodeQ"] := ! MatchQ[d["Head"], $DiagramHeadPattern]
+
+DiagramProp[d_, "SingletonNodeQ"] := d["NodeQ"] || MatchQ[d["HoldExpression"], HoldForm[Evaluate @ $DiagramHeadPattern[diag_Diagram]] /; diag["NodeQ"]]
 
 DiagramProp[d_, "Dual", opts___] := DiagramDual[d, opts]
 
