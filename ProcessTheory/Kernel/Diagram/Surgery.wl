@@ -58,7 +58,7 @@ DiagramPosition[d_Diagram] := DiagramPosition[d, _Diagram]
 DiagramMap[f_, d_Diagram, lvl : (_Integer ? NonNegative) | Infinity : Infinity] := If[lvl > 0,
     Replace[d["HoldExpression"], {
         _[(head : $DiagramHeadPattern)[ds___]] :> Diagram[d, "Expression" :> head[##] & @@ Map[DiagramMap[f, #, lvl - 1] &, {ds}]],
-        _ :> Diagram[f[d]]
+        _ :> Diagram[f @@ d["HoldExpression"]]
     }]
     ,
     Diagram[f[d]]
