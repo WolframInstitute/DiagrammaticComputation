@@ -164,8 +164,6 @@ PortProp[p_, "Dual"] := PortDual[p]
 
 PortProp[p_, "Reverse"] := Port[reverseTree[p["PortTree"]], reverseTree[p["Type"]]]
 
-PortProp[_, prop_] := Missing[prop]
-
 
 (* internal properties *)
 
@@ -200,6 +198,10 @@ PortProp[p_, "SumList", lvl : (_Integer ? NonNegative) | Infinity : Infinity] :=
 ]
 
 PortProp[p_, "Apply", f_] := p["PortTree"] /. port_Port :> f[port]
+
+
+PortProp[_, prop_, ___] := Missing[prop]
+
 
 
 (* ::Section:: *)
