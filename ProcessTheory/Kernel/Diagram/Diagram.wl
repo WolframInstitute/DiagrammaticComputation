@@ -162,7 +162,8 @@ Diagram[expr : Except[_Association | _Diagram | OptionsPattern[]], opts : Option
 (* merge options *)
 
 inheritExpresion[expr_, deps_List, def_ : Automatic] := With[{pos = Position[expr, Inherited]},
-    ReplacePart[expr, DeleteCases[Catenate[(dep |-> (# -> ResourceFunction["LookupPart"][dep, Sequence @@ #, Automatic] & /@ pos)) /@ deps], _ -> Inherited]] /. Inherited -> def
+    ReplacePart[expr, DeleteCases[Catenate[(dep |->
+        # -> If[# =!= {} && (Extract[expr, #] === Extract[dep, #] &[Append[Most[#], 0]]), ResourceFunction["LookupPart"][dep, Sequence @@ #, Automatic], Automatic] & /@ pos) /@ deps], _ -> Inherited]] /. Inherited -> def
 ]
 
 
@@ -577,10 +578,11 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
                 ]
             ],
             "Wires"[wires_] :> With[{
-                ps = Catenate[d["PortArrows", opts]]
+                ps = Catenate[d["PortArrows", opts]],
+                styles = Catenate[d["PortStyles", opts]]
             },
-                With[{p = ps[[First[#]]]},
-                    BSplineCurve[{p[[1]], 2 * p[[1]] - p[[2]], 2 * #[[1]] - #[[2]], #[[1]]}] & /@ ps[[Rest[#]]]
+                With[{p = ps[[First[#]]], style = Replace[SelectFirst[styles[[#]], # =!= Automatic &, Nothing], None -> Nothing]},
+                    {style, BSplineCurve[{p[[1]], 2 * p[[1]] - p[[2]], 2 * #[[1]] - #[[2]], #[[1]]}] & /@ DeleteCases[None] @ ps[[Rest[#]]]}
                 ] & /@ wires
             ],
             "Wire" :> With[{
@@ -613,7 +615,7 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := With[{
     {
          transform @ MapThread[
             Replace[#3, {
-                Placed[_, p : Except[Automatic]] :> placeArrow[p],
+                Placed[_, p : Except[Automatic | None]] :> placeArrow[p],
                 _ :> Replace[shape, {
                     "Circle" :> {1 / 2 {w Cos[#1], h Sin[#1]}, 3 / 4 {w Cos[#1], h Sin[#1]}} + Threaded[c],
                     _ :> {{(- 1 / 2 + #2) w, h / 2}, {(- 1 / 2 + #2) w, h / 2 + 1 / 4}} + Threaded[c]
@@ -628,7 +630,7 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := With[{
         ,
         transform @ MapThread[
             Replace[#3, {
-                Placed[_, p : Except[Automatic]] :> placeArrow[p],
+                Placed[_, p : Except[Automatic | None]] :> placeArrow[p],
                 _ :> Replace[shape, {
                     "Circle" :> {1 / 2 {w Cos[#1], h Sin[#1]}, 3 / 4 {w Cos[#1], h Sin[#1]}} + Threaded[c],
                     _ :> {{(- 1 / 2 + #2) w, - h / 2}, {(- 1 / 2 + #2) w, - h / 2 - 1 / 4}} + Threaded[c]
@@ -644,6 +646,9 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := With[{
 ]
 
 DiagramProp[d_, "FlatPortArrows", opts : OptionsPattern[]] := d["Flatten"]["PortArrows", opts]
+
+DiagramProp[d_, "PortStyles", opts : OptionsPattern[]] :=
+    Replace[fillAutomatic[d["OptionValue"["PortArrows"], opts], {d["InputArity"], d["OutputArity"]}], {Placed[_, None] :> None, Placed[x_, _] :> x}, {2}]
 
 
 DiagramProp[_, prop_] := Missing[prop]
@@ -671,7 +676,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
     points = diagram["PortArrows", opts],
     arities = {diagram["InputArity"], diagram["OutputArity"]}
 }, {
-    portArrows = Replace[fillAutomatic[diagram["OptionValue"["PortArrows"], opts], arities], Placed[x_, _] :> x, {2}],
+    portArrows = diagram["PortStyles", opts],
     portLabels = fillAutomatic[diagram["OptionValue"["PortLabels"], opts], arities],
     labelFunction = diagram["OptionValue"["LabelFunction"], opts],
     portLabelFunction = diagram["OptionValue"["PortLabelFunction"], opts]
