@@ -48,9 +48,9 @@ reverseTree[tree_] := Replace[Unevaluated[tree], {
 makePorts[xs_List] := Function[Null, Port[Unevaluated[##]], HoldAll] @@@ Flatten @* HoldForm /@ Replace[xs, SuperStar[HoldForm[x_]] :> HoldForm[SuperStar[x]], 1]
 
 
-tag[expr_, tag_] := Replace[expr, {
-    HoldForm[Interpretation[x_, y_]] | Interpretation[x_, y_] :> Interpretation[x, y -> tag],
-    HoldForm[x_] | x_ :> Interpretation[x, tag]
+tag[expr_, t_] := Replace[expr, {
+    HoldForm[Interpretation[x_, y_]] | Interpretation[x_, y_] :> Interpretation[x, y -> t],
+    HoldForm[x_] | x_ :> Interpretation[x, t]
 }]
 
 

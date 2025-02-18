@@ -53,7 +53,7 @@ $DiagramProperties = Sort @ {
     "Diagram", "PortGraph", "Graph", "NetGraph", "Grid"
 }
 
-$DefaultPortFunction = Function[#["Apply", #["HoldName"] &]]
+$DefaultPortFunction = Function[Replace[HoldForm[Evaluate[#["Apply", #["HoldName"] &]]], HoldForm[x_] :> x, Infinity]]
 
 $DiagramDefaultGraphics = If[#["SingletonNodeQ"], #["Graphics"], #["Grid"]] &
 
@@ -1121,19 +1121,23 @@ ToDiagramNetwork[d_Diagram, opts : OptionsPattern[]] := If[d["NetworkQ"],
     ] & @@ toDiagramNetwork[If[TrueQ[OptionValue["Arrange"]], d["Arrange", opts], d]["Decompose", "Unary" -> True, "Diagram" -> True], {}, {}, FilterRules[{opts}, Options[toDiagramNetwork]]]
 ]
 
-toDiagramNetwork[d_Diagram -> None, pos_, ports_, opts : OptionsPattern[]] := Block[{portFunction = OptionValue["PortFunction"], uniqueQ = TrueQ[OptionValue["Unique"]], mports = ports, port}, {
+toDiagramNetwork[d_Diagram -> None, pos_, ports_, opts : OptionsPattern[]] := Block[{
+    portFunction = OptionValue["PortFunction"],
+    uniqueQ = TrueQ[OptionValue["Unique"]],
+    mports = ports, port
+}, {
 	Diagram[d,
-		"OutputPorts" -> MapIndexed[
-            Port @ If[ KeyExistsQ[mports, #1],
-                Sow[port = #1 -> Lookup[mports, #1], "Port"];
+		"InputPorts" -> MapIndexed[With[{p = portFunction[PortDual[#1]]},
+            If[ KeyExistsQ[mports, p],
+                Sow[port = p -> Lookup[mports, p], "Port"];
                 mports = DeleteElements[mports, 1 -> {port}];
-                port[[2]]
+                PortDual @ port[[2]]
                 ,
-                Interpretation[#1, Evaluate[If[uniqueQ, Join[pos, {2}, #2], pos] -> #1]]
-            ] &,
-            portFunction /@ d["FlatOutputPorts"]
+                If[#1["DualQ"], Port, PortDual] @ Interpretation[p, Evaluate @ If[uniqueQ, Join[pos, {1}, #2], pos]]
+            ]] &,
+            d["FlatInputPorts"]
         ],
-		"InputPorts" -> MapIndexed[Port[Interpretation[#1, Evaluate[If[uniqueQ, Join[pos, {1}, #2], pos] -> #1]]]["Dual"] &, portFunction /@ Through[d["FlatInputPorts"]["Dual"]]],
+		"OutputPorts" -> MapIndexed[With[{p = portFunction[#1]}, If[#1["DualQ"], PortDual, Port] @ Interpretation[p, Evaluate @ If[uniqueQ, Join[pos, {2}, #2], pos]]] &, d["FlatOutputPorts"]],
         FilterRules[{opts}, Options[Diagram]]
 	]
 }
@@ -1145,15 +1149,15 @@ toDiagramNetwork[CirclePlus[ds___] -> d_, pos_, ports_, opts : OptionsPattern[]]
 toDiagramNetwork[CircleTimes[ds___] -> d_, pos_, ports_, opts : OptionsPattern[]] :=
     Catenate @ FoldPairList[With[{net = Reap[toDiagramNetwork[#2, Append[pos, #1[[1]]], #1[[2]], "Unique" -> True, "PortFunction" -> d["PortFunction"], opts], "Port"]}, {net[[1]], {#1[[1]] + 1, DeleteElements[#1[[2]], 1 -> Catenate[net[[2]]]]}}] &, {1, ports}, {ds}]
 
-toDiagramNetwork[CircleDot[ds__] -> d_, pos_, ports_, opts : OptionsPattern[]] := With[{portFunction = (#["Apply", #["HoldName"][[1, 1]] &] &)},
+toDiagramNetwork[CircleDot[ds__] -> d_, pos_, ports_, opts : OptionsPattern[]] := With[{portFunction = (Replace[$DefaultPortFunction[#], HoldForm[SuperStar[Interpretation[x_, _]] | Interpretation[x_, _]] :> HoldForm[x]] &)},
 	Fold[
 		{
             DiagramNetwork[##, "PortFunction" -> (#["HoldExpression"] &), FilterRules[{opts}, Options[DiagramNetwork]]] & @@
-                Join[#1[[1]]["SubDiagrams"], toDiagramNetwork[#2, Append[pos, #1[[2]]], Join[portFunction[#] -> # & /@ Through[#1[[1]]["FlatInputPorts"]["Dual"]], ports], "PortFunction" -> d["PortFunction"], "Unique" -> True, opts]],
-            #1[[2]] + 1
+                Join[#1[[1]]["SubDiagrams"], toDiagramNetwork[#2, Append[pos, #1[[2]]], Join[portFunction[#] -> # & /@ #1[[1]]["FlatOutputPorts"], ports], "PortFunction" -> d["PortFunction"], "Unique" -> True, opts]],
+            #1[[2]] - 1
         } &,
-		{Diagram[], 1},
-		{ds}
+		{Diagram[], Length[{ds}]},
+		Reverse[{ds}]
 	][[1]]["SubDiagrams"]
 ]
 
