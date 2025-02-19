@@ -626,47 +626,61 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
     ]
 ]
 
-DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := With[{
+DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := Block[{
     w = Replace[d["OptionValue"["Width"], opts], Automatic -> 1],
     h = Replace[d["OptionValue"["Height"], opts], Automatic -> 1],
     c = d["OptionValue"["Center"], opts],
     a = d["OptionValue"["Angle"], opts],
     s = d["OptionValue"["Spacing"], opts],
     shape = d["OptionValue"["Shape"], opts],
-    arities = {d["InputArity"], d["OutputArity"]}
-}, {
+    arities = {d["InputArity"], d["OutputArity"]},
     arrows = fillAutomatic[d["OptionValue"["PortArrows"], opts], arities, True],
     transform = RotationTransform[a, c],
-    placeArrow = Replace[{Right -> {{1 / 2, 0}, {1, 0}}, Left -> {{- 1 / 2, 0}, {- 1, 0}}, Top | Up -> {{0, 1 / 2}, {0, 1}}, Bottom | Down -> {{0, - 1 / 2}, {0, - 1}}}]
+    placeShift = <||>, placeArity, placeArrow
 },
+    placeArity = Counts @ Join[
+        MapThread[Replace[#1, {Placed[_, p_] :> Replace[p, Automatic :> If[#2["NeutralQ"], Left, Top]], _ :> If[#2["NeutralQ"], Left, Top]}] &, {arrows[[1]], d["InputPorts"]}],
+        MapThread[Replace[#1, {Placed[_, p_] :> Replace[p, Automatic :> If[#2["NeutralQ"], Right, Bottom]], _ :> If[#2["NeutralQ"], Right, Bottom]}] &, {arrows[[2]], d["OutputPorts"]}]
+    ];
+    placeArrow = Function @ With[{dx = s / (Lookup[placeArity, #1, 0] + 1)}, {x = Lookup[placeShift, #1, (1 - s) / 2 + dx]},
+        placeShift = <|placeShift, #1 -> x + dx|>;
+        Replace[#1, {
+            Right :> {{w / 2, (1 / 2 - x) h}, {w / 2 + 1 / 4, (1 / 2 - x) h}},
+            Left :> {{- w / 2, (1 / 2 - x) h}, {- w / 2 - 1 / 4, (1 / 2 - x) h}},
+            Top | Up :> {{(- 1 / 2 + x) w, h / 2}, {(- 1 / 2 + x) w, h / 2 + 1 / 4}},
+            Bottom | Down :> {{(- 1 / 2 + x) w, - h / 2}, {(- 1 / 2 + x) w, - h / 2 - 1 / 4}}
+        }] + Threaded[c]
+    ];
     {
          transform @ MapThread[
             Replace[#3, {
-                Placed[_, p : Except[Automatic | None]] :> placeArrow[p],
+                Placed[_, p : Except[None]] :> placeArrow[Replace[p, Automatic :> If[#4["NeutralQ"], Left, Top]]],
                 _ :> Replace[shape, {
-                    "Circle" :> {1 / 2 {w Cos[#1], h Sin[#1]}, 3 / 4 {w Cos[#1], h Sin[#1]}} + Threaded[c],
-                    _ :> {{(- 1 / 2 + #2) w, h / 2}, {(- 1 / 2 + #2) w, h / 2 + 1 / 4}} + Threaded[c]
+                    "Circle" :> With[{p = {w Cos[#1], h Sin[#1]}}, {p / 2, p / 2 + Normalize[p] /4}] + Threaded[c],
+                    _ :> placeArrow[If[#4["NeutralQ"], Left, Top]]
                 }]
             }] &,
             {
                 Range[Pi, 0, - Pi / (d["InputArity"] + 1)][[2 ;; -2]],
                 Range[(1 - s) / 2, (s + 1) / 2, s / (d["InputArity"] + 1)][[2 ;; -2]],
-                arrows[[1]]
+                arrows[[1]],
+                d["InputPorts"]
             }
         ]
         ,
         transform @ MapThread[
             Replace[#3, {
-                Placed[_, p : Except[Automatic | None]] :> placeArrow[p],
+                Placed[_, p : Except[None]] :> placeArrow[Replace[p, Automatic :> If[#4["NeutralQ"], Right, Bottom]]],
                 _ :> Replace[shape, {
-                    "Circle" :> {1 / 2 {w Cos[#1], h Sin[#1]}, 3 / 4 {w Cos[#1], h Sin[#1]}} + Threaded[c],
-                    _ :> {{(- 1 / 2 + #2) w, - h / 2}, {(- 1 / 2 + #2) w, - h / 2 - 1 / 4}} + Threaded[c]
+                    "Circle" :> With[{p = {w Cos[#1], h Sin[#1]}}, {p / 2, p / 2 + Normalize[p] /4}] + Threaded[c],
+                    _ :> placeArrow[If[#4["NeutralQ"], Right, Bottom]]
                 }]
             }] &,
             {
                 Range[Pi, 2 Pi, Pi / (d["OutputArity"] + 1)][[2 ;; -2]],
                 Range[(1 - s) / 2, (s + 1) / 2, s / (d["OutputArity"] + 1)][[2 ;; -2]],
-                arrows[[2]]
+                arrows[[2]],
+                d["OutputPorts"]
             }
         ]
     }
@@ -675,7 +689,7 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := With[{
 DiagramProp[d_, "FlatPortArrows", opts : OptionsPattern[]] := d["Flatten"]["PortArrows", opts]
 
 DiagramProp[d_, "PortStyles", opts : OptionsPattern[]] :=
-    Replace[fillAutomatic[d["OptionValue"["PortArrows"], opts], {d["InputArity"], d["OutputArity"]}], Placed[x_, _] :> x, {2}]
+    Replace[fillAutomatic[d["OptionValue"["PortArrows"], opts], {d["InputArity"], d["OutputArity"]}, Automatic], Placed[x_, _] :> x, {2}]
 
 
 DiagramProp[_, prop_] := Missing[prop]
@@ -707,7 +721,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
     portArrows = diagram["PortStyles", opts],
     portLabels = fillAutomatic[diagram["OptionValue"["PortLabels"], opts], arities],
     labelFunction = diagram["OptionValue"["LabelFunction"], opts],
-    portArrowFunction = Replace[diagram["OptionValue"["PortArrowFunction"], opts], Automatic -> Identity],
+    portArrowFunction = Replace[diagram["OptionValue"["PortArrowFunction"], opts], Automatic -> (#1 &)],
     portLabelFunction = diagram["OptionValue"["PortLabelFunction"], opts]
 }, Graphics[{
     EdgeForm[Black], FaceForm[None], 
@@ -725,18 +739,18 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
         diagram["OptionValue"["Center"], opts]
     ],
     Arrowheads[Small],
-    MapThread[{ports, ps, arrows, labels, angle} |->
+    MapThread[{ports, ps, arrows, labels, dir} |->
         MapThread[{x, p, arrow, label} |-> {
             If[ MatchQ[arrow, None | False],
                 Nothing,
-                If[MatchQ[arrow, _Function], portArrowFunction @ arrow[p, x], {Replace[arrow, True | Automatic -> Nothing], portArrowFunction @ Arrow[If[x["DualQ"], Reverse, Identity] @ p]}]
+                If[MatchQ[arrow, _Function], portArrowFunction[arrow[p, x], x, dir], {Replace[arrow, True | Automatic -> Nothing], portArrowFunction[Arrow[If[x["DualQ"], Reverse, Identity] @ p], x, dir]}]
             ],
             If[ MatchQ[label, None | False],
                 Nothing,
                 Replace[label, Placed[l_, pos_] | l_ :> Text[
                         Replace[portLabelFunction, Automatic -> Function[ClickToCopy[#2 /. Automatic :> If[#1["DualQ"], #1["Dual"], #1], #1["View"]]]][x, l],
-                        With[{v = p[[-1]] - p[[1]], s = PadLeft[Flatten[Replace[{pos}, {{Right} -> {2, 0}, {Left} -> {- 2, 0}, {Top | Up} -> {0, 2}, {Bottom | Down} -> {0, - 2}, {Center} -> {0, 0}, {} -> {0, 2}}]], 2, 0]},
-                            p[[1]] + s[[2]] * v + s[[1]] * RotationTransform[angle][v]
+                        With[{v = (p[[-1]] - p[[1]]) 3 / 4, s = PadLeft[Flatten[Replace[{pos}, {{Right} -> {2, 0}, {Left} -> {- 2, 0}, {Top | Up} -> {0, 2}, {Bottom | Down} -> {0, - 2}, {Center} -> {0, 0}, {} -> {0, 2}}]], 2, 0]},
+                            p[[1]] + s[[2]] * v + s[[1]] * RotationTransform[Replace[dir, {Top -> Pi / 2, Bottom -> - Pi / 2}]][v]
                         ]
                     ]
                 ]
@@ -744,7 +758,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
         },
            {ports, ps, arrows, labels}
         ],
-        {{diagram["InputPorts"], diagram["OutputPorts"]}, points, portArrows, portLabels, {Pi / 2, - Pi / 2}}
+        {{diagram["InputPorts"], diagram["OutputPorts"]}, points, portArrows, portLabels, {Top, Bottom}}
     ]
 },
     FilterRules[{opts, diagram["DiagramOptions"]}, Options[Graphics]],
@@ -807,7 +821,7 @@ DiagramGraphSimplify[g_ ? GraphQ] := Fold[
     VertexList[g, _Integer]
 ]
 
-SimplifyDiagram[diag_ ? DiagramQ] := With[{portFunction = #["HoldExpression"] &}, {
+SimplifyDiagram[diag_ ? DiagramQ] := With[{portFunction = If[diag["NetworkQ"], diag["PortFunction"], #["HoldExpression"] &]}, {
 	net = DiagramsNetGraph[
             diag["Network", "Arrange" -> False]["Graph", "Simplify" -> True, "PortFunction" -> portFunction],
             "PortFunction" -> portFunction, "UnarySpiders" -> False, "BinarySpiders" -> False
@@ -1127,7 +1141,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
                         ],
 							If[ wireLabelsQ,
                                 Text[
-                                    Style[ClickToCopy[x, x], Black],
+                                    Style[ClickToCopy[InterpretationForm[x], x], Black],
                                     If[ lindep,
                                         (a + b) / 2 + 1.25 RotationTransform[Pi / 2][normal1],
                                         (a + point1 + normal1 + b + point2 + normal2) / 2 + .1 normal1
@@ -1163,7 +1177,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
 			},
 			1
 		],
-		VertexLabels -> (# -> If[wireLabelsQ, Placed[ClickToCopy[#, #], Center], None] & /@ spiderVertices),
+		VertexLabels -> (# -> If[wireLabelsQ, Placed[ClickToCopy[InterpretationForm[#], #], Center], None] & /@ spiderVertices),
 		BaseStyle -> {FormatType -> StandardForm}
 	]
 ]
@@ -1191,12 +1205,12 @@ toDiagramNetwork[d_Diagram -> None, pos_, ports_, opts : OptionsPattern[]] := Bl
 }, {
 	Diagram[d,
 		"InputPorts" -> MapIndexed[With[{p = portFunction[PortDual[#1]]},
-            If[ KeyExistsQ[mports, p],
+            PortDual @ If[ KeyExistsQ[mports, p],
                 Sow[port = p -> Lookup[mports, p], "Port"];
                 mports = DeleteElements[mports, 1 -> {port}];
-                PortDual @ port[[2]]
+                port[[2]]
                 ,
-                If[#1["DualQ"], Port, PortDual] @ Interpretation[p, Evaluate @ If[uniqueQ, Join[pos, {1}, #2], pos]]
+                Interpretation[p, Evaluate @ If[uniqueQ, Join[pos, {1}, #2], pos]]
             ]] &,
             d["FlatInputPorts"]
         ],

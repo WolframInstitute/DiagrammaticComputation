@@ -7,6 +7,7 @@ reverseTree
 makePorts
 
 tag
+InterpretationForm
 
 collectPorts
 collectPortsListBy
@@ -24,7 +25,7 @@ fillAutomatic[expr_, arities_List, def_ : Inherited] := MapThread[
     {list, arity} |-> 
         Replace[
             Replace[Replace[list, x : Except[_List] :> ConstantArray[x, arity]], Automatic -> def, 1] //
-                PadRight[#, arity, {Replace[def, Inherited -> SelectFirst[Reverse[#], # =!= Inherited &, Automatic]]}] &,
+                PadRight[#, arity, {Replace[def, Inherited :> SelectFirst[Reverse[#], # =!= Inherited &, Automatic]]}] &,
             Inherited -> Automatic,
             1
         ],
@@ -49,16 +50,22 @@ makePorts[xs_List] := Function[Null, Port[Unevaluated[##]], HoldAll] @@@ Flatten
 
 
 tag[expr_, t_] := Replace[expr, {
+    HoldForm[Interpretation[Interpretation[x_, y_], z_]] | Interpretation[Interpretation[x_, y_], z_] :> tag[HoldForm[Interpretation[x, y -> z]], t],
     HoldForm[Interpretation[x_, y_]] | Interpretation[x_, y_] :> Interpretation[x, y -> t],
     HoldForm[x_] | x_ :> Interpretation[x, t]
 }]
 
 
+InterpretationForm[Interpretation[i_Interpretation, _]] := InterpretationForm[i]
+InterpretationForm[HoldForm[x_]] := HoldForm[Evaluate[InterpretationForm[Unevaluated[x]]]]
+InterpretationForm[x_] := x
+
+
 collectPorts[ports_List] := If[ports === {}, {},
     Fold[
         {
-            Join[#2[[1]], DeleteElements[#1[[1]], 1 -> #2[[2]]]],
-            Join[DeleteElements[#2[[2]], 1 -> #1[[1]]], #1[[2]]]
+            Join[DeleteElements[#1[[1]], 1 -> #2[[2]]], #2[[1]]],
+            Join[#1[[2]], DeleteElements[#2[[2]], 1 -> #1[[1]]]]
         } &,
         ports
     ]
@@ -68,8 +75,8 @@ collectPortsListBy[ports_List, f_] := If[ports === {}, {},
     FoldList[List /* Replace[{{out1_, in1_}, {out2_, in2_}} :>
         With[{fout1 = f /@ out1, fin2 = f /@ in2},
             {
-                Join[out2, Delete[out1, FirstPositions[fout1, fin2]]],
-                Join[Delete[in2, FirstPositions[fin2, fout1]], in1]
+                Join[Delete[out1, FirstPositions[fout1, fin2]], out2],
+                Join[in1, Delete[in2, FirstPositions[fin2, fout1]]]
             }
         ]
     ],

@@ -38,7 +38,7 @@ ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
     If[ ContainsNone[aPorts, bPorts],
         If[ aPorts === {} && bPorts === {},
             Return[DiagramComposition[b, a, FilterRules[{opts}, Options[DiagramComposition]], "PortArrows" -> {aStyles[[1]], bStyles[[2]]}]],
-            Return[RowDiagram[{b, a}, FilterRules[{opts}, Options[RowDiagram]]]]
+            Return[RowDiagram[{a, b}, FilterRules[{opts}, Options[RowDiagram]]]]
         ]
     ];
     Replace[SequenceAlignment[Reverse[aPorts], Reverse[bPorts], Method -> "Local"], {
@@ -431,7 +431,7 @@ Options[DiagramGrid] = Join[{
     "VerticalGapSize" -> 1,
     "Rotate" -> 0,
     "Wires" -> True,
-    "WireArrows" -> False,
+    "WireArrows" -> True,
     "Frames" -> Automatic,
     Spacings -> 1.6,
     Dividers -> None,
@@ -473,9 +473,9 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
     positions = Position[grid, _Diagram, All];
 
     unlabeledGrid = grid //
-        MapAt[Diagram[#, "PortLabels" -> {None, Placed[Automatic, {- 2 / 3, 1}]}, If[#["WireQ"], {}, "PortArrows" -> {Placed[None, Inherited], Placed[None, Inherited]}]] &, Complement[positions, outputPositions, inputPositions]] //
-        MapAt[Diagram[#, "PortLabels" -> {None, Inherited}, If[#["WireQ"], {}, "PortArrows" -> {Placed[None, Inherited], Inherited}]] &, Complement[outputPositions, inputPositions]] //
-        MapAt[Diagram[#, "PortLabels" -> {Inherited, Placed[Automatic, {- 2 / 3, 1}]}, If[#["WireQ"], {}, "PortArrows" -> {Inherited, Placed[None, Inherited]}]] &, Complement[inputPositions, outputPositions]];
+        MapAt[Diagram[#, "PortLabels" -> {None, Placed[Automatic, {- 2 / 3, 1}]}, "PortArrowFunction" -> (Nothing &)] &, Complement[positions, outputPositions, inputPositions]] //
+        MapAt[Diagram[#, "PortLabels" -> {None, Inherited}, "PortArrowFunction" -> (If[#3 === Top, Nothing, #1] &)] &, Complement[outputPositions, inputPositions]] //
+        MapAt[Diagram[#, "PortLabels" -> {Inherited, Placed[Automatic, {- 2 / 3, 1}]}, "PortArrowFunction" -> (If[#3 === Bottom, Nothing, #1] &)] &, Complement[inputPositions, outputPositions]];
     
     dividers = {
         FaceForm[None], EdgeForm[Directive[Thin, Black]],
