@@ -5,6 +5,7 @@ PortQ
 EmptyPortQ
 
 PortDual
+PortNeutral
 PortProduct
 PortSum
 
@@ -19,17 +20,17 @@ Port::usage = "Port[expr] represents a symbolic port for diagram inputs and outp
 
 $DefaultPortType = \[FormalCapitalT]
 
-Options[Port] = {"Type" -> $DefaultPortType};
+Options[Port] = {"Type" -> $DefaultPortType, "NeutralQ" -> False};
 
 $PortHiddenOptions = {"Expression" -> "1"}
 
-$PortProperties = Join[Keys[Options[Port]], {"Properties", "Data", "HoldExpression", "Name", "Types", "Arity", "Label", "View", "Dual", "Reverse"}];
+$PortProperties = Join[Keys[Options[Port]], {"Properties", "Data", "HoldExpression", "Name", "Types", "Arity", "Label", "View", "Dual", "Neutral", "Reverse"}];
 
 
 (* ::Section:: *)
 (* Validation *)
 
-portQ[HoldPattern[Port[data_Association]]] := MatchQ[data, KeyValuePattern[{_["Expression", _], "Type" -> _}]]
+portQ[HoldPattern[Port[data_Association]]] := MatchQ[data, KeyValuePattern[{_["Expression", _], "Type" -> _, "NeutralQ" -> _ ? BooleanQ}]]
 
 portQ[___] := False
 
@@ -92,11 +93,26 @@ PortSum[ps___Port ? PortQ] := If[Length[{ps}] > 0 && AllTrue[{ps}, #["DualQ"] &]
 Port[SuperStar[p_], opts : OptionsPattern[]] := PortDual[Port[Unevaluated[p], opts]]
 
 PortDual[p_Port ? PortQ] := If[EmptyPortQ[p], p,
-    Function[Null, Port["Expression" :> #, "Type" -> Replace[p["Type"], {SuperStar[x_] :> x, x_ :> SuperStar[x]}]], HoldFirst] @@
+    Function[Null, Port[p, "Expression" :> #, "Type" -> Replace[p["Type"], {SuperStar[x_] :> x, x_ :> SuperStar[x]}]], HoldFirst] @@
         Replace[p["HoldExpression"], {HoldForm[PortDual[q_]] :> HoldForm[q], HoldForm[q_] :> HoldForm[PortDual[q]]}]
 ]
 
-PortDual[expr_] := PortDual[Port[expr]]
+PortDual[expr_] := PortDual[Port[Unevaluated[expr]]]
+
+
+(* neutral *)
+
+Port[OverTilde[p_], opts : OptionsPattern[]] := PortNeutral[Port[Unevaluated[p], opts]]
+
+PortNeutral[p_Port ? PortQ] := Port[p, Function[Null, "Expression" :> ##, HoldFirst] @@ Replace[p["HoldExpression"], {
+        HoldForm[PortDual[q_]] :> (HoldForm[PortDual[#]] & @ PortNeutral[q]),
+        HoldForm[PortProduct[ps___]] :> (HoldForm[PortProduct[##]] & @@ (PortNeutral /@ {ps})),
+        HoldForm[PortSum[ps___]] :> (HoldForm[PortSum[##]] & @@ (PortNeutral /@ {ps}))
+    }],
+    "NeutralQ" -> ! p["NeutralQ"]
+]
+
+PortNeutral[expr_] := PortNeutral[Port[Unevaluated[expr]]]
 
 
 (* merge options *)
@@ -162,6 +178,8 @@ PortProp[p_, "View"] := With[{
 
 PortProp[p_, "Dual"] := PortDual[p]
 
+PortProp[p_, "Neutral"] := PortNeutral[p]
+
 PortProp[p_, "Reverse"] := Port[reverseTree[p["PortTree"]], reverseTree[p["Type"]]]
 
 
@@ -173,9 +191,9 @@ PortProp[p_, "ProductQ"] := MatchQ[p["HoldExpression"], HoldForm[_PortProduct]]
 
 PortProp[p_, "SumQ"] := MatchQ[p["HoldExpression"], HoldForm[_PortSum]]
 
-PortProp[p_, "PortTree"] :=
+PortProp[p_, "PortTree" | "Decompose"] :=
     Replace[p["HoldExpression"], {
-        HoldForm[PortDual[q_]] :> SuperStar[Port[q]["PortTree"]],
+        HoldForm[PortDual[q_]] :> SuperStar[Port[Unevaluated[q]]["PortTree"]],
         HoldForm[PortProduct[ps___]] :> CircleTimes @@ Through[{ps}["PortTree"]],
         HoldForm[PortSum[ps___]] :> CirclePlus @@ Through[{ps}["PortTree"]],
         _ :> p

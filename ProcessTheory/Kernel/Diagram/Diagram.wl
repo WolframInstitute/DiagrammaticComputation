@@ -45,7 +45,7 @@ Diagram::usage = "Diagram[expr] represents a symbolic diagram with input and out
 
 Options[Diagram] := Sort @ DeleteDuplicatesBy[First] @ Join[Options[DiagramGraphics], Options[DiagramGrid], Options[DiagramsNetGraph]];
 
-$DiagramHiddenOptions = {"Expression" -> None, "OutputPorts" -> {}, "InputPorts" -> {}, "DiagramOptions" -> {}};
+$DiagramHiddenOptions = {"Expression" -> None, "InputPorts" -> {}, "OutputPorts" -> {}, "DiagramOptions" -> {}};
 
 $DiagramProperties = Sort @ {
     "Properties", "HoldExpression", "ProductQ", "SumQ", "CompositionQ", "NetworkQ", "SubDiagrams",
@@ -372,6 +372,10 @@ DiagramProp[_, "Properties"] := Sort[$DiagramProperties]
 
 DiagramProp[HoldPattern[Diagram[data_]], "Data"] := data
 
+DiagramProp[d_, "InputPorts", neutralQ : _ ? BooleanQ : True] := If[neutralQ, d["Data"]["InputPorts"], Discard[d["Data"]["InputPorts"], #["NeutralQ"] &]]
+
+DiagramProp[d_, "OutputPorts", neutralQ : _ ? BooleanQ : True] := If[neutralQ, d["Data"]["OutputPorts"], Discard[d["Data"]["OutputPorts"], #["NeutralQ"] &]]
+
 DiagramProp[HoldPattern[Diagram[data_Association]], prop_] /; ! MemberQ[prop, $DiagramProperties] && KeyExistsQ[data, prop] := Lookup[data, prop]
 
 DiagramProp[d_, "HoldExpression"] := Extract[d["Data"], "Expression", HoldForm]
@@ -416,13 +420,36 @@ DiagramProp[d_, "SubDiagrams"] := Replace[d["HoldExpression"], {
     _ -> {}
 }]
 
-DiagramProp[d_, "Ports", dualQ : _ ? BooleanQ : False] := Join[d["OutputPorts"], If[dualQ, PortDual, Identity] /@ d["InputPorts"]]
+DiagramProp[d_, "TopPorts", dualQ : _ ? BooleanQ : False] := If[dualQ, PortDual, Identity] /@ d["InputPorts", False]
 
-DiagramProp[d_, "OutputArity"] := Length[d["OutputPorts"]]
+DiagramProp[d_, "BottomPorts", dualQ : _ ? BooleanQ : False] := If[dualQ, PortDual, Identity] /@ d["OutputPorts", False]
 
-DiagramProp[d_, "InputArity"] := Length[d["InputPorts"]]
+DiagramProp[d_, "NeutralPorts", dualQ : _ ? BooleanQ : False] := Select[
+    Join[d["OutputPorts", True], If[dualQ, PortDual, Identity] /@ d["InputPorts", True]],
+    #["NeutralQ"] &
+]
 
-DiagramProp[d_, "Arity"] := Length[d["Ports"]]
+DiagramProp[d_, "LeftPorts", dualQ : _ ? BooleanQ : False] := If[dualQ, PortDual, Identity] /@ Select[d["InputPorts", True], #["NeutralQ"] &]
+
+DiagramProp[d_, "RightPorts", dualQ : _ ? BooleanQ : False] := If[dualQ, PortDual, Identity] /@ Select[d["OutputPorts", True], #["NeutralQ"] &]
+
+DiagramProp[d_, "Ports", dualQ : _ ? BooleanQ : False, neutralQ : _ ? BooleanQ : True] := Join[d["OutputPorts", neutralQ], If[dualQ, PortDual, Identity] /@ d["InputPorts", neutralQ]]
+
+DiagramProp[d_, "OutputArity"] := Length[d["OutputPorts", True]]
+
+DiagramProp[d_, "InputArity"] := Length[d["InputPorts", True]]
+
+DiagramProp[d_, "TopArity"] := Length[d["TopPorts"]]
+
+DiagramProp[d_, "BottomArity"] := Length[d["BottomPorts"]]
+
+DiagramProp[d_, "LeftArity"] := Length[d["LeftPorts"]]
+
+DiagramProp[d_, "RightArity"] := Length[d["RightPorts"]]
+
+DiagramProp[d_, "NeutralArity"] := Length[d["NeutralPorts"]]
+
+DiagramProp[d_, "Arity", neutralQ : _ ? BooleanQ : False] := Length[d["Ports", False, neutralQ]]
 
 DiagramProp[d_, "Arities"] := {d["InputArity"], d["OutputArity"]}
 
