@@ -455,11 +455,15 @@ DiagramProp[d_, "Arities"] := {d["InputArity"], d["OutputArity"]}
 
 DiagramProp[d_, "MaxArity"] := Max[d["OutputArity"], d["InputArity"]]
 
-DiagramProp[d_, "FlatOutputPorts", args___] := Catenate[Through[d["OutputPorts"]["ProductList", args]]]
+DiagramProp[d_, "MaxGridArity"] := Max[d["TopArity"], d["BottomArity"]]
+
+DiagramProp[d_, "Flat"[params__], args___] := Catenate[Through[d[params]["ProductList", args]]]
+
+DiagramProp[d_, "FlatInputPorts", args___] := d["Flat"["InputPorts"], args]
+
+DiagramProp[d_, "FlatOutputPorts", args___] := d["Flat"["OutputPorts"], args]
 
 DiagramProp[d_, "FlattenOutputs", args___] := Diagram[d, "OutputPorts" -> d["FlatOutputPorts", args], "PortArrows" -> ({#1, Catenate @ MapThread[ConstantArray[#2, Length[#1]] &, {Through[d["OutputPorts"]["ProductList", args]], #2}]} & @@ d["PortStyles"])]
-
-DiagramProp[d_, "FlatInputPorts", args___] := Catenate[Through[d["InputPorts"]["ProductList", args]]]
 
 DiagramProp[d_, "FlattenInputs", args___] := Diagram[d, "InputPorts" -> d["FlatInputPorts", args], "PortArrows" -> ({Catenate @ MapThread[ConstantArray[#2, Length[#1]] &, {Through[d["InputPorts"]["ProductList", args]], #1}], #2} & @@ d["PortStyles"])]
 
@@ -698,6 +702,8 @@ DiagramProp[_, prop_] := Missing[prop]
 (* ::Subsection:: *)
 (* Formatting *)
 
+$DefaultPortLabelFunction = Function[ClickToCopy[#2 /. Automatic :> If[#1["DualQ"], #1["Dual"], #1], #1["View"]]]
+
 Options[DiagramGraphics] = Join[{
     "Shape" -> Automatic,
     "Center" -> {0, 0},
@@ -721,8 +727,8 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
     portArrows = diagram["PortStyles", opts],
     portLabels = fillAutomatic[diagram["OptionValue"["PortLabels"], opts], arities],
     labelFunction = diagram["OptionValue"["LabelFunction"], opts],
-    portArrowFunction = Replace[diagram["OptionValue"["PortArrowFunction"], opts], Automatic -> (#1 &)],
-    portLabelFunction = diagram["OptionValue"["PortLabelFunction"], opts]
+    portArrowFunction = Replace[diagram["OptionValue"["PortArrowFunction"], opts], Automatic -> (#2 &)],
+    portLabelFunction = Replace[diagram["OptionValue"["PortLabelFunction"], opts], Automatic -> $DefaultPortLabelFunction]
 }, Graphics[{
     EdgeForm[Black], FaceForm[None], 
     Confirm @ diagram["Shape", opts],
@@ -743,18 +749,21 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
         MapThread[{x, p, arrow, label} |-> {
             If[ MatchQ[arrow, None | False],
                 Nothing,
-                If[MatchQ[arrow, _Function], portArrowFunction[arrow[p, x], x, dir], {Replace[arrow, True | Automatic -> Nothing], portArrowFunction[Arrow[If[x["DualQ"], Reverse, Identity] @ p], x, dir]}]
+                If[MatchQ[arrow, _Function], portArrowFunction[x, arrow[x, p], dir], {Replace[arrow, True | Automatic -> Nothing], portArrowFunction[x, Arrow[If[x["DualQ"], Reverse, Identity] @ p], dir]}]
             ],
-            If[ MatchQ[label, None | False],
+            With[{
+                labelExpr = Replace[label, Placed[e_, _] :> e],
+                newLabel = Replace[label, {Placed[l_, pos_] :> Placed[Replace[portLabelFunction[x, l, dir], Placed[e_, _] :> e], pos], l_ :> portLabelFunction[x, l, dir]}]
+            }, If[ MatchQ[labelExpr, None | False],
                 Nothing,
-                Replace[label, Placed[l_, pos_] | l_ :> Text[
-                        Replace[portLabelFunction, Automatic -> Function[ClickToCopy[#2 /. Automatic :> If[#1["DualQ"], #1["Dual"], #1], #1["View"]]]][x, l],
+                Replace[newLabel, Placed[l_, pos_] | l_ :> If[l === None, Nothing, Text[
+                        l /. Inherited :> $DefaultPortLabelFunction[x, labelExpr, dir],
                         With[{v = (p[[-1]] - p[[1]]) 3 / 4, s = PadLeft[Flatten[Replace[{pos}, {{Right} -> {2, 0}, {Left} -> {- 2, 0}, {Top | Up} -> {0, 2}, {Bottom | Down} -> {0, - 2}, {Center} -> {0, 0}, {} -> {0, 2}}]], 2, 0]},
                             p[[1]] + s[[2]] * v + s[[1]] * RotationTransform[Replace[dir, {Top -> Pi / 2, Bottom -> - Pi / 2}]][v]
                         ]
-                    ]
+                    ]]
                 ]
-            ]
+            ]]
         },
            {ports, ps, arrows, labels}
         ],
@@ -1021,31 +1030,31 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
                 Diagram[#2,
                     "OutputPorts" -> MapThread[
                         FirstCase[edges,
-                            DirectedEdge[#2[[1]], tgtIdx_, {{2, _, #2[[3]]}, _, {1, _, portIdx_}}] :> With[{tgt = portFunction @ diagrams[tgtIdx]["InputPorts"][[portIdx]]["Dual"]},
-                                Port[tag[tgt, {tgtIdx, 1, portIdx}]]
+                            DirectedEdge[#2[[1]], tgtIdx_, {{2, _, #2[[3]]}, _, {1, _, portIdx_}}] :> With[{tgt = diagrams[tgtIdx]["InputPorts"][[portIdx]]["Dual"]},
+                                Port[tag[portFunction @ tgt, {tgtIdx, 1, portIdx}], "NeutralQ" -> tgt["NeutralQ"]]
                             ],
                             FirstCase[edges,
-                                DirectedEdge[#2[[1]], tgtIdx_, {{2, _, #2[[3]]}, _, {2, _, portIdx_}}] :> With[{tgt = portFunction @ diagrams[tgtIdx]["OutputPorts"][[portIdx]]},
-                                    Port[tag[tgt, {tgtIdx, 2, portIdx}]]
+                                DirectedEdge[#2[[1]], tgtIdx_, {{2, _, #2[[3]]}, _, {2, _, portIdx_}}] :> With[{tgt = diagrams[tgtIdx]["OutputPorts"][[portIdx]]},
+                                    Port[tag[portFunction @ tgt, {tgtIdx, 2, portIdx}], "NeutralQ" -> tgt["NeutralQ"]]
                                 ],
-                                Port[tag[#1, #2]]
+                                Port[tag[portFunction @ #1, #2], "NeutralQ" -> #1["NeutralQ"]]
                             ]
                         ] &,
-                        {portFunction /@ #2["OutputPorts"], Thread[{#1, 2, Range[#2["OutputArity"]]}]}
+                        {#2["OutputPorts"], Thread[{#1, 2, Range[#2["OutputArity"]]}]}
                     ],
                     "InputPorts" -> MapThread[
                         FirstCase[edges,
-                            DirectedEdge[#2[[1]], tgtIdx_, {{1, _, #2[[3]]}, _, {2, _, portIdx_}}] :> With[{tgt = portFunction @ diagrams[tgtIdx]["OutputPorts"][[portIdx]]},
-                                Port[tag[tgt, {tgtIdx, 2, portIdx}]]
+                            DirectedEdge[#2[[1]], tgtIdx_, {{1, _, #2[[3]]}, _, {2, _, portIdx_}}] :> With[{tgt = diagrams[tgtIdx]["OutputPorts"][[portIdx]]},
+                                Port[tag[portFunction @ tgt, {tgtIdx, 2, portIdx}], "NeutralQ" -> tgt["NeutralQ"]]
                             ],
                             FirstCase[edges,
-                                DirectedEdge[#2[[1]], tgtIdx_, {{1, _, #2[[3]]}, _, {1, _, portIdx_}}] :> With[{tgt = portFunction @ diagrams[tgtIdx]["InputPorts"][[portIdx]]["Dual"]},
-                                    Port[tag[tgt, {tgtIdx, 1, portIdx}]]
+                                DirectedEdge[#2[[1]], tgtIdx_, {{1, _, #2[[3]]}, _, {1, _, portIdx_}}] :> With[{tgt = diagrams[tgtIdx]["InputPorts"][[portIdx]]["Dual"]},
+                                    Port[tag[portFunction @ tgt, {tgtIdx, 1, portIdx}],  "NeutralQ" -> tgt["NeutralQ"]]
                                 ],
-                                Port[tag[#1, #2]]
+                                Port[tag[portFunction @ #1, #2],  "NeutralQ" -> #1["NeutralQ"]]
                             ]
                         ]["Dual"] &,
-                        {portFunction /@ Through[#2["InputPorts"]["Dual"]], Thread[{#1, 1, Range[#2["InputArity"]]}]}
+                        {Through[#2["InputPorts"]["Dual"]], Thread[{#1, 1, Range[#2["InputArity"]]}]}
                     ]
                 ] &,
                 diagrams
@@ -1061,7 +1070,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
 		VertexShapeFunction -> Join[
 			Thread[diagramVertices ->
 				MapThread[{diagram, orientation} |-> With[{
-						shape = First @ diagram["Graphics", diagram["DiagramOptions"], "PortArrowFunction" -> (Nothing &), "PortLabels" -> If[portLabelsQ, Automatic, None], "LabelFunction" -> Function[If[#["NetworkQ"], #, Rotate[#["HoldExpression"], Pi]]]],
+						shape = First @ diagram["Graphics", diagram["DiagramOptions"], "PortArrowFunction" -> (Nothing &), "PortLabels" -> If[portLabelsQ, Automatic, None], "LabelFunction" -> Function[If[#["NetworkQ"], #, #["HoldExpression"]]]],
 						transform = RotationTransform[{{0, 1}, orientation}] @* ScalingTransform[scale {1, 1}]
 					},
 						Function[{
@@ -1204,17 +1213,17 @@ toDiagramNetwork[d_Diagram -> None, pos_, ports_, opts : OptionsPattern[]] := Bl
     mports = ports, port
 }, {
 	Diagram[d,
-		"InputPorts" -> MapIndexed[With[{p = portFunction[PortDual[#1]]},
+		"InputPorts" -> MapIndexed[If[#1["NeutralQ"], #1, With[{p = portFunction[PortDual[#1]]},
             PortDual @ If[ KeyExistsQ[mports, p],
                 Sow[port = p -> Lookup[mports, p], "Port"];
                 mports = DeleteElements[mports, 1 -> {port}];
                 port[[2]]
                 ,
                 Interpretation[p, Evaluate @ If[uniqueQ, Join[pos, {1}, #2], pos]]
-            ]] &,
+            ]]] &,
             d["FlatInputPorts"]
         ],
-		"OutputPorts" -> MapIndexed[With[{p = portFunction[#1]}, If[#1["DualQ"], PortDual, Port] @ Interpretation[p, Evaluate @ If[uniqueQ, Join[pos, {2}, #2], pos]]] &, d["FlatOutputPorts"]],
+		"OutputPorts" -> MapIndexed[If[#1["NeutralQ"], #1, With[{p = portFunction[#1]}, If[#1["DualQ"], PortDual, Port] @ Interpretation[p, Evaluate @ If[uniqueQ, Join[pos, {2}, #2], pos]]]] &, d["FlatOutputPorts"]],
         FilterRules[{opts}, Options[Diagram]]
 	]
 }

@@ -160,7 +160,7 @@ PortProp[p_, "Types"] := Through[Flatten[p["PortTree"]]["Type"]]
 PortProp[p_, "Arity"] := Length[p["Types"]]
 
 PortProp[p_, "Label"] := ReplaceAll[
-    ReplaceAll[p["PortTree"], q_Port :> q["HoldExpression"]],
+    ReplaceAll[p["PortTree"], q_Port :> If[q["NeutralQ"], OverTilde, Identity] @ q["HoldExpression"]],
     {
         CircleTimes[x_, y_] /; x === SuperStar[y] :> OverHat[x],
         CircleTimes[x_, y_] /; SuperStar[x] === y :> OverHat[y],
@@ -193,7 +193,7 @@ PortProp[p_, "SumQ"] := MatchQ[p["HoldExpression"], HoldForm[_PortSum]]
 
 PortProp[p_, "PortTree" | "Decompose"] :=
     Replace[p["HoldExpression"], {
-        HoldForm[PortDual[q_]] :> SuperStar[Port[Unevaluated[q]]["PortTree"]],
+        HoldForm[PortDual[q_]] :> SuperStar[Port[Unevaluated[q], "NeutralQ" -> p["NeutralQ"]]["PortTree"]],
         HoldForm[PortProduct[ps___]] :> CircleTimes @@ Through[{ps}["PortTree"]],
         HoldForm[PortSum[ps___]] :> CirclePlus @@ Through[{ps}["PortTree"]],
         _ :> p

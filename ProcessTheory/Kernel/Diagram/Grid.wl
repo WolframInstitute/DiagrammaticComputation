@@ -22,7 +22,7 @@ Options[ColumnDiagram] := Join[{"PortOrderingFunction" -> Automatic, "Direction"
 
 ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
     func = OptionValue["PortFunction"],
-    a, b,
+    a, b, pa, pb,
     as, bs,
     aStyles, bStyles,
     aPorts, bPorts
@@ -30,7 +30,11 @@ ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
     a = x["FlattenOutputs"];
     b = y["FlattenInputs"];
     as = a["OutputPorts"];
-    bs = Through[b["InputPorts"]["Dual"]];
+    bs = PortDual /@ b["InputPorts"];
+    pa = Not /@ Through[as["NeutralQ"]];
+    pb = Not /@ Through[bs["NeutralQ"]];
+    as = Pick[as, pa];
+    bs = Pick[bs, pb];
 	aPorts = func /@ as;
 	bPorts = func /@ bs;
     aStyles = a["PortStyles"];
@@ -41,29 +45,35 @@ ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
             Return[RowDiagram[{a, b}, FilterRules[{opts}, Options[RowDiagram]]]]
         ]
     ];
+    aStyles = Pick[aStyles[[2]], pa];
+    bStyles = Pick[bStyles[[1]], pb];
     Replace[SequenceAlignment[Reverse[aPorts], Reverse[bPorts], Method -> "Local"], {
         {left : {l_, {}} | {{}, l_} : {}, {__}, right : {r_, {}} | {{}, r_} : {}} /; ! ({l} =!= {} && {r} =!= {} && IntersectingQ[l, r]) :> (
             Which[
                 MatchQ[left, {_, {}}],
-                b = RowDiagram[{b, IdentityDiagram[Take[as, - Length[l]], "PortArrows" -> {Take[aStyles[[2]], - Length[l]]}]}]["Flatten", 1],
+                b = RowDiagram[{b, IdentityDiagram[Take[as, - Length[l]], "PortArrows" -> {Take[aStyles, - Length[l]]}]}]["Flatten", 1],
                 MatchQ[left, {{}, _}],
-                a = RowDiagram[{a, IdentityDiagram[Take[bs, - Length[l]], "PortArrows" -> {Take[bStyles[[1]], - Length[l]]}]}]["Flatten", 1]
+                a = RowDiagram[{a, IdentityDiagram[Take[bs, - Length[l]], "PortArrows" -> {Take[bStyles, - Length[l]]}]}]["Flatten", 1]
             ];
             Which[
                 MatchQ[right, {_, {}}],
-                b = RowDiagram[{IdentityDiagram[Take[as, Length[r]], "PortArrows" -> {Take[aStyles[[2]], Length[r]]}], b}]["Flatten", 1],
+                b = RowDiagram[{IdentityDiagram[Take[as, Length[r]], "PortArrows" -> {Take[aStyles, Length[r]]}], b}]["Flatten", 1],
                 MatchQ[right, {{}, _}],
-                a = RowDiagram[{IdentityDiagram[Take[bs, Length[r]], "PortArrows" -> {Take[bStyles[[1]], Length[r]]}], a}]["Flatten", 1]
+                a = RowDiagram[{IdentityDiagram[Take[bs, Length[r]], "PortArrows" -> {Take[bStyles, Length[r]]}], a}]["Flatten", 1]
             ]
         ),
         _ :> With[{inPos = FirstPositions[bPorts, aPorts], outPos = FirstPositions[aPorts, bPorts]}, {ins = Delete[bs, inPos], outs = Delete[as, outPos]},
-            If[ins =!= {}, a = RowDiagram[{IdentityDiagram[ins, "PortArrows" -> {Delete[bStyles[[1]], inPos]}], a}]["Flatten", 1]];
-            If[outs =!= {}, b = RowDiagram[{IdentityDiagram[outs, "PortArrows" -> {Delete[aStyles[[2]], outPos]}], b}]["Flatten", 1]]
+            If[ins =!= {}, a = RowDiagram[{IdentityDiagram[ins, "PortArrows" -> {Delete[bStyles, inPos]}], a}]["Flatten", 1]];
+            If[outs =!= {}, b = RowDiagram[{IdentityDiagram[outs, "PortArrows" -> {Delete[aStyles, outPos]}], b}]["Flatten", 1]]
         ]
     }
     ];
     as = a["OutputPorts"];
-    bs = Through[b["InputPorts"]["Dual"]];
+    bs = PortDual /@ b["InputPorts"];
+    pa = Not /@ Through[as["NeutralQ"]];
+    pb = Not /@ Through[bs["NeutralQ"]];
+    as = Pick[as, pa];
+    bs = Pick[bs, pb];
 	aPorts = func /@ as;
 	bPorts = func /@ bs;
     aStyles = a["PortStyles"];
@@ -84,7 +94,7 @@ ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
                     perm,
                     "PortArrows" -> MapAt[Permute[#, perm] &, {2}] @ Thread @ MapThread[
                         PadRight[#, 2, Replace[#, {} -> Automatic]] & @ DeleteCases[Automatic] @ Which[! #1["DualQ"] && #2["DualQ"], {#3, #3}, #1["DualQ"] && ! #2["DualQ"], {#4, #4}, True, {#3, #4}] &,
-                        {as, bs, aStyles[[2]], Permute[bStyles[[1]], InversePermutation[perm]]}
+                        {as, bs, Pick[aStyles[[2]], pa], Permute[Pick[bStyles[[1]], pb], InversePermutation[perm]]}
                     ]
                 ],
                 a,
@@ -117,14 +127,19 @@ RowDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Block[{a = x["Fla
     hb = decompositionHeight[b];
     aStyles = a["PortStyles"];
     bStyles = b["PortStyles"];
-    Which[
-        ha > hb,
-        DiagramProduct[a, DiagramComposition[##, FilterRules[{opts}, Options[DiagramComposition]], "PortArrows" -> bStyles] & @@ Append[ConstantArray[IdentityDiagram[bPorts, "PortArrows" -> {bStyles[[2]]}], ha - hb], b], FilterRules[{opts}, Options[DiagramProduct]], "PortArrows" -> Join[aStyles, bStyles, 2]],
-        ha < hb,
-        DiagramProduct[DiagramComposition[##, FilterRules[{opts}, Options[DiagramComposition]], "PortArrows" -> aStyles] & @@ Prepend[ConstantArray[IdentityDiagram[aPorts, "PortArrows" -> {aStyles[[1]]}], hb - ha], a], b, FilterRules[{opts}, Options[DiagramProduct]], "PortArrows" -> Join[aStyles, bStyles, 2]],
-        True,
-        DiagramProduct[a, b, FilterRules[{opts}, Options[DiagramProduct]], "PortArrows" -> Join[aStyles, bStyles, 2]]
-    ]["Flatten", 1]
+    Diagram[
+        Which[
+            ha > hb,
+            DiagramProduct[a, DiagramComposition[##, FilterRules[{opts}, Options[DiagramComposition]], "PortArrows" -> bStyles] & @@
+                Append[ConstantArray[IdentityDiagram[bPorts, "PortArrows" -> {bStyles[[2]]}], ha - hb], b], FilterRules[{opts}, Options[DiagramProduct]]],
+            ha < hb,
+            DiagramProduct[DiagramComposition[##, FilterRules[{opts}, Options[DiagramComposition]], "PortArrows" -> aStyles] & @@
+                Prepend[ConstantArray[IdentityDiagram[aPorts, "PortArrows" -> {aStyles[[1]]}], hb - ha], a], b, FilterRules[{opts}, Options[DiagramProduct]]],
+            True,
+            DiagramProduct[a, b, FilterRules[{opts}, Options[DiagramProduct]]]
+        ]["Flatten", 1],
+        "PortArrows" -> Join[aStyles, bStyles, 2]
+    ]
 ]
 
 RowDiagram[xs : {___Diagram}, opts : OptionsPattern[]] := Fold[RowDiagram[{##}, opts] &, xs]
@@ -281,7 +296,7 @@ gridTranspose[d_] := d
 decompostionWidth[d_Diagram, args___] := gridWidth[DiagramDecompose[d], args]
 
 gridWidth[expr_, prop_ : Automatic] := Replace[expr, {
-    d_Diagram :> Replace[prop, {Automatic :> Max[d["MaxArity"], 1], _ :> d[prop]}],
+    d_Diagram :> Replace[prop, {Automatic :> Max[d["MaxGridArity"], 1], _ :> d[prop]}],
     (CircleTimes | CirclePlus)[ds___] :> Total[gridWidth[#, prop] & /@ {ds}],
     CircleDot[ds___] :> Max[gridWidth[#, prop] & /@ {ds}],
     (Transpose | SuperStar)[d_, ___] :> gridWidth[d, prop],
@@ -300,9 +315,8 @@ gridHeight[expr_, prop_ : Automatic] := Replace[expr, {
     _ -> 1
 }]
 
-
 circuitArrange[diagram_Diagram -> d_, pos_, {_, autoHeight_}, {dx_, dy_}, corner_ : {0, 0}, angle_ : 0] := Block[{
-    arity = diagram["MaxArity"], inputOrder, outputOrder, min, max,
+    arity = diagram["MaxGridArity"], inputOrder, outputOrder, min, max,
     alignment = diagram["OptionValue"[Alignment]],
     spacing = diagram["OptionValue"["Spacing"]],
     orderingFunction = Replace[diagram["OptionValue"["PortOrderingFunction"]],
@@ -334,7 +348,7 @@ circuitArrange[diagram_Diagram -> d_, pos_, {_, autoHeight_}, {dx_, dy_}, corner
 ]
 
 gridArrange[diagram_Diagram -> d_, pos_, {autoWidth_, autoHeight_}, {dx_, dy_}, corner_ : {0, 0}, angle_ : 0] := Block[{
-    arity = diagram["MaxArity"],
+    arity = diagram["MaxGridArity"],
     alignment = diagram["OptionValue"[Alignment]],
     spacing = diagram["OptionValue"["Spacing"]],
     width, w, h, ratio, center
@@ -420,11 +434,11 @@ gridInputPositions[(Transpose | SuperStar)[d_, ___], pos_] := gridInputPositions
 gridInputPositions[grid_ -> _, pos_] := gridInputPositions[grid, Append[pos, 1]]
 gridInputPositions[grid_] := gridInputPositions[grid, {}]
 
-GridInputPorts[d_Diagram] := If[d["NodeQ"], d["InputPorts"], GridInputPorts[If[d["NetworkQ"], d["Arrange"], d]["Decompose", "Unary" -> True]]]
-GridInputPorts[grid_] := Catenate[Extract[grid, gridInputPositions[grid], #["InputPorts"] &]]
+GridInputPorts[d_Diagram] := If[d["NodeQ"], d["TopPorts"], GridInputPorts[If[d["NetworkQ"], d["Arrange"], d]["Decompose", "Unary" -> True]]]
+GridInputPorts[grid_] := Catenate[Extract[grid, gridInputPositions[grid], #["TopPorts"] &]]
 
-GridOutputPorts[d_Diagram] := If[d["NodeQ"], d["OutputPorts"], GridOutputPorts[If[d["NetworkQ"], d["Arrange"], d]["Decompose", "Unary" -> True]]]
-GridOutputPorts[grid_] := Catenate[Extract[grid, gridOutputPositions[grid], #["OutputPorts"] &]]
+GridOutputPorts[d_Diagram] := If[d["NodeQ"], d["BottomPorts"], GridOutputPorts[If[d["NetworkQ"], d["Arrange"], d]["Decompose", "Unary" -> True]]]
+GridOutputPorts[grid_] := Catenate[Extract[grid, gridOutputPositions[grid], #["BottomPorts"] &]]
 
 Options[DiagramGrid] = Join[{
     "HorizontalGapSize" -> 1,
@@ -452,7 +466,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
     wireArrows = diagram["OptionValue"["WireArrows"], opts],
     frames = diagram["OptionValue"["Frames"], opts],
     alignment = diagram["OptionValue"[Alignment], opts],
-    dividers
+    dividers, networkWires
 },
     grid = DiagramDecompose[DiagramArrange[diagram, FilterRules[{opts}, Options[DiagramArrange]]], "Diagram" -> True, "Unary" -> True, FilterRules[{opts}, Options[DiagramDecompose]]];
     width = gridWidth[grid];
@@ -473,9 +487,9 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
     positions = Position[grid, _Diagram, All];
 
     unlabeledGrid = grid //
-        MapAt[Diagram[#, "PortLabels" -> {None, Placed[Automatic, {- 2 / 3, 1}]}, "PortArrowFunction" -> (Nothing &)] &, Complement[positions, outputPositions, inputPositions]] //
-        MapAt[Diagram[#, "PortLabels" -> {None, Inherited}, "PortArrowFunction" -> (If[#3 === Top, Nothing, #1] &)] &, Complement[outputPositions, inputPositions]] //
-        MapAt[Diagram[#, "PortLabels" -> {Inherited, Placed[Automatic, {- 2 / 3, 1}]}, "PortArrowFunction" -> (If[#3 === Bottom, Nothing, #1] &)] &, Complement[inputPositions, outputPositions]];
+        MapAt[Diagram[#, "PortLabelFunction" -> (If[#3 === Top && ! #1["NeutralQ"], None, Placed[Inherited, {- 2 / 3, 1}]] &), "PortArrowFunction" -> (Nothing &)] &, Complement[positions, outputPositions, inputPositions]] //
+        MapAt[Diagram[#, "PortLabelFunction" -> (If[#3 === Top && ! #1["NeutralQ"], None, Inherited] &), "PortArrowFunction" -> (If[#3 === Top && ! #1["NeutralQ"] || #1["NeutralQ"], Nothing, #2] &)] &, Complement[outputPositions, inputPositions]] //
+        MapAt[Diagram[#, "PortLabelFunction" -> (If[#3 === Top && ! #1["NeutralQ"], Inherited, Placed[Inherited, {- 2 / 3, 1}]] &), "PortArrowFunction" -> (If[#3 === Bottom && ! #1["NeutralQ"] || #1["NeutralQ"], Nothing, #2] &)] &, Complement[inputPositions, outputPositions]];
     
     dividers = {
         FaceForm[None], EdgeForm[Directive[Thin, Black]],
@@ -485,6 +499,8 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
             _, Nothing
         ]
     };
+
+    networkWires = gridNetworkWires[grid, portFunction, "WireArrows" -> wireArrows, "GapSize" -> hGapSize];
 
     Graphics[
         Switch[frames,
@@ -497,8 +513,8 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
                     frames === Automatic,
                     DeleteCases[
                         (pos_ -> d_Diagram) /; With[{portFunction = d["PortFunction"]}, 
-                            portFunction /@ PortDual /@ d["FlatInputPorts"] === Catenate[Extract[grid, {pos}, portFunction /@ PortDual /@ GridInputPorts[#] &]] &&
-                            portFunction /@ d["FlatOutputPorts"] === Catenate[Extract[grid, {pos}, portFunction /@ GridOutputPorts[#] &]]
+                            portFunction /@ d["Flat"["TopPorts", True]] === Catenate[Extract[grid, {pos}, portFunction /@ PortDual /@ GridInputPorts[#] &]] &&
+                            portFunction /@ d["Flat"["BottomPorts"]] === Catenate[Extract[grid, {pos}, portFunction /@ GridOutputPorts[#] &]]
                         ]
                     ], Identity
                 ] @ Replace[Catenate[{rows, columns} /. _Missing -> Nothing], {} -> items]
@@ -510,7 +526,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
                         Diagram[#, "DiagramOptions" -> Join[
                                 diagramOptions,
                                 If[ AnyTrue[subDiagrams[[All, 1]], Take[pos, UpTo[Length[#]]] === # &],
-                                    {"PortArrows" -> If[#["WireQ"], None, Function[{PointSize[0.01], Point[#1[[1]]]}]], "PortLabels" -> Placed[Automatic, {0.1, .5}]},
+                                    {"PortArrows" -> If[#["WireQ"], None, Function[{PointSize[0.01], Point[#2[[1]]]}]], "PortLabels" -> Placed[Automatic, {0.1, .5}]},
                                     {}
                                 ],
                                 #["DiagramOptions"]
@@ -519,14 +535,15 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
                     ]) /@ positions,
                     If[ wiresQ, {
                         gridFrameWires[grid, {}, subDiagrams,
-                            With[{d = Lookup[subDiagrams, Key[{}]]}, {ps = d["InputPorts"]}, Thread[portFunction /@ Through[ps["Dual"]] -> Thread[{Not /@ Through[ps["DualQ"]], {#1, #1 + (#1 - #2)} & @@@ d["PortArrows"][[1]], d["PortStyles"][[1]]}]]],
+                            With[{d = Lookup[subDiagrams, Key[{}]]}, If[MissingQ[d], {}, makeInputRules[d, portFunction, True]]],
                             portFunction,
-                            "WireArrows" -> wireArrows, "VerticalGapSize" -> vGapSize
+                            "WireArrows" -> wireArrows, "GapSize" -> vGapSize
                         ]
                     },
                         Nothing
                     ],
-                    #[[2]]["Graphics", "PortArrows" -> Function[{FaceForm[Directive[Opacity[1], White]], Disk[#1[[1]], 0.04]}]][[1]] & /@ subDiagrams,
+                    #[[2]]["Graphics", "PortArrows" -> Function[{FaceForm[Directive[Opacity[1], White]], Disk[#2[[1]], 0.04]}]][[1]] & /@ subDiagrams,
+                    networkWires,
                     dividers
                 }
             ],
@@ -536,7 +553,8 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
                     d_Diagram :> Diagram[d, "DiagramOptions" -> Join[diagramOptions, d["DiagramOptions"]]]["Graphics"][[1]],
                     All
                 ],
-                If[wiresQ, gridWires[grid, {}, portFunction, "WireArrows" -> wireArrows, "VerticalGapSize" -> vGapSize], Nothing],
+                If[wiresQ, gridWires[grid, {}, portFunction, "WireArrows" -> wireArrows, "GapSize" -> vGapSize], Nothing],
+                networkWires,
                 dividers
             }
         ],
@@ -553,7 +571,7 @@ wireGraphics[opts___][{outPort_, out_, outStyle_}, {inPort_, in_, inStyle_}] := 
     inDual = inPort["DualQ"],
     outDual = outPort["DualQ"],
     wireArrows = OptionValue[{opts}, "WireArrows"],
-    vGapSize = OptionValue[{opts}, "VerticalGapSize"]
+    gapSize = OptionValue[{opts}, "GapSize"]
 },
     If[
         inStyle === outStyle || inStyle === Automatic || outStyle === Automatic,
@@ -572,7 +590,7 @@ wireGraphics[opts___][{outPort_, out_, outStyle_}, {inPort_, in_, inStyle_}] := 
                         ]
                     ],
                     style,
-                    Arrow @ BSplineCurve @ With[{p = out[[1]] + vGapSize (out[[2]] - out[[1]]), q = in[[1]] + vGapSize (in[[2]] - in[[1]])},
+                    Arrow @ BSplineCurve @ With[{p = out[[1]] + gapSize (out[[2]] - out[[1]]), q = in[[1]] + gapSize (in[[2]] - in[[1]])},
                         If[
                             Dot[p - q, out[[1]] - in[[1]]] > 0,
                             {out[[1]], p, q, in[[1]]},
@@ -586,7 +604,7 @@ wireGraphics[opts___][{outPort_, out_, outStyle_}, {inPort_, in_, inStyle_}] := 
         With[{
             arrowSize = Replace[wireArrows, {False | None -> 0, True -> Small}],
             from = If[outDual, -1, 1], to = If[inDual, -1, 1],
-            p = out[[1]] + vGapSize (out[[2]] - out[[1]]), q = in[[1]] + vGapSize (in[[2]] - in[[1]])
+            p = out[[1]] + gapSize (out[[2]] - out[[1]]), q = in[[1]] + gapSize (in[[2]] - in[[1]])
         },
             {
                 If[ outStyle === None,
@@ -611,21 +629,53 @@ wireGraphics[opts___][{outPort_, out_, outStyle_}, {inPort_, in_, inStyle_}] := 
     ]
 ]
 
-gridWires[CirclePlus[ds___], args___] := gridWires[#, args] & /@ {ds}
 
-gridWires[(Transpose | SuperStar)[d_, ___], args___] := gridWires[d, args]
+makeRules[keys_, ports_, arrows_, styles_, dualQ_] :=
+    Thread[
+        keys -> Thread[{
+            If[dualQ, Map[PortDual], Identity] @ ports,
+            If[dualQ, {#1, #1 + (#1 - #2)} & @@@ # &, Identity] @ arrows,
+            styles
+        }]
+    ]
+
+makeRules[keys_, ports_, arrows_, styles_, dualQ_, pick_] := makeRules[Pick[keys, pick], Pick[ports, pick], Pick[arrows, pick], Pick[styles, pick], dualQ]
+
+makeInputRules[diagram_, portFunction_, dualQ_ : False] := With[{ports = diagram["InputPorts"]},
+    makeRules[portFunction /@ PortDual /@ ports, ports, diagram["PortArrows"][[1]], diagram["PortStyles"][[1]], dualQ, Not /@ Through[ports["NeutralQ"]]]
+]
+
+makeOutputRules[diagram_, portFunction_, dualQ_ : False] := With[{ports = diagram["OutputPorts"]},
+    makeRules[portFunction /@ ports, ports, diagram["PortArrows"][[2]], diagram["PortStyles"][[2]], dualQ, Not /@ Through[ports["NeutralQ"]]]
+]
+
+makeNeutralRules[diagram_, portFunction_, dualQ_ : False] := With[
+    {inputPorts = diagram["InputPorts"], outputPorts = diagram["OutputPorts"]},
+    {inputPick = #["NeutralQ"] & /@ inputPorts, outputPick = #["NeutralQ"] & /@ outputPorts},
+
+    makeRules[
+        portFunction /@ Join[PortDual /@ Pick[inputPorts, inputPick], Pick[outputPorts, outputPick]],
+        Join[Pick[inputPorts, inputPick], Pick[outputPorts, outputPick]],
+        Catenate @ MapThread[Pick, {diagram["PortArrows"], {inputPick, outputPick}}],
+        Catenate @ MapThread[Pick, {diagram["PortStyles"], {inputPick, outputPick}}],
+        dualQ
+    ]
+]
 
 mergeRules[xs_, ys_] := Catenate @ KeyValueMap[{k, v} |->
     k -> # & /@ Thread[PadRight[v, {Automatic, Min[Length /@ v]}]],
     Select[Merge[KeyUnion[GroupBy[Replace[#, ((CircleTimes | CirclePlus)[zs___] -> x_) :> Splice[# -> x & /@ {zs}], 1], First, Map[Last]] & /@ {xs, ys}], Identity], MatchQ[{_List, _List}]]
 ]
 
+
+gridWires[CirclePlus[ds___], args___] := gridWires[#, args] & /@ {ds}
+
+gridWires[(Transpose | SuperStar)[d_, ___], args___] := gridWires[d, args]
+
 gridWires[CircleTimes[ds___], ports_, portFunction_, opts___] :=
     Fold[
         With[
-            {inputs = Join @@ Extract[#2, gridInputPositions[#2],
-                With[{ps = #["InputPorts"]}, Thread[portFunction /@ Through[ps["Dual"]] -> Thread[{ps, #["PortArrows"][[1]], #["PortStyles"][[1]]}]]] &
-            ]},
+            {inputs = Join @@ Extract[#2, gridInputPositions[#2], makeInputRules[#, portFunction] &]},
             {merge = mergeRules[#1[[2]], inputs]},
             {
                 Join[#1[[1]], wireGraphics[opts] @@@ Values[merge], gridWires[#2, {}, portFunction, opts]],
@@ -641,8 +691,8 @@ gridWires[CircleDot[ds___, d_], ports_, portFunction_, opts___] := Block[{
     outputPos = gridOutputPositions[d],
     merge, inputs, outputs
 },
-    inputs = Join @@ Extract[d, inputPos, With[{ps = #["InputPorts"]}, Thread[portFunction /@ Through[ps["Dual"]] -> Thread[{ps, #["PortArrows"][[1]], #["PortStyles"][[1]]}]]] &];
-    outputs = Join @@ Extract[d, outputPos, With[{ps = #["OutputPorts"]}, Thread[portFunction /@ ps -> Thread[{ps, #["PortArrows"][[2]], #["PortStyles"][[2]]}]]] &];
+    inputs = Join @@ Extract[d, inputPos, makeInputRules[#, portFunction] &];
+    outputs = Join @@ Extract[d, outputPos, makeOutputRules[#, portFunction] &];
     merge = mergeRules[ports, inputs];
     
     Join[
@@ -664,10 +714,10 @@ frameWires[grid_, diagrams_, portFunction_, opts___] := DeleteDuplicatesBy[#[[2,
             outputPos = gridOutputPositions[subGrid],
             mergeInput, mergeOutput, inputs, outputs
         },
-            inputs = Join @@ Extract[subGrid, inputPos, With[{ps = #["InputPorts"]}, Thread[portFunction /@ Through[ps["Dual"]] -> Thread[{ps, #["PortArrows"][[1]], #["PortStyles"][[1]]}]]] &];
-            outputs = Join @@ Extract[subGrid, outputPos, With[{ps = #["OutputPorts"]}, Thread[portFunction /@ ps -> Thread[{ps, #["PortArrows"][[2]], #["PortStyles"][[2]]}]]] &];
-            mergeInput = mergeRules[With[{ps = diagram["InputPorts"]}, Thread[portFunction /@ Through[ps["Dual"]] -> Thread[{PortDual /@ ps, {#1, #1 + (#1 - #2)} & @@@ diagram["PortArrows"][[1]], diagram["PortStyles"][[1]]}]]], inputs];
-            mergeOutput = mergeRules[With[{ps = diagram["OutputPorts"]}, Thread[portFunction /@ ps -> Thread[{PortDual /@ ps, {#1, #1 + (#1 - #2)} & @@@ diagram["PortArrows"][[2]], diagram["PortStyles"][[2]]}]]], outputs];
+            inputs = Join @@ Extract[subGrid, inputPos, makeInputRules[#, portFunction] &];
+            outputs = Join @@ Extract[subGrid, outputPos, makeOutputRules[#, portFunction] &];
+            mergeInput = mergeRules[makeInputRules[diagram, portFunction, True], inputs];
+            mergeOutput = mergeRules[makeOutputRules[diagram, portFunction, True], outputs];
             
             wireGraphics[opts] @@@ Values[#] & /@ {mergeInput, mergeOutput}
         ]
@@ -685,8 +735,8 @@ gridFrameWires[(CircleTimes | CirclePlus)[ds___], pos_, frameDiagrams_, initPort
 },
     If[ ! MissingQ[diagram],
         portFunction = diagram["PortFunction"];
-        upInputs = With[{ps = diagram["InputPorts"]}, Thread[portFunction /@ Through[ps["Dual"]] -> Thread[{PortDual /@ ps, {#1, #1 + (#1 - #2)} & @@@ diagram["PortArrows"][[1]], diagram["PortStyles"][[1]]}]]];
-        upOutputs = With[{ps = diagram["OutputPorts"]}, Thread[portFunction /@ ps -> Thread[{PortDual /@ ps, {#1, #1 + (#1 - #2)} & @@@ diagram["PortArrows"][[2]], diagram["PortStyles"][[2]]}]]];
+        upInputs = makeInputRules[diagram, portFunction, True];
+        upOutputs = makeOutputRules[diagram, portFunction, True];
         merge = mergeRules[ports, upInputs];
         ports = upInputs
     ];
@@ -694,16 +744,12 @@ gridFrameWires[(CircleTimes | CirclePlus)[ds___], pos_, frameDiagrams_, initPort
         Fold[(
             diagram = Lookup[frameDiagrams, Key[Append[pos, #1[[3]]]]];
             If[ MissingQ[diagram],
-                inputs = Join @@ Extract[#2, gridInputPositions[#2],
-                    With[{ps = #["InputPorts"]}, Thread[portFunction /@ Through[ps["Dual"]] -> Thread[{ps, #["PortArrows"][[1]], #["PortStyles"][[1]]}]]] &
-                ];
-                outputs = Join @@ Extract[#2, gridOutputPositions[#2],
-                    With[{ps = #["OutputPorts"]}, Thread[portFunction /@ ps -> Thread[{ps, #["PortArrows"][[2]], #["PortStyles"][[2]]}]]] &
-                ];
+                inputs = Join @@ Extract[#2, gridInputPositions[#2], makeInputRules[#, portFunction] &];
+                outputs = Join @@ Extract[#2, gridOutputPositions[#2], makeOutputRules[#, portFunction] &];
                 merge = mergeRules[#1[[2]], inputs]
                 ,
-                inputs = With[{ps = diagram["InputPorts"]}, Thread[portFunction /@ Through[ps["Dual"]] -> Thread[{ps, diagram["PortArrows"][[1]], diagram["PortStyles"][[1]]}]]];
-                outputs = With[{ps = diagram["OutputPorts"]}, Thread[portFunction /@ ps -> Thread[{ps, diagram["PortArrows"][[2]], diagram["PortStlyes"][[2]]}]]];
+                inputs = makeInputRules[diagram, portFunction];
+                outputs = makeOutputRules[diagram, portFunction];
                 merge = mergeRules[#1[[2]], inputs]
             ];
             If[ upOutputs =!= None,
@@ -717,10 +763,7 @@ gridFrameWires[(CircleTimes | CirclePlus)[ds___], pos_, frameDiagrams_, initPort
                     #1[[1]], wireGraphics[opts] @@@ Values[merge]
                     ,
                     If[ DiagramQ[#2], {},
-                        gridFrameWires[#2, Append[pos, #1[[3]]], frameDiagrams,
-                            With[{ps = diagram["InputPorts"]}, Thread[portFunction /@ Through[ps["Dual"]] -> Thread[{PortDual /@ ps, {#1, #1 + (#1 - #2)} & @@@ diagram["PortArrows"][[1]], diagram["PortStyles"][[1]]}]]],
-                            portFunction, opts
-                        ]
+                        gridFrameWires[#2, Append[pos, #1[[3]]], frameDiagrams, If[MissingQ[diagram], {}, makeInputRules[diagram, portFunction, True]], portFunction, opts]
                     ]
                 ],
                 DeleteElements[#1[[2]], 1 -> MapAt[First, merge, {All, 2}]],
@@ -743,22 +786,16 @@ gridFrameWires[CircleDot[ds___, d_], pos_, frameDiagrams_, initPorts_, defPortFu
     portFunction = defPortFunction
 },
     If[ MissingQ[diagramDown],
-        inputs = Join @@ Extract[d, inputPos, With[{ps = #["InputPorts"]}, Thread[portFunction /@ Through[ps["Dual"]] -> Thread[{ps, #["PortArrows"][[1]], #["PortStyles"][[1]]}]]] &];
-        outputs = Join @@ Extract[d, outputPos, With[{ps = #["OutputPorts"]}, Thread[portFunction /@ ps -> Thread[{ps, #["PortArrows"][[2]], #["PortStyles"][[2]]}]]] &];
+        inputs = Join @@ Extract[d, inputPos, makeInputRules[#, portFunction] &];
+        outputs = Join @@ Extract[d, outputPos, makeOutputRules[#, portFunction] &];
         merge = mergeRules[ports, inputs];
         ports = Join[outputs, DeleteElements[ports, 1 -> MapAt[First, merge, {All, 2}]]]
         ,
-        With[{arrows = diagramDown["PortArrows"], styles = diagramDown["PortStyles"]},
-            downInputPorts = With[{ps = diagramDown["InputPorts"]},
-                Thread[portFunction /@ Through[ps["Dual"]] -> Thread[{ps, arrows[[1]], styles[[1]]}]]
-            ];
-            downOutputPorts = With[{ps = diagramDown["OutputPorts"]},
-                Thread[portFunction /@ ps -> Thread[{PortDual /@ ps, {#1, #1 + (#1 - #2)} & @@@ arrows[[2]], styles[[2]]}]]
-            ]
-        ];
+        downInputPorts = makeInputRules[diagramDown, portFunction];
+        downOutputPorts = makeOutputRules[diagramDown, portFunction, True];
         outputs = Catenate @ Map[
-            With[{diagramUp = Lookup[frameDiagrams, Key[Join[pos, {Length[{ds}] + 1}, Most[#]]], First[Extract[d, {#}]]]}, {ps = diagramUp["OutputPorts"]},
-                Thread[portFunction /@ ps -> Thread[{ps, diagramUp["PortArrows"][[2]], diagramUp["PortStyles"][[2]]}]]
+            With[{diagramUp = Lookup[frameDiagrams, Key[Join[pos, {Length[{ds}] + 1}, Most[#]]], First[Extract[d, {#}]]]},
+                makeOutputRules[diagramUp, portFunction]
             ] &,
             outputPos
         ];
@@ -767,14 +804,14 @@ gridFrameWires[CircleDot[ds___, d_], pos_, frameDiagrams_, initPorts_, defPortFu
         merge = Join[merge1, {}];
         portFunction = diagramDown["PortFunction"];
         ports = Join[
-            With[{ps = diagramDown["OutputPorts"]}, Thread[portFunction /@ ps -> Thread[{ps, diagramDown["PortArrows"][[2]], diagramDown["PortStyles"][[2]]}]]],
+            makeOutputRules[diagramDown, portFunction],
             DeleteElements[ports, 1 -> MapAt[First, merge1, {All, 2}]]
         ]
     ];
     portFunction = defPortFunction;
     If[ ! MissingQ[diagramUp] && Length[{ds}] == 0,
         portFunction = diagramUp["PortFunction"];
-        upOutputPorts = With[{ps = diagramUp["OutputPorts"]}, Thread[portFunction /@ ps -> Thread[{PortDual /@ ps, {#1, #1 + (#1 - #2)} & @@@ diagramUp["PortArrows"][[2]], diagramUp["PortStyles"][[2]]}]]];
+        upOutputPorts = makeOutputRules[diagramUp, portFunction, True];
         merge = Join[merge, mergeRules[Join[ports, outputs], upOutputPorts]];
         ports = Join[DeleteElements[Join[ports, outputs], 1 -> MapAt[First, merge, {All, 2}]], upOutputPorts]
     ];
@@ -787,6 +824,11 @@ gridFrameWires[CircleDot[ds___, d_], pos_, frameDiagrams_, initPorts_, defPortFu
 
 
 gridFrameWires[___] := {}
+
+
+gridNetworkWires[grid_, portFunction_, opts___] := With[{rules = Catenate @ Cases[grid, d_Diagram /; d["NodeQ"] :> makeNeutralRules[d, portFunction], All]},
+    wireGraphics[opts] @@@ Catenate[Values[mergeRules[{#}, rules]] & /@ rules]
+]
 
 
 
