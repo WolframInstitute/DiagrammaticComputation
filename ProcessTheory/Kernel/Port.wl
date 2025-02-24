@@ -8,6 +8,7 @@ PortDual
 PortNeutral
 PortProduct
 PortSum
+PortPower
 
 
 Begin["ProcessTheory`Port`Private`"];
@@ -86,6 +87,13 @@ PortSum[ps___Port ? PortQ] := If[Length[{ps}] > 0 && AllTrue[{ps}, #["DualQ"] &]
     Port["Expression" :> PortDual[PortSum[##]], "Type" -> CirclePlus @@ Through[{ps}["Type"]]] & @@ Through[{ps}["Dual"]],
     Port["Expression" :> PortSum[ps], "Type" -> CirclePlus @@ Through[{ps}["Type"]]]
 ]
+
+
+(* power *)
+
+Port[(Superscript | Power)[p_, q_], opts : OptionsPattern[]] := PortPower[Port[Unevaluated[p], opts], Port[Unevaluated[q], opts]]
+
+PortPower[p_Port ? PortQ, q_Port ? PortQ] := Port["Expression" :> PortPower[p, q], "Type" -> Superscript[p["Type"], q["Type"]]]
 
 
 (* conjugation *)
@@ -191,17 +199,21 @@ PortProp[p_, "ProductQ"] := MatchQ[p["HoldExpression"], HoldForm[_PortProduct]]
 
 PortProp[p_, "SumQ"] := MatchQ[p["HoldExpression"], HoldForm[_PortSum]]
 
+PortProp[p_, "PowerQ"] := MatchQ[p["HoldExpression"], HoldForm[_PortPower]]
+
 PortProp[p_, "PortTree" | "Decompose"] :=
     Replace[p["HoldExpression"], {
         HoldForm[PortDual[q_]] :> SuperStar[Port[Unevaluated[q], "NeutralQ" -> p["NeutralQ"]]["PortTree"]],
         HoldForm[PortProduct[ps___]] :> CircleTimes @@ Through[{ps}["PortTree"]],
         HoldForm[PortSum[ps___]] :> CirclePlus @@ Through[{ps}["PortTree"]],
+        HoldForm[PortPower[x_, y_]] :> Superscript[x["PortTree"], y["PortTree"]],
         _ :> p
     }]
 
 PortProp[p_, "ProductList", lvl : (_Integer ? NonNegative) | Infinity : Infinity] := If[lvl > 0, Replace[p["HoldExpression"], {
     HoldForm[PortProduct[ps___]] :> Catenate[Through[{ps}["ProductList", lvl - 1]]],
-    HoldForm[PortDual[PortProduct[ps___]]] :> Through[Catenate[Through[{ps}["ProductList", lvl - 1]]]["Dual"]],
+    HoldForm[PortPower[x_, y_]] :> Join[PortDual /@ x["ProductList", lvl - 1], y["ProductList", lvl - 1]],
+    HoldForm[PortDual[(PortProduct | PortPower)[ps___]]] :> Through[Catenate[Through[{ps}["ProductList", lvl - 1]]]["Dual"]],
     _ :> {p}
 }],
     {p}
@@ -241,6 +253,8 @@ PortDual /: MakeBoxes[PortDual[p_], form_] := With[{boxes = ToBoxes[SuperStar[p]
 PortProduct /: MakeBoxes[PortProduct[ps___], form_] := With[{boxes = ToBoxes[CircleTimes[ps], form]}, InterpretationBox[boxes, PortProduct[ps]]]
 
 PortSum /: MakeBoxes[PortSum[ps___], form_] := With[{boxes = ToBoxes[CirclePlus[ps], form]}, InterpretationBox[boxes, PortSum[ps]]]
+
+PortPower /: MakeBoxes[PortPower[p_, q_], form_] := With[{boxes = ToBoxes[Superscript[p, q], form]}, InterpretationBox[boxes, PortPower[p, q]]]
 
 
 
