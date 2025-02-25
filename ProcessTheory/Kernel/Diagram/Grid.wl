@@ -662,7 +662,8 @@ makeNeutralRules[diagram_, portFunction_, dualQ_ : False] := With[
 ]
 
 flattenRules[rules_] := Replace[rules, {
-    (HoldForm[(CircleTimes | CirclePlus )[zs___]] -> {p_, ps___}) :> Splice[MapThread[#1 -> {p, ps} &, {HoldForm /@ Unevaluated[{zs}], p["ProductList"]}]],
+    (HoldForm[CircleTimes[zs___]] -> {p_, ps___}) :> Splice[MapThread[#1 -> {p, ps} &, {HoldForm /@ Unevaluated[{zs}], p["ProductList"]}]],
+    (HoldForm[CirclePlus[zs___]] -> {p_, ps___}) :> Splice[MapThread[#1 -> {p, ps} &, {HoldForm /@ Unevaluated[{zs}], p["SumList"]}]],
     (HoldForm[Superscript[x_, y_]] -> {p_, ps___}) :> Splice[MapThread[#1 -> {p, ps} &, {HoldForm /@ Unevaluated[{SuperStar[x], y}], p["ProductList"]}]]
 }, 1]
 

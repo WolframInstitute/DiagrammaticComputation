@@ -463,9 +463,13 @@ DiagramProp[d_, "FlatInputPorts", args___] := d["Flat"["InputPorts"], args]
 
 DiagramProp[d_, "FlatOutputPorts", args___] := d["Flat"["OutputPorts"], args]
 
-DiagramProp[d_, "FlattenOutputs", args___] := Diagram[d, "OutputPorts" -> d["FlatOutputPorts", args], "PortArrows" -> ({#1, Catenate @ MapThread[ConstantArray[#2, Length[#1]] &, {Through[d["OutputPorts"]["ProductList", args]], #2}]} & @@ d["PortStyles"])]
+DiagramProp[d_, "FlattenOutputs", args___] := With[{newPorts = d["FlatOutputPorts", args]},
+    Diagram[d, "OutputPorts" -> newPorts, If[Length[newPorts] == d["OutputArity"], {}, "PortArrows" -> ({#1, Catenate @ MapThread[ConstantArray[#2, Length[#1]] &, {Through[d["OutputPorts"]["ProductList", args]], #2}]} & @@ d["PortStyles"])]]
+]
 
-DiagramProp[d_, "FlattenInputs", args___] := Diagram[d, "InputPorts" -> d["FlatInputPorts", args], "PortArrows" -> ({Catenate @ MapThread[ConstantArray[#2, Length[#1]] &, {Through[d["InputPorts"]["ProductList", args]], #1}], #2} & @@ d["PortStyles"])]
+DiagramProp[d_, "FlattenInputs", args___] :=  With[{newPorts = d["FlatInputPorts", args]},
+    Diagram[d, "InputPorts" -> newPorts, If[Length[newPorts] == d["InputArity"], {}, "PortArrows" -> ({Catenate @ MapThread[ConstantArray[#2, Length[#1]] &, {Through[d["InputPorts"]["ProductList", args]], #1}], #2} & @@ d["PortStyles"])]]
+]
 
 DiagramProp[d_, "FlatOutputArity", args___] := Length[d["FlatOutputPorts", args]]
 
@@ -1447,7 +1451,7 @@ TensorDiagram[HoldPattern[Transpose[a_, perm_ : {1, 2}]], opts : OptionsPattern[
 TensorDiagram[SymbolicIdentityArray[ns_List], opts : OptionsPattern[]] := Diagram["\[DoubleStruckCapitalI]", Join[#, #] & @ (Interpretation[#, Evaluate[Unique["i"]]] & /@ ns), "Shape" -> "Wires"[Thread[{Range[#], # + Range[#]}] & @ Length[ns]], "ShowLabel" -> False]
 
 TensorDiagram[TensorContract[x_, indices : {{_Integer, _Integer} ...}], opts : OptionsPattern[]] := With[{d = DiagramSplit[TensorDiagram[x, opts], Infinity]}, {perm = FindPermutation[Join[Catenate[indices], Complement[Range[d["OutputArity"]], Catenate[indices]]]]},
-    DiagramComposition[RowDiagram[Diagram["\[DoubleStruckCapitalI]", d["OutputPorts"][[#]], {}, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False] & /@ indices], PermutationDiagram[d["OutputPorts"] -> Permute[d["OutputPorts"], perm], perm], d]
+    DiagramComposition[RowDiagram[Diagram["\[DoubleStruckCapitalI]", d["OutputPorts"][[#]], {}, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False] & /@ indices], PermutationDiagram[d["OutputPorts"] -> Permute[d["OutputPorts"], perm], perm], d]["Network"]
 ]
 
 TensorDiagram[scalar_, opts : OptionsPattern[]] := Diagram[scalar, {}, {}, FilterRules[{opts}, Options[Diagram]]]

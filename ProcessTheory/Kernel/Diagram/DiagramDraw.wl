@@ -185,7 +185,7 @@ DiagramDraw[diagram_ : <||>, opts : OptionsPattern[]] := DynamicModule[{
 								"Width" -> Abs[#2[[1, 2, 1]] - #2[[1, 1, 1]]],
 								"Height" -> Abs[#2[[1, 2, 2]] - #2[[1, 1, 2]]],
 								"LabelFunction" -> ("" &),
-								"PortArrows" -> {(point |-> Placed[None, {point - Mean[#2[[1]]], point - Mean[#2[[1]]] + 0.05 connectorNormal[#2[[1]], point]}]) /@ #2[[2]]}
+								"PortArrows" -> {(point |-> Placed[Automatic, {point - Mean[#2[[1]]], point - Mean[#2[[1]]] + 0.05 connectorNormal[#2[[1]], point]}]) /@ #2[[2]]}
 							] &,
 							boxes
 						]
