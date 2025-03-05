@@ -5,6 +5,7 @@ PortQ
 EmptyPortQ
 
 PortDual
+PortMinus
 PortNeutral
 PortProduct
 PortSum
@@ -62,7 +63,8 @@ Port["0" | CirclePlus[], ___] := Port["Expression" :> "0", "Type" -> CirclePlus[
 
 (* exponential *)
 
-Port[(Power | Superscript | Overscript)[p_, n_Integer ? NonNegative], opts : OptionsPattern[]] := With[{port = Port[Unevaluated[p], opts]}, Port[port, "Type" -> Superscript[port["Type"], n]]]
+Port[(Power | Superscript | Overscript)[p_, n_Integer], opts : OptionsPattern[]] :=
+    PortProduct @@ ConstantArray[If[n >= 0, Port, PortDual][Unevaluated[p], opts], Abs[n]]
 
 
 (* product *)
@@ -75,6 +77,12 @@ PortProduct[ps___Port ? PortQ] := If[Length[{ps}] > 0 && AllTrue[{ps}, #["DualQ"
     Port["Expression" :> PortDual[PortProduct[##]], "Type" -> CircleTimes @@ Through[{ps}["Type"]]] & @@ Through[{ps}["Dual"]],
     Port["Expression" :> PortProduct[ps], "Type" -> CircleTimes @@ Through[{ps}["Type"]]]
 ]
+
+
+(* multiplication *)
+
+Port[Times[n_Integer, p_] | Times[p_, n_Integer], opts : OptionsPattern[]] :=
+    PortSum @@ ConstantArray[If[n >= 0, Port, PortMinus][Unevaluated[p], opts], Abs[n]]
 
 
 (* sum *)
@@ -96,7 +104,7 @@ Port[(Superscript | Power)[p_, q_], opts : OptionsPattern[]] := PortPower[Port[U
 PortPower[p_Port ? PortQ, q_Port ? PortQ] := Port["Expression" :> PortPower[p, q], "Type" -> Superscript[p["Type"], q["Type"]]]
 
 
-(* conjugation *)
+(* conjugation/inverse *)
 
 Port[SuperStar[p_], opts : OptionsPattern[]] := PortDual[Port[Unevaluated[p], opts]]
 
@@ -108,14 +116,24 @@ PortDual[p_Port ? PortQ] := If[EmptyPortQ[p], p,
 PortDual[expr_] := PortDual[Port[Unevaluated[expr]]]
 
 
+(* negation *)
+
+Port[OverTilde[p_], opts : OptionsPattern[]] := PortMinus[Port[Unevaluated[p], opts]]
+
+PortMinus[p_Port ? PortQ] := If[EmptyPortQ[p], p,
+    Function[Null, Port[p, "Expression" :> #, "Type" -> Replace[p["Type"], {OverTilde[x_] :> x, x_ :> OverTilde[x]}]], HoldFirst] @@
+        Replace[p["HoldExpression"], {HoldForm[PortMinus[q_]] :> HoldForm[q], HoldForm[q_] :> HoldForm[PortMinus[q]]}]
+]
+
+PortMinus[expr_] := PortMinus[Port[Unevaluated[expr]]]
+
+
 (* neutral *)
 
 Port[OverTilde[p_], opts : OptionsPattern[]] := PortNeutral[Port[Unevaluated[p], opts]]
 
 PortNeutral[p_Port ? PortQ] := Port[p, Function[Null, "Expression" :> ##, HoldFirst] @@ Replace[p["HoldExpression"], {
-        HoldForm[PortDual[q_]] :> (HoldForm[PortDual[#]] & @ PortNeutral[q]),
-        HoldForm[PortProduct[ps___]] :> (HoldForm[PortProduct[##]] & @@ (PortNeutral /@ {ps})),
-        HoldForm[PortSum[ps___]] :> (HoldForm[PortSum[##]] & @@ (PortNeutral /@ {ps}))
+        HoldForm[(h : PortProduct | PortSum | PortDual | PortMinus)[ps___]] :> (HoldForm[h[##]] & @@ (PortNeutral /@ {ps}))
     }],
     "NeutralQ" -> ! p["NeutralQ"]
 ]
@@ -125,14 +143,14 @@ PortNeutral[expr_] := PortNeutral[Port[Unevaluated[expr]]]
 
 (* merge options *)
 
-Port[p_ ? PortQ, opts : OptionsPattern[]] := Port[Replace[Normal[Merge[{opts, p["Data"]}, List]], head_[k_, {{v_, ___}}] :> head[k, v], 1]]
+Port[p_Port ? PortQ, opts : OptionsPattern[]] := Port[Replace[Normal[Merge[{opts, p["Data"]}, List]], head_[k_, {{v_, ___}}] :> head[k, v], 1]]
 
 
 (* data constructor *)
 
 Port[expr : Except[_Association | _Port | OptionsPattern[]], opts : OptionsPattern[]] := Port[FilterRules[{"Expression" :> expr, opts}, Join[Options[Port], $PortHiddenOptions]]]
 
-Port[expr : Except[_Association], type : Except[OptionsPattern[]], opts : OptionsPattern[]] := Port[Port[expr], "Type" -> type, opts]
+Port[expr : Except[_Association], type : Except[OptionsPattern[]], opts : OptionsPattern[]] := Port[Port[Unevaluated[expr]], "Type" -> type, opts]
 
 Port[opts : OptionsPattern[]] := Port[KeySort[<|DeleteDuplicatesBy[First] @ FilterRules[{opts, Options[Port], $PortHiddenOptions}, Join[Options[Port], $PortHiddenOptions]]|>]]
 
@@ -186,6 +204,8 @@ PortProp[p_, "View"] := With[{
 
 PortProp[p_, "Dual"] := PortDual[p]
 
+PortProp[p_, "Minus"] := PortMinus[p]
+
 PortProp[p_, "Neutral"] := PortNeutral[p]
 
 PortProp[p_, "Reverse"] := Port[reverseTree[p["PortTree"]], reverseTree[p["Type"]]]
@@ -220,8 +240,9 @@ PortProp[p_, "ProductList", lvl : (_Integer ? NonNegative) | Infinity : Infinity
 ]
 
 PortProp[p_, "SumList", lvl : (_Integer ? NonNegative) | Infinity : Infinity] :=  If[lvl > 0, Replace[p["HoldExpression"], {
-    HoldForm[PortSum[ps___]] :> Catenate[Through[{ps}["SumList"]]],
-    HoldForm[PortDual[PortSum[ps___]]] :> Through[Catenate[Through[{ps}["SumList"]]]["Dual"]],
+    HoldForm[PortSum[ps___]] :> Catenate[Through[{ps}["SumList", lvl - 1]]],
+    HoldForm[PortDual[PortSum[ps___]]] :> Through[Catenate[Through[{ps}["SumList", lvl - 1]]]["Dual"]],
+    HoldForm[PortMinus[PortSum[ps___]]] :> Through[Catenate[Through[{ps}["SumList", lvl - 1]]]["Minus"]],
     _ :> {p}
 }],
     {p}
@@ -249,6 +270,8 @@ Port /: MakeBoxes[p : Port[_Association] ? PortQ, form_] := With[{
 ]
 
 PortDual /: MakeBoxes[PortDual[p_], form_] := With[{boxes = ToBoxes[SuperStar[p], form]}, InterpretationBox[boxes, PortDual[p]]]
+
+PortMinus /: MakeBoxes[PortMinus[p_], form_] := With[{boxes = ToBoxes[OverTilde[p], form]}, InterpretationBox[boxes, PortMinus[p]]]
 
 PortProduct /: MakeBoxes[PortProduct[ps___], form_] := With[{boxes = ToBoxes[CircleTimes[ps], form]}, InterpretationBox[boxes, PortProduct[ps]]]
 
