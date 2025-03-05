@@ -488,8 +488,8 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
 
     unlabeledGrid = grid //
         MapAt[Diagram[#, "PortLabelFunction" -> (If[#3 === Top && ! #1["NeutralQ"], None, Placed[Inherited, {- 2 / 3, 1}]] &), "PortArrowFunction" -> (Nothing &)] &, Complement[positions, outputPositions, inputPositions]] //
-        MapAt[Diagram[#, "PortLabelFunction" -> (If[#3 === Top && ! #1["NeutralQ"], None, Inherited] &), "PortArrowFunction" -> (If[#3 === Top && ! #1["NeutralQ"], Nothing, #2] &)] &, Complement[outputPositions, inputPositions]] //
-        MapAt[Diagram[#, "PortLabelFunction" -> (If[#3 === Top && ! #1["NeutralQ"], Inherited, Placed[Inherited, {- 2 / 3, 1}]] &), "PortArrowFunction" -> (If[#3 === Bottom && ! #1["NeutralQ"], Nothing, #2] &)] &, Complement[inputPositions, outputPositions]];
+        MapAt[Diagram[#, "PortLabelFunction" -> (If[#3 === Top && ! #1["NeutralQ"], None, Inherited] &), "PortArrowFunction" -> (If[#3 === Top && ! #1["NeutralQ"], Nothing, Automatic] &)] &, Complement[outputPositions, inputPositions]] //
+        MapAt[Diagram[#, "PortLabelFunction" -> (If[#3 === Top && ! #1["NeutralQ"], Inherited, Placed[Inherited, {- 2 / 3, 1}]] &), "PortArrowFunction" -> (If[#3 === Bottom && ! #1["NeutralQ"], Nothing, Automatic] &)] &, Complement[inputPositions, outputPositions]];
     
     dividers = {
         FaceForm[None], EdgeForm[Directive[Thin, Black]],
@@ -525,7 +525,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
                         Diagram[#, "DiagramOptions" -> Join[
                                 diagramOptions,
                                 If[ AnyTrue[subDiagrams[[All, 1]], Take[pos, UpTo[Length[#]]] === # &],
-                                    {"PortArrows" -> If[#["WireQ"], None, Function[{PointSize[0.01], Point[#2[[1]]]}]], "PortLabels" -> Placed[Automatic, {0.1, .5}]},
+                                    {"PortArrowFunction" -> Function[{PointSize[0.01], Point[#2[[1]]]}], "PortLabels" -> Placed[Automatic, {0.1, .5}]},
                                     {}
                                 ],
                                 #["DiagramOptions"]
@@ -542,7 +542,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
                         Nothing
                     ],
                     gridNetworkWires[grid, Lookup[subDiagrams, Key[{}]], portFunction, "WireArrows" -> wireArrows, "GapSize" -> hGapSize],
-                    #[[2]]["Graphics", "PortArrows" -> Function[{FaceForm[Directive[Opacity[1], White]], Disk[#2[[1]], 0.04]}]][[1]] & /@ subDiagrams,
+                    #[[2]]["Graphics", "PortArrowFunction" -> Function[{FaceForm[Directive[Opacity[1], White]], Disk[#2[[1]], 0.04]}]][[1]] & /@ subDiagrams,
                     dividers
                 }
             ],

@@ -204,6 +204,7 @@ DiagramDual[d_ ? DiagramQ, opts : OptionsPattern[]] := If[d["DualQ"], First[d["S
     }],
     "OutputPorts" -> Through[d["OutputPorts"]["Dual"]],
     "InputPorts" -> Through[d["InputPorts"]["Dual"]],
+    "Shape" -> Automatic,
     "DiagramOptions" -> d["DiagramOptions"]
 ]
 ]
@@ -224,6 +225,7 @@ DiagramFlip[d_ ? DiagramQ, opts : OptionsPattern[]] := If[d["FlipQ"], First[d["S
     "InputPorts" -> d["OutputPorts"],
     "PortArrows" -> Reverse[fillAutomatic[d["OptionValue"["PortArrows"], opts], d["Arities"], True]],
     "PortLabels" -> Reverse[fillAutomatic[d["OptionValue"["PortLabels"], opts], d["Arities"], Automatic]],
+    "Shape" -> Automatic,
     "DiagramOptions" -> d["DiagramOptions"]
 ]
 ]
@@ -244,6 +246,7 @@ DiagramReverse[d_ ? DiagramQ, opts : OptionsPattern[]] := If[d["ReverseQ"], Firs
     "InputPorts" -> Reverse[Through[d["InputPorts"]["Reverse"]]],
     "PortArrows" -> (Reverse /@ fillAutomatic[d["OptionValue"["PortArrows"], opts], d["Arities"], True]),
     "PortLabels" -> (Reverse /@ fillAutomatic[d["OptionValue"["PortLabels"], opts], d["Arities"], Automatic]),
+    "Shape" -> Automatic,
     "DiagramOptions" -> d["DiagramOptions"]
 ]
 ]
@@ -616,7 +619,7 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
                 ps = Catenate[d["PortArrows", opts]],
                 styles = Catenate[d["PortStyles", opts]]
             },
-                With[{p = ps[[First[#]]], style = Replace[SelectFirst[styles[[#]], # =!= Automatic &, Nothing], None -> Nothing]},
+                With[{p = ps[[First[#]]], style = Replace[SelectFirst[styles[[#]], ! MatchQ[#, Automatic | True] &, Nothing], None -> Nothing]},
                     {style, BSplineCurve[{p[[1]], 2 * p[[1]] - p[[2]], 2 * #[[1]] - #[[2]], #[[1]]}] & /@ DeleteCases[None] @ ps[[Rest[#]]]}
                 ] & /@ wires
             ],
@@ -697,7 +700,7 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := Block[{
 DiagramProp[d_, "FlatPortArrows", opts : OptionsPattern[]] := d["Flatten"]["PortArrows", opts]
 
 DiagramProp[d_, "PortStyles", opts : OptionsPattern[]] :=
-    Replace[fillAutomatic[d["OptionValue"["PortArrows"], opts], {d["InputArity"], d["OutputArity"]}, Automatic], Placed[x_, _] :> x, {2}]
+    Replace[fillAutomatic[d["OptionValue"["PortArrows"], opts], {d["InputArity"], d["OutputArity"]}, Automatic], {Placed[x_, _] :> Replace[x, True -> Automatic], True -> Automatic}, {2}]
 
 
 DiagramProp[_, prop_] := Missing[prop]
@@ -731,7 +734,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
     portArrows = diagram["PortStyles", opts],
     portLabels = fillAutomatic[diagram["OptionValue"["PortLabels"], opts], arities],
     labelFunction = diagram["OptionValue"["LabelFunction"], opts],
-    portArrowFunction = Replace[diagram["OptionValue"["PortArrowFunction"], opts], Automatic -> (#2 &)],
+    portArrowFunction = Replace[diagram["OptionValue"["PortArrowFunction"], opts], Automatic -> (Arrow[If[#1["DualQ"], Reverse, Identity] @ #2] &)],
     portLabelFunction = Replace[diagram["OptionValue"["PortLabelFunction"], opts], Automatic -> $DefaultPortLabelFunction]
 }, Graphics[{
     EdgeForm[Black], FaceForm[None], 
@@ -753,7 +756,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
         MapThread[{x, p, arrow, label} |-> {
             If[ MatchQ[arrow, None | False],
                 Nothing,
-                If[MatchQ[arrow, _Function], portArrowFunction[x, arrow[x, p], dir], {Replace[arrow, True | Automatic -> Nothing], portArrowFunction[x, Arrow[If[x["DualQ"], Reverse, Identity] @ p], dir]}]
+                {Replace[arrow, True | Automatic -> Nothing], Replace[portArrowFunction[x, p, dir], True | Automatic | Inherited :> Arrow[If[x["DualQ"], Reverse, Identity][p]]]}
             ],
             With[{
                 labelExpr = Replace[label, Placed[e_, _] :> e],
