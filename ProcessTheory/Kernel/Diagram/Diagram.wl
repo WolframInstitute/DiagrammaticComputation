@@ -202,9 +202,9 @@ DiagramDual[d_ ? DiagramQ, opts : OptionsPattern[]] := If[d["DualQ"], First[d["S
         _[DiagramDual[x_]] :> "Expression" :> x,
         _ :> If[TrueQ[OptionValue["Singleton"]], "Expression" :> DiagramDual[d], Function[Null, "Expression" :> #, HoldAll] @@ d["HoldExpression"]]
     }],
-    "OutputPorts" -> Through[d["OutputPorts"]["Dual"]],
-    "InputPorts" -> Through[d["InputPorts"]["Dual"]],
-    "Shape" -> Automatic,
+    "OutputPorts" -> Through[d["FlatOutputPorts"]["Dual"]],
+    "InputPorts" -> Through[d["FlatInputPorts"]["Dual"]],
+     If[TrueQ[OptionValue["Singleton"]], "Shape" -> Automatic, {}],
     "DiagramOptions" -> d["DiagramOptions"]
 ]
 ]
@@ -221,11 +221,11 @@ DiagramFlip[d_ ? DiagramQ, opts : OptionsPattern[]] := If[d["FlipQ"], First[d["S
         _[DiagramFlip[x_]] :> "Expression" :> x,
         _ :> If[TrueQ[OptionValue["Singleton"]], "Expression" :> DiagramFlip[d], Function[Null, "Expression" :> #, HoldAll] @@ d["HoldExpression"]]
     }],
-    "OutputPorts" -> d["InputPorts"],
-    "InputPorts" -> d["OutputPorts"],
+    "OutputPorts" -> d["FlatInputPorts"],
+    "InputPorts" -> d["FlatOutputPorts"],
     "PortArrows" -> Reverse[fillAutomatic[d["OptionValue"["PortArrows"], opts], d["Arities"], True]],
     "PortLabels" -> Reverse[fillAutomatic[d["OptionValue"["PortLabels"], opts], d["Arities"], Automatic]],
-    "Shape" -> Automatic,
+    If[TrueQ[OptionValue["Singleton"]], "Shape" -> Automatic, {}],
     "DiagramOptions" -> d["DiagramOptions"]
 ]
 ]
@@ -242,11 +242,11 @@ DiagramReverse[d_ ? DiagramQ, opts : OptionsPattern[]] := If[d["ReverseQ"], Firs
         _[DiagramReverse[x_]] :> "Expression" :> x,
         _ :> If[TrueQ[OptionValue["Singleton"]], "Expression" :> DiagramReverse[d], Function[Null, "Expression" :> #, HoldAll] @@ d["HoldExpression"]]
     }],
-    "OutputPorts" -> Reverse[Through[d["OutputPorts"]["Reverse"]]],
-    "InputPorts" -> Reverse[Through[d["InputPorts"]["Reverse"]]],
+    "OutputPorts" -> Reverse[Through[d["FlatOutputPorts"]["Reverse"]]],
+    "InputPorts" -> Reverse[Through[d["FlatInputPorts"]["Reverse"]]],
     "PortArrows" -> (Reverse /@ fillAutomatic[d["OptionValue"["PortArrows"], opts], d["Arities"], True]),
     "PortLabels" -> (Reverse /@ fillAutomatic[d["OptionValue"["PortLabels"], opts], d["Arities"], Automatic]),
-    "Shape" -> Automatic,
+    If[TrueQ[OptionValue["Singleton"]], "Shape" -> Automatic, {}],
     "DiagramOptions" -> d["DiagramOptions"]
 ]
 ]
@@ -460,7 +460,9 @@ DiagramProp[d_, "MaxArity"] := Max[d["OutputArity"], d["InputArity"]]
 
 DiagramProp[d_, "MaxGridArity"] := Max[d["TopArity"], d["BottomArity"]]
 
-DiagramProp[d_, "Flat"[params__], args___] := Catenate[Through[d[params]["ProductList", args]]]
+flatPorts[xs_List, args___] := Discard[If[Length[#] == 1, First[#], PortSum @@ Discard[flatPorts[#, args], EmptyPortQ]] & @ #["SumList"] & /@ Catenate[Through[xs["ProductList", args]]], EmptyPortQ]
+
+DiagramProp[d_, "Flat"[params__], args___] := flatPorts[d[params], args]
 
 DiagramProp[d_, "FlatInputPorts", args___] := d["Flat"["InputPorts"], args]
 
@@ -585,7 +587,7 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
         d["OptionValue"["Shape"], opts],
         {
             None -> {},
-            Automatic :> transform @ Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c],
+            Automatic | dir_Directive :> {dir, transform @ Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c]},
             "RoundedRectangle" :> transform @ Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c, RoundingRadius -> {{Right, Bottom} -> .1 (w + h)}],
             "Triangle" :> transform @ Polygon[{{- w / 2, h / 2}, {0, - h / 2}, {w / 2, h / 2}} + Threaded[c]],
             "UpsideDownTriangle" :> transform @ Polygon[{{- w / 2, - h / 2}, {0, h / 2}, {w / 2, - h / 2}} + Threaded[c]],

@@ -3,6 +3,7 @@ BeginPackage["ProcessTheory`Port`", {"ProcessTheory`Utilities`"}];
 Port
 PortQ
 EmptyPortQ
+ZeroPortQ
 
 PortDual
 PortMinus
@@ -56,9 +57,21 @@ Port["1" | CircleTimes[], ___] := emptyPort["1"]
 
 emptyPort[p_] := Port["Expression" :> p, "Type" -> CircleTimes[]]
 
-EmptyPortQ[p_Port ? PortQ] := p["Type"] === CircleTimes[]
+emptyTypeQ[CircleTimes[]] := True
+emptyTypeQ[(SuperStar | OverBar)[t_]] := emptyTypeQ[t]
+emptyTypeQ[Superscript[t_, _]] := emptyTypeQ[t]
+emptyTypeQ[_] := False
+
+EmptyPortQ[p_Port ? PortQ] := emptyTypeQ[p["Type"]]
 
 Port["0" | CirclePlus[], ___] := Port["Expression" :> "0", "Type" -> CirclePlus[]]
+
+zeroTypeQ[CirclePlus[]] := True
+zeroTypeQ[(SuperStar | OverBar)[t_]] := zeroTypeQ[t]
+zeroTypeQ[Superscript[t_, _]] := zeroTypeQ[t]
+zeroTypeQ[_] := False
+
+ZeroPortQ[p_Port ? PortQ] := zeroTypeQ[p["Type"]]
 
 
 (* exponential *)
@@ -108,22 +121,20 @@ PortPower[p_Port ? PortQ, q_Port ? PortQ] := Port["Expression" :> PortPower[p, q
 
 Port[SuperStar[p_], opts : OptionsPattern[]] := PortDual[Port[Unevaluated[p], opts]]
 
-PortDual[p_Port ? PortQ] := If[EmptyPortQ[p], p,
+PortDual[p_Port ? PortQ] := 
     Function[Null, Port[p, "Expression" :> #, "Type" -> Replace[p["Type"], {SuperStar[x_] :> x, x_ :> SuperStar[x]}]], HoldFirst] @@
         Replace[p["HoldExpression"], {HoldForm[PortDual[q_]] :> HoldForm[q], HoldForm[q_] :> HoldForm[PortDual[q]]}]
-]
 
 PortDual[expr_] := PortDual[Port[Unevaluated[expr]]]
 
 
 (* negation *)
 
-Port[OverTilde[p_], opts : OptionsPattern[]] := PortMinus[Port[Unevaluated[p], opts]]
+Port[OverBar[p_], opts : OptionsPattern[]] := PortMinus[Port[Unevaluated[p], opts]]
 
-PortMinus[p_Port ? PortQ] := If[EmptyPortQ[p], p,
-    Function[Null, Port[p, "Expression" :> #, "Type" -> Replace[p["Type"], {OverTilde[x_] :> x, x_ :> OverTilde[x]}]], HoldFirst] @@
+PortMinus[p_Port ? PortQ] :=
+    Function[Null, Port[p, "Expression" :> #, "Type" -> Replace[p["Type"], {OverBar[x_] :> x, x_ :> OverBar[x]}]], HoldFirst] @@
         Replace[p["HoldExpression"], {HoldForm[PortMinus[q_]] :> HoldForm[q], HoldForm[q_] :> HoldForm[PortMinus[q]]}]
-]
 
 PortMinus[expr_] := PortMinus[Port[Unevaluated[expr]]]
 
@@ -271,7 +282,7 @@ Port /: MakeBoxes[p : Port[_Association] ? PortQ, form_] := With[{
 
 PortDual /: MakeBoxes[PortDual[p_], form_] := With[{boxes = ToBoxes[SuperStar[p], form]}, InterpretationBox[boxes, PortDual[p]]]
 
-PortMinus /: MakeBoxes[PortMinus[p_], form_] := With[{boxes = ToBoxes[OverTilde[p], form]}, InterpretationBox[boxes, PortMinus[p]]]
+PortMinus /: MakeBoxes[PortMinus[p_], form_] := With[{boxes = ToBoxes[OverBar[p], form]}, InterpretationBox[boxes, PortMinus[p]]]
 
 PortProduct /: MakeBoxes[PortProduct[ps___], form_] := With[{boxes = ToBoxes[CircleTimes[ps], form]}, InterpretationBox[boxes, PortProduct[ps]]]
 
