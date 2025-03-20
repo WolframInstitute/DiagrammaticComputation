@@ -296,7 +296,10 @@ Options[IdentityDiagram] = Options[PermutationDiagram] = Options[Diagram]
 IdentityDiagram[xs_List, opts : OptionsPattern[]] := With[{ports = makePorts[xs]},
     Diagram[Interpretation["1", Identity], ports, ports, opts, "Shape" -> "Wires"[Thread[{Range[Length[xs]], Length[xs] + Range[Length[xs]]}]], "ShowLabel" -> False, "PortFunction" -> (#["HoldExpression"] &)]
 ]
-    
+
+IdentityDiagram[x_, opts : OptionsPattern[]] := IdentityDiagram[{x}, opts]
+
+
 PermutationDiagram[inputs_List -> outputs_List, ins_List -> outs_List, opts___] := Enclose @ With[
     {len = Min[Length[ins], Length[outs]]},
     {perm = ConfirmBy[FindPermutation[Take[ins, len], Take[outs, len]], PermutationCyclesQ]}
@@ -318,7 +321,7 @@ PermutationDiagram[inputs_List, outputs_List, perm_Cycles, opts___] := With[{len
 
 (* vertical product *)
 
-Options[DiagramComposition] = Join[{"PortFunction" -> $DefaultPortFunction}, Options[Diagram]]
+Options[DiagramComposition] := Join[{"PortFunction" -> $DefaultPortFunction}, Options[Diagram]]
 
 DiagramComposition[d_Diagram, opts : OptionsPattern[]] := Diagram[d, opts]
 
@@ -460,7 +463,7 @@ DiagramProp[d_, "MaxArity"] := Max[d["OutputArity"], d["InputArity"]]
 
 DiagramProp[d_, "MaxGridArity"] := Max[d["TopArity"], d["BottomArity"]]
 
-flatPorts[xs_List, args___] := Discard[If[Length[#] == 1, First[#], PortSum @@ Discard[flatPorts[#, args], EmptyPortQ]] & @ #["SumList"] & /@ Catenate[Through[xs["ProductList", args]]], EmptyPortQ]
+flatPorts[xs_List, args___] := Discard[If[Length[#] == 1, First[#], PortSum @@ (PortProduct @@ Discard[flatPorts[{#}, args], EmptyPortQ] & /@ #)] & @ #["SumList"] & /@ Catenate[Through[xs["ProductList", args]]], EmptyPortQ]
 
 DiagramProp[d_, "Flat"[params__], args___] := flatPorts[d[params], args]
 
@@ -589,8 +592,8 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
             None -> {},
             Automatic | dir_Directive :> {dir, transform @ Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c]},
             "RoundedRectangle" :> transform @ Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c, RoundingRadius -> {{Right, Bottom} -> .1 (w + h)}],
-            "Triangle" :> transform @ Polygon[{{- w / 2, h / 2}, {0, - h / 2}, {w / 2, h / 2}} + Threaded[c]],
-            "UpsideDownTriangle" :> transform @ Polygon[{{- w / 2, - h / 2}, {0, h / 2}, {w / 2, - h / 2}} + Threaded[c]],
+            "UpsideDownTriangle" :> transform @ Polygon[{{- w / 2, h / 2}, {0, - h / 2}, {w / 2, h / 2}} + Threaded[c]],
+            "Triangle" :> transform @ Polygon[{{- w / 2, - h / 2}, {0, h / 2}, {w / 2, - h / 2}} + Threaded[c]],
             "Circle" :> transform @ Circle[c, {w, h} / 2],
             "CrossWires" :> With[{
                 points = d["PortArrows", opts],

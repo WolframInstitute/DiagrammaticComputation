@@ -104,8 +104,8 @@ Port[CirclePlus[ps__], opts : OptionsPattern[]] := PortSum @@ Map[Function[Null,
 
 PortSum[p_Port ? PortQ] := p
 
-PortSum[ps___Port ? PortQ] := If[Length[{ps}] > 0 && AllTrue[{ps}, #["DualQ"] &],
-    Port["Expression" :> PortDual[PortSum[##]], "Type" -> CirclePlus @@ Through[{ps}["Type"]]] & @@ Through[{ps}["Dual"]],
+PortSum[ps___Port ? PortQ] := If[Length[{ps}] > 0 && AllTrue[{ps}, #["MinusQ"] &],
+    Port["Expression" :> PortMinus[PortSum[##]], "Type" -> CirclePlus @@ Through[{ps}["Type"]]] & @@ Through[{ps}["Minus"]],
     Port["Expression" :> PortSum[ps], "Type" -> CirclePlus @@ Through[{ps}["Type"]]]
 ]
 
@@ -226,6 +226,8 @@ PortProp[p_, "Reverse"] := Port[reverseTree[p["PortTree"]], reverseTree[p["Type"
 
 PortProp[p_, "DualQ"] := MatchQ[p["HoldExpression"], HoldForm[_PortDual]]
 
+PortProp[p_, "MinusQ"] := MatchQ[p["HoldExpression"], HoldForm[_PortMinus]]
+
 PortProp[p_, "ProductQ"] := MatchQ[p["HoldExpression"], HoldForm[_PortProduct]]
 
 PortProp[p_, "SumQ"] := MatchQ[p["HoldExpression"], HoldForm[_PortSum]]
@@ -235,6 +237,7 @@ PortProp[p_, "PowerQ"] := MatchQ[p["HoldExpression"], HoldForm[_PortPower]]
 PortProp[p_, "PortTree" | "Decompose"] :=
     Replace[p["HoldExpression"], {
         HoldForm[PortDual[q_]] :> SuperStar[Port[Unevaluated[q], "NeutralQ" -> p["NeutralQ"]]["PortTree"]],
+        HoldForm[PortMinus[q_]] :> OverBar[Port[Unevaluated[q], "NeutralQ" -> p["NeutralQ"]]["PortTree"]],
         HoldForm[PortProduct[ps___]] :> CircleTimes @@ Through[{ps}["PortTree"]],
         HoldForm[PortSum[ps___]] :> CirclePlus @@ Through[{ps}["PortTree"]],
         HoldForm[PortPower[x_, y_]] :> Superscript[x["PortTree"], y["PortTree"]],
@@ -251,9 +254,8 @@ PortProp[p_, "ProductList", lvl : (_Integer ? NonNegative) | Infinity : Infinity
 ]
 
 PortProp[p_, "SumList", lvl : (_Integer ? NonNegative) | Infinity : Infinity] :=  If[lvl > 0, Replace[p["HoldExpression"], {
-    HoldForm[PortSum[ps___]] :> Catenate[Through[{ps}["SumList", lvl - 1]]],
-    HoldForm[PortDual[PortSum[ps___]]] :> Through[Catenate[Through[{ps}["SumList", lvl - 1]]]["Dual"]],
-    HoldForm[PortMinus[PortSum[ps___]]] :> Through[Catenate[Through[{ps}["SumList", lvl - 1]]]["Minus"]],
+    HoldForm[PortSum[ps___]] :> PortSum @@@ Through[{ps}["SumList", lvl - 1]],
+    HoldForm[PortMinus[PortSum[ps___]]] :> Through[(PortSum @@@ Through[{ps}["SumList", lvl - 1]])["Minus"]],
     _ :> {p}
 }],
     {p}
