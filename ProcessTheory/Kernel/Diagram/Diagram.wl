@@ -575,12 +575,18 @@ DiagramProp[d_, "Grid", opts : OptionsPattern[]] := DiagramGrid[d, opts]
 
 DiagramProp[d_, "OptionValue"[opt_], opts : OptionsPattern[]] := OptionValue[{opts, d["DiagramOptions"], Options[DiagramGraphics], Options[DiagramGrid], Options[DiagramsNetGraph]}, opt]
 
+DiagramProp[d_, "Center", opts : OptionsPattern[]] := Replace[d["OptionValue"["Center"], opts], Automatic -> {0, 0}]
+
+DiagramProp[d_, "Width", opts : OptionsPattern[]] := Replace[d["OptionValue"["Width"], opts], Automatic -> 1]
+
+DiagramProp[d_, "Height", opts : OptionsPattern[]] := Replace[d["OptionValue"["Height"], opts], Automatic -> 1]
+
 DiagramProp[d_, "WireQ"] := MatchQ[d["OptionValue"["Shape"]], "Wire" | "Wires" | "Wires"[_]]
 
 DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
     w = Replace[d["OptionValue"["Width"], opts], Automatic -> 1],
     h = Replace[d["OptionValue"["Height"], opts], Automatic -> 1],
-    c = d["OptionValue"["Center"], opts],
+    c = d["Center", opts],
     a = d["OptionValue"["Angle"], opts],
     func = d["OptionValue"["PortFunction"], opts],
     transform, primitives
@@ -624,7 +630,7 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
                 ps = Catenate[d["PortArrows", opts]],
                 styles = Catenate[d["PortStyles", opts]]
             },
-                With[{p = ps[[First[#]]], style = Replace[SelectFirst[styles[[#]], ! MatchQ[#, Automatic | True] &, Nothing], None -> Nothing]},
+                With[{p = ps[[First[#]]], style = Replace[SelectFirst[styles[[#]], ! MatchQ[#, Automatic | True | _Function] &, Nothing], None -> Nothing]},
                     {style, BSplineCurve[{p[[1]], 2 * p[[1]] - p[[2]], 2 * #[[1]] - #[[2]], #[[1]]}] & /@ DeleteCases[None] @ ps[[Rest[#]]]}
                 ] & /@ wires
             ],
@@ -633,6 +639,13 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
             },
                 BSplineCurve[{ps[[1, 1]], 2 * ps[[1, 1]] - ps[[1, 2]], c, 2 * #[[1]] - #[[2]], #[[1]]}] & /@ Rest[ps]
             ],
+            "Point" :> With[{
+                ps = Catenate[d["PortArrows", opts]],
+                styles = Catenate[d["PortStyles", opts]]
+            },
+                {PointSize[Medium], Point[c], MapThread[{Replace[#2, {None | False | Automatic | True | _Function -> Nothing}], BSplineCurve[{c, 2 * #[[1]] - #[[2]], #[[1]]}]} &, {ps, styles}]}
+            ],
+            f_Function :> f[d],
             shape_ :> transform @ GeometricTransformation[shape, TranslationTransform[c]]
         }
     ];
@@ -643,9 +656,9 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
 ]
 
 DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := Block[{
-    w = Replace[d["OptionValue"["Width"], opts], Automatic -> 1],
-    h = Replace[d["OptionValue"["Height"], opts], Automatic -> 1],
-    c = d["OptionValue"["Center"], opts],
+    w = d["Width", opts],
+    h = d["Height", opts],
+    c = d["Center", opts],
     a = d["OptionValue"["Angle"], opts],
     s = d["OptionValue"["Spacing"], opts],
     shape = d["OptionValue"["Shape"], opts],
@@ -672,7 +685,8 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := Block[{
             Replace[#3, {
                 Placed[_, p : Except[None]] :> placeArrow[Replace[p, Automatic :> If[#4["NeutralQ"], Left, Top]]],
                 _ :> Replace[shape, {
-                    "Circle" :> With[{p = {w Cos[#1], h Sin[#1]}}, {p / 2, p / 2 + Normalize[p] /4}] + Threaded[c],
+                    "Circle" :> With[{p = {w Cos[#1], h Sin[#1]}}, {c + p / 2, c + p / 2 + Normalize[p] / 4}],
+                    "Point" :> With[{p = {w Cos[#1], h Sin[#1]}}, {c + Normalize[p] / 10, c + Normalize[p] / 5}],
                     _ :> placeArrow[If[#4["NeutralQ"], Left, Top]]
                 }]
             }] &,
@@ -688,7 +702,8 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := Block[{
             Replace[#3, {
                 Placed[_, p : Except[None]] :> placeArrow[Replace[p, Automatic :> If[#4["NeutralQ"], Right, Bottom]]],
                 _ :> Replace[shape, {
-                    "Circle" :> With[{p = {w Cos[#1], h Sin[#1]}}, {p / 2, p / 2 + Normalize[p] /4}] + Threaded[c],
+                    "Circle" :> With[{p = {w Cos[#1], h Sin[#1]}}, {c + p / 2, c + p / 2 + Normalize[p] / 4}],
+                    "Point" :> With[{p = {w Cos[#1], h Sin[#1]}}, {c + Normalize[p] / 10, c + Normalize[p] / 5}],
                     _ :> placeArrow[If[#4["NeutralQ"], Right, Bottom]]
                 }]
             }] &,
@@ -718,7 +733,7 @@ $DefaultPortLabelFunction = Function[ClickToCopy[#2 /. Automatic :> If[#1["DualQ
 
 Options[DiagramGraphics] = Join[{
     "Shape" -> Automatic,
-    "Center" -> {0, 0},
+    "Center" -> Automatic,
     "Width" -> Automatic,
     "Height" -> Automatic,
     "Angle" -> 0,
@@ -754,14 +769,14 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
                 #["View"]
             ]]
         ] @ diagram,
-        diagram["OptionValue"["Center"], opts]
+        diagram["Center", opts]
     ],
     Arrowheads[Small],
     MapThread[{ports, ps, arrows, labels, dir} |->
         MapThread[{x, p, arrow, label} |-> {
             If[ MatchQ[arrow, None | False],
                 Nothing,
-                {Replace[arrow, True | Automatic -> Nothing], Replace[portArrowFunction[x, p, dir], True | Automatic | Inherited :> Arrow[If[x["DualQ"], Reverse, Identity][p]]]}
+                {Replace[arrow, True | Automatic | _Function -> Nothing], Replace[portArrowFunction[x, p, dir], True | Automatic | Inherited :> Arrow[If[x["DualQ"], Reverse, Identity][p]]]}
             ],
             With[{
                 labelExpr = Replace[label, Placed[e_, _] :> e],
@@ -1078,7 +1093,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
 	Graph[
 		netGraph,
 		FilterRules[{opts}, Options[Graph]],
-		VertexCoordinates -> Thread[vertices -> Join[Lookup[embedding, diagramVertices] + Through[Values[diagrams]["OptionValue"["Center"]]], Lookup[embedding, spiderVertices]]],
+		VertexCoordinates -> Thread[vertices -> Join[Lookup[embedding, diagramVertices] + Through[Values[diagrams]["Center"]], Lookup[embedding, spiderVertices]]],
 		VertexShapeFunction -> Join[
 			Thread[diagramVertices ->
 				MapThread[{diagram, orientation} |-> With[{
@@ -1101,7 +1116,8 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
                     style1, style2,
                     diagram1 = diagrams[v], diagram2 = diagrams[w],
                     port1, port2,
-                    points1, points2
+                    points1, points2,
+                    hold
 				},
                     port1 = diagram1[Replace[i, {1 -> "InputPorts", 2 -> "OutputPorts"}]][[p]];
                     port2 = diagram2[Replace[j, {1 -> "InputPorts", 2 -> "OutputPorts"}]][[q]];
@@ -1127,37 +1143,49 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
                                     If[port1["DualQ"], {- arrowSize, .3}, {arrowSize, .3}],
                                     If[port2["DualQ"], {arrowSize, .7}, {- arrowSize, .7}]
                                 }],
-                                Replace[Replace[style1, Automatic :> Replace[style2, Automatic -> {}]], f_Function :> f[port1]],
-                                Arrow @ BSplineCurve[{
-                                    a + point1, a + point1 + normal1,
-                                    If[lindep, (a + b) / 2 + 2 * RotationTransform[Pi / 2][normal1], Nothing],
-                                    b + point2 + normal2, b + point2
-                                }]
+                                With[{style = Replace[style1, Automatic :> Replace[style2, Automatic -> {}]]},
+                                    If[ MatchQ[style1, _Function],
+                                        hold[style],
+                                        {style, Arrow @ BSplineCurve @ #} &
+                                    ] @ {
+                                        a + point1, a + point1 + normal1,
+                                        If[lindep, (a + b) / 2 + 2 * RotationTransform[Pi / 2][normal1], Nothing],
+                                        b + point2 + normal2, b + point2
+                                    }
+                                ]
                             },
                             {
-                                If[ style1 === None, {}, {
-                                    Arrowheads[{
-                                        If[port1["DualQ"], {- arrowSize, .5}, {arrowSize, .5}]
-                                    }],
-                                    style1,
-                                    Arrow @ BSplineCurve[{
+                                If[ style1 === None, {},
+                                    With[{arrowheads = Arrowheads[{
+                                            If[port1["DualQ"], {- arrowSize, .5}, {arrowSize, .5}]
+                                        }]
+                                    },
+                                        If[ MatchQ[style1, _Function],
+                                            {arrowheads, hold[style1][#]} &,
+                                            {arrowheads, style1, Arrow @ BSplineCurve @ #} &
+                                        ]
+                                    ] @ {
                                         a + point1, a + point1 + normal1,
-                                        (a + b) / 2 + 2 * RotationTransform[Pi / 2][normal1],
-                                        b + point2 + normal2, b + point2
-                                    }]
-                                }],
-                                If[ style2 === None, {}, {
-                                    Arrowheads[{
-                                        If[port2["DualQ"], {arrowSize, .5}, {- arrowSize, .5}]
+                                        (a + b) / 2 + 2 * RotationTransform[Pi / 2][normal1]
+                                        (* b + point2 + normal2, b + point2 *)
                                     }
-                                    ],
-                                    style2,
-                                    Arrow @ BSplineCurve[{
-                                        a + point1, a + point1 + normal1,
+                                ],
+                                If[ style2 === None, {},
+                                    With[{
+                                        arrowheads = Arrowheads[{
+                                            If[port2["DualQ"], {arrowSize, .5}, {- arrowSize, .5}]
+                                        }]
+                                    },
+                                        If[ MatchQ[style2, _Function],
+                                            {arrowheads, hold[style2][#]} &,
+                                            {arrowheads, style2, Arrow @ BSplineCurve @ #} &
+                                        ]
+                                     ] @ {
+                                        (* a + point1, a + point1 + normal1, *)
                                         (a + b) / 2 + 2 * RotationTransform[Pi / 2][normal1],
                                         b + point2 + normal2, b + point2
-                                    }]
-                                }]
+                                    }
+                                ]
                             }
                         ],
 							If[ wireLabelsQ,
@@ -1170,7 +1198,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
                                 ],
                                 Nothing
                             ]
-						}] /. {a :> #[[1]], b :> #[[-1]]}
+						}] /. {a :> #[[1]], b :> #[[-1]], hold -> Identity}
 					]
 				],
 				edge : DirectedEdge[v_Integer, _, {{i : 1 | 2, _Integer, p_Integer}, _}] | DirectedEdge[_, v_Integer, {_, {i : 1 | 2, _Integer, p_Integer}}] :> edge -> Block[{

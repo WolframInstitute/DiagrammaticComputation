@@ -347,7 +347,7 @@ circuitArrange[diagram_Diagram -> d_, pos_, {_, autoHeight_}, {dx_, dy_}, corner
     ]
 ]
 
-gridArrange[diagram_Diagram -> d_, pos_, {autoWidth_, autoHeight_}, {dx_, dy_}, corner_ : {0, 0}, angle_ : 0] := Block[{
+gridArrange[diagram_Diagram -> d_, pos_, {autoWidth_, autoHeight_}, {dx_, dy_}, corner_ : {0, 0}, angle_ : 0, _] := Block[{
     arity = diagram["MaxGridArity"],
     alignment = diagram["OptionValue"[Alignment]],
     spacing = diagram["OptionValue"["Spacing"]],
@@ -378,13 +378,13 @@ gridArrange[diagram_Diagram -> d_, pos_, {autoWidth_, autoHeight_}, {dx_, dy_}, 
         "Shape" -> Automatic
     ], "Item"];
     Diagram[diagram,
-        "Center" -> center,
+        "Center" -> Replace[diagram["OptionValue"["Center"]], {Automatic -> center, Offset[shift_] :> center + shift}],
         "Width" -> Replace[diagram["OptionValue"["Width"]], Automatic :> If[MatchQ[diagram["OptionValue"["Shape"]], "Circle"] || arity <= 1, 1, ratio * w]],
         "Height" -> Replace[diagram["OptionValue"["Height"]], Automatic :> Max[h - dy, 1]]
     ]
 ]
 
-gridArrange[grid : (head : CircleTimes | CirclePlus)[ds___] -> d_, pos_, {width_, height_}, {dx_, dy_}, corner : {xMin_, yMin_}, angle_] := Block[{widths, relativeWidths, newHeight, positions},
+gridArrange[grid : (head : CircleTimes | CirclePlus)[ds___] -> d_, pos_, {width_, height_}, {dx_, dy_}, corner : {xMin_, yMin_}, angle_, upHead_] := Block[{widths, relativeWidths, newHeight, positions},
     widths = gridWidth /@ {ds};
     relativeWidths = If[width =!= Automatic, width * widths / Total[widths], widths];
     newHeight = Replace[height, Automatic :> gridHeight[grid, "OptionValue"["Height"]] + dy * gridHeight[grid]];
@@ -396,15 +396,15 @@ gridArrange[grid : (head : CircleTimes | CirclePlus)[ds___] -> d_, pos_, {width_
             "Center" -> RotationTransform[angle, corner][corner + {w, h} / 2],
             "Width" -> Replace[d["OptionValue"["Width"]], Automatic -> w],
             "Height" -> Replace[d["OptionValue"["Height"]], Automatic -> h],
-            If[head === CirclePlus, "Shape" -> Directive[EdgeForm[Dotted]], {}]
+            If[head =!= upHead, "Shape" -> Directive[EdgeForm[Dotted]], {}]
         ],
             "Row"
         ]
     ];
-    MapIndexed[With[{i = #2[[1]]}, gridArrange[#1, Append[pos, i], {relativeWidths[[i]], newHeight}, {dx, dy}, {xMin, yMin} + RotationTransform[angle] @ {positions[[i]], 0}, angle]] &, grid]
+    MapIndexed[With[{i = #2[[1]]}, gridArrange[#1, Append[pos, i], {relativeWidths[[i]], newHeight}, {dx, dy}, {xMin, yMin} + RotationTransform[angle] @ {positions[[i]], 0}, angle, head]] &, grid]
 ]
 
-gridArrange[grid : CircleDot[ds___] -> d_, pos_, {width_, height_}, {dx_, dy_}, corner : {xMin_, yMin_}, angle_] := Block[{heights, newWidth, positions},
+gridArrange[grid : CircleDot[ds___] -> d_, pos_, {width_, height_}, {dx_, dy_}, corner : {xMin_, yMin_}, angle_, _] := Block[{heights, newWidth, positions},
     heights = gridHeight[#, "OptionValue"["Height"]] + gridHeight[#] * dy & /@ {ds};
     If[height =!= Automatic, heights = height * heights / Total[heights]];
     newWidth = Replace[width, Automatic :> gridWidth[grid]];
@@ -412,7 +412,7 @@ gridArrange[grid : CircleDot[ds___] -> d_, pos_, {width_, height_}, {dx_, dy_}, 
     With[{w = newWidth * (1 + dx), h = Total[heights]},
         Sow[pos -> Diagram[d, "Center" -> RotationTransform[angle, corner][corner + {w, h} / 2], "Width" -> Replace[d["OptionValue"["Width"]], Automatic -> w], "Height" -> Replace[d["OptionValue"["Height"]], Automatic -> h]], "Column"]
     ];
-    MapIndexed[With[{i = #2[[1]]}, gridArrange[#1, Append[pos, i], {newWidth, heights[[i]]}, {dx, dy}, {xMin, yMin} + RotationTransform[angle] @ {0, positions[[i]]}, angle]] &, grid]
+    MapIndexed[With[{i = #2[[1]]}, gridArrange[#1, Append[pos, i], {newWidth, heights[[i]]}, {dx, dy}, {xMin, yMin} + RotationTransform[angle] @ {0, positions[[i]]}, angle, CircleDot]] &, grid]
 ]
 
 gridArrange[HoldPattern[SuperStar[d_]] -> diag_, args___] := gridArrange[CircleTimes[d] -> diag, args]
@@ -424,7 +424,7 @@ gridArrange[ds_List -> d_, args___] := If[Length[ds] == 1,
     gridArrange[DiagramNetwork @@ ds -> d, args]
 ]
 
-gridArrange[grid_, gapSizes_, angle_] := gridArrange[grid, {}, {Automatic, Automatic}, gapSizes, {0, 0}, angle]
+gridArrange[grid_, gapSizes_, angle_] := gridArrange[grid, {}, {Automatic, Automatic}, gapSizes, {0, 0}, angle, None]
 
 
 gridOutputPositions[_Diagram, pos_] := {pos}
@@ -583,29 +583,31 @@ wireGraphics[opts___][{outPort_, out_, outStyle_}, {inPort_, in_, inStyle_}] := 
 },
     If[
         inStyle === outStyle || inStyle === Automatic || outStyle === Automatic,
-        With[{style = Replace[Replace[outStyle, Automatic :> Replace[inStyle, Automatic -> {}]], f_Function :> f[out]]},
+        With[{style = Replace[outStyle, Automatic :> Replace[inStyle, Automatic -> {}]]},
             If[
                 MatchQ[style, None],
                 {}
                 ,
-                {
-                    Arrowheads[
+                With[{arrowheads = Arrowheads[
                         With[{arrowSize = Replace[wireArrows, {False | None -> 0, True -> Small}], from = If[outDual, -1, 1], to = If[inDual, -1, 1]},
                             If[ from == - to,
                                 {{from * arrowSize, .5}},
                                 {{from * arrowSize, .3}, {to * arrowSize, .7}}
                             ]
                         ]
-                    ],
-                    style,
-                    Arrow @ BSplineCurve @ With[{p = out[[1]] + gapSize (out[[2]] - out[[1]]), q = in[[1]] + gapSize (in[[2]] - in[[1]])},
-                        If[
-                            Dot[p - q, out[[1]] - in[[1]]] > 0,
-                            {out[[1]], p, q, in[[1]]},
-                            {out[[1]], in[[1]]}
-                        ]
                     ]
-                }
+                },
+                    If[ MatchQ[style, _Function],
+                        {arrowheads, style[#]} &,
+                        {arrowheads, style, Arrow @ BSplineCurve @ #} &
+                    ]
+                ] @ With[{p = out[[1]] + gapSize (out[[2]] - out[[1]]), q = in[[1]] + gapSize (in[[2]] - in[[1]])},
+                    If[
+                        Dot[p - q, out[[1]] - in[[1]]] > 0,
+                        {out[[1]], p, q, in[[1]]},
+                        {out[[1]], in[[1]]}
+                    ]
+                ]
             ]
         ]
         ,
@@ -617,20 +619,16 @@ wireGraphics[opts___][{outPort_, out_, outStyle_}, {inPort_, in_, inStyle_}] := 
             {
                 If[ outStyle === None,
                     {},
-                    {
-                        Arrowheads[{{from * arrowSize, .5}}],
-                        outStyle,
-                        Arrow @ BSplineCurve @ {out[[1]], p, (in[[1]] + out[[1]]) / 2}
-                    }
+                    With[{arrowheads = Arrowheads[{{from * arrowSize, .5}}]},
+                        If[MatchQ[outStyle, _Function], {arrowheads, outStyle[#]} &, {arrowheads, outStyle, Arrow @ BSplineCurve @ #} &] @ {out[[1]], p, (in[[1]] + out[[1]]) / 2}
+                    ]
                 ]
                 ,
                 If[ inStyle === None,
                     {},
-                    {
-                        Arrowheads[{{to * arrowSize, .7}}],
-                        inStyle,
-                        Arrow @ BSplineCurve @ {(in[[1]] + out[[1]]) / 2, q, in[[1]]}
-                    }
+                    With[{arrowheads = Arrowheads[{{to * arrowSize, .7}}]},
+                        If[MatchQ[inStyle, _Function], {arrowheads, inStyle[#]} &, {arrowheads, inStyle, Arrow @ BSplineCurve @ #} &] @  {(in[[1]] + out[[1]]) / 2, q, in[[1]]}
+                    ]
                 ]
             }
         ]
