@@ -170,8 +170,8 @@ inheritExpresion[expr_, deps_List, def_ : Automatic] := With[{pos = Position[exp
 mergeOptions[opts_List] := Normal @ GroupBy[opts, First,
     If[ MatchQ[#[[1, 1]], "PortArrows" | "PortLabels"],
         Map[
-            With[{len = Max[Length /@ #, 1]}, inheritExpresion[#1, {##2}] & @@ (PadRight[#, len, #] & /@ #)] &,
-            Thread[Developer`ToList /@ PadRight[Developer`ToList[#], 2, #] & /@ #[[All, 2]]]
+            With[{len = Max[If[ListQ[#], Length[#], 1] & /@ #, 1]}, inheritExpresion[#1, {##2}] & @@ (If[ListQ[#], PadRight[#, len, #], #] & /@ #)] &,
+            Thread[PadRight[Developer`ToList[#], 2, #] & /@ #[[All, 2]]]
         ]
         ,
         #[[1, 2]]
@@ -191,7 +191,7 @@ Diagram[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[Replace[Normal[Merge[
 (* ::Subsubsection:: *)
 (* Unary ops *)
 
-Options[DiagramDual] := Join[{"Singleton" -> True}, Options[Diagram]]
+Options[DiagramDual] := Join[{"Singleton" -> False}, Options[Diagram]]
 
 DiagramDual[d_ ? DiagramQ, opts : OptionsPattern[]] := If[d["DualQ"], First[d["SubDiagrams"]], Diagram[
     d,
@@ -209,7 +209,7 @@ DiagramDual[d_ ? DiagramQ, opts : OptionsPattern[]] := If[d["DualQ"], First[d["S
 ]
 ]
 
-Options[DiagramFlip] := Join[{"Singleton" -> True}, Options[Diagram]]
+Options[DiagramFlip] := Join[{"Singleton" -> False}, Options[Diagram]]
 
 DiagramFlip[d_ ? DiagramQ, opts : OptionsPattern[]] := If[d["FlipQ"], First[d["SubDiagrams"]], Diagram[
     d,
@@ -223,14 +223,14 @@ DiagramFlip[d_ ? DiagramQ, opts : OptionsPattern[]] := If[d["FlipQ"], First[d["S
     }],
     "OutputPorts" -> d["FlatInputPorts"],
     "InputPorts" -> d["FlatOutputPorts"],
-    "PortArrows" -> Reverse[fillAutomatic[d["OptionValue"["PortArrows"], opts], d["Arities"], True]],
-    "PortLabels" -> Reverse[fillAutomatic[d["OptionValue"["PortLabels"], opts], d["Arities"], Automatic]],
+    "PortArrows" -> Reverse[d["PortStyles", opts]],
+    "PortLabels" -> Reverse[d["PortLabels", opts]],
     If[TrueQ[OptionValue["Singleton"]], "Shape" -> Automatic, {}],
     "DiagramOptions" -> d["DiagramOptions"]
 ]
 ]
 
-Options[DiagramReverse] := Join[{"Singleton" -> True}, Options[Diagram]]
+Options[DiagramReverse] := Join[{"Singleton" -> False}, Options[Diagram]]
 
 DiagramReverse[d_ ? DiagramQ, opts : OptionsPattern[]] := If[d["ReverseQ"], First[d["SubDiagrams"]], Diagram[
     d,
@@ -244,8 +244,8 @@ DiagramReverse[d_ ? DiagramQ, opts : OptionsPattern[]] := If[d["ReverseQ"], Firs
     }],
     "OutputPorts" -> Reverse[Through[d["FlatOutputPorts"]["Reverse"]]],
     "InputPorts" -> Reverse[Through[d["FlatInputPorts"]["Reverse"]]],
-    "PortArrows" -> (Reverse /@ fillAutomatic[d["OptionValue"["PortArrows"], opts], d["Arities"], True]),
-    "PortLabels" -> (Reverse /@ fillAutomatic[d["OptionValue"["PortLabels"], opts], d["Arities"], Automatic]),
+    "PortArrows" -> (Reverse /@ d["PortStyles", opts]),
+    "PortLabels" -> (Reverse /@ d["PortLabels", opts]),
     If[TrueQ[OptionValue["Singleton"]], "Shape" -> Automatic, {}],
     "DiagramOptions" -> d["DiagramOptions"]
 ]
@@ -686,7 +686,7 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := Block[{
                 Placed[_, p : Except[None]] :> placeArrow[Replace[p, Automatic :> If[#4["NeutralQ"], Left, Top]]],
                 _ :> Replace[shape, {
                     "Circle" :> With[{p = {w Cos[#1], h Sin[#1]}}, {c + p / 2, c + p / 2 + Normalize[p] / 4}],
-                    "Point" :> With[{p = {w Cos[#1], h Sin[#1]}}, {c + Normalize[p] / 10, c + Normalize[p] / 5}],
+                    "Point" :> With[{p = {w Cos[#1], h Sin[#1]}}, {c, c + Normalize[p] / 1*^3}],
                     _ :> placeArrow[If[#4["NeutralQ"], Left, Top]]
                 }]
             }] &,
@@ -703,7 +703,7 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := Block[{
                 Placed[_, p : Except[None]] :> placeArrow[Replace[p, Automatic :> If[#4["NeutralQ"], Right, Bottom]]],
                 _ :> Replace[shape, {
                     "Circle" :> With[{p = {w Cos[#1], h Sin[#1]}}, {c + p / 2, c + p / 2 + Normalize[p] / 4}],
-                    "Point" :> With[{p = {w Cos[#1], h Sin[#1]}}, {c + Normalize[p] / 10, c + Normalize[p] / 5}],
+                    "Point" :> With[{p = {w Cos[#1], h Sin[#1]}}, {c, c + Normalize[p] / 1*^3}],
                     _ :> placeArrow[If[#4["NeutralQ"], Right, Bottom]]
                 }]
             }] &,
@@ -721,6 +721,9 @@ DiagramProp[d_, "FlatPortArrows", opts : OptionsPattern[]] := d["Flatten"]["Port
 
 DiagramProp[d_, "PortStyles", opts : OptionsPattern[]] :=
     Replace[fillAutomatic[d["OptionValue"["PortArrows"], opts], {d["InputArity"], d["OutputArity"]}, Automatic], {Placed[x_, _] :> Replace[x, True -> Automatic], True -> Automatic}, {2}]
+
+DiagramProp[d_, "PortLabels", opts : OptionsPattern[]] :=
+    Replace[fillAutomatic[d["OptionValue"["PortLabels"], opts], {d["InputArity"], d["OutputArity"]}, Automatic], {Placed[x_, pos_] :> Placed[Replace[x, True -> Automatic], pos], True -> Automatic}, {2}]
 
 
 DiagramProp[_, prop_] := Missing[prop]
@@ -749,17 +752,18 @@ Options[DiagramGraphics] = Join[{
 
 DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[{
     points = diagram["PortArrows", opts],
-    arities = {diagram["InputArity"], diagram["OutputArity"]}
+    arities = {diagram["InputArity"], diagram["OutputArity"]},
+    center = diagram["Center", opts]
 }, {
     portArrows = diagram["PortStyles", opts],
-    portLabels = fillAutomatic[diagram["OptionValue"["PortLabels"], opts], arities],
+    portLabels = diagram["PortLabels", opts],
     labelFunction = diagram["OptionValue"["LabelFunction"], opts],
     portArrowFunction = Replace[diagram["OptionValue"["PortArrowFunction"], opts], Automatic -> (Arrow[If[#1["DualQ"], Reverse, Identity] @ #2] &)],
     portLabelFunction = Replace[diagram["OptionValue"["PortLabelFunction"], opts], Automatic -> $DefaultPortLabelFunction]
 }, Graphics[{
     EdgeForm[Black], FaceForm[None], 
     Confirm @ diagram["Shape", opts],
-    Text[
+    Replace[
         Replace[labelFunction,
             Automatic :> Function[ClickToCopy[
                 If[ MatchQ[#["OptionValue"["ShowLabel"], opts], None | False],
@@ -768,8 +772,11 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
                 ],
                 #["View"]
             ]]
-        ] @ diagram,
-        diagram["Center", opts]
+        ] @ diagram, {
+            Placed[l_, Offset[offset_]] :> Text[l, center + offset],
+            Placed[l_, pos_] :> Text[l, pos],
+            label_ :> Text[label, center]
+        }
     ],
     Arrowheads[Small],
     MapThread[{ports, ps, arrows, labels, dir} |->
@@ -779,7 +786,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
                 {Replace[arrow, True | Automatic | _Function -> Nothing], Replace[portArrowFunction[x, p, dir], True | Automatic | Inherited :> Arrow[If[x["DualQ"], Reverse, Identity][p]]]}
             ],
             With[{
-                labelExpr = Replace[label, Placed[e_, _] :> e],
+                labelExpr = If[diagram["OptionValue"["Shape"], opts] === "Point", None, Replace[label, Placed[e_, _] :> e]],
                 newLabel = Replace[label, {Placed[l_, pos_] :> Placed[Replace[portLabelFunction[x, l, dir], Placed[e_, _] :> e], pos], l_ :> portLabelFunction[x, l, dir]}]
             }, If[ MatchQ[labelExpr, None | False],
                 Nothing,
@@ -1144,7 +1151,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
                                     If[port2["DualQ"], {arrowSize, .7}, {- arrowSize, .7}]
                                 }],
                                 With[{style = Replace[style1, Automatic :> Replace[style2, Automatic -> {}]]},
-                                    If[ MatchQ[style1, _Function],
+                                    If[ MatchQ[style, _Function],
                                         hold[style],
                                         {style, Arrow @ BSplineCurve @ #} &
                                     ] @ {
@@ -1162,7 +1169,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
                                     },
                                         If[ MatchQ[style1, _Function],
                                             {arrowheads, hold[style1][#]} &,
-                                            {arrowheads, style1, Arrow @ BSplineCurve @ #} &
+                                            {arrowheads, Replace[style1, Automatic -> Nothing], Arrow @ BSplineCurve @ #} &
                                         ]
                                     ] @ {
                                         a + point1, a + point1 + normal1,
@@ -1178,7 +1185,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
                                     },
                                         If[ MatchQ[style2, _Function],
                                             {arrowheads, hold[style2][#]} &,
-                                            {arrowheads, style2, Arrow @ BSplineCurve @ #} &
+                                            {arrowheads, Replace[style2, Automatic -> Nothing], Arrow @ BSplineCurve @ #} &
                                         ]
                                      ] @ {
                                         (* a + point1, a + point1 + normal1, *)
@@ -1198,14 +1205,15 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
                                 ],
                                 Nothing
                             ]
-						}] /. {a :> #[[1]], b :> #[[-1]], hold -> Identity}
+						}] /. {a :> #[[1]], b :> #[[-1]], hold[expr_] :> expr}
 					]
 				],
 				edge : DirectedEdge[v_Integer, _, {{i : 1 | 2, _Integer, p_Integer}, _}] | DirectedEdge[_, v_Integer, {_, {i : 1 | 2, _Integer, p_Integer}}] :> edge -> Block[{
 					point, normal, orientation = orientations[v], portCoords = Lookup[embedding, Key[{v, i, p}]],
                     style = diagrams[v]["PortStyles"][[i, p]],
                     diagram = diagrams[v],
-                    port, points
+                    port, points,
+                    hold
 				},
                     port = diagram[Replace[i, {1 -> "InputPorts", 2 -> "OutputPorts"}]][[p]];
                     points = diagram["PortArrows"][[i, p]];
@@ -1216,10 +1224,13 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
 
 					With[{a = VectorSymbol["p", 2], b = VectorSymbol["q", 2]},
 						Function[Evaluate @ If[style === None, {}, {
-							Arrowheads[If[port["DualQ"], {{-arrowSize, .5}}, {{arrowSize, .5}}]],
-                            Replace[style, Automatic -> Nothing],
-							Arrow @ BSplineCurve[{a + point, a + point + normal, b + scale Normalize[portCoords - b], b + rad scale Normalize[portCoords - b]}]
-						}]] /. With[{s = If[IntegerQ[edge[[1]]], 1, -1]}, {a :> #[[s]], b :> #[[-s]]}]
+							With[{arrowheads = Arrowheads[If[port["DualQ"], {{-arrowSize, .5}}, {{arrowSize, .5}}]]},
+                                If[ MatchQ[style, _Function],
+                                    {arrowheads, hold[style][#]} &,
+                                    {arrowheads, Replace[style, Automatic -> Nothing], Arrow @ BSplineCurve @ #} &
+                                ]
+                            ] @ {a + point, a + point + normal, b + scale Normalize[portCoords - b], b + rad scale Normalize[portCoords - b]}
+						}]] /. With[{s = If[IntegerQ[edge[[1]]], 1, -1]}, {a :> #[[s]], b :> #[[-s]], hold[expr_] :> expr}]
 					]
 				],
 				_ -> Nothing
