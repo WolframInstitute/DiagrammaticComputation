@@ -6,6 +6,7 @@ DiagramPattern
 DiagramCases
 DiagramPosition
 DiagramMap
+DiagramMapAt
 
 
 Begin["ProcessTheory`Diagram`Surgery`Private`"];
@@ -58,11 +59,20 @@ DiagramPosition[d_Diagram] := DiagramPosition[d, _Diagram]
 DiagramMap[f_, d_Diagram, lvl : (_Integer ? NonNegative) | Infinity : Infinity] := If[lvl > 0,
     Replace[d["HoldExpression"], {
         _[(head : $DiagramHeadPattern)[ds___]] :> Diagram[d, "Expression" :> head[##] & @@ Map[DiagramMap[f, #, lvl - 1] &, {ds}]],
-        _ :> Diagram[f @@ d["HoldExpression"]]
+        _ :> Diagram[f[d]]
     }]
     ,
     Diagram[f[d]]
 ]
+
+
+DiagramMapAt[f_, d_Diagram, pos : {{___Integer} ...}, curPos_ : {}] := Enclose @ 
+    If[ d["Head"] === Null,
+        If[MemberQ[pos, curPos], f[d, curPos], d],
+        If[MemberQ[pos, curPos], f[#, curPos] &, # &] @ Diagram[d["Head"] @@ MapIndexed[DiagramMapAt[f, #1, pos, Join[curPos, #2]] &, d["SubDiagrams"]], d["DiagramOptions"]]
+    ]
+
+DiagramMapAt[f_, d_Diagram, pos : {___Integer}] := DiagramMapAt[f, d, {pos}]
 
 
 End[]
