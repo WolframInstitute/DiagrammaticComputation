@@ -639,12 +639,7 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
             },
                 BSplineCurve[{ps[[1, 1]], 2 * ps[[1, 1]] - ps[[1, 2]], c, 2 * #[[1]] - #[[2]], #[[1]]}] & /@ Rest[ps]
             ],
-            "Point" :> With[{
-                ps = Catenate[d["PortArrows", opts]],
-                styles = Catenate[d["PortStyles", opts]]
-            },
-                {PointSize[Medium], Point[c], MapThread[Replace[#2, {None | False | Automatic | True -> BSplineCurve, f_Function :> (f[#, "Shape"] &), x_ :> ({x, BSplineCurve[#]} &)}] @ {c, #[[2]]} &, {ps, styles}]}
-            ],
+            "Point" :> {PointSize[Medium], Point[c]},
             f_Function :> f[d],
             shape_ :> transform @ GeometricTransformation[shape, TranslationTransform[c]]
         }
@@ -1112,9 +1107,9 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
 				MapThread[{diagram, orientation} |-> With[{
 						shape = First @ diagram["Graphics",
                             "Center" -> Automatic,
-                            diagram["DiagramOptions"],
                             "PortArrowFunction" -> (Nothing &),
                             "PortLabels" -> If[portLabelsQ, Automatic, None],
+                            diagram["DiagramOptions"],
                             "LabelFunction" -> Function[If[#["NetworkQ"], #, #["HoldExpression"]]]
                         ],
 						transform = RotationTransform[{{0, 1}, orientation}] @* ScalingTransform[scale {1, 1}]
@@ -1211,20 +1206,26 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
                                     }
                                 ]
                             }
-                        ]},
+                        ],
+                        labelPos = If[ lindep,
+                            (a + b) / 2 + 1.25 RotationTransform[Pi / 2][normal1],
+                            (a + point1 + normal1 + b + point2 + normal2) / 2 + .1 normal1
+                        ]
+                        },
                         If[ wireLabelsQ,
                             Function @ With[{
-                                edgeShape = primitive /. {a :> #[[1]], b :> #[[-1]], hold[expr_] :> expr}
+                                edgeShape = primitive /. {a :> #[[1]], b :> #[[-1]], hold[expr_] :> expr},
+                                wireLabel = Replace[wireLabelFunction[p1, p2, label], Automatic | True -> label]
                             }, {
                                 edgeShape,
-                                Text[
-                                    Style[ClickToCopy[InterpretationForm[wireLabelFunction[p1, p2, label]], x], Black],
-                                    With[{center = Quiet @ RegionCentroid[RegionUnion[ResourceFunction["ExtractGraphicsPrimitives"][edgeShape] /. {Arrow[a_] :> a}]]},
-                                        If[ MatchQ[center, {_, _}],
-                                            center,
-                                            If[ lindep,
-                                                (a + b) / 2 + 1.25 RotationTransform[Pi / 2][normal1],
-                                                (a + point1 + normal1 + b + point2 + normal2) / 2 + .1 normal1
+                                If[ MatchQ[wireLabel, None | False],
+                                    Nothing,
+                                    Text[
+                                        Style[ClickToCopy[InterpretationForm[wireLabel], x], Black],
+                                        With[{center = Quiet @ RegionCentroid[DiscretizeRegion @ RegionUnion[ResourceFunction["ExtractGraphicsPrimitives"][edgeShape] /. {Arrow[a_] :> a}]]},
+                                            If[ MatchQ[center, {_ ? NumericQ, _ ? NumericQ}],
+                                                center,
+                                                labelPos /. {a :> #[[1]], b :> #[[-1]]}
                                             ]
                                         ]
                                     ]

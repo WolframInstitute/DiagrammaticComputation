@@ -649,7 +649,7 @@ wireGraphics[opts___][{outPort_, out_, outStyle_, outLabel_}, {inPort_, in_, inS
     ] // Append[
         With[{label = Replace[Replace[inLabel, {Automatic -> outLabel, _ -> inLabel}], {Placed[Automatic | True, _] | Automatic | True -> outPort, Placed[l_, _] :> l}]},
             If[ MatchQ[wireLabels, None | False] || MatchQ[label, None | False], Nothing,
-                Text[ClickToCopy[wireLabelFunction[out, in, label]], (out[[2]] + in[[2]]) / 2 + 0.1 RotationTransform[Replace[wireLabels, Automatic | True -> Pi / 2]] @ Normalize[out[[2]] - in[[2]]]],
+                Text[ClickToCopy[wireLabelFunction[out, in, label]], (out[[1]] + in[[1]]) / 2 + 0.1 RotationTransform[Replace[wireLabels, Automatic | True -> Pi / 2]] @ Normalize[out[[1]] - in[[1]]]],
                 Nothing
             ]
         ]
