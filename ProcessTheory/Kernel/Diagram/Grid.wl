@@ -647,10 +647,15 @@ wireGraphics[opts___][{outPort_, out_, outStyle_, outLabel_}, {inPort_, in_, inS
             }
         ]
     ] // Append[
-        With[{label = Replace[Replace[inLabel, {Automatic -> outLabel, _ -> inLabel}], {Placed[Automatic | True, _] | Automatic | True -> outPort, Placed[l_, _] :> l}]},
-            If[ MatchQ[wireLabels, None | False] || MatchQ[label, None | False], Nothing,
-                Text[ClickToCopy[wireLabelFunction[out, in, label]], (out[[1]] + in[[1]]) / 2 + 0.1 RotationTransform[Replace[wireLabels, Automatic | True -> Pi / 2]] @ Normalize[out[[1]] - in[[1]]]],
-                Nothing
+        With[{
+            label = Replace[Replace[inLabel, {Automatic -> outLabel, _ -> inLabel}], {Placed[Automatic | True, _] | Automatic | True -> outPort, Placed[l_, _] :> l}],
+            wirePos = (out[[1]] + in[[1]]) / 2 + 0.1 RotationTransform[Replace[wireLabels, Automatic | True -> Pi / 2]] @ Normalize[out[[1]] - in[[1]]]
+        },
+            With[{wireLabel = Replace[wireLabelFunction[out, in, label], {Placed[l_, x_] :> {l, x}, l_ :> {l, wirePos}}]},
+                If[ MatchQ[wireLabels, None | False] || MatchQ[wireLabel[[1]], None | False] || MatchQ[wireLabel[[2]], None],
+                    Nothing,
+                    Text[ClickToCopy[Replace[wireLabel[[1]], Automatic | True -> label]], Replace[wireLabel[[2]], {Automatic -> wirePos, Offset[offset_] :> wirePos + offset}]]
+                ]
             ]
         ]
     ]

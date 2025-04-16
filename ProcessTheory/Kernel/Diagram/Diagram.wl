@@ -1158,10 +1158,15 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
                     },
 						With[{primitive = If[style1 === style2 || style1 === Automatic || style2 === Automatic,
                             {
-                                Arrowheads[{
-                                    If[port1["DualQ"], {- arrowSize, .3}, {arrowSize, .3}],
-                                    If[port2["DualQ"], {arrowSize, .7}, {- arrowSize, .7}]
-                                }],
+                                Arrowheads[
+                                    If[ port1["DualQ"] != port2["DualQ"],
+                                        {{If[port1["DualQ"], -1, 1] arrowSize, .5}},
+                                        {
+                                            If[port1["DualQ"], {- arrowSize, .3}, {arrowSize, .3}],
+                                            If[port2["DualQ"], {arrowSize, .7}, {- arrowSize, .7}]
+                                        }
+                                    ]
+                                ],
                                 With[{style = Replace[style1, Automatic :> Replace[style2, Automatic -> {}]]},
                                     If[ MatchQ[style, _Function],
                                         hold[style][#, "Net"] &,
@@ -1215,18 +1220,35 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
                         If[ wireLabelsQ,
                             Function @ With[{
                                 edgeShape = primitive /. {a :> #[[1]], b :> #[[-1]], hold[expr_] :> expr},
-                                wireLabel = Replace[wireLabelFunction[p1, p2, label], Automatic | True -> label]
+                                wireLabel = Replace[
+                                    Replace[wireLabelFunction[p1, p2, label], {
+                                        Placed[l_, pos_] :> {l, pos},
+                                        l_ :> {l, Automatic}
+                                    }],
+                                    {l_, pos_} :> {Replace[l, Automatic | True -> label], pos}
+                                ]
                             }, {
                                 edgeShape,
-                                If[ MatchQ[wireLabel, None | False],
+                                If[ MatchQ[wireLabel[[1]], None | False],
                                     Nothing,
                                     Text[
-                                        Style[ClickToCopy[InterpretationForm[wireLabel], x], Black],
-                                        With[{center = Quiet @ RegionCentroid[DiscretizeRegion @ RegionUnion[ResourceFunction["ExtractGraphicsPrimitives"][edgeShape] /. {Arrow[a_] :> a}]]},
-                                            If[ MatchQ[center, {_ ? NumericQ, _ ? NumericQ}],
-                                                center,
-                                                labelPos /. {a :> #[[1]], b :> #[[-1]]}
+                                        Style[ClickToCopy[InterpretationForm[wireLabel[[1]]], x], Black],
+                                        With[{pos = 
+                                            With[{center = Quiet @ RegionCentroid @ DiscretizeRegion[
+                                                    RegionUnion[ResourceFunction["ExtractGraphicsPrimitives"][edgeShape] /. {Arrow[Line[a_] | a_] :> Line[a]}],
+                                                    MaxCellMeasure -> {"Length", 0.1}
+                                                ]
+                                            },
+                                                If[ MatchQ[center, {_ ? NumericQ, _ ? NumericQ}],
+                                                    center,
+                                                    labelPos /. {a :> #[[1]], b :> #[[-1]]}
+                                                ]
                                             ]
+                                        },
+                                            Replace[wireLabel[[2]], {
+                                                Automatic :> pos,
+                                                Offset[offset_] :> pos + offset
+                                            }]
                                         ]
                                     ]
                                 ]
