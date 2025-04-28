@@ -114,6 +114,8 @@ Diagram[d_ ? DiagramQ, {}, {}, opts : OptionsPattern[]] := Diagram[Unevaluated @
 
 Diagram[d_ ? DiagramQ, inputs : Except[OptionsPattern[]], {}, opts : OptionsPattern[]] := Diagram[Unevaluated @@ d["HoldExpression"], inheritPorts[inputs, PortDual /@ d["InputPorts"]], {}, opts, d["DiagramOptions"]]
 
+Diagram[d_ ? DiagramQ, {}] := d
+
 Diagram[d_ ? DiagramQ, {}, opts : OptionsPattern[]] := Diagram[d, Inherited, {}, opts]
 
 Diagram[d_ ? DiagramQ, output : Except[OptionsPattern[]], opts : OptionsPattern[]] := Diagram[d, Inherited, output, opts]
@@ -185,7 +187,7 @@ Diagram[opts : OptionsPattern[]] := Diagram[KeySort[<|
     ]|>
 ]]
 
-Diagram[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[Replace[Normal[Merge[{opts, d["Data"]}, List]], head_[k_, {{v_, ___}}] :> head[k, v], 1]]
+Diagram[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[Replace[Normal[Merge[{opts, d["AbsoluteData"]}, List]], head_[k_, {{v_, ___}}] :> head[k, v], 1]]
 
 
 (* ::Subsubsection:: *)
@@ -385,6 +387,12 @@ DiagramProp[d_, "OutputPorts", neutralQ : _ ? BooleanQ : True] := If[neutralQ, d
 DiagramProp[HoldPattern[Diagram[data_Association]], prop_] /; ! MemberQ[prop, $DiagramProperties] && KeyExistsQ[data, prop] := Lookup[data, prop]
 
 DiagramProp[d_, "HoldExpression"] := Extract[d["Data"], "Expression", HoldForm]
+
+DiagramProp[d_, "AbsoluteData"] := MapAt[
+    Replace[#, {_[k : "PortArrows" | "PortLabels", v_] :> (k -> fillAutomatic[d["OptionValue"[k]], {d["InputArity"], d["OutputArity"]}, Automatic])}, 1] &,
+    d["Data"],
+    Key["DiagramOptions"]
+]
 
 collectUnaries[(head : DiagramDual | DiagramFlip | DiagramReverse)[d_Diagram]] := Prepend[collectUnaries[d["HoldExpression"]], head]
 collectUnaries[HoldForm[d_]] := collectUnaries[Unevaluated[d]]
@@ -1153,7 +1161,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
                         a = VectorSymbol["p", 2], b = VectorSymbol["q", 2],
                         lindep = v == w && TrueQ[Quiet[Chop[Det[{normal1, normal2}]]] == 0],
                         wireLabelFunction = Replace[OptionValue["WireLabelFunction"], {Automatic | True -> (#3 &), None | False -> ("" &)}],
-                        p1 = port1, p2 = port2,
+                        p1 = points1, p2 = points2,
                         label = Replace[Replace[label2, {Automatic -> label1, _ -> label2}], {Placed[Automatic | True, _] | Automatic | True -> port1, Placed[l_, _] :> l}]
                     },
 						With[{primitive = If[style1 === style2 || style1 === Automatic || style2 === Automatic,
@@ -1296,7 +1304,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
 DiagramsFreePorts[diagrams : {___Diagram ? DiagramQ}] := Keys @ Select[CountsBy[Catenate[Through[Through[diagrams["Flatten"]]["Ports"]]], #["HoldExpression"] &], EqualTo[1]]
 
 
-Options[ToDiagramNetwork] = Options[toDiagramNetwork] = Join[{"Unique" -> True}, Options[DiagramNetwork]];
+Options[ToDiagramNetwork] := Options[toDiagramNetwork] = Join[{"Unique" -> True}, Options[DiagramNetwork]];
 
 ToDiagramNetwork[d_Diagram, opts : OptionsPattern[]] := If[d["NetworkQ"],
     Diagram[d, Inherited, Inherited, FilterRules[{opts}, Options[Diagram]]]
