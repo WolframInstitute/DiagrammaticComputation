@@ -46,7 +46,7 @@ reverseTree[tree_] := Replace[Unevaluated[tree], {
 }]
 
 
-makePorts[xs_List] := Function[Null, Port[Unevaluated[##]], HoldAll] @@@ Flatten @* HoldForm /@ Replace[xs, SuperStar[HoldForm[x_]] :> HoldForm[SuperStar[x]], 1]
+makePorts[xs_List] := Function[Null, Wolfram`DiagrammaticComputation`Port`Port[Unevaluated[##]], HoldAll] @@@ Flatten @* HoldForm /@ Replace[xs, SuperStar[HoldForm[x_]] :> HoldForm[SuperStar[x]], 1]
 
 
 tag[expr_, t_] := Replace[expr, {

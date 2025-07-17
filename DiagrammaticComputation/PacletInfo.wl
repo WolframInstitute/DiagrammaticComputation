@@ -1,10 +1,13 @@
+(* ::Package:: *)
+
 PacletObject[
   <|
     "Name" -> "Wolfram/DiagrammaticComputation",
-    "Description" -> "Circuit and string diagrams",
+    "Description" -> "Abstract compositional diagrammatic calculus",
+    "Creator" -> "Nik Murzin, Ian Ford",
+    "License" -> "MIT",
     "PublisherID" -> "Wolfram",
-    "Creator" -> "nikm, ianf",
-    "Version" -> "0.0.1",
+    "Version" -> "1.0.0",
     "WolframVersion" -> "14.1+",
     "PrimaryContext" -> "Wolfram`DiagrammaticComputation`",
     "Extensions" -> {
@@ -30,9 +33,7 @@ PacletObject[
           "Wolfram`DiagrammaticComputation`TensorDiagram"
         },
         "Root" -> "Kernel",
-        "Context" -> {
-          "Wolfram`DiagrammaticComputation`"
-        }
+        "Context" -> {"Wolfram`DiagrammaticComputation`"}
       }
     }
   |>
