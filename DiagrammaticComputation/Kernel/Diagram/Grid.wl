@@ -585,7 +585,8 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
         FormatType -> StandardForm,
         BaseStyle -> {
             GraphicsHighlightColor -> Automatic
-        }
+        },
+        ImageSize -> Small
     ]
 ]
 

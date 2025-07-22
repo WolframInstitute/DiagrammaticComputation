@@ -7,7 +7,7 @@ PacletObject[
     "Creator" -> "Nik Murzin, Ian Ford",
     "License" -> "MIT",
     "PublisherID" -> "Wolfram",
-    "Version" -> "1.0.0",
+    "Version" -> "1.0.2",
     "WolframVersion" -> "14.1+",
     "PrimaryContext" -> "Wolfram`DiagrammaticComputation`",
     "Extensions" -> {
@@ -34,7 +34,8 @@ PacletObject[
         },
         "Root" -> "Kernel",
         "Context" -> {"Wolfram`DiagrammaticComputation`"}
-      }
+      },
+      {"Documentation", "Language" -> "English"}
     }
   |>
 ]

@@ -10,6 +10,7 @@ DiagramReverse
 DiagramProduct
 DiagramSum
 DiagramComposition
+DiagramRightComposition
 DiagramNetwork
 SingletonDiagram
 IdentityDiagram
@@ -293,6 +294,10 @@ Options[SingletonDiagram] = Options[Diagram]
 SingletonDiagram[diagram_Diagram, opts : OptionsPattern[]] := Diagram[diagram, "Expression" :> Diagram[diagram], opts]
 
 
+
+makePorts[xs_List] := Function[Null, Port[Unevaluated[##]], HoldAll] @@@ Flatten @* HoldForm /@ Replace[xs, SuperStar[HoldForm[x_]] :> HoldForm[SuperStar[x]], 1]
+
+
 Options[IdentityDiagram] = Options[PermutationDiagram] = Options[Diagram]
 
 IdentityDiagram[xs_List, opts : OptionsPattern[]] := With[{ports = makePorts[xs]},
@@ -340,6 +345,11 @@ DiagramComposition[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
         "InputPorts" -> PortDual /@ ports[[2]]
     ]
 ]
+
+
+Options[DiagramRightComposition] := Options[DiagramComposition]
+
+DiagramRightComposition[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := DiagramComposition[##, opts] & @@ Reverse[{ds}]
 
 
 (* network of diagrams exposing free ports *)
@@ -609,6 +619,7 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
             "UpsideDownTriangle" :> transform @ Polygon[{{- w / 2, h / 2}, {0, - h / 2}, {w / 2, h / 2}} + Threaded[c]],
             "Triangle" :> transform @ Polygon[{{- w / 2, - h / 2}, {0, h / 2}, {w / 2, - h / 2}} + Threaded[c]],
             "Circle" :> transform @ Circle[c, {w, h} / 2],
+            "Disk" :> transform @ Disk[c, {w, h} / 2],
             "CrossWires" :> With[{
                 points = d["PortArrows", opts],
                 inputs = PositionIndex[func /@ Through[d["InputPorts"]["Dual"]]],
@@ -811,6 +822,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
     ]
 },
     FilterRules[{opts, diagram["DiagramOptions"]}, Options[Graphics]],
+    ImageSize -> Tiny,
     FormatType -> StandardForm
 ]]
 
