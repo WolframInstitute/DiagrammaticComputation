@@ -13,6 +13,7 @@ DiagramComposition
 DiagramRightComposition
 DiagramNetwork
 SingletonDiagram
+EmptyDiagram
 IdentityDiagram
 PermutationDiagram
 
@@ -296,6 +297,14 @@ SingletonDiagram[diagram_Diagram, opts : OptionsPattern[]] := Diagram[diagram, "
 
 
 makePorts[xs_List] := Function[Null, Port[Unevaluated[##]], HoldAll] @@@ Flatten @* HoldForm /@ Replace[xs, SuperStar[HoldForm[x_]] :> HoldForm[SuperStar[x]], 1]
+
+Options[EmptyDiagram] = Options[Diagram]
+
+EmptyDiagram[opts : OptionsPattern[]] := Diagram[
+    opts,
+    "ShowLabel" -> False,
+    "Shape" -> None
+]
 
 
 Options[IdentityDiagram] = Options[PermutationDiagram] = Options[Diagram]
