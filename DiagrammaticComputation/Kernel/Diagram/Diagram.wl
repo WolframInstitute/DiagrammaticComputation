@@ -1,4 +1,9 @@
-BeginPackage["Wolfram`DiagrammaticComputation`Diagram`", {"Wolfram`DiagrammaticComputation`Utilities`", "Wolfram`DiagrammaticComputation`Port`", "Wolfram`DiagrammaticComputation`Diagram`Grid`"}];
+BeginPackage["Wolfram`DiagrammaticComputation`Diagram`", {
+    "Wolfram`DiagrammaticComputation`Utilities`",
+    "Wolfram`DiagrammaticComputation`Port`",
+    "Wolfram`DiagrammaticComputation`Diagram`Grid`",
+    "Wolfram`DiagrammaticComputation`Diagram`Surgery`"
+}];
 
 Diagram
 DiagramQ
@@ -869,40 +874,66 @@ DiagramsPortGraph[diagrams : {___Diagram ? DiagramQ}, opts : OptionsPattern[]] :
 
 
 DiagramGraphSimplify[g_ ? GraphQ] := Fold[
-    {net, v} |-> Block[{d = AnnotationValue[{net, v}, "Diagram"], wires, out, in, ports},
+    {net, v} |-> Block[{d = AnnotationValue[{net, v}, "Diagram"], wires, out, in, ports, portWires},
         (wires = If[MatchQ[#, "Wires"[_]], First[#], {}]) & @ d["OptionValue"["Shape"]];
         If[wires === {}, Return[net, Block]];
         in = EdgeList[net, DirectedEdge[_, v]];
         out = EdgeList[net, DirectedEdge[v, _]];
         ports = Join[SortBy[in, #[[1, 3]] &], SortBy[out, #[[2, 3]] &]];
-        VertexReplace[
-            VertexDelete[
-                net, 
-                Append[v] @ Replace[ports, DirectedEdge[_, p_List] | DirectedEdge[p_List, _] :> p, 1]
-            ],
-            First @ Solve[Equal @@ Replace[
-                    ports[[#]],
+        portWires = DeleteCases[{{_, _, {}}, {_, _, {}}}] @ Map[
+            With[{ps = ports[[#]]},
+                Replace[
+                    ps,
                     {
-                        DirectedEdge[_, out_List] :> Splice @ EdgeList[net, DirectedEdge[out, _]][[All, 2]], 
-                        DirectedEdge[in_List, _] :> Splice @ EdgeList[net, DirectedEdge[_, in]][[All, 1]]
+                        DirectedEdge[_, out_List] :> ({out, #, VertexOutComponent[net, #, {1}]} & @ EdgeList[net, DirectedEdge[out, _]][[1, 2]]), 
+                        DirectedEdge[in_List, _] :> ({in, #, VertexInComponent[net, #, {1}]} & @ EdgeList[net, DirectedEdge[_, in]][[1, 1]])
                     }, 
                     1
-                ] & /@ wires
-			]
+                ]
+            ] &,
+            wires
+        ];
+        If[ Length[portWires] == Length[wires],
+            VertexReplace[
+                VertexDelete[
+                    net, 
+                    Append[v] @ Catenate[portWires[[All, All, 1]]]
+                ],
+                First @ Solve[Equal @@@ portWires[[All, All, 2]]]
+            ],
+            net
         ]
     ],
     g,
     VertexList[g, _Integer]
 ]
 
-SimplifyDiagram[diag_ ? DiagramQ] := With[{portFunction = If[diag["NetworkQ"], diag["PortFunction"], #["HoldExpression"] &]}, {
-	net = DiagramsNetGraph[
-            diag["Network", "Arrange" -> False]["Graph", "Simplify" -> True, "PortFunction" -> portFunction],
-            "PortFunction" -> portFunction, "UnarySpiders" -> False, "BinarySpiders" -> False
-        ] //
-        DiagramNetwork[##, "PortFunction" -> portFunction] & @@ AnnotationValue[{#, VertexList[#]}, "Diagram"] &
+
+restorePort[p_Port] := Function[Null, Port[p, "Expression" :> #], HoldFirst] @@ Replace[p["HoldExpression"], {
+    HoldForm[Interpretation[x_, _]] :> HoldForm[x],
+    HoldForm[PortDual[Interpretation[HoldForm[x_], _]]] :> HoldForm[x]
+}]
+
+restorePorts[d_Diagram] := DiagramAssignPorts[d, {restorePort /@ d["OutputPorts"], restorePort /@ d["InputPorts"]}]
+
+
+SimplifyDiagram[diag_ ? DiagramQ] := Block[{
+    portFunction = If[diag["NetworkQ"], diag["PortFunction"], #["HoldExpression"] &],
+	net,
+    in = PortDual /@ diag["InputPorts"],
+    out = diag["OutputPorts"]
 },
-	If[diag["NetworkQ"], net, net["Arrange"]]
+    net = diag["Network", "Arrange" -> False];
+    net = DiagramsNetGraph[
+        net["Graph", "Simplify" -> True, "PortFunction" -> portFunction],
+        "PortFunction" -> portFunction, "UnarySpiders" -> False, "BinarySpiders" -> False
+    ];
+    net = DiagramNetwork[##, "PortFunction" -> portFunction] & @@ AnnotationValue[{net, VertexList[net]}, "Diagram"];
+	net = Diagram[restorePorts @ If[diag["NetworkQ"], net, net["Arrange"]], "PortFunction" -> diag["PortFunction"]];
+    If[ portFunction /@ PortDual /@ net["InputPorts"] === portFunction /@ in && portFunction /@ net["OutputPorts"] === portFunction /@ out,
+        net,
+        Diagram[SingletonDiagram[net], in, out]
+    ]
 ]
 
 
@@ -1032,7 +1063,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
     portFunction = OptionValue["PortFunction"]
 },
 	diagrams = AssociationMap[AnnotationValue[{graph, #}, "Diagram"]["Flatten"] &, diagramVertices];
-	If[Length[diagrams] == 0, Return[Graphics[FilterRules[Join[{opts}, Options[graph]], Options[Graphics]]]]];
+	If[Length[diagrams] == 0, Return[Graph[{}, {}, FilterRules[Join[{opts}, Options[graph]], Options[Graph]]]]];
 	embedding = AssociationThread[VertexList[graph], GraphEmbedding[graph]];
 	If[EdgeCount[graph] == 0 && VertexCount[graph] > 1, embedding = ScalingTransform[{1, .5} / Max[#2 - #1 & @@@ CoordinateBounds[embedding]], Mean[embedding]][embedding]];
 	orientations = Switch[
