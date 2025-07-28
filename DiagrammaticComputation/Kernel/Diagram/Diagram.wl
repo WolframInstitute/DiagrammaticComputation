@@ -309,9 +309,13 @@ EmptyDiagram[opts : OptionsPattern[]] := Diagram[
 
 Options[IdentityDiagram] = Options[PermutationDiagram] = Options[Diagram]
 
-IdentityDiagram[xs_List, opts : OptionsPattern[]] := With[{ports = makePorts[xs]},
-    Diagram[Interpretation["1", Identity], ports, ports, opts, "Shape" -> "Wires"[Thread[{Range[Length[xs]], Length[xs] + Range[Length[xs]]}]], "ShowLabel" -> False, "PortFunction" -> (#["HoldExpression"] &)]
+IdentityDiagram[xs_List -> ys_List, opts : OptionsPattern[]] /; Length[xs] == Length[ys] := With[{in = makePorts[xs], out = makePorts[ys]},
+    Diagram[Interpretation["1", Identity], in, out, opts, "Shape" -> "Wires"[Thread[{Range[Length[xs]], Length[xs] + Range[Length[xs]]}]], "ShowLabel" -> False, "PortFunction" -> (#["HoldExpression"] &)]
 ]
+
+IdentityDiagram[xs_List, opts : OptionsPattern[]] := IdentityDiagram[xs -> xs, opts]
+
+IdentityDiagram[x_ -> y_, opts : OptionsPattern[]] := IdentityDiagram[{x} -> {y}, opts]
 
 IdentityDiagram[x_, opts : OptionsPattern[]] := IdentityDiagram[{x}, opts]
 
