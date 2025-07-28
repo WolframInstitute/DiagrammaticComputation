@@ -1622,7 +1622,7 @@ TensorDiagram[scalar_, opts : OptionsPattern[]] := Diagram[scalar, {}, {}, Filte
 $FunctionPortsType = "Association" | "List" | "Sequence"
 $FunctionType = $FunctionPortsType -> $FunctionPortsType
 
-Options[DiagramFunction] = {"Input" -> "Sequence", "Output" -> "List", "Parallel" -> False, "PortFunction" -> Function[#["Name"]]};
+Options[DiagramFunction] = {"Input" -> "Sequence", "Output" -> "Sequence", "Parallel" -> False, "PortFunction" -> Function[#["Name"]]};
  
 DiagramFunction[diagram_Diagram, opts : OptionsPattern[]] := Enclose @ Replace[diagram["HoldExpression"], {
 	HoldForm[(Diagram | DiagramDual)[d_]] :> DiagramFunction[d, opts]
@@ -1634,7 +1634,7 @@ DiagramFunction[diagram_Diagram, opts : OptionsPattern[]] := Enclose @ Replace[d
 	HoldForm[DiagramComposition[ds___]] :> Composition @@ (DiagramFunction[#, opts] & /@ {ds})
 	,
 	HoldForm[DiagramProduct[ds___]] :> With[{args = TakeList[Slot /@ Range[Total[#]], #] & @ Through[{ds}["InputArity"]]},
-		Function @@ Switch[OptionValue["Input"], "List" | "Association", Map[Apply[Join]], "Sequence", Map[Apply[Sequence]]][
+		Function @@ ReplaceAt[Switch[OptionValue["Input"], "List" | "Association", x_ :> Join @@ x, "Sequence", x_ :> Sequence @@ x], 1][
             If[ TrueQ[OptionValue["Parallel"]],
                 WaitAll /@ List @@@
                     Hold @ Evaluate @ Flatten[Hold @@ MapThread[If[Length[#2] == 1, With[{x = #2[[1]]}, Hold[ParallelSubmit[#1[x]]]], Hold[ParallelSubmit[#1 @@ #2]]] &, #]] &,
