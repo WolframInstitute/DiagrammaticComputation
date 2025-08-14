@@ -160,7 +160,7 @@ Replace[diagram["HoldExpression"], {
         With[{g = DiagramsNetGraph[DiagramArrange[#, opts] & /@ {ds}, FilterRules[{opts, "RemoveCycles" -> True, "BinarySpiders" -> True, diagram["DiagramOptions"]}, Options[DiagramsNetGraph]], "UnarySpiders" -> False]},
             If[ TrueQ[OptionValue["AssignPorts"]], DiagramAssignPorts, Identity] @ setDiagram[
                 diagram,
-                SingletonDiagram @ DiagramComposition[##, FilterRules[{opts, diagram["DiagramOptions"]}, Options[DiagramComposition]]] & @@
+                DiagramComposition[##, FilterRules[{opts, diagram["DiagramOptions"]}, Options[DiagramComposition]]] & @@
                     Reverse @ Switch[OptionValue["NetworkMethod"],
                         "TopologicalSort", Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, TopologicalSort[g]}, "Diagram"],
                         "Stratify", RowDiagram[Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, Developer`FromPackedArray[#]}, "Diagram"]] & /@ ResourceFunction["VertexStratify"][g],

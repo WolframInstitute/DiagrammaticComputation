@@ -942,8 +942,17 @@ restorePort[p_Port] := Function[Null, Port[p, "Expression" :> #], HoldFirst] @@ 
     HoldForm[PortDual[Interpretation[HoldForm[x_], _]]] :> HoldForm[x]
 }]
 
-restorePorts[d_Diagram] := DiagramAssignPorts[d, {restorePort /@ d["OutputPorts"], restorePort /@ d["InputPorts"]}]
+restorePorts[d_Diagram] := DiagramAssignPorts[d, {restorePort /@ d["InputPorts"], restorePort /@ d["OutputPorts"]}]
 
+toIdentities[ds : {__Diagram}] := Map[
+	Replace[#["HoldExpression"],
+		{
+			_[Interpretation["\[Pi]", cycles_Cycles]] :> Splice[IdentityDiagram /@ Thread[PortDual /@ #["InputPorts"] -> Permute[#["OutputPorts"], cycles]]],
+			_ -> #
+		}
+	] &,
+	ds
+]
 
 SimplifyDiagram[diag_ ? DiagramQ] := Block[{
     portFunction = If[diag["NetworkQ"], diag["PortFunction"], #["HoldExpression"] &],
@@ -956,7 +965,7 @@ SimplifyDiagram[diag_ ? DiagramQ] := Block[{
         net["Graph", "Simplify" -> True, "PortFunction" -> portFunction],
         "PortFunction" -> portFunction, "UnarySpiders" -> False, "BinarySpiders" -> False
     ];
-    net = DiagramNetwork[##, "PortFunction" -> portFunction] & @@ AnnotationValue[{net, VertexList[net]}, "Diagram"];
+    net = DiagramNetwork[##, "PortFunction" -> portFunction] & @@ toIdentities @ AnnotationValue[{net, VertexList[net]}, "Diagram"];
 	net = Diagram[restorePorts @ If[diag["NetworkQ"], net, net["Arrange"]], "PortFunction" -> diag["PortFunction"]];
     If[ portFunction /@ PortDual /@ net["InputPorts"] === portFunction /@ in && portFunction /@ net["OutputPorts"] === portFunction /@ out,
         net,
