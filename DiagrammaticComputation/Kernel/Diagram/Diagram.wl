@@ -69,6 +69,7 @@ $DefaultPortFunction = Function[Replace[HoldForm[Evaluate[#["Apply", #["HoldName
 
 $DiagramDefaultGraphics = If[#["SingletonNodeQ"], #["Graphics"], #["Grid"]] &
 
+$Black = If[$VersionNumber >= 14.3, LightDarkSwitched[Black, White], Black];
 
 (* ::Subsection:: *)
 (* Validation *)
@@ -710,7 +711,7 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
         }
     ];
     If[ MatchQ[d["OptionValue"["Outline"], opts], Automatic | True],
-        primitives = {primitives, EdgeForm[Directive[Dashed, Black]], FaceForm[None], transform[Rectangle[{c[[1]]- w / 2, c[[2]] - h / 2}, {c[[1]] + w / 2, c[[2]] + h / 2}]]},
+        primitives = {primitives, EdgeForm[Directive[Dashed, $Black]], FaceForm[None], transform[Rectangle[{c[[1]]- w / 2, c[[2]] - h / 2}, {c[[1]] + w / 2, c[[2]] + h / 2}]]},
         primitives
     ]
 ]
@@ -824,7 +825,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
     portArrowFunction = Replace[diagram["OptionValue"["PortArrowFunction"], opts], Automatic -> (Arrow[If[#1["DualQ"], Reverse, Identity] @ #2] &)],
     portLabelFunction = Replace[diagram["OptionValue"["PortLabelFunction"], opts], Automatic -> $DefaultPortLabelFunction]
 }, Graphics[{
-    EdgeForm[Black], FaceForm[background], 
+    EdgeForm[$Black], FaceForm[background], 
     Confirm @ diagram["Shape", opts],
     Replace[
         Replace[labelFunction,
@@ -1002,7 +1003,7 @@ DiagramsGraph[diagrams : {___Diagram ? DiagramQ}, opts : OptionsPattern[]] := Bl
         ],
         VertexSize -> {_ -> Medium, _Integer -> Large, {__Integer} -> Medium},
         VertexShapeFunction -> {_ -> "Diamond", _Integer -> "Square", {__Integer} -> "Circle"},
-        VertexStyle -> Transparent,
+        VertexStyle -> Directive[EdgeForm[$Black], FaceForm[None]],
         PerformanceGoal -> "Quality"
     ];
     indexedPorts = MapIndexed[#2 &, ports, {3}];
@@ -1216,7 +1217,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
 						transform = RotationTransform[{{0, 1}, orientation}] @* ScalingTransform[scale {1, 1}]
 					},
 						Function[{
-							Black, FaceForm[None],
+							$Black, FaceForm[None],
 							GeometricTransformation[shape, TranslationTransform[#1] @* transform]
 						}]
 					],
@@ -1333,7 +1334,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
                                 If[ MatchQ[wireLabel[[1]], None | False],
                                     Nothing,
                                     Text[
-                                        Style[ClickToCopy[InterpretationForm[wireLabel[[1]]], x], Black],
+                                        Style[ClickToCopy[InterpretationForm[wireLabel[[1]]], x], $Black],
                                         With[{pos = 
                                             With[{center = Quiet @ RegionCentroid @ DiscretizeRegion[
                                                     RegionUnion[ResourceFunction["ExtractGraphicsPrimitives"][edgeShape] /. {Arrow[Line[a_] | a_] :> Line[a]}],
