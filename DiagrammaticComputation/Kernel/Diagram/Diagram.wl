@@ -17,10 +17,15 @@ DiagramSum
 DiagramComposition
 DiagramRightComposition
 DiagramNetwork
+ToDiagramNetwork
 SingletonDiagram
 EmptyDiagram
+CapDiagram
+CupDiagram
 IdentityDiagram
 PermutationDiagram
+SpiderDiagram
+CopyDiagram
 
 DiagramGraphics
 DiagramsFreePorts
@@ -311,6 +316,10 @@ EmptyDiagram[opts : OptionsPattern[]] := Diagram[
     "Shape" -> None
 ]
 
+CupDiagram[x_] := Diagram["\[DoubleStruckCapitalI]", {PortDual[x], x}, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False]
+
+CapDiagram[x_] := Diagram["\[DoubleStruckCapitalI]", {x, PortDual[x]}, {}, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False]
+
 
 Options[IdentityDiagram] = Options[PermutationDiagram] = Options[Diagram]
 
@@ -343,6 +352,25 @@ PermutationDiagram[inputs_List, perm_Cycles, opts___] := PermutationDiagram[inpu
 PermutationDiagram[inputs_List, outputs_List, perm_Cycles, opts___] := With[{len = Min[Length[inputs], Length[outputs]]},
     Diagram[Interpretation["\[Pi]", perm], makePorts[inputs], makePorts[outputs], opts, "Shape" -> "Wires"[Thread[{Range[len], Length[inputs] + Permute[Range[len], InversePermutation[perm]]}]], "ShowLabel" -> False]
 ]
+
+
+SpiderDiagram[in_List, out_List, opts : OptionsPattern[]] := Diagram["Z",
+    in, out,
+    opts,
+  	"ShowLabel" -> False,
+  	"Shape" -> "Disk",
+  	"Width" -> 1 / 2, "Height" -> 1 / 2
+]
+
+SpiderDiagram[x : Except[_List], out_, opts___] := SpiderDiagram[{x}, out, opts]
+
+SpiderDiagram[in_, y : Except[_List], opts___] := SpiderDiagram[in, {y}]
+
+SpiderDiagram[x_] := SpiderDiagram[{}, {x}]
+
+
+CopyDiagram[x_, opts___] := SpiderDiagram[x, {x, x}, opts, "Shape" -> "Wires", "Width" -> 1, "Height" -> 1]
+
 
 (* vertical product *)
 
@@ -717,7 +745,7 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := Block[{
             Replace[#3, {
                 Placed[_, p : Except[None]] :> placeArrow[Replace[p, Automatic :> If[#4["NeutralQ"], Left, Top]]],
                 _ :> Replace[shape, {
-                    "Circle" :> With[{p = {w Cos[#1], h Sin[#1]}}, {c + p / 2, c + p / 2 + Normalize[p] / 4}],
+                    "Circle" | "Disk" :> With[{p = {w Cos[#1], h Sin[#1]}}, {c + p / 2, c + p / 2 + Normalize[p] / 4}],
                     "Point" :> With[{p = {w Cos[#1], h Sin[#1]}}, {c, c + Normalize[p]}],
                     _ :> placeArrow[If[#4["NeutralQ"], Left, Top]]
                 }]
@@ -734,7 +762,7 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := Block[{
             Replace[#3, {
                 Placed[_, p : Except[None]] :> placeArrow[Replace[p, Automatic :> If[#4["NeutralQ"], Right, Bottom]]],
                 _ :> Replace[shape, {
-                    "Circle" :> With[{p = {w Cos[#1], h Sin[#1]}}, {c + p / 2, c + p / 2 + Normalize[p] / 4}],
+                    "Circle" | "Disk" :> With[{p = {w Cos[#1], h Sin[#1]}}, {c + p / 2, c + p / 2 + Normalize[p] / 4}],
                     "Point" :> With[{p = {w Cos[#1], h Sin[#1]}}, {c, c + Normalize[p]}],
                     _ :> placeArrow[If[#4["NeutralQ"], Right, Bottom]]
                 }]
