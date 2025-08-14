@@ -125,23 +125,25 @@ LambdaDiagrams[Interpretation["\[Lambda]", tag_][body_][arg_], depth_] := Block[
 	bodyDiagram = DiagramNetwork @@ LambdaDiagrams[body /. Interpretation[v_Integer, tag] :> Interpretation[v, Evaluate @ out], depth + 1];
 	Join[
 		{
-			Diagram["\[Lambda]", \[FormalX][tag], tag, "Shape" -> "Circle"],
-			Diagram["\[Application]", {bodyDiagram["OutputPorts"][[1]], out}, \[FormalX][tag], "Shape" -> "Triangle"]
+			Diagram["\[Lambda]", \[FormalX][tag], \[FormalY][tag], "Shape" -> "Disk"],
+			Diagram["\[Application]", Append[bodyDiagram["OutputPorts"], out], \[FormalX][tag], "Shape" -> "UpsideDownTriangle"]
 		},
 		bodyDiagram["SubDiagrams"], argDiagram["SubDiagrams"]
 	]
 ] 
-LambdaDiagrams[Interpretation["\[Lambda]", tag_][body_], depth_] := With[{bodyDiagrams = LambdaDiagrams[body, depth]}, Join[{Diagram["\[Lambda]", \[FormalX][tag], tag, "Shape" -> "Circle"]}, bodyDiagrams]]
-LambdaDiagrams[Interpretation[_Integer, f_][Interpretation[_Integer, x_]], _] := {Diagram["\[Application]", {f, x}, Unique["x"], "Shape" -> "Triangle"]}
-LambdaDiagrams[Interpretation[_Integer, tag : _Port | _Symbol | _String][arg_], depth_] := With[{argDiagram = DiagramNetwork @@ LambdaDiagrams[arg, depth]},
-	Join[{Diagram["\[Application]", {tag, argDiagram["OutputPorts"][[1]]}, Unique["x"], "Shape" -> "Triangle"]}, argDiagram["SubDiagrams"]]
+LambdaDiagrams[Interpretation["\[Lambda]", tag_][body_], depth_] := With[{bodyDiagram = DiagramNetwork @@ LambdaDiagrams[body, depth]},
+	Join[{Diagram["\[Lambda]", Append[bodyDiagram["OutputPorts"], \[FormalX][tag]], \[FormalY][tag], "Shape" -> "Disk"]}, bodyDiagram["SubDiagrams"]]
 ]
-LambdaDiagrams[Interpretation[_Integer, tag : _Port | _Symbol | _String], _] := With[{port = Port[tag]}, {Diagram["", port, \[FormalO][port["Name"]], "Shape" -> "Circle"]}]
+LambdaDiagrams[Interpretation[_Integer, f_][Interpretation[_Integer, x_]], _] := {Diagram["\[Application]", {f, x}, Unique["x"], "Shape" -> "UpsideDownTriangle"]}
+LambdaDiagrams[Interpretation[_Integer, tag : _Port | _Symbol | _String][arg_], depth_] := With[{argDiagram = DiagramNetwork @@ LambdaDiagrams[arg, depth]},
+	Join[{Diagram["\[Application]", Prepend[argDiagram["OutputPorts"], tag], Unique["x"], "Shape" -> "UpsideDownTriangle"]}, argDiagram["SubDiagrams"]]
+]
+LambdaDiagrams[Interpretation[_Integer, tag : _Port | _Symbol | _String], _] := With[{port = Port[tag]}, {Diagram["", port, \[FormalO][port["Name"]], "Shape" -> "Disk"]}]
 LambdaDiagrams[_Interpretation[_Integer, _], _] := {}
 LambdaDiagrams[(f : Except[Interpretation])[xs___], depth_] := Block[{fDiagram, xDiagrams = DiagramNetwork @@ LambdaDiagrams[#, depth] & /@ {xs}, out},
 	out = Catenate[Through[xDiagrams["OutputPorts"]]];
 	fDiagram = DiagramNetwork @@ LambdaDiagrams[f /. Interpretation[_Integer, var_Integer] :> Interpretation[var, Evaluate @ out], depth];
-	Join[fDiagram["SubDiagrams"], {Diagram["\[Application]", Join[fDiagram["OutputPorts"], out], Unique["x"], "Shape" -> "Triangle"]},
+	Join[fDiagram["SubDiagrams"], {Diagram["\[Application]", Join[fDiagram["OutputPorts"], out], Unique["x"], "Shape" -> "UpsideDownTriangle"]},
 		Catenate[Through[xDiagrams["SubDiagrams"]]]]
 ]
 LambdaDiagrams[x_, _] := {Diagram[x, Unique["x"], "Shape" -> "UpsideDownTriangle"]}
@@ -153,12 +155,12 @@ ToDiagram::missing = "Lambda package is not loaded. Please install the package w
 Rule[StripOnInput, False]], RowBox[List[\"PacletInstall\", \"[\", \
 \"\\\"Wolfram/Lambda\\\"\", \"]\"]]], \"ClickToCopy2\"]\)";
 
-Options[LambdaDiagram] = Options[DiagramNetwork];
-LambdaDiagram[expr_, depth_Integer : 0, opts : OptionsPattern[]] := Module[{lambdaIdx = 1},
+Options[LambdaDiagram] = Join[{ColorFunction -> Wolfram`Lambda`Private`$DefaultColorFunction}, Options[DiagramNetwork]];
+LambdaDiagram[expr_, depth_Integer : 0, opts : OptionsPattern[]] := Block[{lambdaIdx = 1, colorFunction = OptionValue[ColorFunction]},
 	Quiet[Check[Needs["Wolfram`Lambda`"], Message[ToDiagram::missing]; Return[$Failed]], {Get::noopen, Needs::nocont}];
 	DiagramNetwork[##, opts, "ShowPortLabels" -> False, "PortLabels" -> False, "ShowWireLabels" -> False] & @@ 
 		Map[
-			If[#["HoldExpression"] === HoldForm["\[Lambda]"], Diagram[#, "Expression" -> Style["\[Lambda]", 16, Bold, ColorData[109][lambdaIdx++]]], #] &,
+			Diagram[If[#["HoldExpression"] === HoldForm["\[Lambda]"], Diagram[#, "Expression" -> Style["\[Lambda]", 16, Bold, ColorData[109][lambdaIdx++]]], #], "Width" -> 1, "Height" -> 1] &,
 			LambdaDiagrams[Wolfram`Lambda`TagLambda[expr], depth]
 		]
 ]
