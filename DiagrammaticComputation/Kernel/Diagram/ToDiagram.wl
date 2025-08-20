@@ -146,7 +146,7 @@ LambdaDiagrams[(f : Except[Interpretation])[xs___], depth_] := Block[{fDiagram, 
 	Join[fDiagram["SubDiagrams"], {Diagram["\[Application]", Join[fDiagram["OutputPorts"], out], Unique["x"], "Shape" -> "UpsideDownTriangle"]},
 		Catenate[Through[xDiagrams["SubDiagrams"]]]]
 ]
-LambdaDiagrams[x_, _] := {Diagram[x, Unique["x"], "Shape" -> "UpsideDownTriangle"]}
+LambdaDiagrams[x_, _] := {Diagram[x, Unique["x"], "Shape" -> "Triangle"]}
 
 
 ToDiagram::missing = "Lambda package is not loaded. Please install the package with \!\(\*TemplateBox[List[StyleBox[TagBox[RowBox[List[\"PacletInstall\", \
@@ -160,7 +160,7 @@ LambdaDiagram[expr_, depth_Integer : 0, opts : OptionsPattern[]] := Block[{lambd
 	Quiet[Check[Needs["Wolfram`Lambda`"], Message[ToDiagram::missing]; Return[$Failed]], {Get::noopen, Needs::nocont}];
 	DiagramNetwork[##, opts, "ShowPortLabels" -> False, "PortLabels" -> False, "ShowWireLabels" -> False] & @@ 
 		Map[
-			Diagram[If[#["HoldExpression"] === HoldForm["\[Lambda]"], Diagram[#, "Expression" -> Style["\[Lambda]", 16, Bold, ColorData[109][lambdaIdx++]]], #], "Width" -> 1, "Height" -> 1] &,
+			Diagram[If[#["HoldExpression"] === HoldForm["\[Lambda]"], Diagram[#, "Expression" -> Style["\[Lambda]", 16, Bold, colorFunction[lambdaIdx++]]], #], "Width" -> 1, "Height" -> 1] &,
 			LambdaDiagrams[Wolfram`Lambda`TagLambda[expr], depth]
 		]
 ]
