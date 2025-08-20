@@ -159,7 +159,7 @@ Replace[diagram["HoldExpression"], {
     HoldForm[DiagramSum[ds___]] :> setDiagram[diagram, DiagramSum[##, FilterRules[{opts, diagram["DiagramOptions"]}, Options[DiagramSum]]] & @@ (DiagramArrange[#, opts] & /@ {ds})],
     HoldForm[DiagramNetwork[ds___]] :> If[TrueQ[OptionValue["Network"]],
         With[{g = DiagramsNetGraph[DiagramArrange[#, opts] & /@ {ds}, FilterRules[{opts, "RemoveCycles" -> True, "BinarySpiders" -> True, diagram["DiagramOptions"]}, Options[DiagramsNetGraph]], "UnarySpiders" -> False]},
-            If[ TrueQ[OptionValue["AssignPorts"]], DiagramAssignPorts, Identity] @ setDiagram[
+            If[ TrueQ[OptionValue["AssignPorts"]], DiagramAssignPorts @* DiagramArrange, Identity] @ setDiagram[
                 diagram,
                 DiagramComposition[##, FilterRules[{opts, diagram["DiagramOptions"]}, Options[DiagramComposition]]] & @@
                     Reverse @ Switch[OptionValue["NetworkMethod"],
