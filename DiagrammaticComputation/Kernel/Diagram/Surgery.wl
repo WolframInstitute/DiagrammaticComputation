@@ -11,7 +11,6 @@ DiagramMapAt
 
 Begin["Wolfram`DiagrammaticComputation`Diagram`Surgery`Private`"];
 
-DiagramSubdiagrams[d_Diagram] := Prepend[Catenate[DiagramSubdiagrams /@ d["SubDiagrams"]], d]
 
 DiagramPositions[d_Diagram, lvl : (_Integer ? NonNegative) | Infinity : Infinity] := With[{subDiagrams = d["SubDiagrams"]},
     If[ lvl > 0 && Length[subDiagrams] > 0,
@@ -19,6 +18,22 @@ DiagramPositions[d_Diagram, lvl : (_Integer ? NonNegative) | Infinity : Infinity
         <|{} -> d|>
     ]
 ]
+
+DiagramPositions[d_Diagram, levels : {_Integer, _Integer}] := With[
+    {pos = DiagramPositions[d, If[AllTrue[levels, NonNegative], Max[levels], Infinity]]},
+    {maxLevel = Max[Length /@ Keys[pos]]},
+    {bounds = If[# < 0, Max[maxLevel + #, 0], #] & /@ levels}
+    ,
+    KeySelect[pos, Between[Length[#], bounds] &]
+]
+
+DiagramPositions[d_Diagram, {lvl_Integer}] := DiagramPositions[d, {lvl, lvl}]
+
+DiagramPositions[d_Diagram, lvl_Integer] := DiagramPositions[d, {1, lvl}]
+
+
+DiagramSubdiagrams[d_Diagram, lvl : _Integer | {_Integer} | {_Integer, _Integer} | Infinity : Infinity] := Values @ DiagramPositions[d, lvl]
+
 
 DiagramPattern[expr_] := DiagramPattern[expr, {___}, {___}]
 DiagramPattern[expr_, out_] := DiagramPattern[expr, {___}, out]
@@ -56,20 +71,26 @@ DiagramPosition[d_Diagram, patt_, lvl : (_Integer ? NonNegative) | Infinity : In
 DiagramPosition[d_Diagram] := DiagramPosition[d, _Diagram]
 
 
-DiagramMap[f_, d_Diagram, lvl : (_Integer ? NonNegative) | Infinity : Infinity] := If[lvl > 0,
-    Replace[d["HoldExpression"], {
-        _[(head : $DiagramHeadPattern)[ds___]] :> Diagram[d, "Expression" :> head[##] & @@ Map[DiagramMap[f, #, lvl - 1] &, {ds}]],
-        _ :> Diagram[f[d]]
-    }]
-    ,
-    Diagram[f[d]]
+DiagramMap[f_, d_Diagram, lvl : (_Integer ? NonNegative) | Infinity : Infinity] := Enclose @ ConfirmBy[
+    If[ lvl > 0,
+        Replace[d["HoldExpression"], {
+            _[(head : $DiagramHeadPattern)[ds___]] :> Diagram[d, "Expression" :> head[##] & @@ Map[DiagramMap[f, #, lvl - 1] &, {ds}]],
+            _ :> Diagram[f[d]]
+        }]
+        ,
+        Diagram[f[d]]
+    ],
+    DiagramQ
 ]
 
 
 DiagramMapAt[f_, d_Diagram, pos : {{___Integer} ...}, curPos_ : {}] := Enclose @ 
-    If[ d["Head"] === Null,
-        If[MemberQ[pos, curPos], f[d, curPos], d],
-        If[MemberQ[pos, curPos], f[#, curPos] &, # &] @ Diagram[d["Head"] @@ MapIndexed[DiagramMapAt[f, #1, pos, Join[curPos, #2]] &, d["SubDiagrams"]], d["DiagramOptions"]]
+    ConfirmBy[
+        If[ d["Head"] === Null,
+            If[MemberQ[pos, curPos], Diagram[f[d, curPos]], d],
+            If[MemberQ[pos, curPos], Diagram[f[#, curPos]] &, # &] @ Diagram[d["Head"] @@ MapIndexed[DiagramMapAt[f, #1, pos, Join[curPos, #2]] &, d["SubDiagrams"]], d["DiagramOptions"]]
+        ],
+        DiagramQ
     ]
 
 DiagramMapAt[f_, d_Diagram, pos : {___Integer}] := DiagramMapAt[f, d, {pos}]
