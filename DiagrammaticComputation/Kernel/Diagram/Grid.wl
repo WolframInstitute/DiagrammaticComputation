@@ -15,6 +15,7 @@ GridOutputPorts
 
 Begin["Wolfram`DiagrammaticComputation`Diagram`Grid`Private`"];
 
+{$Black, $White} = If[$VersionNumber >= 14.3, {LightDarkSwitched[Black, White], LightDarkSwitched[White, Black]}, {Black, White}]
 
 (* compose vertically preserving grid structure *)
 
@@ -510,7 +511,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
         MapAt[Diagram[#, "PortLabelFunction" -> (If[#3 === Top && ! #1["NeutralQ"], Inherited, Placed[Inherited, {- 2 / 3, 1}]] &), "PortArrowFunction" -> (If[#3 === Bottom && ! #1["NeutralQ"], Nothing, Automatic] &), "PortLabels" -> {Inherited, None}] &, Complement[inputPositions, outputPositions]];
     
     dividers = {
-        FaceForm[None], EdgeForm[Directive[Thin, Black]],
+        FaceForm[None], EdgeForm[Directive[Thin, $Black]],
         Switch[diagram["OptionValue"[Dividers], opts],
             All | Automatic, #["Graphics", "Background" -> None, "LabelFunction" -> ("" &), "PortArrows" -> None, "PortLabels" -> None][[1]] & /@ items[[All, 2]],
             True, #["Graphics", "Background" -> None, "LabelFunction" -> ("" &), "PortArrows" -> None, "PortLabels" -> None][[1]] & /@ Catenate[{rows, columns} /. _Missing -> Nothing][[All, 2]],
@@ -565,7 +566,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
                     ],
                     gridNetworkWires[grid, Lookup[subDiagrams, Key[{}]], portFunction, "WireArrows" -> wireArrows, "WireLabels" -> wireLabels, "WireLabelFunction" -> wireLabelFunction, "GapSize" -> hGapSize],
                     #[[2]]["Graphics",
-                        "PortArrowFunction" -> Function[{EdgeForm[LightGray], FaceForm[Directive[Opacity[1], White]], Disk[#2[[1]], Offset[10]]}]
+                        "PortArrowFunction" -> Function[{EdgeForm[LightGray], FaceForm[Directive[Opacity[1], $White]], Disk[#2[[1]], Offset[10]]}]
                     ][[1]] & /@ subDiagrams,
                     dividers
                 }

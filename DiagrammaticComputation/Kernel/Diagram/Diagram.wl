@@ -69,7 +69,7 @@ $DefaultPortFunction = Function[Replace[HoldForm[Evaluate[#["Apply", #["HoldName
 
 $DiagramDefaultGraphics = If[#["SingletonNodeQ"], #["Graphics"], #["Grid"]] &
 
-$Black = If[$VersionNumber >= 14.3, LightDarkSwitched[Black, White], Black];
+{$Black, $White} = If[$VersionNumber >= 14.3, {LightDarkSwitched[Black, White], LightDarkSwitched[White, Black]}, {Black, White}]
 
 (* ::Subsection:: *)
 (* Validation *)
