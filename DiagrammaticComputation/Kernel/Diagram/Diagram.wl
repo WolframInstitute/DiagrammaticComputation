@@ -317,9 +317,11 @@ EmptyDiagram[opts : OptionsPattern[]] := Diagram[
     "Shape" -> None
 ]
 
-CupDiagram[x_] := Diagram["\[DoubleStruckCapitalI]", {PortDual[x], x}, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False]
+CupDiagram[{x_, y_}, opts___] := Diagram["\[DoubleStruckCapitalI]", {x, y}, opts, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False]
+CupDiagram[x_, opts___] := CupDiagram[{PortDual[x], x}, opts]
 
-CapDiagram[x_] := Diagram["\[DoubleStruckCapitalI]", {x, PortDual[x]}, {}, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False]
+CapDiagram[{x_, y}, opts___] := Diagram["\[DoubleStruckCapitalI]", {x, y}, {}, opts, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False]
+CapDiagram[x_, opts___] := CupDiagram[{x, PortDual[x]}, opts]
 
 
 Options[IdentityDiagram] = Options[PermutationDiagram] = Options[Diagram]
@@ -1136,7 +1138,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
                         Diagram[If[Length[ports] == 2, "\[DoubleStruckCapitalI]", v],
                             Port[tag[v, #]] & /@ in,
                             Port[tag[v, #]] & /@ out,
-                            If[Length[ports] == 2, {"Shape" -> If[Length[ports] == 2, "Wires"[{{1, 2}}], "Wire"], "ShowLabel" -> False}, {"Shape" -> "Circle", "ShowLabel" -> wireLabelsQ}],
+                            If[Length[ports] == 2, {"Shape" -> If[Length[ports] == 2, "Wires"[{{1, 2}}], "Wire"], "ShowLabel" -> False}, {"Shape" -> "Circle", "Width" -> 1 / 2, "Height" -> 1 / 2, "ShowLabel" -> wireLabelsQ}],
                             "PortArrows" -> {diagrams[#[[1]]]["PortStyles"][[2, #[[3]]]] & /@ in, diagrams[#[[1]]]["PortStyles"][[1, #[[3]]]] & /@ out}
                         ]
                     }];
