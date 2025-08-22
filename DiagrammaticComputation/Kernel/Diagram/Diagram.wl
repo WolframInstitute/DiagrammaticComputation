@@ -665,6 +665,7 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
             None -> {},
             Automatic | dir_Directive :> {dir, transform @ Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c]},
             "RoundedRectangle" :> transform @ Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c, RoundingRadius -> {{Right, Bottom} -> .1 (w + h)}],
+            "RoundRectangle" :> transform @ Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c, RoundingRadius -> .1 (w + h)],
             "UpsideDownTriangle" :> transform @ Polygon[{{- w / 2, h / 2}, {0, - h / 2}, {w / 2, h / 2}} + Threaded[c]],
             "Triangle" :> transform @ Polygon[{{- w / 2, - h / 2}, {0, h / 2}, {w / 2, - h / 2}} + Threaded[c]],
             "Circle" :> transform @ Circle[c, {w, h} / 2],
@@ -811,7 +812,7 @@ Options[DiagramGraphics] = Join[{
     "PortArrowFunction" -> Automatic,
     "PortLabelFunction" -> Automatic,
     "Outline" -> None,
-    "Background" -> Automatic
+    "Style" -> Automatic
 }, Options[Graphics]];
 
 DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[{
@@ -819,7 +820,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
     arities = {diagram["InputArity"], diagram["OutputArity"]},
     center = diagram["Center", opts],
     shape = diagram["OptionValue"["Shape"], opts],
-    background = Replace[diagram["OptionValue"["Background"], opts], Automatic -> GrayLevel[.9, .5]]
+    style = Replace[diagram["OptionValue"["Style"], opts], {Automatic -> FaceForm[StandardGray], None -> Nothing}]
 }, {
     portArrows = diagram["PortStyles", opts],
     portLabels = diagram["PortLabels", opts],
@@ -827,18 +828,21 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
     portArrowFunction = Replace[diagram["OptionValue"["PortArrowFunction"], opts], Automatic -> (Arrow[If[#1["DualQ"], Reverse, Identity] @ #2] &)],
     portLabelFunction = Replace[diagram["OptionValue"["PortLabelFunction"], opts], Automatic -> $DefaultPortLabelFunction]
 }, Graphics[{
-    EdgeForm[$Black], FaceForm[background], 
-    Confirm @ diagram["Shape", opts],
+    {
+        EdgeForm[$Black], style,
+        Confirm @ diagram["Shape", opts]
+    },
     Replace[
-        Replace[labelFunction,
-            Automatic :> Function[ClickToCopy[
-                If[ MatchQ[#["OptionValue"["ShowLabel"], opts], None | False],
-                    "\t\t\t",
-                    Replace[#["HoldExpression"], expr_ :> (expr //. d_Diagram ? DiagramQ :> RuleCondition[d["HoldExpression"]])]
-                ],
-                #["View"]
-            ]]
-        ] @ diagram, {
+        If[ MatchQ[diagram["OptionValue"["ShowLabel"], opts], None | False],
+            "\t\t\t",
+            Replace[labelFunction,
+                Automatic :> Function[ClickToCopy[
+                    Replace[#["HoldExpression"], expr_ :> (expr //. d_Diagram ? DiagramQ :> RuleCondition[d["HoldExpression"]])],
+                    #["View"]
+                ]]
+            ] @ diagram
+        ],
+        {
             Placed[l_, Offset[offset_]] :> Text[l, center + offset],
             Placed[l_, pos_] :> Text[l, pos],
             label_ :> Text[label, center]

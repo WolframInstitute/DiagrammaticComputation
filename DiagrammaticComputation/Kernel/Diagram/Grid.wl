@@ -395,7 +395,7 @@ gridArrange[grid : (head : CircleTimes | CirclePlus)[ds___] -> d_, pos_, {width_
             "Center" -> RotationTransform[angle, corner][corner + {w, h} / 2],
             "Width" -> Replace[d["OptionValue"["Width"]], Automatic -> w],
             "Height" -> Replace[d["OptionValue"["Height"]], Automatic -> h],
-            "Background" -> None,
+            "Style" -> None,
             If[head =!= upHead =!= None, "Shape" -> Directive[EdgeForm[Dashing[{Small, Tiny}]]], {}]
         ],
             "Row"
@@ -414,7 +414,7 @@ gridArrange[grid : CircleDot[ds___] -> d_, pos_, {width_, height_}, {dx_, dy_}, 
             "Center" -> RotationTransform[angle, corner][corner + {w, h} / 2],
             "Width" -> Replace[d["OptionValue"["Width"]], Automatic -> w],
             "Height" -> Replace[d["OptionValue"["Height"]], Automatic -> h],
-            "Background" -> None
+            "Style" -> None
         ],
             "Column"
         ]
@@ -514,8 +514,8 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
     dividers = {
         FaceForm[None], EdgeForm[Directive[Thin, $Black]],
         Switch[diagram["OptionValue"[Dividers], opts],
-            All | Automatic, #["Graphics", "Background" -> None, "LabelFunction" -> ("" &), "PortArrows" -> None, "PortLabels" -> None][[1]] & /@ items[[All, 2]],
-            True, #["Graphics", "Background" -> None, "LabelFunction" -> ("" &), "PortArrows" -> None, "PortLabels" -> None][[1]] & /@ Catenate[{rows, columns} /. _Missing -> Nothing][[All, 2]],
+            All | Automatic, #["Graphics", "Style" -> None, "LabelFunction" -> ("" &), "PortArrows" -> None, "PortLabels" -> None][[1]] & /@ items[[All, 2]],
+            True, #["Graphics", "Style" -> None, "LabelFunction" -> ("" &), "PortArrows" -> None, "PortLabels" -> None][[1]] & /@ Catenate[{rows, columns} /. _Missing -> Nothing][[All, 2]],
             _, Nothing
         ]
     };
