@@ -83,6 +83,8 @@ DiagramMap[f_, d_Diagram, lvl : (_Integer ? NonNegative) | Infinity : Infinity] 
     DiagramQ
 ]
 
+DiagramMap[f_][d_Diagram] := DiagramMap[f, d]
+
 
 DiagramMapAt[f_, d_Diagram, pos : {{___Integer} ...}, curPos_ : {}] := Enclose @ 
     ConfirmBy[
@@ -94,6 +96,8 @@ DiagramMapAt[f_, d_Diagram, pos : {{___Integer} ...}, curPos_ : {}] := Enclose @
     ]
 
 DiagramMapAt[f_, d_Diagram, pos : {___Integer}] := DiagramMapAt[f, d, {pos}]
+
+DiagramMapAt[f_, pos_][d_Diagram] := DiagramMapAt[f, d, pos]
 
 
 End[]

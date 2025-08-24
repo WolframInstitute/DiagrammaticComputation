@@ -4,7 +4,9 @@ BeginPackage["Wolfram`DiagrammaticComputation`Utilities`"];
 fillAutomatic
 reverseTree
 
+getName
 tag
+untag
 InterpretationForm
 
 collectPorts
@@ -43,12 +45,22 @@ reverseTree[tree_] := Replace[Unevaluated[tree], {
     (head : CircleTimes | CirclePlus)[xs___] :> head @@ Reverse[reverseTree /@ {xs}]
 }]
 
+getName[expr_] := Replace[Unevaluated[expr], {
+    SuperStar[x_] :> x
+}]
 
 tag[expr_, t_] := Replace[Unevaluated[expr], {
     HoldForm[Interpretation[Interpretation[x_, y_], z_]] | Interpretation[Interpretation[x_, y_], z_] :> tag[HoldForm[Interpretation[x, y -> z]], t],
     HoldForm[Interpretation[x_, y_]] | Interpretation[x_, y_] :> Interpretation[x, y -> t],
     HoldForm[SuperStar[x_]] | SuperStar[x_] :> SuperStar[tag[Unevaluated[x], t]],
     HoldForm[x_] | x_ :> Interpretation[x, t]
+}]
+
+untag[expr_] := Replace[Unevaluated[expr], {
+    HoldForm[Interpretation[x_, tag_ -> _]] :> HoldForm[Interpretation[x, tag]],
+    HoldForm[SuperStar[Interpretation[x_, tag_ -> _]]] :> HoldForm[SuperStar[Interpretation[x, tag]]],
+    HoldForm[Interpretation[x_, _]] :> HoldForm[x],
+    HoldForm[SuperStar[Interpretation[x_, _]]] :> HoldForm[SuperStar[x]]
 }]
 
 

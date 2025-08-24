@@ -149,7 +149,7 @@ RowDiagram[xs : {___Diagram}, opts : OptionsPattern[]] := Fold[RowDiagram[{##}, 
 setDiagram[diagram1_, diagram2_, opts___] := Diagram[diagram1, Function[Null, "Expression" :> ##, HoldAll] @@ diagram2["HoldExpression"], "PortFunction" -> diagram2["PortFunction"], FilterRules[{opts}, Options[Diagram]]]
 
 
-Options[DiagramArrange] := Join[{"Network" -> True, "Arrange" -> True, "NetworkMethod" -> "Foliation", "AssignPorts" -> True, "Grid" -> True}, Options[ColumnDiagram]]
+Options[DiagramArrange] := Join[{"Network" -> True, "Arrange" -> True, "NetworkMethod" -> "Foliation", "AssignPorts" -> True}, Options[ColumnDiagram]]
 
 DiagramArrange[diagram_Diagram, opts : OptionsPattern[]] := If[(TrueQ[diagram["OptionValue"["Arrange"], opts]] || diagram["NetworkQ"]) && TrueQ[diagram["OptionValue"["Decompose"], opts]],
 Replace[diagram["HoldExpression"], {
@@ -242,7 +242,7 @@ Replace[diagram["HoldExpression"], {
 	],
 	HoldForm[DiagramProduct[ds___]] :> ({Diagram[(DiagramProduct @@ #[[1]])["Flatten"], args], #[[2]]} & @ Fold[{state, d} |-> MapAt[Append[state[[1]], #] &, assignPorts[d, state[[2]]], {1}], {{}, ports}, {ds}]),
 	HoldForm[DiagramSum[ds___]] :> ({Diagram[DiagramSum @@ #[[All, 1]], args], {Intersection @@ #[[2, All, 1]], Intersection @@ #[[2, All, 2]]}} & @ (assignPorts[#, ports] & /@ {ds})),
-    HoldForm[DiagramNetwork[ds___]] :> ({Diagram[DiagramNetwork @@ #[[1]], args], #[[2]]} & @ Fold[{state, d} |-> MapAt[Append[state[[1]], #] &, assignPorts[d, state[[2]]], {1}], {{}, ports}, {ds}]),
+    (* HoldForm[DiagramNetwork[ds___]] :> ({Diagram[DiagramNetwork @@ #[[1]], args], #[[2]]} & @ Fold[{state, d} |-> MapAt[Append[state[[1]], #] &, assignPorts[d, state[[2]]], {1}], {{}, ports}, {ds}]), *)
 	_ :> {
 		Diagram[diagram, args]
 		,
