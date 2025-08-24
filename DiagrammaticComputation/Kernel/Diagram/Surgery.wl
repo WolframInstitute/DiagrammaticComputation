@@ -22,7 +22,7 @@ DiagramPositions[d_Diagram, lvl : (_Integer ? NonNegative) | Infinity : Infinity
 DiagramPositions[d_Diagram, levels : {_Integer, _Integer}] := With[
     {pos = DiagramPositions[d, If[AllTrue[levels, NonNegative], Max[levels], Infinity]]},
     {maxLevel = Max[Length /@ Keys[pos]]},
-    {bounds = If[# < 0, Max[maxLevel + #, 0], #] & /@ levels}
+    {bounds = If[# < 0, Max[maxLevel + # + 1, 0], #] & /@ levels}
     ,
     KeySelect[pos, Between[Length[#], bounds] &]
 ]

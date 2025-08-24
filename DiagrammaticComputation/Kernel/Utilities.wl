@@ -44,10 +44,10 @@ reverseTree[tree_] := Replace[Unevaluated[tree], {
 }]
 
 
-tag[expr_, t_] := Replace[expr, {
+tag[expr_, t_] := Replace[Unevaluated[expr], {
     HoldForm[Interpretation[Interpretation[x_, y_], z_]] | Interpretation[Interpretation[x_, y_], z_] :> tag[HoldForm[Interpretation[x, y -> z]], t],
     HoldForm[Interpretation[x_, y_]] | Interpretation[x_, y_] :> Interpretation[x, y -> t],
-    HoldForm[SuperStar[x_]] | SuperStar[x_] :> SuperStar[tag[x, t]],
+    HoldForm[SuperStar[x_]] | SuperStar[x_] :> SuperStar[tag[Unevaluated[x], t]],
     HoldForm[x_] | x_ :> Interpretation[x, t]
 }]
 

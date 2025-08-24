@@ -146,29 +146,27 @@ RowDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Block[{a = x["Fla
 RowDiagram[xs : {___Diagram}, opts : OptionsPattern[]] := Fold[RowDiagram[{##}, opts] &, xs]
 
 
-setDiagram[diagram1_, diagram2_] := Diagram[diagram1, Function[Null, "Expression" :> ##, HoldAll] @@ diagram2["HoldExpression"], "PortFunction" -> diagram2["PortFunction"]]
+setDiagram[diagram1_, diagram2_, opts___] := Diagram[diagram1, Function[Null, "Expression" :> ##, HoldAll] @@ diagram2["HoldExpression"], "PortFunction" -> diagram2["PortFunction"], FilterRules[{opts}, Options[Diagram]]]
 
 
 Options[DiagramArrange] := Join[{"Network" -> True, "Arrange" -> True, "NetworkMethod" -> "Foliation", "AssignPorts" -> True, "Grid" -> True}, Options[ColumnDiagram]]
 
 DiagramArrange[diagram_Diagram, opts : OptionsPattern[]] := If[(TrueQ[diagram["OptionValue"["Arrange"], opts]] || diagram["NetworkQ"]) && TrueQ[diagram["OptionValue"["Decompose"], opts]],
 Replace[diagram["HoldExpression"], {
-    HoldForm[Diagram[d_]] :> setDiagram[diagram, SingletonDiagram[DiagramArrange[d, opts], FilterRules[{opts, diagram["DiagramOptions"]}, Options[SingletonDiagram]]]],
-    HoldForm[DiagramProduct[ds___]] :> setDiagram[diagram, RowDiagram[DiagramArrange[#, opts] & /@ {ds}, FilterRules[{opts, diagram["DiagramOptions"]}, Options[RowDiagram]]]],
-    HoldForm[DiagramComposition[ds___]] :> setDiagram[diagram, ColumnDiagram[DiagramArrange[#, opts] & /@ Reverse[{ds}], FilterRules[{opts, diagram["DiagramOptions"]}, Options[ColumnDiagram]]]],
-    HoldForm[DiagramSum[ds___]] :> setDiagram[diagram, DiagramSum[##, FilterRules[{opts, diagram["DiagramOptions"]}, Options[DiagramSum]]] & @@ (DiagramArrange[#, opts] & /@ {ds})],
+    HoldForm[Diagram[d_]] :> setDiagram[diagram, SingletonDiagram[DiagramArrange[d, opts], FilterRules[{opts, diagram["DiagramOptions"]}, Options[SingletonDiagram]]], opts],
+    HoldForm[DiagramProduct[ds___]] :> setDiagram[diagram, RowDiagram[DiagramArrange[#, opts] & /@ {ds}, FilterRules[{opts, diagram["DiagramOptions"]}, Options[RowDiagram]]], opts],
+    HoldForm[DiagramComposition[ds___]] :> setDiagram[diagram, ColumnDiagram[DiagramArrange[#, opts] & /@ Reverse[{ds}], FilterRules[{opts, diagram["DiagramOptions"]}, Options[ColumnDiagram]]], opts],
+    HoldForm[DiagramSum[ds___]] :> setDiagram[diagram, DiagramSum[##, FilterRules[{opts, diagram["DiagramOptions"]}, Options[DiagramSum]]] & @@ (DiagramArrange[#, opts] & /@ {ds}), opts],
     HoldForm[DiagramNetwork[ds___]] :> If[TrueQ[OptionValue["Network"]],
         With[{g = DiagramsNetGraph[DiagramArrange[#, opts] & /@ {ds}, FilterRules[{opts, "RemoveCycles" -> True, "BinarySpiders" -> True, diagram["DiagramOptions"]}, Options[DiagramsNetGraph]], "UnarySpiders" -> False]},
-            If[ TrueQ[OptionValue["AssignPorts"]], DiagramAssignPorts @* DiagramArrange, Identity] @ setDiagram[
-                diagram,
-                DiagramComposition[##, FilterRules[{opts, diagram["DiagramOptions"]}, Options[DiagramComposition]]] & @@
-                    Reverse @ Switch[OptionValue["NetworkMethod"],
+            If[ TrueQ[OptionValue["AssignPorts"]], DiagramAssignPorts[#, diagram["GraphInputOutputPorts", True]] &, Identity] @
+                DiagramRightComposition[##, FilterRules[{opts, diagram["DiagramOptions"]}, Options[DiagramRightComposition]]] & @@
+                    Switch[OptionValue["NetworkMethod"],
                         "TopologicalSort", Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, TopologicalSort[g]}, "Diagram"],
                         "Stratify", RowDiagram[Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, Developer`FromPackedArray[#]}, "Diagram"]] & /@ ResourceFunction["VertexStratify"][g],
                         "Foliation", RowDiagram[Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, #}, "Diagram"]] & /@ First[ResourceFunction["GraphFoliations"][g, MaxItems -> 1, Direction -> Top]],
                         "RandomFoliation", RowDiagram[Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, #}, "Diagram"]] & /@ RandomChoice[ResourceFunction["GraphFoliations"][g]]
                     ]
-            ]
         ],
         Diagram[diagram, "Expression" :> DiagramNetwork[##] & @@ (DiagramArrange[#, opts] & /@ {ds})]
     ],
@@ -527,7 +525,8 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
                     "LabelFunction" -> ("" &),
                     "PortLabels" -> {Placed[Automatic, {0, 0}]},
                     "Width" -> Min[1, 0.95 ^ (Length[#[[1]]] / 2)] #[[2]]["OptionValue"["Width"]],
-                    "Height" -> If[#[[1]] === {}, 1.1, Min[1, 0.85 ^ (Length[#[[1]]] / 2)]] #[[2]]["OptionValue"["Height"]]
+                    "Height" -> If[#[[1]] === {}, 1.1, Min[1, 0.85 ^ (Length[#[[1]]] / 2)]] #[[2]]["OptionValue"["Height"]],
+                    "Style" -> Transparent
                 ]["Flatten"] & /@ If[
                     frames === Automatic,
                     DeleteCases[
@@ -575,7 +574,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
             _,
             {
                 Cases[unlabeledGrid,
-                    d_Diagram :> Diagram[d, "PortArrows" -> None, "DiagramOptions" -> Join[diagramOptions, d["DiagramOptions"]]]["Graphics"][[1]],
+                    d_Diagram :> Diagram[d, "DiagramOptions" -> Join[diagramOptions, d["DiagramOptions"]]]["Graphics"][[1]],
                     All
                 ],
                 If[wiresQ, gridWires[grid, {}, portFunction, "WireArrows" -> wireArrows, "WireLabels" -> wireLabels, "WireLabelFunction" -> wireLabelFunction, "GapSize" -> vGapSize], Nothing],

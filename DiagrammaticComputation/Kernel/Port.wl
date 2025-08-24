@@ -121,11 +121,11 @@ PortPower[p_Port ? PortQ, q_Port ? PortQ] := Port["Expression" :> PortPower[p, q
 
 Port[SuperStar[p_], opts : OptionsPattern[]] := PortDual[Port[Unevaluated[p], opts]]
 
-PortDual[p_Port ? PortQ] := 
-    Function[Null, Port[p, "Expression" :> #, "Type" -> Replace[p["Type"], {SuperStar[x_] :> x, x_ :> SuperStar[x]}]], HoldFirst] @@
+PortDual[p_Port ? PortQ, opts : OptionsPattern[Port]] := 
+    Function[Null, Port[p, opts, "Expression" :> #, "Type" -> Replace[p["Type"], {SuperStar[x_] :> x, x_ :> SuperStar[x]}]], HoldFirst] @@
         Replace[p["HoldExpression"], {HoldForm[PortDual[q_]] :> HoldForm[q], HoldForm[q_] :> HoldForm[PortDual[q]]}]
 
-PortDual[expr_] := PortDual[Port[Unevaluated[expr]]]
+PortDual[expr_, opts : OptionsPattern[Port]] := PortDual[Port[Unevaluated[expr]], opts]
 
 
 (* negation *)
