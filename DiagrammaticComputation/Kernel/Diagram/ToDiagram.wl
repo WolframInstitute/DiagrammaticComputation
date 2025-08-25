@@ -1,7 +1,6 @@
 BeginPackage["Wolfram`DiagrammaticComputation`Diagram`ToDiagram`", {"Wolfram`DiagrammaticComputation`Utilities`", "Wolfram`DiagrammaticComputation`Port`", "Wolfram`DiagrammaticComputation`Diagram`", "Wolfram`DiagrammaticComputation`Diagram`Grid`"}];
 
 ToDiagram
-LambdaDiagram
 
 Begin["Wolfram`DiagrammaticComputation`Diagram`ToDiagram`Private`"];
 

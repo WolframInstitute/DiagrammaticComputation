@@ -149,29 +149,34 @@ RowDiagram[xs : {___Diagram}, opts : OptionsPattern[]] := Fold[RowDiagram[{##}, 
 setDiagram[diagram1_, diagram2_, opts___] := Diagram[diagram1, Function[Null, "Expression" :> ##, HoldAll] @@ diagram2["HoldExpression"], "PortFunction" -> diagram2["PortFunction"], FilterRules[{opts}, Options[Diagram]]]
 
 
-Options[DiagramArrange] := Join[{"Network" -> True, "Arrange" -> True, "NetworkMethod" -> "Foliation", "AssignPorts" -> True}, Options[ColumnDiagram]]
+Options[DiagramArrange] := DeleteDuplicatesBy[First] @ Join[{"Network" -> True, "Arrange" -> True, "NetworkMethod" -> "Foliation", "AssignPorts" -> True}, Options[ColumnDiagram], Options[DiagramsNetGraph]]
 
-DiagramArrange[diagram_Diagram, opts : OptionsPattern[]] := If[(TrueQ[diagram["OptionValue"["Arrange"], opts]] || diagram["NetworkQ"]) && TrueQ[diagram["OptionValue"["Decompose"], opts]],
-Replace[diagram["HoldExpression"], {
-    HoldForm[Diagram[d_]] :> setDiagram[diagram, SingletonDiagram[DiagramArrange[d, opts], FilterRules[{opts, diagram["DiagramOptions"]}, Options[SingletonDiagram]]], opts],
-    HoldForm[DiagramProduct[ds___]] :> setDiagram[diagram, RowDiagram[DiagramArrange[#, opts] & /@ {ds}, FilterRules[{opts, diagram["DiagramOptions"]}, Options[RowDiagram]]], opts],
-    HoldForm[DiagramComposition[ds___]] :> setDiagram[diagram, ColumnDiagram[DiagramArrange[#, opts] & /@ Reverse[{ds}], FilterRules[{opts, diagram["DiagramOptions"]}, Options[ColumnDiagram]]], opts],
-    HoldForm[DiagramSum[ds___]] :> setDiagram[diagram, DiagramSum[##, FilterRules[{opts, diagram["DiagramOptions"]}, Options[DiagramSum]]] & @@ (DiagramArrange[#, opts] & /@ {ds}), opts],
-    HoldForm[DiagramNetwork[ds___]] :> If[TrueQ[OptionValue["Network"]],
-        With[{g = DiagramsNetGraph[DiagramArrange[#, opts] & /@ {ds}, FilterRules[{opts, "RemoveCycles" -> True, "BinarySpiders" -> True, diagram["DiagramOptions"]}, Options[DiagramsNetGraph]], "UnarySpiders" -> False]},
-            If[ TrueQ[OptionValue["AssignPorts"]], DiagramAssignPorts[#, diagram["GraphInputOutputPorts", True]] &, Identity] @
-                DiagramRightComposition[##, FilterRules[{opts, diagram["DiagramOptions"]}, Options[DiagramRightComposition]]] & @@
-                    Switch[OptionValue["NetworkMethod"],
-                        "TopologicalSort", Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, TopologicalSort[g]}, "Diagram"],
-                        "Stratify", RowDiagram[Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, Developer`FromPackedArray[#]}, "Diagram"]] & /@ ResourceFunction["VertexStratify"][g],
-                        "Foliation", RowDiagram[Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, #}, "Diagram"]] & /@ First[ResourceFunction["GraphFoliations"][g, MaxItems -> 1, Direction -> Top]],
-                        "RandomFoliation", RowDiagram[Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, #}, "Diagram"]] & /@ RandomChoice[ResourceFunction["GraphFoliations"][g]]
-                    ]
+DiagramArrange[diagram_Diagram, opts : OptionsPattern[]] := Enclose @ If[
+    (TrueQ[diagram["OptionValue"["Arrange"], opts]] || diagram["NetworkQ"]) && TrueQ[diagram["OptionValue"["Decompose"], opts]]
+    ,
+    Replace[diagram["HoldExpression"], {
+        HoldForm[Diagram[d_]] :> setDiagram[diagram, SingletonDiagram[DiagramArrange[d, opts], FilterRules[{opts, diagram["DiagramOptions"]}, Options[SingletonDiagram]]], opts],
+        HoldForm[DiagramProduct[ds___]] :> setDiagram[diagram, RowDiagram[DiagramArrange[#, opts] & /@ {ds}, FilterRules[{opts, diagram["DiagramOptions"]}, Options[RowDiagram]]], opts],
+        HoldForm[DiagramComposition[ds___]] :> setDiagram[diagram, ColumnDiagram[DiagramArrange[#, opts] & /@ Reverse[{ds}], FilterRules[{opts, diagram["DiagramOptions"]}, Options[ColumnDiagram]]], opts],
+        HoldForm[DiagramSum[ds___]] :> setDiagram[diagram, DiagramSum[##, FilterRules[{opts, diagram["DiagramOptions"]}, Options[DiagramSum]]] & @@ (DiagramArrange[#, opts] & /@ {ds}), opts],
+        HoldForm[DiagramNetwork[ds___]] :> If[TrueQ[OptionValue["Network"]],
+            With[{g = ConfirmBy[
+                DiagramsNetGraph[DiagramArrange[#, opts] & /@ {ds}, FilterRules[{opts, "RemoveCycles" -> True, "BinarySpiders" -> True, diagram["DiagramOptions"]}, Options[DiagramsNetGraph]], "UnarySpiders" -> False],
+                AcyclicGraphQ
+            ]},
+                If[ TrueQ[OptionValue["AssignPorts"]], DiagramAssignPorts[#, diagram["GraphInputOutputPorts", True]] &, Identity] @
+                    DiagramRightComposition[##, FilterRules[{opts, diagram["DiagramOptions"]}, Options[DiagramRightComposition]]] & @@
+                        Switch[OptionValue["NetworkMethod"],
+                            "TopologicalSort", Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, TopologicalSort[g]}, "Diagram"],
+                            "Stratify", RowDiagram[Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, Developer`FromPackedArray[#]}, "Diagram"]] & /@ ResourceFunction["VertexStratify"][g],
+                            "Foliation", RowDiagram[Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, #}, "Diagram"]] & /@ First[ResourceFunction["GraphFoliations"][g, MaxItems -> 1, Direction -> Top]],
+                            "RandomFoliation", RowDiagram[Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, #}, "Diagram"]] & /@ RandomChoice[ResourceFunction["GraphFoliations"][g]]
+                        ]
+            ],
+            Diagram[diagram, "Expression" :> DiagramNetwork[##] & @@ (DiagramArrange[#, opts] & /@ {ds})]
         ],
-        Diagram[diagram, "Expression" :> DiagramNetwork[##] & @@ (DiagramArrange[#, opts] & /@ {ds})]
-    ],
-    _ :> diagram
-}]
+        _ :> diagram
+    }]
     ,
     diagram
 ]
