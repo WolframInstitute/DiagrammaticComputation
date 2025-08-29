@@ -72,7 +72,10 @@ $DefaultNetworkPortFunction = Function[Replace[#["HoldName"] , HoldForm[x_] :> x
 
 $DiagramDefaultGraphics = If[#["SingletonNodeQ"], #["Graphics"], #["Grid"]] &
 
-{$Black, $White} = If[$VersionNumber >= 14.3, {LightDarkSwitched[Black, White], LightDarkSwitched[White, Black]}, {Black, White}]
+$Gray = RGBColor[0.952941188969422, 0.9529411889694224, 0.9529411889694221]
+
+{$Black, $White, $Gray} = If[$VersionNumber >= 14.3,
+    {LightDarkSwitched[Black, White], LightDarkSwitched[White, Black], LightDarkSwitched[$Gray, StandardGray]}, {Black, White, $Gray}]
 
 (* ::Subsection:: *)
 (* Validation *)
@@ -845,7 +848,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
     arities = {diagram["InputArity"], diagram["OutputArity"]},
     center = diagram["Center", opts],
     shape = diagram["OptionValue"["Shape"], opts],
-    style = Replace[diagram["OptionValue"["Style"], opts], {Automatic -> FaceForm[StandardGray], None -> Nothing}]
+    style = Replace[diagram["OptionValue"["Style"], opts], {Automatic -> Directive[EdgeForm[$Black], FaceForm[$Gray]], None -> Nothing}]
 }, {
     portArrows = diagram["PortStyles", opts],
     portLabels = diagram["PortLabels", opts],
@@ -854,7 +857,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
     portLabelFunction = Replace[diagram["OptionValue"["PortLabelFunction"], opts], Automatic -> $DefaultPortLabelFunction]
 }, Graphics[{
     {
-        EdgeForm[$Black], style,
+        style,
         Confirm @ diagram["Shape", opts]
     },
     Replace[
