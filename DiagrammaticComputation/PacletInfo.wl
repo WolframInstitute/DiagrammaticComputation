@@ -7,7 +7,7 @@ PacletObject[
     "Creator" -> "Nik Murzin, Ian Ford",
     "License" -> "MIT",
     "PublisherID" -> "Wolfram",
-    "Version" -> "1.0.5",
+    "Version" -> "1.0.6",
     "WolframVersion" -> "14.1+",
     "PrimaryContext" -> "Wolfram`DiagrammaticComputation`",
     "Extensions" -> {
@@ -24,7 +24,9 @@ PacletObject[
           "Wolfram`DiagrammaticComputation`DiagramFlip",
           "Wolfram`DiagrammaticComputation`DiagramFunction",
           "Wolfram`DiagrammaticComputation`DiagramGraphics",
+          "Wolfram`DiagrammaticComputation`DiagramArrange",
           "Wolfram`DiagrammaticComputation`DiagramGrid",
+          "Wolfram`DiagrammaticComputation`DiagramDecompose",
           "Wolfram`DiagrammaticComputation`DiagramNetwork",
           "Wolfram`DiagrammaticComputation`DiagramProduct",
           "Wolfram`DiagrammaticComputation`DiagramQ",
