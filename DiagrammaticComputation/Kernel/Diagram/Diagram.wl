@@ -906,8 +906,39 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
 
 Diagram /: MakeBoxes[diagram : Diagram[_Association] ? DiagramQ, form_] := With[{boxes = ToBoxes[Show[
     If[diagram["NetworkQ"], diagram["NetGraph"], Replace[$DiagramDefaultGraphics, {"Grid" :> diagram["Grid"], f_Function :> f[diagram], _ :> diagram["Graphics"]}]], BaseStyle -> {GraphicsHighlightColor -> Magenta}], form]},
-    InterpretationBox[boxes, diagram]
+    diagramBox[boxes, #] & @ diagram
 ]
+
+
+SetAttributes[diagramBox, HoldAllComplete];
+diagramBox[GraphicsBox[box_, opts___], d_] := GraphicsBox[
+	NamespaceBox["Diagram", DynamicModuleBox[{Typeset`d = HoldComplete[d]}, box]],
+	opts
+]
+
+diagramBox[_, d_] := ToBoxes[d, TraditionalForm]
+
+
+DiagramBoxQ[HoldPattern[GraphicsBox[NamespaceBox["Diagram", _, ___], ___]]] := True
+
+DiagramBoxQ[___] := False
+
+
+FromGraphicsBox[HoldPattern[GraphicsBox[NamespaceBox["Diagram", DynamicModuleBox[vars_, ___], ___], ___]], _] := Module[vars, Typeset`d]
+
+Unprotect[GraphicsBox, Graphics3DBox]
+Scan[head |->
+    With[{lhs = HoldPattern[MakeExpression[g_head ? DiagramBoxQ, fmt_]]},
+        If[	!KeyExistsQ[FormatValues[head], lhs],
+            PrependTo[
+                FormatValues[head],
+                lhs :> FromGraphicsBox[g, fmt]
+            ]
+        ]
+    ],
+    {GraphicsBox, Graphics3DBox}
+]
+Protect[GraphicsBox, Graphics3DBox]
 
 DiagramDual /: MakeBoxes[DiagramDual[d_], form_] := With[{boxes = ToBoxes[SuperStar[d], form]}, InterpretationBox[boxes, DiagramDual[d]]]
 
