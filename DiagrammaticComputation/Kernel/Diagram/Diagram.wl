@@ -321,7 +321,7 @@ EmptyDiagram[opts : OptionsPattern[]] := Diagram[
 ]
 
 CupDiagram[{x_, y_}, opts___] := Diagram["\[DoubleStruckCapitalI]", {}, {x, y}, opts, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False]
-CupDiagram[x_, opts___] := CupDiagram[{PortDual[x], x}, opts]
+CupDiagram[x_, opts___] := CupDiagram[{x, PortDual[x]}, opts]
 
 CapDiagram[{x_, y_}, opts___] := Diagram["\[DoubleStruckCapitalI]", {x, y}, {}, opts, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False]
 CapDiagram[x_, opts___] := CapDiagram[{x, PortDual[x]}, opts]
