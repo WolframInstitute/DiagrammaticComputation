@@ -531,7 +531,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
                     "PortLabels" -> {Placed[Automatic, {0, 0}]},
                     "Width" -> Min[1, 0.95 ^ (Length[#[[1]]] / 2)] #[[2]]["OptionValue"["Width"]],
                     "Height" -> If[#[[1]] === {}, 1.1, Min[1, 0.85 ^ (Length[#[[1]]] / 2)]] #[[2]]["OptionValue"["Height"]],
-                    "Style" -> Transparent
+                    "Style" -> Directive[EdgeForm[$Black], FaceForm[Transparent]]
                 ]["Flatten"] & /@ If[
                     frames === Automatic,
                     DeleteCases[
@@ -549,12 +549,24 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
                         {pos},
                         Diagram[#, "DiagramOptions" -> Join[
                                 diagramOptions,
-                                If[ AnyTrue[subDiagrams[[All, 1]], Take[pos, UpTo[Length[#]]] === # &],
-                                    {
-                                        "PortArrows" -> None,
-                                        "PortLabels" -> None
+                                    With[{
+                                        parentDiagrams = Select[subDiagrams, Take[pos, UpTo[Length[#[[1]]]]] === #[[1]] &]
                                     },
-                                    {}
+                                    If[ parentDiagrams === {},
+                                        {},
+                                        With[
+                                        {
+                                            ports = MapThread[Join, {portFunction /@ PortDual /@ #["InputPorts"], portFunction /@ #["OutputPorts"]} & /@ parentDiagrams[[All, 2]]]
+                                        },
+                                            {
+                                                "PortArrows" -> {
+                                                    Map[If[MemberQ[ports[[1]], #], None, Inherited] &, portFunction /@ PortDual /@ #["InputPorts"]],
+                                                    Map[If[MemberQ[ports[[2]], #], None, Inherited] &, portFunction /@ #["OutputPorts"]]
+                                                },
+                                                "PortLabels" -> None
+                                            }
+                                        ]
+                                    ]
                                 ],
                                 #["DiagramOptions"]
                             ]
@@ -871,8 +883,8 @@ gridFrameWires[CircleDot[ds___, d_], pos_, frameDiagrams_, initPorts_, defPortFu
     If[ ! MissingQ[diagramUp] && Length[{ds}] == 0,
         portFunction = diagramUp["PortFunction"];
         upOutputPorts = makeOutputRules[diagramUp, portFunction, True];
-        merge = Join[merge, mergeRules[Join[ports, outputs], upOutputPorts]];
-        ports = Join[DeleteElements[Join[ports, outputs], 1 -> MapAt[First, merge, {All, 2}]], upOutputPorts]
+        merge = Join[merge, mergeRules[ports, upOutputPorts]];
+        ports = Join[DeleteElements[ports, 1 -> MapAt[First, merge, {All, 2}]], upOutputPorts]
     ];
     Sow[pos -> merge, "Rules"];
     Join[

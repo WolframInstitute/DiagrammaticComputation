@@ -70,7 +70,7 @@ $DefaultPortFunction = Function[Replace[HoldForm[Evaluate[#["Apply", #["HoldName
 
 $DefaultNetworkPortFunction = Function[Replace[#["HoldName"] , HoldForm[x_] :> x, Infinity]]
 
-$DiagramDefaultGraphics = If[#["SingletonNodeQ"], #["Graphics"], #["Grid"]] &
+$DiagramDefaultGraphics = If[#["NodeQ"], #["Graphics"], #["Grid"]] &
 
 $Gray = RGBColor[0.952941188969422, 0.9529411889694224, 0.9529411889694221]
 
