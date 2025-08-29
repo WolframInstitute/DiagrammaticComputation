@@ -531,7 +531,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
                     "PortLabels" -> {Placed[Automatic, {0, 0}]},
                     "Width" -> Min[1, 0.95 ^ (Length[#[[1]]] / 2)] #[[2]]["OptionValue"["Width"]],
                     "Height" -> If[#[[1]] === {}, 1.1, Min[1, 0.85 ^ (Length[#[[1]]] / 2)]] #[[2]]["OptionValue"["Height"]],
-                    "Style" -> Directive[EdgeForm[$Black], FaceForm[Transparent]]
+                    "Style" -> Directive[EdgeForm[$Black], FaceForm[None]]
                 ]["Flatten"] & /@ If[
                     frames === Automatic,
                     DeleteCases[
@@ -582,9 +582,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
                         Nothing
                     ],
                     gridNetworkWires[grid, Lookup[subDiagrams, Key[{}]], portFunction, "WireArrows" -> wireArrows, "WireLabels" -> wireLabels, "WireLabelFunction" -> wireLabelFunction, "GapSize" -> hGapSize],
-                    #[[2]]["Graphics",
-                        "PortArrowFunction" -> Function[{EdgeForm[LightGray], FaceForm[Directive[Opacity[1], $White]], Disk[#2[[1]], Offset[10]]}]
-                    ][[1]] & /@ subDiagrams,
+                    #[[2]]["Graphics", "PortLabelFunction" -> Function[Framed[Wolfram`DiagrammaticComputation`Diagram`Private`$DefaultPortLabelFunction[##], Background -> $White, FrameStyle -> LightGray]]][[1]] & /@ subDiagrams,
                     dividers
                 }
             ],
