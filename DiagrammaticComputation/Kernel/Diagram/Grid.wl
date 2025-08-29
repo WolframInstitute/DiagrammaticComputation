@@ -615,7 +615,7 @@ wireGraphics[opts___][{outPort_, out_, outStyle_, outLabel_, ___}, {inPort_, in_
                 With[{arrowheads = Arrowheads[
                         With[{arrowSize = Replace[wireArrows, {False | None -> 0, True -> Small}], from = If[outDual, -1, 1], to = If[inDual, -1, 1]},
                             If[ from == - to,
-                                {{from * arrowSize, .5}},
+                                {{arrowSize, .5}},
                                 {{from * arrowSize, .3}, {to * arrowSize, .7}}
                             ]
                         ]
@@ -623,7 +623,7 @@ wireGraphics[opts___][{outPort_, out_, outStyle_, outLabel_, ___}, {inPort_, in_
                 },
                     If[ MatchQ[style, _Function],
                         {arrowheads, style[#, "Grid"]} &,
-                        {arrowheads, Replace[style, Placed[x_, _] :> x], Arrow @ BSplineCurve @ #} &
+                        {arrowheads, Replace[style, Placed[x_, _] :> x], Arrow @ BSplineCurve @ If[outDual && outDual == ! inDual, Reverse[#], #]} &
                     ]
                 ] @ With[{p = out[[1]] + gapSize (out[[2]] - out[[1]]), q = in[[1]] + gapSize (in[[2]] - in[[1]])},
                     If[

@@ -720,11 +720,12 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
                 ]
             ],
             "Wires"[wires_] :> With[{
+                ports = Join @@ d["InputOutputPorts"],
                 ps = Catenate[d["PortArrows", opts]],
                 styles = Catenate[d["PortStyles", opts]]
             },
-                With[{p = ps[[First[#]]], style = Replace[SelectFirst[styles[[#]], ! MatchQ[#, Automatic | True | _Function] &, Nothing], None -> Nothing]},
-                    {style, BSplineCurve[{p[[1]], 2 * p[[1]] - p[[2]], 2 * #[[1]] - #[[2]], #[[1]]}] & /@ DeleteCases[None] @ ps[[Rest[#]]]}
+                With[{p = ps[[First[#]]], style = Replace[SelectFirst[styles[[#]], ! MatchQ[#, Automatic | True | _Function] &, Nothing], None -> Nothing], dual = ports[[First[#]]]["DualQ"]},
+                    {style, BSplineCurve[If[dual, Identity, Reverse] @ {p[[1]], 2 * p[[1]] - p[[2]], 2 * #[[1]] - #[[2]], #[[1]]}] & /@ DeleteCases[None] @ ps[[Rest[#]]]}
                 ] & /@ wires
             ],
             "Wire" :> With[{
