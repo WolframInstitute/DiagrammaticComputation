@@ -132,7 +132,7 @@ applicationDiagram[f_, xs_List] := With[{fPort = Port[f], ports = Port /@ xs},
 		"Shape" -> "Disk",
 		"Style" -> Lookup[Lookup[Options[Wolfram`Lambda`LambdaTree], ColorRules], "Application"],
 		"ShowLabel" -> False,
-		"Width" -> 1 / 4, "Height" -> 1 / 4
+		"Width" -> 1 / 2, "Height" -> 1 / 2
 	]
 ]
 

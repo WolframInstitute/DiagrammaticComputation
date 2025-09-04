@@ -859,26 +859,6 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
     portArrowFunction = Replace[diagram["OptionValue"["PortArrowFunction"], opts], Automatic -> (Arrow[If[#1["DualQ"], Reverse, Identity] @ #2] &)],
     portLabelFunction = Replace[diagram["OptionValue"["PortLabelFunction"], opts], Automatic -> $DefaultPortLabelFunction]
 }, Graphics[{
-    {
-        style,
-        Confirm @ diagram["Shape", opts]
-    },
-    Replace[
-        If[ MatchQ[diagram["OptionValue"["ShowLabel"], opts], None | False],
-            "\t\t\t",
-            Replace[labelFunction,
-                Automatic :> Function[ClickToCopy[
-                    Replace[#["HoldExpression"], expr_ :> (expr //. d_Diagram ? DiagramQ :> RuleCondition[d["HoldExpression"]])],
-                    #["View"]
-                ]]
-            ] @ diagram
-        ],
-        {
-            Placed[l_, Offset[offset_]] :> Text[l, center + offset],
-            Placed[l_, pos_] :> Text[l, pos],
-            label_ :> Text[label, center]
-        }
-    ],
     Arrowheads @ If[shape === "Point", {{Small, .7}}, Small],
     MapThread[{ports, ps, arrows, labels, dir} |->
         MapThread[{x, p, arrow, label} |-> {
@@ -903,6 +883,26 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
            {ports, ps, arrows, labels}
         ],
         {{diagram["InputPorts"], diagram["OutputPorts"]}, points, portArrows, portLabels, {Top, Bottom}}
+    ],
+    {
+        style,
+        Confirm @ diagram["Shape", opts]
+    },
+    Replace[
+        If[ MatchQ[diagram["OptionValue"["ShowLabel"], opts], None | False],
+            "\t\t\t",
+            Replace[labelFunction,
+                Automatic :> Function[ClickToCopy[
+                    Replace[#["HoldExpression"], expr_ :> (expr //. d_Diagram ? DiagramQ :> RuleCondition[d["HoldExpression"]])],
+                    #["View"]
+                ]]
+            ] @ diagram
+        ],
+        {
+            Placed[l_, Offset[offset_]] :> Text[l, center + offset],
+            Placed[l_, pos_] :> Text[l, pos],
+            label_ :> Text[label, center]
+        }
     ]
 },
     FilterRules[{opts, diagram["DiagramOptions"]}, Options[Graphics]],
