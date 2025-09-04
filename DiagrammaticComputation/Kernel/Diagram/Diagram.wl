@@ -307,30 +307,27 @@ DiagramProduct[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{subDia
     ]
 ]
 
-Options[SingletonDiagram] = Options[Diagram]
+
+Options[SingletonDiagram] = Options[EmptyDiagram] = Options[CupDiagram] = Options[CapDiagram] = Options[IdentityDiagram] = Options[PermutationDiagram] = Options[SpiderDiagram] = Options[CopyDiagram] = Options[Diagram]
 
 SingletonDiagram[diagram_Diagram, opts : OptionsPattern[]] := Diagram[diagram, "Expression" :> Diagram[diagram], opts]
 
 
-
 makePorts[xs_List] := Function[Null, Port[Unevaluated[##]], HoldAll] @@@ Flatten @* HoldForm /@ Replace[xs, SuperStar[HoldForm[x_]] :> HoldForm[SuperStar[x]], 1]
 
-Options[EmptyDiagram] = Options[Diagram]
-
-EmptyDiagram[opts : OptionsPattern[]] := Diagram[
+EmptyDiagram[opts : opts : OptionsPattern[]] := Diagram[
     opts,
     "ShowLabel" -> False,
     "Shape" -> None
 ]
 
-CupDiagram[{x_, y_}, opts___] := Diagram["\[DoubleStruckCapitalI]", {}, {x, y}, opts, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False]
-CupDiagram[x_, opts___] := CupDiagram[{x, PortDual[x]}, opts]
+CupDiagram[{x_, y_}, opts : OptionsPattern[]] := Diagram["\[DoubleStruckCapitalI]", {}, {x, y}, opts, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False]
+CupDiagram[x_, opts : OptionsPattern[]] := CupDiagram[{x, PortDual[x]}, opts]
 
-CapDiagram[{x_, y_}, opts___] := Diagram["\[DoubleStruckCapitalI]", {x, y}, {}, opts, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False]
-CapDiagram[x_, opts___] := CapDiagram[{x, PortDual[x]}, opts]
+CapDiagram[{x_, y_}, opts : OptionsPattern[]] := Diagram["\[DoubleStruckCapitalI]", {x, y}, {}, opts, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False]
+CapDiagram[x_, opts : OptionsPattern[]] := CapDiagram[{x, PortDual[x]}, opts]
 
 
-Options[IdentityDiagram] = Options[PermutationDiagram] = Options[Diagram]
 
 IdentityDiagram[xs_List -> ys_List, opts : OptionsPattern[]] /; Length[xs] == Length[ys] := With[{in = makePorts[xs], out = makePorts[ys]},
     Diagram[Interpretation["1", Identity], in, out, opts, "Shape" -> "Wires"[Thread[{Range[Length[xs]], Length[xs] + Range[Length[xs]]}]], "ShowLabel" -> False]
@@ -343,27 +340,27 @@ IdentityDiagram[x_ -> y_, opts : OptionsPattern[]] := IdentityDiagram[{x} -> {y}
 IdentityDiagram[x_, opts : OptionsPattern[]] := IdentityDiagram[{x}, opts]
 
 
-PermutationDiagram[inputs_List -> outputs_List, ins_List -> outs_List, opts___] := Enclose @ With[
+PermutationDiagram[inputs_List -> outputs_List, ins_List -> outs_List, opts : OptionsPattern[]] := Enclose @ With[
     {len = Min[Length[ins], Length[outs]]},
     {perm = ConfirmBy[FindPermutation[Take[ins, len], Take[outs, len]], PermutationCyclesQ]}
     ,
     PermutationDiagram[inputs, outputs, perm, opts, "Shape" -> "Wires"[Thread[{Range[len], Length[inputs] + Permute[Range[len], InversePermutation[perm]]}]]]
 ]
 
-PermutationDiagram[outputs_List, opts___] := PermutationDiagram[Sort[outputs] -> outputs, opts]
+PermutationDiagram[outputs_List, opts : OptionsPattern[]] := PermutationDiagram[Sort[outputs] -> outputs, opts]
 
-PermutationDiagram[inputs_List -> outputs_List, opts___] := PermutationDiagram[inputs -> outputs, inputs -> outputs, opts]
+PermutationDiagram[inputs_List -> outputs_List, opts : OptionsPattern[]] := PermutationDiagram[inputs -> outputs, inputs -> outputs, opts]
 
-PermutationDiagram[inputs_List -> outputs_List, perm_Cycles, opts___] := PermutationDiagram[inputs, outputs, perm, opts]
+PermutationDiagram[inputs_List -> outputs_List, perm_Cycles, opts : OptionsPattern[]] := PermutationDiagram[inputs, outputs, perm, opts]
 
-PermutationDiagram[inputs_List, perm_Cycles, opts___] := PermutationDiagram[inputs, Permute[inputs, perm], perm, opts]
+PermutationDiagram[inputs_List, perm_Cycles, opts : OptionsPattern[]] := PermutationDiagram[inputs, Permute[inputs, perm], perm, opts]
 
-PermutationDiagram[inputs_List, outputs_List, perm_Cycles, opts___] := With[{len = Min[Length[inputs], Length[outputs]]},
+PermutationDiagram[inputs_List, outputs_List, perm_Cycles, opts : OptionsPattern[]] := With[{len = Min[Length[inputs], Length[outputs]]},
     Diagram[Interpretation["\[Pi]", perm], makePorts[inputs], makePorts[outputs], opts, "Shape" -> "Wires"[Thread[{Range[len], Length[inputs] + Permute[Range[len], InversePermutation[perm]]}]], "ShowLabel" -> False]
 ]
 
 
-SpiderDiagram[in_List, out_List, opts : OptionsPattern[]] := Diagram["Z",
+SpiderDiagram[in_List, out_List, opts : OptionsPattern[]] := Diagram["",
     in, out,
     opts,
   	"ShowLabel" -> False,
@@ -371,14 +368,20 @@ SpiderDiagram[in_List, out_List, opts : OptionsPattern[]] := Diagram["Z",
   	"Width" -> 1 / 2, "Height" -> 1 / 2
 ]
 
-SpiderDiagram[x : Except[_List], out_, opts___] := SpiderDiagram[{x}, out, opts]
+SpiderDiagram[x : Except[_List], out_, OptionsPattern[]] := SpiderDiagram[{x}, out, opts]
 
-SpiderDiagram[in_, y : Except[_List], opts___] := SpiderDiagram[in, {y}]
+SpiderDiagram[in_, y : Except[_List], OptionsPattern[]] := SpiderDiagram[in, {y}]
 
 SpiderDiagram[x_] := SpiderDiagram[{}, {x}]
 
 
-CopyDiagram[x_, opts___] := SpiderDiagram[x, {x, x}, opts, "Shape" -> "Wires", "Width" -> 1, "Height" -> 1]
+CopyDiagram[x_, xs : {__}, opts : OptionsPattern[]] := Diagram["", x, xs, opts, "Shape" -> "Wires"[Thread[{1, Range[2, Length[xs] + 1]}]]]
+
+CopyDiagram[xs : {x_, ___}, opts : OptionsPattern[]] := CopyDiagram[x, xs, opts]
+
+CopyDiagram[x_, n_Integer ? Positive, opts : OptionsPattern[]] := CopyDiagram[x, ConstantArray[x, n], opts]
+
+CopyDiagram[x_, opts : OptionsPattern[]] := CopyDiagram[x, {x, x}, opts]
 
 
 (* vertical product *)
@@ -1269,10 +1272,10 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Block[{
                     Length[wirePorts] == 2 && Switch[binarySpiders, All | Full, True, True | Automatic, SameQ @@ Lookup[ports, wirePorts, None, #["DualQ"] &], _, False]
                     ,
 					Sow[{v,
-                        Diagram[If[Length[wirePorts] == 2, "\[DoubleStruckCapitalI]", v],
+                        If[Length[in] == 1, CopyDiagram, SpiderDiagram][
                             Port[tag[v, #]] & /@ in,
                             Port[tag[v, #]] & /@ out,
-                            If[Length[wirePorts] == 2, {"Shape" -> If[Length[wirePorts] == 2, "Wires"[{{1, 2}}], "Wire"], "ShowLabel" -> False}, {"Shape" -> "Circle", "Width" -> 1 / 2, "Height" -> 1 / 2, "ShowLabel" -> wireLabelsQ}],
+                            "ShowLabel" -> wireLabelsQ,
                             "PortArrows" -> {diagrams[#[[1]]]["PortStyles"][[#[[2]], #[[3]]]] & /@ in, diagrams[#[[1]]]["PortStyles"][[#[[2]], #[[3]]]] & /@ out}
                         ]
                     }];
