@@ -57,7 +57,7 @@ Diagram::usage = "Diagram[expr] represents a symbolic diagram with input and out
 
 Options[Diagram] := Sort @ DeleteDuplicatesBy[First] @ Join[Options[DiagramGraphics], Options[DiagramGrid], Options[DiagramsNetGraph]];
 
-$DiagramHiddenOptions = {"Expression" -> None, "InputPorts" -> {}, "OutputPorts" -> {}, "DiagramOptions" -> {}};
+$DiagramHiddenOptions = {"Expression" -> None, "InputPorts" -> {}, "OutputPorts" -> {}, "FloatingPorts" -> False, "DiagramOptions" -> {}};
 
 $DiagramProperties = Sort @ {
     "Properties", "HoldExpression", "ProductQ", "SumQ", "CompositionQ", "NetworkQ", "SubDiagrams",
@@ -674,9 +674,9 @@ DiagramProp[d_, "OptionValue"[opt_], opts : OptionsPattern[]] := OptionValue[{op
 
 DiagramProp[d_, "Center", opts : OptionsPattern[]] := Replace[d["OptionValue"["Center"], opts], Automatic -> {0, 0}]
 
-DiagramProp[d_, "Width", opts : OptionsPattern[]] := Replace[d["OptionValue"["Width"], opts], Automatic :> DiagramGridWidth[d]]
+DiagramProp[d_, "Width", opts : OptionsPattern[]] := Replace[d["OptionValue"["Width"], opts], Automatic :> If[d["NodeQ"], 1, DiagramGridWidth[d]]]
 
-DiagramProp[d_, "Height", opts : OptionsPattern[]] := Replace[d["OptionValue"["Height"], opts], Automatic :> DiagramGridHeight[d]]
+DiagramProp[d_, "Height", opts : OptionsPattern[]] := Replace[d["OptionValue"["Height"], opts], Automatic :> If[d["NodeQ"], 1, DiagramGridHeight[d]]]
 
 DiagramProp[d_, "WireQ"] := MatchQ[d["OptionValue"["Shape"]], "Wire" | "Wires" | "Wires"[_]]
 
@@ -853,7 +853,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
     center = diagram["Center", opts],
     shape = diagram["OptionValue"["Shape"], opts],
     style = Replace[diagram["OptionValue"["Style"], opts], {Automatic -> Directive[EdgeForm[$Black], FaceForm[$Gray]], None -> Nothing}],
-    interactiveQ = TrueQ[OptionValue[PlotInteractivity]]
+    interactiveQ = Replace[OptionValue[PlotInteractivity], Automatic -> True]
 }, {
     portArrows = diagram["PortStyles", opts],
     portLabels = diagram["PortLabels", opts],

@@ -98,7 +98,7 @@ ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
             a["Head"] === DiagramProduct,
             With[{row = a["SubDiagrams"]}, {len = Length[row], arities = Through[row["OutputArity"]]},
                 Replace[
-                    ResourceFunction["PositionLargestBy"][Permutations @ TakeList[aPorts, arities], - DamerauLevenshteinDistance[Catenate[#1], bPorts] &, 1],
+                    ResourceFunction["PositionLargestBy"][Permutations @ TakeList[aPorts, arities], - DamerauLevenshteinDistance[Catenate[#], bPorts] &, 1],
                     {i : Except[1]} :> (
                         a = DiagramProduct[##, a["DiagramOptions"]]["FlattenOutputs"] & @@ Permute[row, InversePermutation @ ResourceFunction["PermutationFromIndex"][i, len]];
                         resetPortsA[]
@@ -108,7 +108,7 @@ ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
             a["Head"] === DiagramComposition && a["SubDiagrams"][[1]]["Head"] === DiagramProduct,
             With[{d = a["SubDiagrams"][[1]]}, {row = d["SubDiagrams"]}, {len = Length[row], arities = Through[row["OutputArity"]]},
                 Replace[
-                    ResourceFunction["PositionLargestBy"][Permutations @ TakeList[aPorts, arities], - DamerauLevenshteinDistance[Catenate[#1], bPorts] &, 1],
+                    ResourceFunction["PositionLargestBy"][Permutations @ TakeList[aPorts, arities], - DamerauLevenshteinDistance[Catenate[#], bPorts] &, 1],
                     {i : Except[1]} :> With[{new = DiagramProduct[##, d["DiagramOptions"]]["FlattenOutputs"] & @@ Permute[row, InversePermutation @ ResourceFunction["PermutationFromIndex"][i, len]]},
                         a = ColumnDiagram[Reverse[ReplacePart[a["SubDiagrams"], 1 -> new]], opts, a["DiagramOptions"]];
                         resetPortsA[]
@@ -123,7 +123,7 @@ ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
             b["Head"] === DiagramProduct,
             With[{row = b["SubDiagrams"]}, {len = Length[row], arities = Through[row["InputArity"]]},
                 Replace[
-                    ResourceFunction["PositionLargestBy"][Permutations @ TakeList[bPorts, arities], - DamerauLevenshteinDistance[aPorts, Catenate[#1]] &, 1],
+                    ResourceFunction["PositionLargestBy"][Permutations @ TakeList[bPorts, arities], - DamerauLevenshteinDistance[aPorts, Catenate[#]] &, 1],
                     {i : Except[1]} :> (
                         b = DiagramProduct[##, b["DiagramOptions"]]["FlattenInputs"] & @@ Permute[row, InversePermutation @ ResourceFunction["PermutationFromIndex"][i, len]];
                         resetPortsB[]
@@ -133,7 +133,7 @@ ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
             b["Head"] === DiagramComposition && b["SubDiagrams"][[-1]]["Head"] === DiagramProduct,
             With[{d = b["SubDiagrams"][[-1]]}, {row = d["SubDiagrams"]}, {len = Length[row], arities = Through[row["InputArity"]]},
                 Replace[
-                    ResourceFunction["PositionLargestBy"][Permutations @ TakeList[bPorts, arities], - DamerauLevenshteinDistance[bPorts, Catenate[#1]] &, 1],
+                    ResourceFunction["PositionLargestBy"][Permutations @ TakeList[bPorts, arities], - DamerauLevenshteinDistance[aPorts, Catenate[#]] &, 1],
                     {i : Except[1]} :> With[{new = DiagramProduct[##, d["DiagramOptions"]]["FlattenOutputs"] & @@ Permute[row, InversePermutation @ ResourceFunction["PermutationFromIndex"][i, len]]},
                         b = ColumnDiagram[Reverse[ReplacePart[b["SubDiagrams"], -1 -> new]], opts, b["DiagramOptions"]];
                         resetPortsB[]
@@ -143,6 +143,76 @@ ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
         ]
     ];
 
+    Block[{row, ports, xs, d = None},
+        row = Which[
+            a["Head"] === DiagramProduct,
+                a["SubDiagrams"],
+            a["Head"] === DiagramComposition && a["SubDiagrams"][[1]]["Head"] === DiagramProduct,
+                d = a["SubDiagrams"][[1]];
+                d["SubDiagrams"],
+            a["NodeQ"],
+                {a},
+            True,
+                {}
+        ];
+        If[Length[row] == 0, Return[Null, Block]];
+        ports = Through[row["OutputPorts"]];
+        xs = TakeList[aPorts, Length /@ ports];
+        row = MapThread[
+            Diagram[#1, Inherited, Permute[#4, FindPermutation[#2, #3]], #1["DiagramOptions"]] &,
+            {   row,
+                xs,
+                First @ MaximalBy[
+                    Tuples[MapThread[If[#1, Permutations[#2], {#2}] &, {Through[row["FloatingPorts"]], xs}]],
+                    - DamerauLevenshteinDistance[Catenate[#], bPorts] &,
+                    1
+                ],
+                ports
+            }
+        ];
+        If[ d === None,
+            a = DiagramProduct[##, a["DiagramOptions"]]["FlattenOutputs"] & @@ row,
+            a = DiagramComposition[##, a["DiagramOptions"]] & @@ ReplacePart[a["SubDiagrams"], 1 -> DiagramProduct[##, d["DiagramOptions"]]["FlattenOutputs"] & @@ row]
+        ];
+
+        resetPortsA[]
+    ];
+
+    Block[{row, ports, xs, d = None},
+        row = Which[
+            b["Head"] === DiagramProduct,
+                b["SubDiagrams"],
+            b["Head"] === DiagramComposition && b["SubDiagrams"][[1]]["Head"] === DiagramProduct,
+                d = b["SubDiagrams"][[1]];
+                d["SubDiagrams"],
+            b["NodeQ"],
+                {b},
+            True,
+                {}
+        ];
+        If[Length[row] == 0, Return[Null, Block]];
+        ports = Through[row["InputPorts"]];
+        xs = TakeList[bPorts, Length /@ ports];
+        row = MapThread[
+            Diagram[#1, PortDual /@ Permute[#4, FindPermutation[#2, #3]], Inherited, #1["DiagramOptions"]] &,
+            {   row,
+                xs,
+                First @ MaximalBy[
+                    Tuples[MapThread[If[#1, Permutations[#2], {#2}] &, {Through[row["FloatingPorts"]], xs}]],
+                    - DamerauLevenshteinDistance[aPorts, Catenate[#]] &,
+                    1
+                ],
+                ports
+            }
+        ];
+        If[ d === None,
+            b = DiagramProduct[##, b["DiagramOptions"]]["FlattenInputs"] & @@ row,
+            b = DiagramComposition[##, b["DiagramOptions"]] & @@ ReplacePart[b["SubDiagrams"], -1 -> DiagramProduct[##, d["DiagramOptions"]]["FlattenInputs"] & @@ row]
+        ];
+
+        resetPortsB[]
+    ];
+    
     aStyles = a["PortStyles"];
     bStyles = b["PortStyles"];
   
