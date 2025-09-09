@@ -7,6 +7,7 @@ DiagramCases
 DiagramPosition
 DiagramMap
 DiagramMapAt
+DiagramReplacePart
 
 
 Begin["Wolfram`DiagrammaticComputation`Diagram`Surgery`Private`"];
@@ -98,6 +99,19 @@ DiagramMapAt[f_, d_Diagram, pos : {{___Integer} ...}, curPos_ : {}] := Enclose @
 DiagramMapAt[f_, d_Diagram, pos : {___Integer}] := DiagramMapAt[f, d, {pos}]
 
 DiagramMapAt[f_, pos_][d_Diagram] := DiagramMapAt[f, d, pos]
+
+
+DiagramReplacePart[d_Diagram, pos : {{___Integer} ...} -> new_, curPos_ : {}] := Enclose @ 
+    ConfirmBy[
+        If[ d["Head"] === Null,
+            If[MemberQ[pos, curPos], Diagram[new], d],
+            If[MemberQ[pos, curPos], Diagram[#] &, # &] @ Diagram[d["Head"] @@ MapIndexed[DiagramReplacePart[#, pos -> new, Join[curPos, #2]] &, d["SubDiagrams"]], d["DiagramOptions"]]
+        ],
+        DiagramQ
+    ]
+
+DiagramReplacePart[d_Diagram, pos : {___Integer} -> new_] := DiagramReplacePart[d, {pos} -> new]
+
 
 
 End[]

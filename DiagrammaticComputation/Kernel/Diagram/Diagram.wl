@@ -674,9 +674,9 @@ DiagramProp[d_, "OptionValue"[opt_], opts : OptionsPattern[]] := OptionValue[{op
 
 DiagramProp[d_, "Center", opts : OptionsPattern[]] := Replace[d["OptionValue"["Center"], opts], Automatic -> {0, 0}]
 
-DiagramProp[d_, "Width", opts : OptionsPattern[]] := Replace[d["OptionValue"["Width"], opts], Automatic -> 1]
+DiagramProp[d_, "Width", opts : OptionsPattern[]] := Replace[d["OptionValue"["Width"], opts], Automatic :> DiagramGridWidth[d]]
 
-DiagramProp[d_, "Height", opts : OptionsPattern[]] := Replace[d["OptionValue"["Height"], opts], Automatic -> 1]
+DiagramProp[d_, "Height", opts : OptionsPattern[]] := Replace[d["OptionValue"["Height"], opts], Automatic :> DiagramGridHeight[d]]
 
 DiagramProp[d_, "WireQ"] := MatchQ[d["OptionValue"["Shape"]], "Wire" | "Wires" | "Wires"[_]]
 
@@ -827,7 +827,7 @@ DiagramProp[_, prop_] := Missing[prop]
 (* ::Subsection:: *)
 (* Formatting *)
 
-$DefaultPortLabelFunction = Function[ClickToCopy[#2 /. Automatic :> If[#1["DualQ"], #1["Dual"], #1], #1["View"]]]
+$DefaultPortLabelFunction = Function[If[TrueQ[$PlotInteractivity], ClickToCopy, #1 &][#2 /. Automatic :> If[#1["DualQ"], #1["Dual"], #1], #1["View"]]]
 
 Options[DiagramGraphics] = Join[{
     "Shape" -> Automatic,
@@ -842,6 +842,7 @@ Options[DiagramGraphics] = Join[{
     "PortLabels" -> Automatic,
     "PortArrowFunction" -> Automatic,
     "PortLabelFunction" -> Automatic,
+    "PortsFirst" -> True,
     "Outline" -> None,
     "Style" -> Automatic
 }, Options[Graphics]];
@@ -851,14 +852,15 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
     arities = {diagram["InputArity"], diagram["OutputArity"]},
     center = diagram["Center", opts],
     shape = diagram["OptionValue"["Shape"], opts],
-    style = Replace[diagram["OptionValue"["Style"], opts], {Automatic -> Directive[EdgeForm[$Black], FaceForm[$Gray]], None -> Nothing}]
+    style = Replace[diagram["OptionValue"["Style"], opts], {Automatic -> Directive[EdgeForm[$Black], FaceForm[$Gray]], None -> Nothing}],
+    interactiveQ = TrueQ[OptionValue[PlotInteractivity]]
 }, {
     portArrows = diagram["PortStyles", opts],
     portLabels = diagram["PortLabels", opts],
     labelFunction = diagram["OptionValue"["LabelFunction"], opts],
     portArrowFunction = Replace[diagram["OptionValue"["PortArrowFunction"], opts], Automatic -> (Arrow[If[#1["DualQ"], Reverse, Identity] @ #2] &)],
     portLabelFunction = Replace[diagram["OptionValue"["PortLabelFunction"], opts], Automatic -> $DefaultPortLabelFunction]
-}, Graphics[{
+}, Graphics[If[TrueQ["PortsFirst"], Identity, Permute[#, Cycles[{{2, 3}}]] &] @ {
     Arrowheads @ If[shape === "Point", {{Small, .7}}, Small],
     MapThread[{ports, ps, arrows, labels, dir} |->
         MapThread[{x, p, arrow, label} |-> {
@@ -892,7 +894,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
         If[ MatchQ[diagram["OptionValue"["ShowLabel"], opts], None | False],
             "\t\t\t",
             Replace[labelFunction,
-                Automatic :> Function[ClickToCopy[
+                Automatic :> Function[If[interactiveQ, ClickToCopy, # &][
                     Replace[#["HoldExpression"], expr_ :> (expr //. d_Diagram ? DiagramQ :> RuleCondition[d["HoldExpression"]])],
                     #["View"]
                 ]]
