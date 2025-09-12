@@ -28,7 +28,7 @@ identityDiagrams[ports_, styles_] := Splice @ MapThread[IdentityDiagram[#1, "Por
 
 Options[ColumnDiagram] := Join[{"PortOrderingFunction" -> Automatic, "Direction" -> Down, "RowSort" -> False}, Options[Diagram]]
 
-ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
+ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPattern[]] := Module[{
     func = OptionValue["PortFunction"],
     a, b, pa, pb,
     as, bs,
@@ -92,7 +92,7 @@ ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
         ]
     }
     ];
-
+    
     If[ TrueQ[OptionValue["RowSort"]],
         Which[
             a["Head"] === DiagramProduct,
@@ -150,7 +150,7 @@ ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
             a["Head"] === DiagramComposition && a["SubDiagrams"][[1]]["Head"] === DiagramProduct,
                 d = a["SubDiagrams"][[1]];
                 d["SubDiagrams"],
-            a["NodeQ"],
+            a["SingletonNodeQ"],
                 {a},
             True,
                 {}
@@ -177,15 +177,14 @@ ColumnDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Module[{
 
         resetPortsA[]
     ];
-
     Block[{row, ports, xs, d = None},
         row = Which[
             b["Head"] === DiagramProduct,
                 b["SubDiagrams"],
-            b["Head"] === DiagramComposition && b["SubDiagrams"][[1]]["Head"] === DiagramProduct,
-                d = b["SubDiagrams"][[1]];
+            b["Head"] === DiagramComposition && b["SubDiagrams"][[-1]]["Head"] === DiagramProduct,
+                d = b["SubDiagrams"][[-1]];
                 d["SubDiagrams"],
-            b["NodeQ"],
+            b["SingletonNodeQ"],
                 {b},
             True,
                 {}
@@ -286,7 +285,7 @@ RowDiagram[xs : {___Diagram}, opts : OptionsPattern[]] := Fold[RowDiagram[{##}, 
 setDiagram[diagram1_, diagram2_, opts___] := Diagram[diagram1, Function[Null, "Expression" :> ##, HoldAll] @@ diagram2["HoldExpression"], "PortFunction" -> diagram2["PortFunction"], FilterRules[{opts}, Options[Diagram]]]
 
 
-Options[DiagramArrange] := DeleteDuplicatesBy[First] @ Join[{"Network" -> True, "Arrange" -> True, "NetworkMethod" -> "Foliation", "AssignPorts" -> True}, Options[ColumnDiagram], Options[DiagramsNetGraph]]
+Options[DiagramArrange] := DeleteDuplicatesBy[First] @ Join[{"Network" -> True, "Arrange" -> True, "NetworkMethod" -> "Foliation", "AssignPorts" -> False}, Options[ColumnDiagram], Options[DiagramsNetGraph]]
 
 DiagramArrange[diagram_Diagram, opts : OptionsPattern[]] := Enclose @ If[
     (TrueQ[diagram["OptionValue"["Arrange"], opts]] || diagram["NetworkQ"]) && TrueQ[diagram["OptionValue"["Decompose"], opts]]
@@ -307,7 +306,7 @@ DiagramArrange[diagram_Diagram, opts : OptionsPattern[]] := Enclose @ If[
                             "TopologicalSort", Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, TopologicalSort[g]}, "Diagram"],
                             "Stratify", RowDiagram[Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, Developer`FromPackedArray[#]}, "Diagram"]] & /@ ResourceFunction["VertexStratify"][g],
                             "Foliation", RowDiagram[Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, #}, "Diagram"]] & /@ First[ResourceFunction["GraphFoliations"][g, MaxItems -> 1, Direction -> Top]],
-                            "RandomFoliation", RowDiagram[Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, #}, "Diagram"]] & /@ RandomChoice[ResourceFunction["GraphFoliations"][g]]
+                            "RandomFoliation", RowDiagram[Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, #}, "Diagram"]] & /@ RandomChoice[ResourceFunction["GraphFoliations"][g, "IncludePermutations" -> True, Direction -> Top]]
                         ]
             ],
             Diagram[diagram, "Expression" :> DiagramNetwork[##] & @@ (DiagramArrange[#, opts] & /@ {ds})]
@@ -423,7 +422,7 @@ DiagramDecompose[diagram_Diagram ? DiagramQ, lvl : (_Integer ? NonNegative) | In
     ,
     diagram["Flatten"]
 ] // If[TrueQ[OptionValue["Ports"]], # -> {Through[diagram["InputPorts"]["Dual"]], diagram["OutputPorts"]} &, Identity] //
-    If[TrueQ[OptionValue["Diagram"]], # -> If[diagram["NodeQ"], None, diagram] &, Identity]
+    If[TrueQ[OptionValue["Diagram"]], # -> If[diagram["SingletonNodeQ"], None, diagram] &, Identity]
 
 gridTranspose[CircleTimes[ds___CircleDot]] := CircleDot @@ ResourceFunction["GeneralizedMapThread"][DiagramDecompose[RowDiagram[Diagram /@ {##}]] &, List @@@ {ds}]
 gridTranspose[CircleDot[ds___CircleTimes]] := CircleTimes @@ ResourceFunction["GeneralizedMapThread"][DiagramDecompose[ColumnDiagram[Diagram /@ Reverse[{##}]]] & , List @@@ {ds}]
@@ -566,7 +565,7 @@ gridArrange[grid : CircleDot[ds___] -> d_, pos_, {width_, height_}, {dx_, dy_}, 
 
 gridArrange[HoldPattern[SuperStar[d_]] -> diag_, args___] := gridArrange[CircleTimes[d] -> diag, args]
 
-gridArrange[HoldPattern[Transpose[d_, perm___]] -> diag_, args___] := (Sow[{perm}, "Transpose"]; gridArrange[CircleTimes[d] -> diag, args])
+gridArrange[HoldPattern[Transpose[d_, perm___]] -> diag_, args___] := (Sow[{perm}, "Transpose"]; gridArrange[If[diag === None, d, CircleTimes[d] -> diag], args])
 
 gridArrange[ds_List -> d_, args___] := If[Length[ds] == 1,
     gridArrange[CircleTimes[ds[[1]]] -> d, args],
@@ -580,7 +579,7 @@ gridOutputPositions[_Diagram, pos_] := {pos}
 gridOutputPositions[(CircleTimes | List)[ds___], pos_] := Catenate[MapIndexed[gridOutputPositions[#1, Join[pos, #2]] &, {ds}]]
 gridOutputPositions[_CirclePlus, _] := {}
 gridOutputPositions[CircleDot[d_, ___], pos_] := gridOutputPositions[d, Append[pos, 1]]
-gridOutputPositions[(Transpose | SuperStar)[d_, ___], pos_] := gridOutputPositions[d, pos]
+gridOutputPositions[(Transpose | SuperStar)[d_, ___], pos_] := gridOutputPositions[d, Append[pos, 1]]
 gridOutputPositions[grid_ -> _, pos_] := gridOutputPositions[grid, Append[pos, 1]]
 gridOutputPositions[grid_] := gridOutputPositions[grid, {}]
 
@@ -588,14 +587,14 @@ gridInputPositions[_Diagram, pos_] := {pos}
 gridInputPositions[(CircleTimes | List)[ds___], pos_] := Catenate[MapIndexed[gridInputPositions[#1, Join[pos, #2]] &, {ds}]]
 gridInputPositions[_CirclePlus, _] := {}
 gridInputPositions[CircleDot[ds___, d_], pos_] := gridInputPositions[d, Append[pos, Length[{ds}] + 1]]
-gridInputPositions[(Transpose | SuperStar)[d_, ___], pos_] := gridInputPositions[d, pos]
+gridInputPositions[(Transpose | SuperStar)[d_, ___], pos_] := gridInputPositions[d, Append[pos, 1]]
 gridInputPositions[grid_ -> _, pos_] := gridInputPositions[grid, Append[pos, 1]]
 gridInputPositions[grid_] := gridInputPositions[grid, {}]
 
-GridInputPorts[d_Diagram] := If[d["NodeQ"], d["TopPorts"], GridInputPorts[If[d["NetworkQ"], d["Arrange"], d]["Decompose", "Unary" -> True]]]
+GridInputPorts[d_Diagram] := If[d["SingletonNodeQ"], d["TopPorts"], GridInputPorts[If[d["NetworkQ"], d["Arrange"], d]["Decompose", "Unary" -> True]]]
 GridInputPorts[grid_] := Catenate[Extract[grid, gridInputPositions[grid], #["TopPorts"] &]]
 
-GridOutputPorts[d_Diagram] := If[d["NodeQ"], d["BottomPorts"], GridOutputPorts[If[d["NetworkQ"], d["Arrange"], d]["Decompose", "Unary" -> True]]]
+GridOutputPorts[d_Diagram] := If[d["SingletonNodeQ"], d["BottomPorts"], GridOutputPorts[If[d["NetworkQ"], d["Arrange"], d]["Decompose", "Unary" -> True]]]
 GridOutputPorts[grid_] := Catenate[Extract[grid, gridOutputPositions[grid], #["BottomPorts"] &]]
 
 Options[DiagramGrid] = Join[{
@@ -631,7 +630,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
     plotInteractivity = Replace[OptionValue[PlotInteractivity], Automatic -> True],
     dividers
 },
-    grid = DiagramDecompose[DiagramArrange[diagram, FilterRules[{opts}, Options[DiagramArrange]]], "Diagram" -> True, "Unary" -> True, FilterRules[{opts}, Options[DiagramDecompose]]];
+    grid = DiagramDecompose[DiagramArrange[diagram, FilterRules[{opts}, Options[DiagramArrange]]], "Diagram" -> True, "Unary" -> False, FilterRules[{opts}, Options[DiagramDecompose]]];
     width = gridWidth[grid];
     height = gridHeight[grid];
 
@@ -657,8 +656,8 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
     dividers = {
         FaceForm[None], EdgeForm[Directive[Thin, $Black]],
         Switch[diagram["OptionValue"[Dividers], opts],
-            All | Automatic, #["Graphics", PlotInteractivity -> plotInteractivity, "Style" -> None, "LabelFunction" -> ("" &), "PortArrows" -> None, "PortLabels" -> None][[1]] & /@ items[[All, 2]],
-            True, #["Graphics", PlotInteractivity -> plotInteractivity, "Style" -> None, "LabelFunction" -> ("" &), "PortArrows" -> None, "PortLabels" -> None][[1]] & /@ Catenate[{rows, columns} /. _Missing -> Nothing][[All, 2]],
+            All | Automatic, #["Graphics", "Shape" -> Automatic, PlotInteractivity -> plotInteractivity, "Style" -> None, "LabelFunction" -> ("" &), "PortArrows" -> None, "PortLabels" -> None][[1]] & /@ items[[All, 2]],
+            True, #["Graphics", "Shape" -> Automatic, PlotInteractivity -> plotInteractivity, "Style" -> None, "LabelFunction" -> ("" &), "PortArrows" -> None, "PortLabels" -> None][[1]] & /@ Catenate[{rows, columns} /. _Missing -> Nothing][[All, 2]],
             _, Nothing
         ]
     };
@@ -689,7 +688,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
                         {pos},
                         Diagram[#, "DiagramOptions" -> Join[
                                 diagramOptions,
-                                    With[{
+                                With[{
                                         parentDiagrams = Select[subDiagrams, Take[pos, UpTo[Length[#[[1]]]]] === #[[1]] &]
                                     },
                                     If[ parentDiagrams === {},
@@ -1042,7 +1041,7 @@ gridFrameWires[___] := {}
 
 gridNetworkWires[grid_, frame_, portFunction_, opts___] := With[{
     rules = Join[
-        Catenate @ Cases[grid, d_Diagram /; d["NodeQ"] :> makeNeutralRules[d, portFunction], All],
+        Catenate @ Cases[grid, d_Diagram /; d["SingletonNodeQ"] :> makeNeutralRules[d, portFunction], All],
         If[MissingQ[frame], {}, makeNeutralRules[frame, portFunction, True]]
     ]
 },

@@ -3,6 +3,7 @@ BeginPackage["Wolfram`DiagrammaticComputation`Utilities`"];
 
 fillAutomatic
 reverseTree
+reverseEdge
 
 getName
 tag
@@ -44,6 +45,8 @@ reverseTree[tree_] := Replace[Unevaluated[tree], {
     SuperStar[x_] :> SuperStar[reverseTree[x]],
     (head : CircleTimes | CirclePlus)[xs___] :> head @@ Reverse[reverseTree /@ {xs}]
 }]
+
+reverseEdge[DirectedEdge[a_, b_, t_]] := DirectedEdge[b, a, Reverse[t]]
 
 getName[expr_] := Replace[Unevaluated[expr], {
     SuperStar[x_] :> x
