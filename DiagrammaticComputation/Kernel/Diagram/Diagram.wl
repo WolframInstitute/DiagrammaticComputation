@@ -55,9 +55,9 @@ Begin["Wolfram`DiagrammaticComputation`Diagram`Private`"];
 
 Diagram::usage = "Diagram[expr] represents a symbolic diagram with input and output ports"
 
-Options[Diagram] := Sort @ DeleteDuplicatesBy[First] @ Join[Options[DiagramGraphics], Options[DiagramGrid], Options[DiagramsNetGraph]];
+Options[Diagram] := Sort @ DeleteDuplicatesBy[First] @ Join[{"FloatingPorts" -> False}, Options[DiagramGraphics], Options[DiagramGrid], Options[DiagramsNetGraph]];
 
-$DiagramHiddenOptions = {"Expression" -> None, "InputPorts" -> {}, "OutputPorts" -> {}, "FloatingPorts" -> False, "DiagramOptions" -> {}};
+$DiagramHiddenOptions = {"Expression" -> None, "InputPorts" -> {}, "OutputPorts" -> {}, "DiagramOptions" -> {}};
 
 $DiagramProperties = Sort @ {
     "Properties", "HoldExpression", "ProductQ", "SumQ", "CompositionQ", "NetworkQ", "SubDiagrams",
@@ -214,12 +214,13 @@ Diagram[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[Replace[Normal[Merge[
 
 Options[DiagramDual] := Join[{"Singleton" -> True}, Options[Diagram]]
 
-DiagramDual[d_ ? DiagramQ, opts : OptionsPattern[]] := If[d["DualQ"], First[d["SubDiagrams"]], Diagram[
+DiagramDual[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
     d,
     opts,
     Replace[d["HoldExpression"], {
         _[(head : (DiagramSum | DiagramComposition | DiagramProduct | DiagramNetwork))[ds___]] :>
             ("Expression" :> head[##] & @@ (DiagramDual[#, opts] & /@ {ds})),
+        _[DiagramDual[x_Diagram]] :> (Function[Null, "Expression" :> ##, HoldAll] @@ x["HoldExpression"]),
         _[DiagramDual[x_]] :> "Expression" :> x,
         _ :> If[TrueQ[OptionValue["Singleton"]], "Expression" :> DiagramDual[d], Function[Null, "Expression" :> #, HoldAll] @@ d["HoldExpression"]]
     }],
@@ -236,17 +237,17 @@ DiagramDual[d_ ? DiagramQ, opts : OptionsPattern[]] := If[d["DualQ"], First[d["S
      If[TrueQ[OptionValue["Singleton"]], "Shape" -> Automatic, {}],
     "DiagramOptions" -> d["DiagramOptions"]
 ]
-]
 
 Options[DiagramFlip] := Join[{"Singleton" -> True}, Options[Diagram]]
 
-DiagramFlip[d_ ? DiagramQ, opts : OptionsPattern[]] := If[d["FlipQ"], First[d["SubDiagrams"]], Diagram[
+DiagramFlip[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
     d,
     opts,
     Replace[d["HoldExpression"], {
         _[DiagramComposition[ds___]] :> ("Expression" :> DiagramComposition[##] & @@ Reverse[DiagramFlip[#, opts] & /@ {ds}]),
         _[(head : (DiagramSum | DiagramProduct | DiagramNetwork))[ds___]] :>
             ("Expression" :> head[##] & @@ (DiagramFlip[#, opts] & /@ {ds})),
+        _[DiagramFlip[x_Diagram]] :> (Function[Null, "Expression" :> ##, HoldAll] @@ x["HoldExpression"]),
         _[DiagramFlip[x_]] :> "Expression" :> x,
         _ :> If[TrueQ[OptionValue["Singleton"]], "Expression" :> DiagramFlip[d], Function[Null, "Expression" :> #, HoldAll] @@ d["HoldExpression"]]
     }],
@@ -265,17 +266,17 @@ DiagramFlip[d_ ? DiagramQ, opts : OptionsPattern[]] := If[d["FlipQ"], First[d["S
     If[TrueQ[OptionValue["Singleton"]], "Shape" -> Automatic, {}],
     "DiagramOptions" -> d["DiagramOptions"]
 ]
-]
 
 Options[DiagramReverse] := Join[{"Singleton" -> True}, Options[Diagram]]
 
-DiagramReverse[d_ ? DiagramQ, opts : OptionsPattern[]] := If[d["ReverseQ"], First[d["SubDiagrams"]], Diagram[
+DiagramReverse[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
     d,
     opts,
     Replace[d["HoldExpression"], {
         _[DiagramProduct[ds___]] :> ("Expression" :> DiagramProduct[##] & @@ Reverse[DiagramReverse[#, opts] & /@ {ds}]),
         _[(head : (DiagramSum | DiagramComposition | DiagramNetwork))[ds___]] :>
             ("Expression" :> head[##] & @@ (DiagramReverse[#, opts] & /@ {ds})),
+        _[DiagramReverse[x_Diagram]] :> (Function[Null, "Expression" :> ##, HoldAll] @@ x["HoldExpression"]),
         _[DiagramReverse[x_]] :> "Expression" :> x,
         _ :> If[TrueQ[OptionValue["Singleton"]], "Expression" :> DiagramReverse[d], Function[Null, "Expression" :> #, HoldAll] @@ d["HoldExpression"]]
     }],
@@ -285,7 +286,6 @@ DiagramReverse[d_ ? DiagramQ, opts : OptionsPattern[]] := If[d["ReverseQ"], Firs
     "PortLabels" -> (Reverse /@ d["PortLabels", opts]),
     If[TrueQ[OptionValue["Singleton"]], "Shape" -> Automatic, {}],
     "DiagramOptions" -> d["DiagramOptions"]
-]
 ]
 
 
@@ -381,7 +381,8 @@ SpiderDiagram[in_List, out_List, opts : OptionsPattern[]] := Diagram["",
     opts,
   	"ShowLabel" -> False,
   	"Shape" -> "Disk",
-  	"Width" -> 1 / 2, "Height" -> 1 / 2
+  	"Width" -> 1 / 2, "Height" -> 1 / 2,
+    "FloatingPorts" -> True
 ]
 
 SpiderDiagram[x : Except[_List], out_, OptionsPattern[]] := SpiderDiagram[{x}, out, opts]
@@ -391,7 +392,7 @@ SpiderDiagram[in_, y : Except[_List], OptionsPattern[]] := SpiderDiagram[in, {y}
 SpiderDiagram[x_] := SpiderDiagram[{}, {x}]
 
 
-CopyDiagram[x_, xs : {__}, opts : OptionsPattern[]] := Diagram["Copy", x, xs, opts, "Shape" -> "Wires"[Thread[{1, Range[2, Length[xs] + 1]}]], "ShowLabel" -> False]
+CopyDiagram[x_, xs : {__}, opts : OptionsPattern[]] := Diagram["Copy", x, xs, opts, "Shape" -> "Wires"[Thread[{1, Range[2, Length[xs] + 1]}]], "ShowLabel" -> False, "FloatingPorts" -> True]
 
 CopyDiagram[xs : {x_, ___}, opts : OptionsPattern[]] := CopyDiagram[x, xs, opts]
 
@@ -512,7 +513,7 @@ DiagramProp[d_, "Reverse", opts___] := DiagramReverse[d, opts]
 
 DiagramProp[d_, "Head"] := Replace[d["HoldExpression"], {
     With[{headPatt = $DiagramHeadPattern}, HoldForm[(head : headPatt)[___]] :> head],
-    _ -> Null
+    _ -> None
 }]
 
 DiagramProp[d_, "SubDiagrams"] := Replace[d["HoldExpression"], {
@@ -520,7 +521,7 @@ DiagramProp[d_, "SubDiagrams"] := Replace[d["HoldExpression"], {
     _ -> {}
 }]
 
-DiagramProp[d_, "SubDiagrams", n : _Integer | Infinity : 1] := FixedPoint[Catenate @* Map[Replace[#["SubDiagrams"], {} -> {#}] &], {d}, n]
+DiagramProp[d_, "SubDiagrams", n : _Integer | Infinity : 1] := FixedPoint[Catenate @* Map[Replace[#["SubDiagrams"], {} :> {#}] &], {d}, n]
 
 DiagramProp[d_, "TopPorts", dualQ : _ ? BooleanQ : False] := If[dualQ, PortDual, Identity] /@ d["InputPorts", False]
 
@@ -1049,7 +1050,9 @@ toIdentities[ds : {__Diagram}] := Map[
 	ds
 ]
 
-SimplifyDiagram[diag_ ? DiagramQ] /; diag["NetworkQ"] := Block[{
+Options[SimplifyDiagram] = Options[DiagramsNetGraph]
+
+SimplifyDiagram[diag_ ? DiagramQ, opts : OptionsPattern[]] /; diag["NetworkQ"] := Block[{
     portFunction = diag["PortFunction"],
 	net,
     in = PortDual /@ diag["InputPorts"],
@@ -1057,13 +1060,14 @@ SimplifyDiagram[diag_ ? DiagramQ] /; diag["NetworkQ"] := Block[{
 },
     net = DiagramsNetGraph[
         diag["Graph", "Simplify" -> True, "PortFunction" -> portFunction],
+        FilterRules[{opts}, Options[DiagramsNetGraph]],
         "PortFunction" -> portFunction, "UnarySpiders" -> False, "BinarySpiders" -> False
     ];
     DiagramNetwork[##, diag["DiagramOptions"], "PortFunction" -> portFunction] & @@ toIdentities @ AnnotationValue[{net, VertexList[net]}, "Diagram"]
 ]
 
-SimplifyDiagram[diag_ ? DiagramQ] := With[{
-    d = restorePorts @ restorePorts @ DiagramArrange[SimplifyDiagram[diag["Network"]], "PortFunction" -> diag["PortFunction"], "AssignPorts" -> True],
+SimplifyDiagram[diag_ ? DiagramQ, opts : OptionsPattern[]] := With[{
+    d = restorePorts @ restorePorts @ DiagramArrange[SimplifyDiagram[diag["Network"], opts], "PortFunction" -> diag["PortFunction"], "AssignPorts" -> True],
     portFunction = $DefaultPortFunction,
     in = PortDual /@ diag["InputPorts"],
     out = diag["OutputPorts"]
@@ -1160,7 +1164,8 @@ Options[RemoveDiagramsNetGraphCycles] = Join[{"LoopDiagrams" -> True, "NodeCycle
 
 RemoveDiagramsNetGraphCycles[g_ ? DirectedGraphQ, opts : OptionsPattern[]] := Enclose @ Block[{
     net = g, diagrams, cycle, id, edge, cups = {}, caps = {}, cupDiagrams = {}, capDiagrams = {}, cup, cap,
-    nodeCyclesQ = TrueQ[OptionValue["NodeCycles"]]
+    nodeCyclesQ = TrueQ[OptionValue["NodeCycles"]],
+    newSrcPort, newTgtPort
 },
     
     If[ TrueQ[OptionValue["LoopDiagrams"]] || ! LoopFreeGraphQ[g],
@@ -1179,66 +1184,123 @@ RemoveDiagramsNetGraphCycles[g_ ? DirectedGraphQ, opts : OptionsPattern[]] := En
                     ]
                 ]
             ],
-            edge = Confirm @ FirstCase[cycle, _[_, _, {{1, _, _}, __}]];
-            Switch[edge,
-                _[_, _, {{1, _, _}, ___, {2, _, _}}],
-                    AppendTo[cups, cup = id++];
-                    AppendTo[caps, cap = id++];
-                    With[{
-                        src = Lookup[diagrams, edge[[1]]],
-                        tgt = Lookup[diagrams, edge[[2]]],
-                        srcSide = If[edge[[3, 1, 1]] == 1, "InputPorts", "OutputPorts"],
-                        tgtSide = If[edge[[3, -1, 1]] == 1, "InputPorts", "OutputPorts"],
-                        i = edge[[3, 1, 3]],
-                        j = edge[[3, -1, 3]]
-                    },
-                    {
-                        srcPort = src[srcSide][[i]],
-                        tgtPort = tgt[tgtSide][[j]]
-                    },
-                    {
-                        newSrcPort = Port @ srcPort["Apply", tag[#["HoldName"], cup] &],
-                        newTgtPort = Port @ tgtPort["Apply", tag[#["HoldName"], cap] &]
-                    },
+            edge = cycle[[1]];
+            With[{
+                src = Lookup[diagrams, edge[[1]]],
+                tgt = Lookup[diagrams, edge[[2]]],
+                srcSide = If[edge[[3, 1, 1]] == 1, "InputPorts", "OutputPorts"],
+                tgtSide = If[edge[[3, -1, 1]] == 1, "InputPorts", "OutputPorts"],
+                i = edge[[3, 1, 3]],
+                j = edge[[3, -1, 3]],
+                n = edge[[3, 1, 2]],
+                m = edge[[3, -1, 2]]
+            },
+            {
+                srcPort = src[srcSide][[i]],
+                tgtPort = tgt[tgtSide][[j]]
+            },
+                Switch[edge,
+                    _[_, _, {{1, _, _}, ___, {2, _, _}}],
+                        AppendTo[cups, cup = id++];
+                        AppendTo[caps, cap = id++];
+
+                        newSrcPort = Port @ srcPort["Apply", tag[#["HoldName"], cup] &];
+                        newTgtPort = Port @ tgtPort["Apply", tag[#["HoldName"], cap] &];
+
                         diagrams[edge[[1]]] = Diagram[src, srcSide -> ReplacePart[src[srcSide], i -> newSrcPort]];
                         diagrams[edge[[2]]] = Diagram[If[edge[[1]] === edge[[2]], diagrams[edge[[1]]], tgt], tgtSide -> ReplacePart[tgt[tgtSide], j -> newTgtPort]];
-                        AppendTo[diagrams, cup -> CupDiagram[{PortDual[srcPort], PortDual[newTgtPort]}]];
-                        AppendTo[diagrams, cap -> CapDiagram[{tgtPort, newSrcPort}]];
-                    ];
-                    net = EdgeDelete[net, {edge}];
-                    net = VertexAdd[net, {cap, cup}];
-                    net = EdgeAdd[net, {
-                        DirectedEdge[edge[[1]], cap, {edge[[3, 1]], {1, 2, 2}}],
-                        DirectedEdge[cup, cap, {{2, 2, 1}, {1, 2, 1}}],
-                        DirectedEdge[cup, edge[[2]], {{2, 2, 2}, edge[[3, -1]]}]
-                    }]
-                , 
-                _[_, _, {{1, _, _}, ___, {1, _, _}}],
-                    AppendTo[cups, cup = id++];
-                    With[{
-                        src = Lookup[diagrams, edge[[1]]],
-                        tgt = Lookup[diagrams, edge[[2]]],
-                        srcSide = If[edge[[3, 1, 1]] == 1, "InputPorts", "OutputPorts"],
-                        tgtSide = If[edge[[3, -1, 1]] == 1, "InputPorts", "OutputPorts"],
-                        i = edge[[3, 1, 3]],
-                        j = edge[[3, -1, 3]]
-                    },
-                    {
-                        srcPort = src[srcSide][[i]],
-                        tgtPort = tgt[tgtSide][[j]]
-                    },
-                    {
-                        newSrcPort = Port @ srcPort["Apply", tag[#["HoldName"], cup] &]
-                    },
+
+                        net = EdgeDelete[net, {edge}];
+                        net = VertexAdd[net, {cap, cup}];
+
+
+                        If[ i <= n / 2 && j <= m / 2,
+                            AppendTo[diagrams, cup -> CupDiagram[{PortDual[srcPort], PortDual[newTgtPort]}]];
+                            AppendTo[diagrams, cap -> CapDiagram[{tgtPort, newSrcPort}]];
+
+                            
+                            net = EdgeAdd[net, {
+                                DirectedEdge[edge[[1]], cap, {edge[[3, 1]], {1, 2, 2}}],
+                                DirectedEdge[cup, cap, {{2, 2, 1}, {1, 2, 1}}],
+                                DirectedEdge[cup, edge[[2]], {{2, 2, 2}, edge[[3, -1]]}]
+                            }]
+                            ,
+                            AppendTo[diagrams, cup -> CupDiagram[{PortDual[newTgtPort], PortDual[srcPort]}]];
+                            AppendTo[diagrams, cap -> CapDiagram[{newSrcPort, tgtPort}]];
+
+                            
+                            net = EdgeAdd[net, {
+                                DirectedEdge[edge[[1]], cap, {edge[[3, 1]], {1, 2, 1}}],
+                                DirectedEdge[cup, cap, {{2, 2, 2}, {1, 2, 2}}],
+                                DirectedEdge[cup, edge[[2]], {{2, 2, 1}, edge[[3, -1]]}]
+                            }]
+                        ]
+                    ,
+                    _[_, _, {{2, _, _}, ___, {1, _, _}}],
+                        AppendTo[cups, cup = id++];
+                        AppendTo[caps, cap = id++];
+
+                        newSrcPort = Port @ srcPort["Apply", tag[#["HoldName"], cap] &];
+                        newTgtPort = Port @ tgtPort["Apply", tag[#["HoldName"], cup] &];
+
                         diagrams[edge[[1]]] = Diagram[src, srcSide -> ReplacePart[src[srcSide], i -> newSrcPort]];
-                        AppendTo[diagrams, cup -> CupDiagram[{PortDual[newSrcPort], PortDual[tgtPort]}]]
-                    ];
-                    net = EdgeDelete[net, {edge}];
-                    net = VertexAdd[net, cup];
-                    net = EdgeAdd[net, {
-                        DirectedEdge[cup, edge[[1]], {{2, 2, 1}, edge[[3, 1]]}],
-                        DirectedEdge[cup, edge[[2]], {{2, 2, 2}, edge[[3, -1]]}]
-                    }];
+                        diagrams[edge[[2]]] = Diagram[If[edge[[1]] === edge[[2]], diagrams[edge[[1]]], tgt], tgtSide -> ReplacePart[tgt[tgtSide], j -> newTgtPort]];
+
+                        net = EdgeDelete[net, {edge}];
+                        net = VertexAdd[net, {cap, cup}];  
+
+                        If[ i <= n / 2 && j <= m / 2,
+                            AppendTo[diagrams, cup -> CupDiagram[{PortDual[srcPort], PortDual[newTgtPort]}]];
+                            AppendTo[diagrams, cap -> CapDiagram[{tgtPort, newSrcPort}]];
+                            
+                            net = EdgeAdd[net, {
+                                DirectedEdge[edge[[1]], cap, {edge[[3, 1]], {1, 2, 2}}],
+                                DirectedEdge[cup, cap, {{2, 2, 1}, {1, 2, 1}}],
+                                DirectedEdge[cup, edge[[2]], {{2, 2, 2}, edge[[3, -1]]}]
+                            }]
+                            ,
+                            AppendTo[diagrams, cup -> CupDiagram[{PortDual[newTgtPort], PortDual[srcPort]}]];
+                            AppendTo[diagrams, cap -> CapDiagram[{newSrcPort, tgtPort}]];
+                            
+                            net = EdgeAdd[net, {
+                                DirectedEdge[edge[[1]], cap, {edge[[3, 1]], {1, 2, 1}}],
+                                DirectedEdge[cup, cap, {{2, 2, 2}, {1, 2, 2}}],
+                                DirectedEdge[cup, edge[[2]], {{2, 2, 1}, edge[[3, -1]]}]
+                            }]
+                        ]
+                    , 
+                    _[_, _, {{1, _, _}, ___, {1, _, _}}],
+                        AppendTo[cups, cup = id++];
+
+                        newSrcPort = Port @ srcPort["Apply", tag[#["HoldName"], cup] &];
+                       
+                        diagrams[edge[[1]]] = Diagram[src, srcSide -> ReplacePart[src[srcSide], i -> newSrcPort]];
+
+                        AppendTo[diagrams, cup -> CupDiagram[{PortDual[newSrcPort], PortDual[tgtPort]}]];
+
+                        net = EdgeDelete[net, {edge}];
+                        net = VertexAdd[net, cup];
+                        net = EdgeAdd[net, {
+                            DirectedEdge[cup, edge[[1]], {{2, 2, 1}, edge[[3, 1]]}],
+                            DirectedEdge[cup, edge[[2]], {{2, 2, 2}, edge[[3, -1]]}]
+                        }]
+                    ,
+                    _[_, _, {{2, _, _}, ___, {2, _, _}}],
+                        AppendTo[caps, cap = id++];
+
+                        newTgtPort = Port @ tgtPort["Apply", tag[#["HoldName"], cap] &];
+                        
+                        diagrams[edge[[2]]] = Diagram[tgt, tgtSide -> ReplacePart[tgt[tgtSide], j -> newTgtPort]];
+
+                        AppendTo[diagrams, cap -> CapDiagram[{srcPort, newTgtPort}]];
+
+                        net = EdgeDelete[net, {edge}];
+                        net = VertexAdd[net, cap];
+                        net = EdgeAdd[net, {
+                            DirectedEdge[edge[[1]], cap, {edge[[3, 1]], {1, 2, 1}}],
+                            DirectedEdge[edge[[2]], cap, {edge[[3, -1]], {1, 2, 2}}]
+                        }]
+                ]
             ]
         ];
         Graph[net,
@@ -1269,6 +1331,7 @@ Options[DiagramsNetGraph] = DeleteDuplicatesBy[First] @ Join[{
     "Orientation" -> Automatic,
     "UnarySpiders" -> True,
     "BinarySpiders" -> True,
+    "SpiderMethod" -> 2,
     "RemoveCycles" -> False
 }, Options[DiagramsGraph], Options[DiagramGraphics], Options[RemoveDiagramsNetGraphCycles], Options[Graph]];
 DiagramsNetGraph[diagrams : {___Diagram ? DiagramQ}, opts : OptionsPattern[]] :=
@@ -1322,23 +1385,50 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Enclose @ Block[{
 				wirePorts = Join[in, out];
 				If[ Length[wirePorts] > 2 ||
                     Length[wirePorts] == 1 && MatchQ[unarySpiders, True] ||
-                    Length[wirePorts] == 2 && Switch[binarySpiders, All | Full, True, True | Automatic, SameQ @@ Lookup[ports, wirePorts, None, #["DualQ"] &], _, False]
+                    Length[wirePorts] == 2 && Switch[binarySpiders,
+                        All | Full,
+                            True,
+                        True,
+                            SameQ @@ Lookup[ports, wirePorts, None, #["DualQ"] &],
+                        Automatic,
+                            SameQ @@ wirePorts[[All, 2]] || SameQ @@ Lookup[ports, wirePorts, None, #["DualQ"] &],
+                        _,
+                            False
+                    ]
                     ,
-                    {sIn, sOut} = Reverse @ Lookup[GroupBy[{diagrams[#1]["InputOutputPorts"][[#2, #3]], diagrams[#1]["PortStyles"][[#2, #3]], {##}} & @@@ wirePorts, First[#]["DualQ"] &], {True, False}, {}];
+                    {sIn, sOut} = Switch[
+                        OptionValue["SpiderMethod"],
+                        1,
+                        Lookup[GroupBy[{diagrams[#1]["InputOutputPorts"][[#2, #3]], diagrams[#1]["PortStyles"][[#2, #3]], {##}} & @@@ wirePorts, #[[3, 2]] &], {2, 1}, {}],
+                        _,
+                        Lookup[GroupBy[{diagrams[#1]["InputOutputPorts"][[#2, #3]], diagrams[#1]["PortStyles"][[#2, #3]], {##}} & @@@ wirePorts, #[[1]]["DualQ"] &], {False, True}, {}]
+                    ];
 					Sow[{v,
-                        Which[ Length[sIn] == 1, CopyDiagram, Length[sOut] == 1, CopyDiagram[#2, #1, ##3] &, True, SpiderDiagram][
-                            tag[portFunction[#1], #3] & @@@ sIn, tag[portFunction[#1], #3] & @@@ sOut,
+                        Which[
+                            Length[sIn] == 1,
+                                CopyDiagram,
+                            Length[sOut] == 1,
+                                CopyDiagram[#2, #1, ##3] &,
+                            Length[sIn] == 0 && Length[sOut] == 2,
+                                CupDiagram[#2, ##3] &,
+                            Length[sOut] == 0 && Length[sIn] == 2,
+                                CapDiagram[#1, ##3] &,
+                            True,
+                                SpiderDiagram
+                        ][
+                            If[  #1["DualQ"], PortDual[tag[portFunction[PortDual[#1]], #3]], tag[portFunction[#1], #3]] & @@@ sIn,
+                            If[! #1["DualQ"], PortDual[tag[portFunction[PortDual[#1]], #3]], tag[portFunction[#1], #3]] & @@@ sOut,
                             "PortArrows" -> {sIn[[All, 2]], sOut[[All, 2]]}
                         ]
                     }];
                     Splice @ Join[
                         MapIndexed[
-                            (* If[ Lookup[ports, Key[#], False, #["DualQ"] &], reverseEdge, Identity] @ *)
+                            If[ Lookup[ports, Key[#], False, #["DualQ"] &], reverseEdge, Identity] @
                                 DirectedEdge[#[[1]], v, {{#[[2]], Lookup[Switch[#[[2]], 1, inDegrees, 2, outDegrees], #[[1]]], #[[3]]}, {1, Length[sIn], #2[[1]]}}] &,
                             sIn[[All, 3]]
                         ],
                         MapIndexed[
-                            (* If[ Lookup[ports, Key[#], True, #["DualQ"] &], Identity, reverseEdge] @ *)
+                            If[ Lookup[ports, Key[#], True, #["DualQ"] &], Identity, reverseEdge] @
                                 DirectedEdge[v, #[[1]], {{2, Length[sOut], #2[[1]]}, {#[[2]], Lookup[Switch[#[[2]], 1, inDegrees, 2, outDegrees], #[[1]]], #[[3]]}}] &,
                             sOut[[All, 3]]
                         ]
