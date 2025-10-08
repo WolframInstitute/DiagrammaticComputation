@@ -89,7 +89,7 @@ DiagramMap[f_][d_Diagram] := DiagramMap[f, d]
 
 DiagramMapAt[f_, d_Diagram, pos : {{___Integer} ...}, curPos_ : {}] := Enclose @ 
     ConfirmBy[
-        If[ d["Head"] === Null,
+        If[ d["Head"] === None,
             If[MemberQ[pos, curPos], Diagram[f[d, curPos]], d],
             If[MemberQ[pos, curPos], Diagram[f[#, curPos]] &, # &] @ Diagram[d["Head"] @@ MapIndexed[DiagramMapAt[f, #1, pos, Join[curPos, #2]] &, d["SubDiagrams"]], d["DiagramOptions"]]
         ],
@@ -103,7 +103,7 @@ DiagramMapAt[f_, pos_][d_Diagram] := DiagramMapAt[f, d, pos]
 
 DiagramReplacePart[d_Diagram, pos : {{___Integer} ...} -> new_, curPos_ : {}] := Enclose @ 
     ConfirmBy[
-        If[ d["Head"] === Null,
+        If[ d["Head"] === None,
             If[MemberQ[pos, curPos], Diagram[new], d],
             If[MemberQ[pos, curPos], Diagram[#] &, # &] @ Diagram[d["Head"] @@ MapIndexed[DiagramReplacePart[#, pos -> new, Join[curPos, #2]] &, d["SubDiagrams"]], d["DiagramOptions"]]
         ],

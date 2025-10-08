@@ -263,7 +263,7 @@ DiagramFlip[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
     ],
     "PortArrows" -> Reverse[d["PortStyles", opts]],
     "PortLabels" -> Reverse[d["PortLabels", opts]],
-    If[TrueQ[OptionValue["Singleton"]], "Shape" -> Automatic, {}],
+    (* If[TrueQ[OptionValue["Singleton"]], "Shape" -> Automatic, {}], *)
     "DiagramOptions" -> d["DiagramOptions"]
 ]
 
@@ -447,6 +447,9 @@ DiagramNetwork[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
         ]
     ]
 ]
+
+
+Scan[head |-> (head[xs : {__Diagram}, opts : OptionsPattern[]] := head[##, opts] & @@ xs), {DiagramSum, DiagramProduct, DiagramComposition, DiagramRightComposition, DiagramNetwork}]
 
 
 
@@ -876,7 +879,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
     arities = {diagram["InputArity"], diagram["OutputArity"]},
     center = diagram["Center", opts],
     shape = diagram["OptionValue"["Shape"], opts],
-    style = Replace[diagram["OptionValue"["Style"], opts], {Automatic -> Directive[EdgeForm[$Black], FaceForm[$Gray]], None -> Nothing}],
+    style = Replace[diagram["OptionValue"["Style"], opts], {Automatic -> Directive[EdgeForm[Directive[Opacity[.5], $Black]], FaceForm[$Gray]], None -> Nothing}],
     interactiveQ = Replace[OptionValue[PlotInteractivity], Automatic -> True]
 }, {
     portArrows = diagram["PortStyles", opts],
@@ -1889,7 +1892,7 @@ DiagramSplit[diagram_Diagram, n : _Integer | Infinity | - Infinity : Infinity, d
 
 DiagramPermute[diagram_, Cycles[{}], ___] := diagram
 
-DiagramPermute[diagram_ /; diagram["SingletonNodeQ"], perm_, dualQ : _ ? BooleanQ : True] := diagram["Permute", perm, dualQ]
+DiagramPermute[diagram_ /; diagram["SingletonNodeQ"] || diagram["NetworkQ"], perm_, dualQ : _ ? BooleanQ : True] := diagram["Permute", perm, dualQ]
 
 DiagramPermute[diagram_Diagram, perm_, dualQ : _ ? BooleanQ : True] := Enclose @ With[{d = diagram["Flatten"]}, {ports = d["Ports", dualQ], newDiagram = DiagramSplit[d, Infinity, dualQ]}, {newPorts = ConfirmBy[Permute[ports, perm], ListQ]},
 	If[ ports === newPorts,
@@ -1920,27 +1923,28 @@ TensorDiagram[HoldPattern[ArraySymbol[a_, ns_List : {}, dom_ : None, sym_ : Sequ
         opts
     ]
 
-TensorDiagram[HoldPattern[KroneckerProduct[ts___]], opts : OptionsPattern[]] := DiagramProduct @@ (TensorDiagram[#, opts] & /@ {ts})
+TensorDiagram[SymbolicIdentityArray[ns_List], opts : OptionsPattern[]] := Diagram["\[DoubleStruckCapitalI]", Join[#, #] & @ (Interpretation[#, Evaluate[Unique["i"]]] & /@ ns), "Shape" -> "Wires"[Thread[{Range[#], # + Range[#]}] & @ Length[ns]], "ShowLabel" -> False]
 
-TensorDiagram[HoldPattern[TensorProduct[ts___]], opts : OptionsPattern[]] := DiagramProduct @@ (DiagramSplit[TensorDiagram[#, opts], Infinity] & /@ {ts})
+
+TensorDiagram[IgnoringInactive[HoldPattern[KroneckerProduct[ts___]]], opts : OptionsPattern[]] := DiagramProduct @@ (TensorDiagram[#, opts] & /@ {ts})
+
+TensorDiagram[IgnoringInactive[HoldPattern[TensorProduct[ts___]]], opts : OptionsPattern[]] := DiagramProduct @@ (DiagramSplit[TensorDiagram[#, opts], Infinity] & /@ {ts})
 
 TensorDiagramDot[a_, b_, k_] := With[{x = DiagramSplit[a, -k, True, True], y = DiagramSplit[b, k, True, True]},
     DiagramComposition[x, DiagramAssignPorts[y, {Inherited, PortDual /@ x["InputPorts"]}]["Flatten"]]
 ]
 
-TensorDiagram[HoldPattern[Dot[ts__]], opts : OptionsPattern[]] := Fold[TensorDiagramDot[##, 1] &, TensorDiagram[#, opts] & /@ {ts}]
+TensorDiagram[IgnoringInactive[HoldPattern[Dot[ts__]]], opts : OptionsPattern[]] := Fold[TensorDiagramDot[##, 1] &, TensorDiagram[#, opts] & /@ {ts}]
 
-TensorDiagram[HoldPattern[ArrayDot[a_, b_, k_]], opts : OptionsPattern[]] := TensorDiagramDot[TensorDiagram[a, opts], TensorDiagram[b, opts], k]
+TensorDiagram[IgnoringInactive[HoldPattern[ArrayDot[a_, b_, k_]]], opts : OptionsPattern[]] := TensorDiagramDot[TensorDiagram[a, opts], TensorDiagram[b, opts], k]
 
-TensorDiagram[HoldPattern[Transpose[a_, perm_ : {1, 2}]], opts : OptionsPattern[]] := DiagramPermute[TensorDiagram[a, opts], perm]
+TensorDiagram[IgnoringInactive[HoldPattern[Transpose[a_, perm_ : {1, 2}]]], opts : OptionsPattern[]] := DiagramPermute[TensorDiagram[a, opts], perm]
 
-TensorDiagram[SymbolicIdentityArray[ns_List], opts : OptionsPattern[]] := Diagram["\[DoubleStruckCapitalI]", Join[#, #] & @ (Interpretation[#, Evaluate[Unique["i"]]] & /@ ns), "Shape" -> "Wires"[Thread[{Range[#], # + Range[#]}] & @ Length[ns]], "ShowLabel" -> False]
-
-TensorDiagram[TensorContract[x_, indices : {{_Integer, _Integer} ...}], opts : OptionsPattern[]] := With[{d = DiagramSplit[TensorDiagram[x, opts], Infinity]}, {perm = FindPermutation[Join[Catenate[indices], Complement[Range[d["OutputArity"]], Catenate[indices]]]]},
+TensorDiagram[IgnoringInactive[TensorContract[x_, indices : {{_Integer, _Integer} ...}]], opts : OptionsPattern[]] := With[{d = DiagramSplit[TensorDiagram[x, opts], Infinity]}, {perm = FindPermutation[Join[Catenate[indices], Complement[Range[d["OutputArity"]], Catenate[indices]]]]},
     DiagramComposition[RowDiagram[Diagram["\[DoubleStruckCapitalI]", d["OutputPorts"][[#]], {}, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False] & /@ indices], PermutationDiagram[d["OutputPorts"] -> Permute[d["OutputPorts"], perm], perm], d]["Network"]
 ]
 
-TensorDiagram[scalar_, opts : OptionsPattern[]] := Diagram[scalar, {}, {}, FilterRules[{opts}, Options[Diagram]]]
+TensorDiagram[tensor_, opts : OptionsPattern[]] := Diagram[Annotation[\[FormalCapitalT], "Tensor" -> tensor], {}, If[TensorQ[tensor], Subscript[\[FormalCapitalT], #] & /@ TensorDimensions[tensor], {}], FilterRules[{opts}, Options[Diagram]]]
 
 
 

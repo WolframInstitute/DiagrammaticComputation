@@ -36,7 +36,13 @@ permuteRow[row : {__Diagram}, rowPorts_List, ports_List, func_ : Identity] := Re
     }
 ]
 
-Options[ColumnDiagram] := Join[{"PortOrderingFunction" -> Automatic, "Direction" -> Down, "RowSort" -> False}, Options[Diagram]]
+PermutationDecompose[perm_List ? PermutationListQ] := Switch[Length[perm], 0, {}, 1, {perm}, _,
+	Prepend[PermutationDecompose[PermutationList[InversePermutation @ FindPermutation[#2], Length[#2]]], #1] & @@ NestWhile[Apply[{Append[#1, First[#2]], Rest[#2]} &], TakeDrop[perm, 1], Apply[! PermutationListQ[#1] &]]
+]
+
+PermutationCompose[perms : {___ ? PermutationListQ}] := Fold[Join[#1, #2 + Length[#1]] &, {}, perms]
+
+Options[ColumnDiagram] := Join[{"PortOrderingFunction" -> Automatic, "Direction" -> Down, "RowSort" -> False, "PassThrough" -> False, "PermutationDecompose" -> True}, Options[Diagram]]
 
 ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPattern[]] := Module[{
     func = OptionValue["PortFunction"],
@@ -68,9 +74,16 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
    
     If[ ContainsNone[aPorts, bPorts],
         If[ aPorts === {} && bPorts === {},
-            Return[DiagramComposition[b, a, FilterRules[{opts}, Options[DiagramComposition]], "PortArrows" -> {aStyles[[1]], bStyles[[2]]}]],
+            Return[DiagramRightComposition[a, b, FilterRules[{opts}, Options[DiagramComposition]], "PortArrows" -> {aStyles[[1]], bStyles[[2]]}]],
             Return[RowDiagram[{a, b}, FilterRules[{opts}, Options[RowDiagram]]]]
         ]
+    ];
+
+    If[ TrueQ[OptionValue["PassThrough"]],
+        Return[Diagram[
+            DiagramRightComposition[a, b, FilterRules[{opts}, Options[DiagramComposition]], "PortArrows" -> {aStyles[[1]], bStyles[[2]]}],
+            Sequence @@ MapThread[Join, Prepend[{PortDual /@ a["InputPorts"], b["OutputPorts"]}] @ Cases[SequenceAlignment[bPorts, aPorts, Method -> "Local"], {__List}]]
+        ]]
     ];
 
     aStyles = Pick[aStyles[[2]], pa];
@@ -219,12 +232,24 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
         With[{perm = FindPermutation[aPorts, bPorts]},
             DiagramComposition[
                 b,
-                PermutationDiagram[
-                    as -> bs,
-                    perm,
-                    "PortArrows" -> MapAt[Permute[#, perm] &, {2}] @ Thread @ MapThread[
-                        PadRight[#, 2, Replace[#, {} -> Automatic]] & @ DeleteCases[Automatic] @ Which[! #1["DualQ"] && #2["DualQ"], {#3, #3}, #1["DualQ"] && ! #2["DualQ"], {#4, #4}, True, {#3, #4}] &,
-                        {as, bs, Pick[aStyles[[2]], pa], Permute[Pick[bStyles[[1]], pb], InversePermutation[perm]]}
+                If[ TrueQ[OptionValue["PermutationDecompose"]],
+                    With[{decomp = PermutationDecompose[PermutationList[perm, Length[as]]]}, {lens = Length /@ decomp},
+                        DiagramProduct @ MapThread[{as, bs, aStyles, bStyles, perm} |->
+                            PermutationDiagram[as -> bs, perm, "PortArrows" -> MapAt[Permute[#, perm] &, {2}] @ Thread @ MapThread[
+                                PadRight[#, 2, Replace[#, {} -> Automatic]] & @ DeleteCases[Automatic] @ Which[! #1["DualQ"] && #2["DualQ"], {#3, #3}, #1["DualQ"] && ! #2["DualQ"], {#4, #4}, True, {#3, #4}] &,
+                                {as, bs, aStyles, Permute[bStyles, InversePermutation[perm]]}
+                            ]],
+                            Append[TakeList[#, lens] & /@ {as, bs, Pick[aStyles[[2]], pa], Pick[bStyles[[1]], pb]}, PermutationCycles /@ decomp]
+                        ]
+                    ]
+                    ,
+                    PermutationDiagram[
+                        as -> bs,
+                        perm,
+                        "PortArrows" -> MapAt[Permute[#, perm] &, {2}] @ Thread @ MapThread[
+                            PadRight[#, 2, Replace[#, {} -> Automatic]] & @ DeleteCases[Automatic] @ Which[! #1["DualQ"] && #2["DualQ"], {#3, #3}, #1["DualQ"] && ! #2["DualQ"], {#4, #4}, True, {#3, #4}] &,
+                            {as, bs, Pick[aStyles[[2]], pa], Permute[Pick[bStyles[[1]], pb], InversePermutation[perm]]}
+                        ]
                     ]
                 ],
                 a,
@@ -661,6 +686,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
             With[{subDiagrams = #[[1]] -> Diagram[#[[2]],
                     "LabelFunction" -> ("" &),
                     "PortLabels" -> {Placed[Automatic, {0, 0}]},
+                    "PortArrowFunction" -> (Nothing &),
                     "Width" -> Min[1, 0.95 ^ (Length[#[[1]]] / 2)] #[[2]]["OptionValue"["Width"]],
                     "Height" -> If[#[[1]] === {}, 1.1, Min[1, 0.85 ^ (Length[#[[1]]] / 2)]] #[[2]]["OptionValue"["Height"]],
                     "Style" -> Directive[EdgeForm[$Black], FaceForm[None]]
@@ -733,7 +759,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
                 dividers
             }
         ],
-        FilterRules[{opts}, Options[Graphics]],
+        FilterRules[{opts, diagram["DiagramOptions"]}, Options[Graphics]],
         FormatType -> StandardForm,
         BaseStyle -> {
             GraphicsHighlightColor -> Automatic

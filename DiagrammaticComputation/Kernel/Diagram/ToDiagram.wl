@@ -283,15 +283,24 @@ QuantumCircuitDiagram[qc_Wolfram`QuantumFramework`QuantumCircuitOperator, opts :
 	d = DiagramComposition @@
 		Reverse @ MapIndexed[{op, idx} |-> With[{i = idx[[1]], qo = Wolfram`QuantumFramework`QuantumOperator[op]},
 			Diagram[
-				Interpretation[op["CircuitDiagram", "WireLabels" -> None, "ShowEmptyWires" -> False, "ShowGateLabels" -> False, "ShowMeasurementWire" -> False, ImageSize -> 16], op],
+				Wolfram`QuantumFramework`QuantumOperator[qo, {Range[qo["OutputQudits"]], Range[qo["InputQudits"]]}]["CircuitDiagram", "WireLabels" -> None, "ShowWires" -> False, "ShowGateLabels" -> False, "ShowMeasurementWire" -> False, ImageSize -> 16],
 				KeyValueMap[Interpretation[#1, Subscript[i, #1][#2]] &, qo["InputOrderDimensions"]],
 				KeyValueMap[Interpretation[#1, Evaluate[Replace[Superscript[i, #1], rules][#2]]] &, qo["OutputOrderDimensions"]]
+				(* "ShowLabel" -> False *)
+				(* "PortArrows" -> Placed[Automatic, {0, 1}], *)
+				(* "Outline" -> True,
+				"Shape" -> 
+					GeometricTransformation[
+						First @ Wolfram`QuantumFramework`QuantumOperator[qo, {Range[qo["OutputQudits"]], Range[qo["InputQudits"]]}]["CircuitDiagram", "WireLabels" -> None, "ShowWires" -> False, "ShowGateLabels" -> False, "ShowMeasurementWire" -> False],
+						ScalingTransform[{2, 2}] @* RotationTransform[Pi / 2] @* TranslationTransform[{-1, (1 + Max[qo["InputQudits"], qo["OutputQudits"]]) / 2}]
+					] *)
 			]
 		],
 			qc["Flatten"]["NormalOperators"]
 		]
 },
-	Diagram[d, "OutputPorts" -> SortBy[d["OutputPorts"], #["Name"] &], "InputPorts" -> SortBy[d["InputPorts"], #["Name"] &]]
+	Diagram[d, "OutputPorts" -> SortBy[d["OutputPorts"], #["Name"] &], "InputPorts" -> SortBy[d["InputPorts"], #["Name"] &],
+		"PortOrderingFunction" -> Function[Replace[#["HoldName"], {HoldForm[Interpretation[_, (Subscript | Superscript)[_, order_][_]]] :> order + 1, _ -> 0}]]]
 ]
 
 
