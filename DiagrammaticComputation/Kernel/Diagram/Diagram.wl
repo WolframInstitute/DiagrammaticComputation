@@ -757,9 +757,12 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
                 ps = Catenate[node["PortArrows", opts, d["DiagramOptions"]]],
                 styles = Catenate[node["PortStyles", opts, d["DiagramOptions"]]]
             },
-                With[{p = ps[[First[#]]], style = Replace[SelectFirst[styles[[#]], ! MatchQ[#, Automatic | True | _Function] &, Nothing], None -> Nothing], dual = ports[[First[#]]]["DualQ"]},
-                    {style, BSplineCurve[If[dual, Identity, Reverse] @ {p[[1]], 2 * p[[1]] - p[[2]], 2 * #[[1]] - #[[2]], #[[1]]}] & /@ DeleteCases[None] @ ps[[Rest[#]]]}
-                ] & /@ wires // If[d["FlipQ"], GeometricTransformation[#, RotationTransform[2 a, c] @* ReflectionTransform[{0, 1}, c]] &, Identity]
+                {
+                    Haloing[],
+                    With[{p = ps[[First[#]]], style = Replace[SelectFirst[styles[[#]], ! MatchQ[#, Automatic | True | _Function] &, Nothing], None -> Nothing], dual = ports[[First[#]]]["DualQ"]},
+                        {style, BSplineCurve[If[dual, Identity, Reverse] @ {p[[1]], 2 * p[[1]] - p[[2]], 2 * #[[1]] - #[[2]], #[[1]]}] & /@ DeleteCases[None] @ ps[[Rest[#]]]}
+                    ] & /@ wires // If[d["FlipQ"], GeometricTransformation[#, RotationTransform[2 a, c] @* ReflectionTransform[{0, 1}, c]] &, Identity]
+                }
             ],
             "Wire" :> With[{
                 ps = Catenate[node["PortArrows", opts]]

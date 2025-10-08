@@ -18,6 +18,8 @@ inheritedQ
 FirstPositions
 FirstPositionsWithMissing
 
+SmoothGraphicsCurves
+
 
 Begin["Wolfram`DiagrammaticComputation`Utilities`Private`"];
 
@@ -125,6 +127,34 @@ FirstPositionsWithMissing[list1_ ? ListQ, list2_ ? ListQ] := Block[{
         {value, list1}
     ];
     result
+]
+
+
+ConnectCurves[curves_, eps_ : 1*^-4] := Block[{g},
+    g = RelationGraph[EuclideanDistance[#1[[-1]], #2[[1]]] < eps &, curves];
+  
+    Catenate[
+        With[{sg = #, in = Pick[VertexList[#], VertexInDegree[#], 0], out = Pick[VertexList[#], VertexOutDegree[#], 0]}, 
+            Apply[Join] @* MapAt[Rest, {2 ;;}] @* Map[Split /* Map[First]] /@ 
+                Catenate @ Outer[First[FindPath[sg, ##], VertexList[sg]] &, in, out, 1]
+        ] & /@ WeaklyConnectedGraphComponents[g]
+    ]
+]
+
+SmoothPoints[points_, n : _ ? NumericQ : .5, m : _Integer?Positive : 5] /; 0 <= n <= 1 := With[
+    {len = Length[points]}, {k = Round[n * (len - 2) + 1]},
+    {if = Interpolation[Thread[{Subdivide[len - k], Prepend[First[points]] @ Append[Last[points]] @ MovingAverage[points, k][[2 ;; -2]]}], InterpolationOrder -> 2]},
+    BSplineCurve[if /@ Subdivide[m]]
+]
+
+Options[SmoothGraphicsCurves] = Join[{
+    "WireStyle" -> Directive[CapForm["Round"], AbsoluteThickness[1.5], Arrowheads[{{Medium, .6, Graphics[Polygon[{{-1/2, 1/4}, {1/2, 0}, {-1/2, -1/4}}]]}}]]},
+    Options[Graphics]
+]
+
+SmoothGraphicsCurves[g_, n : _ ? NumericQ : .1, m : _Integer ? Positive : 4, opts : OptionsPattern[]] /; 0 <= n <= 1 := Block[{h, curves},
+    curves = First[Reap[h = g /. BSplineCurve[ps_] :> (Sow[ps]; {})][[2]], {}];
+    Show[Graphics[{OptionValue["WireStyle"], Arrow @ SmoothPoints[#, n, m]} & /@ ConnectCurves[curves]], h, FilterRules[{opts}, Options[Graphics]]]
 ]
 
 

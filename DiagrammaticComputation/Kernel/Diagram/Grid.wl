@@ -624,6 +624,7 @@ Options[DiagramGrid] = Join[{
     "WireLabels" -> True,
     "WireLabelFunction" -> Automatic,
     "Frames" -> Automatic,
+    "SmoothWires" -> False,
     Spacings -> 1.6,
     Dividers -> None,
     Alignment -> Automatic
@@ -680,7 +681,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
         ]
     };
 
-    Graphics[
+    If[TrueQ[OptionValue["SmoothWires"]], SmoothGraphicsCurves, Identity] @ Graphics[
         Switch[frames,
             All | Automatic,
             With[{subDiagrams = #[[1]] -> Diagram[#[[2]],
@@ -754,8 +755,11 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
                     d_Diagram :> Diagram[d, "DiagramOptions" -> Join[diagramOptions, d["DiagramOptions"]]]["Graphics", PlotInteractivity -> plotInteractivity][[1]],
                     All
                 ],
-                If[wiresQ, gridWires[grid, {}, portFunction, "WireArrows" -> wireArrows, "WireLabels" -> wireLabels, "WireLabelFunction" -> wireLabelFunction, "GapSize" -> vGapSize], Nothing],
-                gridNetworkWires[grid, Missing[], portFunction, "WireArrows" -> wireArrows, "WireLabels" -> wireLabels, "WireLabelFunction" -> wireLabelFunction, "GapSize" -> hGapSize],
+                {
+                    Haloing[],
+                    If[wiresQ, gridWires[grid, {}, portFunction, "WireArrows" -> wireArrows, "WireLabels" -> wireLabels, "WireLabelFunction" -> wireLabelFunction, "GapSize" -> vGapSize], Nothing],
+                    gridNetworkWires[grid, Missing[], portFunction, "WireArrows" -> wireArrows, "WireLabels" -> wireLabels, "WireLabelFunction" -> wireLabelFunction, "GapSize" -> hGapSize]
+                },
                 dividers
             }
         ],
