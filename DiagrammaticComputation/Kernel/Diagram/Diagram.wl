@@ -19,6 +19,7 @@ DiagramRightComposition
 DiagramNetwork
 ToDiagramNetwork
 SingletonDiagram
+ZeroDiagram
 EmptyDiagram
 CapDiagram
 CupDiagram
@@ -26,6 +27,7 @@ IdentityDiagram
 PermutationDiagram
 SpiderDiagram
 CopyDiagram
+MergeDiagram
 
 DiagramGraphics
 DiagramsFreePorts
@@ -261,9 +263,12 @@ DiagramFlip[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
             "InputPorts" -> d["FlatOutputPorts"]
         }
     ],
+    If[ ! TrueQ[OptionValue["Singleton"]],
+        "Shape" -> Replace[d["OptionValue"["Shape"]], "Wires"[wires_List] :> With[{ins = d["InputArity"], outs = d["OutputArity"]}, "Wires"[wires /. w_Integer :> If[w > ins, w - ins, w + outs]]]],
+        {}
+    ],
     "PortArrows" -> Reverse[d["PortStyles", opts]],
     "PortLabels" -> Reverse[d["PortLabels", opts]],
-    (* If[TrueQ[OptionValue["Singleton"]], "Shape" -> Automatic, {}], *)
     "DiagramOptions" -> d["DiagramOptions"]
 ]
 
@@ -284,7 +289,10 @@ DiagramReverse[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
     "InputPorts" -> Reverse[Through[d["FlatInputPorts"]["Reverse"]]],
     "PortArrows" -> (Reverse /@ d["PortStyles", opts]),
     "PortLabels" -> (Reverse /@ d["PortLabels", opts]),
-    If[TrueQ[OptionValue["Singleton"]], "Shape" -> Automatic, {}],
+    If[ ! TrueQ[OptionValue["Singleton"]],
+        "Shape" -> Replace[d["OptionValue"["Shape"]], "Wires"[wires_List] :> With[{ins = d["InputArity"], outs = d["OutputArity"]}, "Wires"[wires /. w_Integer :> If[w > ins, 2 * ins + outs - w + 1, ins - w + 1]]]],
+        {}
+    ],
     "DiagramOptions" -> d["DiagramOptions"]
 ]
 
@@ -297,9 +305,11 @@ DiagramReverse[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
 
 Options[DiagramSum] = Options[Diagram]
 
+DiagramSum[opts : OptionsPattern[]] := ZeroDiagram[opts]
+
 DiagramSum[d_Diagram, opts : OptionsPattern[]] := Diagram[d, opts]
 
-DiagramSum[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{subDiagrams = If[#["SumQ"], Splice[#["SubDiagrams"]], #] & /@ {ds}},
+DiagramSum[ds__Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{subDiagrams = If[#["SumQ"], Splice[#["SubDiagrams"]], #] & /@ {ds}},
     Diagram[
         opts,
         "Expression" :> DiagramSum[##] & @@ subDiagrams,
@@ -312,9 +322,11 @@ DiagramSum[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{subDiagram
 
 Options[DiagramProduct] = Options[Diagram]
 
+DiagramProduct[opts : OptionsPattern[]] := EmptyDiagram[opts]
+
 DiagramProduct[d_Diagram, opts : OptionsPattern[]] := Diagram[d, opts]
 
-DiagramProduct[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{subDiagrams = If[#["ProductQ"], Splice[#["SubDiagrams"]], #] & /@ {ds}},
+DiagramProduct[ds__Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{subDiagrams = If[#["ProductQ"], Splice[#["SubDiagrams"]], #] & /@ {ds}},
     Diagram[
         opts,
         "Expression" :> DiagramProduct[##] & @@ subDiagrams,
@@ -331,7 +343,14 @@ SingletonDiagram[diagram_Diagram, opts : OptionsPattern[]] := Diagram[diagram, "
 
 makePorts[xs_List] := Function[Null, Port[Unevaluated[##]], HoldAll] @@@ Flatten @* HoldForm /@ Replace[xs, SuperStar[HoldForm[x_]] :> HoldForm[SuperStar[x]], 1]
 
-EmptyDiagram[opts : opts : OptionsPattern[]] := Diagram[
+ZeroDiagram[opts : OptionsPattern[]] := Diagram[
+    opts,
+    "ShowLabel" -> False,
+    "Shape" -> None,
+    "Outline" -> True
+]
+
+EmptyDiagram[opts : OptionsPattern[]] := Diagram[
     opts,
     "ShowLabel" -> False,
     "Shape" -> None
@@ -399,6 +418,9 @@ CopyDiagram[xs : {x_, ___}, opts : OptionsPattern[]] := CopyDiagram[x, xs, opts]
 CopyDiagram[x_, n_Integer ? Positive, opts : OptionsPattern[]] := CopyDiagram[x, ConstantArray[x, n], opts]
 
 CopyDiagram[x_, opts : OptionsPattern[]] := CopyDiagram[x, {x, x}, opts]
+
+
+MergeDiagram[args___] := DiagramDual[DiagramFlip[CopyDiagram[args], "Singleton" -> False], "Singleton" -> False]
 
 
 (* vertical product *)
@@ -710,8 +732,8 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
     transform, primitives,
     node = d["Node"]
 },
-    w = Replace[d["OptionValue"["Width"], opts], Automatic -> 1];
-    h = Replace[d["OptionValue"["Height"], opts], Automatic -> 1];
+    w = Replace[d["Width", opts], Automatic -> 1];
+    h = Replace[d["Height", opts], Automatic -> 1];
     c = Replace[d["Center", opts], _Offset -> {0, 0}];
     a = d["OptionValue"["Angle"], opts];
     func = d["OptionValue"["PortFunction"], opts];
@@ -761,7 +783,8 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
                     Haloing[],
                     With[{p = ps[[First[#]]], style = Replace[SelectFirst[styles[[#]], ! MatchQ[#, Automatic | True | _Function] &, Nothing], None -> Nothing], dual = ports[[First[#]]]["DualQ"]},
                         {style, BSplineCurve[If[dual, Identity, Reverse] @ {p[[1]], 2 * p[[1]] - p[[2]], 2 * #[[1]] - #[[2]], #[[1]]}] & /@ DeleteCases[None] @ ps[[Rest[#]]]}
-                    ] & /@ wires // If[d["FlipQ"], GeometricTransformation[#, RotationTransform[2 a, c] @* ReflectionTransform[{0, 1}, c]] &, Identity]
+                    ] & /@ wires // If[d["FlipQ"], GeometricTransformation[#, RotationTransform[2 a, c] @* ReflectionTransform[{0, 1}, c]] &, Identity] //
+                        If[d["ReverseQ"], GeometricTransformation[#, ReflectionTransform[{1, 0}, c]] &, Identity]
                 }
             ],
             "Wire" :> With[{
@@ -978,19 +1001,19 @@ Scan[head |->
 ]
 Protect[GraphicsBox, Graphics3DBox]
 
-DiagramDual /: MakeBoxes[DiagramDual[d_], form_] := With[{boxes = ToBoxes[SuperStar[d], form]}, InterpretationBox[boxes, DiagramDual[d]]]
+DiagramDual /: MakeBoxes[DiagramDual[d_], form_] := With[{boxes = SuperscriptBox[MakeBoxes[d, form], "*"]}, InterpretationBox[boxes, DiagramDual[d]]]
 
-DiagramFlip /: MakeBoxes[DiagramFlip[d_], form_] := With[{boxes = ToBoxes[OverBar[d], form]}, InterpretationBox[boxes, DiagramFlip[d]]]
+DiagramFlip /: MakeBoxes[DiagramFlip[d_], form_] := With[{boxes = OverscriptBox[MakeBoxes[d, form], "_"]}, InterpretationBox[boxes, DiagramFlip[d]]]
 
-DiagramReverse /: MakeBoxes[DiagramReverse[d_], form_] := With[{boxes = ToBoxes[Overscript[d, RawBoxes["\[LongLeftRightArrow]"]], form]}, InterpretationBox[boxes, DiagramReverse[d]]]
+DiagramReverse /: MakeBoxes[DiagramReverse[d_], form_] := With[{boxes = OverscriptBox[MakeBoxes[d, form], "\[LongLeftRightArrow]"]}, InterpretationBox[boxes, DiagramReverse[d]]]
 
-DiagramProduct /: MakeBoxes[DiagramProduct[ds___], form_] := With[{boxes = ToBoxes[CircleTimes[ds], form]}, InterpretationBox[boxes, DiagramProduct[ds]]]
+DiagramProduct /: MakeBoxes[DiagramProduct[ds___], form_] := With[{boxes = RowBox[Riffle[Function[Null, MakeBoxes[#, form], HoldFirst] /@ Unevaluated[{ds}], "\[CircleTimes]"]]}, InterpretationBox[boxes, DiagramProduct[ds]]]
 
-DiagramSum /: MakeBoxes[DiagramSum[ds___], form_] := With[{boxes = ToBoxes[CirclePlus[ds], form]}, InterpretationBox[boxes, DiagramSum[ds]]]
+DiagramSum /: MakeBoxes[DiagramSum[ds___], form_] := With[{boxes = RowBox[Riffle[Function[Null, MakeBoxes[#, form], HoldFirst] /@ Unevaluated[{ds}], "\[CirclePlus]"]]}, InterpretationBox[boxes, DiagramSum[ds]]]
 
-DiagramComposition /: MakeBoxes[DiagramComposition[ds___], form_] := With[{boxes = ToBoxes[CircleDot[ds], form]}, InterpretationBox[boxes, DiagramComposition[ds]]]
+DiagramComposition /: MakeBoxes[DiagramComposition[ds___], form_] := With[{boxes = RowBox[Riffle[Function[Null, MakeBoxes[#, form], HoldFirst] /@ Unevaluated[{ds}], "\[CircleDot]"]]}, InterpretationBox[boxes, DiagramComposition[ds]]]
 
-DiagramNetwork /: MakeBoxes[DiagramNetwork[ds___], form_] := With[{boxes = ToBoxes[{ds}, form]}, InterpretationBox[boxes, DiagramNetwork[ds]]]
+DiagramNetwork /: MakeBoxes[DiagramNetwork[ds___], form_] := With[{boxes = RowBox[{"{", RowBox[Riffle[Function[Null, MakeBoxes[#, form], HoldFirst] /@ Unevaluated[{ds}], ","]], "}"}]}, InterpretationBox[boxes, DiagramNetwork[ds]]]
 
 
 (* ::Subsection:: *)

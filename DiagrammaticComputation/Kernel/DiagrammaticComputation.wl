@@ -2,10 +2,15 @@ BeginPackage["Wolfram`DiagrammaticComputation`"]
 
 EndPackage[]
 
-Get["Wolfram`DiagrammaticComputation`Port`"]
-Get["Wolfram`DiagrammaticComputation`Diagram`"]
-Get["Wolfram`DiagrammaticComputation`Diagram`Grid`"]
-Get["Wolfram`DiagrammaticComputation`Diagram`ToDiagram`"]
-Get["Wolfram`DiagrammaticComputation`Diagram`Surgery`"]
-Get["Wolfram`DiagrammaticComputation`Diagram`DiagramDraw`"]
-Get["Wolfram`DiagrammaticComputation`Diagram`Feynman`"]
+Scan[
+    (ClearAll[Evaluate[# <> "*"]]; Get[#]) &,
+    {
+        "Wolfram`DiagrammaticComputation`Port`",
+        "Wolfram`DiagrammaticComputation`Diagram`",
+        "Wolfram`DiagrammaticComputation`Diagram`Grid`",
+        "Wolfram`DiagrammaticComputation`Diagram`ToDiagram`",
+        "Wolfram`DiagrammaticComputation`Diagram`Surgery`",
+        "Wolfram`DiagrammaticComputation`Diagram`DiagramDraw`",
+        "Wolfram`DiagrammaticComputation`Diagram`Feynman`"
+    }
+]

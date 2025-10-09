@@ -262,7 +262,9 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
 	]
 ]
 
-ColumnDiagram[xs : {___Diagram}, opts : OptionsPattern[]] := If[
+ColumnDiagram[{}, opts : OptionsPattern[]] := EmptyDiagram[opts]
+
+ColumnDiagram[xs : {__Diagram}, opts : OptionsPattern[]] := If[
     MatchQ[OptionValue["Direction"], Up | Top]
     ,
     Fold[ColumnDiagram[{#2, #1}, opts] &, Reverse[xs]]
@@ -297,7 +299,9 @@ RowDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Block[{a = x["Fla
     ]
 ]
 
-RowDiagram[xs : {___Diagram}, opts : OptionsPattern[]] := Fold[RowDiagram[{##}, opts] &, xs]
+RowDiagram[{}, opts : OptionsPattern[]] := EmptyDiagram[opts]
+
+RowDiagram[xs : {__Diagram}, opts : OptionsPattern[]] := Fold[RowDiagram[{##}, opts] &, xs]
 
 
 setDiagram[diagram1_, diagram2_, opts___] := Diagram[diagram1, Function[Null, "Expression" :> ##, HoldAll] @@ diagram2["HoldExpression"], "PortFunction" -> diagram2["PortFunction"], FilterRules[{opts}, Options[Diagram]]]
