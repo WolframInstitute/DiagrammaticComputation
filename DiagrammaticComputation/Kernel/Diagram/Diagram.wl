@@ -425,7 +425,7 @@ MergeDiagram[args___] := DiagramDual[DiagramFlip[CopyDiagram[args], "Singleton" 
 
 (* vertical product *)
 
-Options[DiagramComposition] := Join[{"PortFunction" -> $DefaultPortFunction}, Options[Diagram]]
+Options[DiagramComposition] := Join[{"PortFunction" -> $DefaultPortFunction, "ColumnPorts" -> True}, Options[Diagram]]
 
 DiagramComposition[d_Diagram, opts : OptionsPattern[]] := Diagram[d, opts]
 
@@ -433,7 +433,11 @@ DiagramComposition[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
     subDiagrams = If[#["CompositionQ"], Splice[#["SubDiagrams"]], #] & /@ {ds},
     func = OptionValue["PortFunction"]
 }, {
-    ports = Last @ collectPortsListBy[{#["OutputPorts"], PortDual /@ #["InputPorts"]} & /@ Through[Reverse[{ds}]["Flatten"]], func]
+    ports = If[
+        TrueQ[OptionValue["ColumnPorts"]],
+        Reverse @ ColumnDiagram[Reverse[{ds}], FilterRules[{opts}, Options[ColumnDiagram]]]["InputOutputPorts", True],
+        Last @ collectPortsListBy[{#["OutputPorts"], PortDual /@ #["InputPorts"]} & /@ Through[Reverse[{ds}]["Flatten"]], func]
+    ]
 },
     Diagram[
         opts,
@@ -1360,7 +1364,7 @@ Options[DiagramsNetGraph] = DeleteDuplicatesBy[First] @ Join[{
     "Orientation" -> Automatic,
     "UnarySpiders" -> True,
     "BinarySpiders" -> True,
-    "SpiderMethod" -> 2,
+    "SpiderMethod" -> 1,
     "RemoveCycles" -> False
 }, Options[DiagramsGraph], Options[DiagramGraphics], Options[RemoveDiagramsNetGraphCycles], Options[Graph]];
 DiagramsNetGraph[diagrams : {___Diagram ? DiagramQ}, opts : OptionsPattern[]] :=
@@ -1437,7 +1441,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Enclose @ Block[{
                             Length[sIn] == 1,
                                 CopyDiagram,
                             Length[sOut] == 1,
-                                CopyDiagram[#2, #1, ##3] &,
+                                MergeDiagram[#2, #1, ##3] &,
                             Length[sIn] == 0 && Length[sOut] == 2,
                                 CupDiagram[#2, ##3] &,
                             Length[sOut] == 0 && Length[sIn] == 2,

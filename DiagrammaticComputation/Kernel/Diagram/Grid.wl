@@ -74,14 +74,14 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
    
     If[ ContainsNone[aPorts, bPorts],
         If[ aPorts === {} && bPorts === {},
-            Return[DiagramRightComposition[a, b, FilterRules[{opts}, Options[DiagramComposition]], "PortArrows" -> {aStyles[[1]], bStyles[[2]]}]],
+            Return[DiagramRightComposition[a, b, "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]], "PortArrows" -> {aStyles[[1]], bStyles[[2]]}]],
             Return[RowDiagram[{a, b}, FilterRules[{opts}, Options[RowDiagram]]]]
         ]
     ];
 
     If[ TrueQ[OptionValue["PassThrough"]],
         Return[Diagram[
-            DiagramRightComposition[a, b, FilterRules[{opts}, Options[DiagramComposition]], "PortArrows" -> {aStyles[[1]], bStyles[[2]]}],
+            DiagramRightComposition[a, b, "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]], "PortArrows" -> {aStyles[[1]], bStyles[[2]]}],
             Sequence @@ MapThread[Join, Prepend[{PortDual /@ a["InputPorts"], b["OutputPorts"]}] @ Cases[SequenceAlignment[bPorts, aPorts, Method -> "Local"], {__List}]]
         ]]
     ];
@@ -178,7 +178,7 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
         ];
         If[ d === None,
             a = DiagramProduct[##, a["DiagramOptions"]]["FlattenOutputs"] & @@ row,
-            a = DiagramComposition[##, a["DiagramOptions"]] & @@ ReplacePart[a["SubDiagrams"], 1 -> DiagramProduct[##, d["DiagramOptions"]]["FlattenOutputs"] & @@ row]
+            a = DiagramComposition[##, "ColumnPorts" -> False, a["DiagramOptions"]] & @@ ReplacePart[a["SubDiagrams"], 1 -> DiagramProduct[##, d["DiagramOptions"]]["FlattenOutputs"] & @@ row]
         ];
 
         resetPortsA[]
@@ -212,7 +212,7 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
         ];
         If[ d === None,
             b = DiagramProduct[##, b["DiagramOptions"]]["FlattenInputs"] & @@ row,
-            b = DiagramComposition[##, b["DiagramOptions"]] & @@ ReplacePart[b["SubDiagrams"], -1 -> DiagramProduct[##, d["DiagramOptions"]]["FlattenInputs"] & @@ row]
+            b = DiagramComposition[##, "ColumnPorts" -> False, b["DiagramOptions"]] & @@ ReplacePart[b["SubDiagrams"], -1 -> DiagramProduct[##, d["DiagramOptions"]]["FlattenInputs"] & @@ row]
         ];
 
         resetPortsB[]
@@ -223,11 +223,11 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
   
 	Which[
 		aPorts === bPorts,
-		DiagramComposition[b, a, FilterRules[{opts}, Options[DiagramComposition]], "PortArrows" -> {aStyles[[1]], bStyles[[2]]}],
+		DiagramComposition[b, a, "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]], "PortArrows" -> {aStyles[[1]], bStyles[[2]]}],
 		aPorts === Reverse[bPorts] && a["WireQ"],
-        DiagramComposition[b, DiagramReverse[a], FilterRules[{opts}, Options[DiagramComposition]], "PortArrows" -> {Reverse[aStyles[[1]]], bStyles[[2]]}],
+        DiagramComposition[b, DiagramReverse[a], "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]], "PortArrows" -> {Reverse[aStyles[[1]]], bStyles[[2]]}],
         aPorts === Reverse[bPorts] && b["WireQ"],
-        DiagramComposition[DiagramReverse[b], a, FilterRules[{opts}, Options[DiagramComposition]], "PortArrows" -> {aStyles[[1]], Reverse[bStyles[[2]]]}],
+        DiagramComposition[DiagramReverse[b], a, "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]], "PortArrows" -> {aStyles[[1]], Reverse[bStyles[[2]]]}],
 		Sort[aPorts] === Sort[bPorts],
         With[{perm = FindPermutation[aPorts, bPorts]},
             DiagramComposition[
@@ -253,6 +253,7 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
                     ]
                 ],
                 a,
+                "ColumnPorts" -> False,
                 FilterRules[{opts}, Options[DiagramComposition]],
                 "PortArrows" -> {aStyles[[1]], bStyles[[2]]}
             ]
@@ -307,7 +308,7 @@ RowDiagram[xs : {__Diagram}, opts : OptionsPattern[]] := Fold[RowDiagram[{##}, o
 setDiagram[diagram1_, diagram2_, opts___] := Diagram[diagram1, Function[Null, "Expression" :> ##, HoldAll] @@ diagram2["HoldExpression"], "PortFunction" -> diagram2["PortFunction"], FilterRules[{opts}, Options[Diagram]]]
 
 
-Options[DiagramArrange] := DeleteDuplicatesBy[First] @ Join[{"Network" -> True, "Arrange" -> True, "NetworkMethod" -> "Foliation", "AssignPorts" -> False}, Options[ColumnDiagram], Options[DiagramsNetGraph]]
+Options[DiagramArrange] := DeleteDuplicatesBy[First] @ Join[{"Network" -> True, "Arrange" -> True, "NetworkMethod" -> "GridFoliation", "AssignPorts" -> False}, Options[ColumnDiagram], Options[DiagramsNetGraph]]
 
 DiagramArrange[diagram_Diagram, opts : OptionsPattern[]] := Enclose @ If[
     (TrueQ[diagram["OptionValue"["Arrange"], opts]] || diagram["NetworkQ"]) && TrueQ[diagram["OptionValue"["Decompose"], opts]]
@@ -323,12 +324,15 @@ DiagramArrange[diagram_Diagram, opts : OptionsPattern[]] := Enclose @ If[
                 AcyclicGraphQ
             ]},
                 If[ TrueQ[OptionValue["AssignPorts"]], DiagramAssignPorts[#, diagram["GraphInputOutputPorts", True]] &, Identity] @
-                    DiagramRightComposition[##, FilterRules[{opts, diagram["DiagramOptions"]}, Options[DiagramRightComposition]]] & @@
+                    Diagram[#, FilterRules[{opts, diagram["DiagramOptions"], "RowSort" -> True}, Options[Diagram]]] & @
                         Switch[OptionValue["NetworkMethod"],
-                            "TopologicalSort", Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, TopologicalSort[g]}, "Diagram"],
-                            "Stratify", RowDiagram[Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, Developer`FromPackedArray[#]}, "Diagram"]] & /@ ResourceFunction["VertexStratify"][g],
-                            "Foliation", RowDiagram[Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, #}, "Diagram"]] & /@ First[ResourceFunction["GraphFoliations"][g, MaxItems -> 1, Direction -> Top]],
-                            "RandomFoliation", RowDiagram[Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, #}, "Diagram"]] & /@ RandomChoice[ResourceFunction["GraphFoliations"][g, "IncludePermutations" -> True, Direction -> Top]]
+                            "TopologicalSort", RightComposition @@ (Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, TopologicalSort[g]}, "Diagram"]),
+                            "Stratify", RightComposition @@ (CircleTimes @@ (Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, Developer`FromPackedArray[#]}, "Diagram"]) & /@ ResourceFunction["VertexStratify"][g]),
+                            "Foliation", RightComposition @@ (CircleTimes @@ (Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, #}, "Diagram"]) & /@ First[ResourceFunction["GraphFoliations"][g, MaxItems -> 1, Direction -> Top]]),
+                            "RandomFoliation", RightComposition @@ (CircleTimes @@ (Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, #}, "Diagram"]) & /@ RandomChoice[ResourceFunction["GraphFoliations"][g, "IncludePermutations" -> True, Direction -> Top]]),
+                            "GridFoliation", With[{ig = IndexGraph[g]},
+                                GridFoliation[ig] /. v_Integer :> Diagram[AnnotationValue[{ig, v}, "Diagram"], "Center" -> Automatic]
+                            ]
                         ]
             ],
             Diagram[diagram, "Expression" :> DiagramNetwork[##] & @@ (DiagramArrange[#, opts] & /@ {ds})]

@@ -20,6 +20,8 @@ FirstPositionsWithMissing
 
 SmoothGraphicsCurves
 
+GridFoliation
+
 
 Begin["Wolfram`DiagrammaticComputation`Utilities`Private`"];
 
@@ -155,6 +157,24 @@ Options[SmoothGraphicsCurves] = Join[{
 SmoothGraphicsCurves[g_, n : _ ? NumericQ : .1, m : _Integer ? Positive : 4, opts : OptionsPattern[]] /; 0 <= n <= 1 := Block[{h, curves},
     curves = First[Reap[h = g /. BSplineCurve[ps_] :> (Sow[ps]; {})][[2]], {}];
     Show[Graphics[{OptionValue["WireStyle"], Arrow @ SmoothPoints[#, n, m]} & /@ ConnectCurves[curves]], h, FilterRules[{opts}, Options[Graphics]]]
+]
+
+
+GridFoliation[g_Graph] /; DirectedGraphQ[g] && AcyclicGraphQ[g] := With[{sources = Pick[VertexList[g], VertexInDegree[g], 0]},
+	Switch[Length[sources],
+		0,
+			Identity,
+		1,
+			RightComposition[First[sources], GridFoliation[VertexDelete[g, sources]]],
+		_,
+			Block[{cones = VertexOutComponent[g, #] & /@ sources, layer},
+				layer = Map[First[WeaklyConnectedGraphComponents[Subgraph[g, #], #]] &, UniqueElements[cones]];
+				RightComposition[
+					(If[Length[layer] == 1, First[#], CircleTimes @@ #] &) @ (OptimalFoliation /@ layer),
+					GridFoliation[Subgraph[g, Complement[Union @@ cones, Union @@ VertexList /@ layer]]]
+				]
+			]
+	]
 ]
 
 
