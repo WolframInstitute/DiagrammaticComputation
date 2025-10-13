@@ -12,6 +12,8 @@ PortProduct
 PortSum
 PortPower
 
+TagPort
+UntagPort
 
 Begin["Wolfram`DiagrammaticComputation`Port`Private`"];
 
@@ -23,7 +25,7 @@ Port::usage = "Port[expr] represents a symbolic port for diagram inputs and outp
 
 $DefaultPortType = \[FormalCapitalT]
 
-Options[Port] = {"Type" -> $DefaultPortType, "NeutralQ" -> False};
+Options[Port] = {"Type" -> $DefaultPortType, "Tags" -> {}, "NeutralQ" -> False};
 
 $PortHiddenOptions = {"Expression" -> "1"}
 
@@ -33,7 +35,7 @@ $PortProperties = Join[Keys[Options[Port]], {"Properties", "Data", "HoldExpressi
 (* ::Section:: *)
 (* Validation *)
 
-portQ[HoldPattern[Port[data_Association]]] := MatchQ[data, KeyValuePattern[{_["Expression", _], "Type" -> _, "NeutralQ" -> _ ? BooleanQ}]]
+portQ[HoldPattern[Port[data_Association]]] := MatchQ[data, KeyValuePattern[{_["Expression", _], "Type" -> _, "Tags" -> _ ? ListQ, "NeutralQ" -> _ ? BooleanQ}]]
 
 portQ[___] := False
 
@@ -159,6 +161,8 @@ Port[p_Port ? PortQ, opts : OptionsPattern[]] := Port[Replace[Normal[Merge[{opts
 
 (* data constructor *)
 
+Port[Labeled[expr_, tags_, ___] | HoldForm[Labeled[expr_, tags_, ___]], opts : OptionsPattern[]] := Port[TagPort[Unevaluated[expr], tags], opts]
+
 Port[expr : Except[_Association | _Port | OptionsPattern[]], opts : OptionsPattern[]] := Port[FilterRules[{"Expression" :> expr, opts}, Join[Options[Port], $PortHiddenOptions]]]
 
 Port[expr : Except[_Association], type : Except[OptionsPattern[]], opts : OptionsPattern[]] := Port[Port[Unevaluated[expr]], "Type" -> type, opts]
@@ -190,6 +194,10 @@ PortProp[p_, "HoldName"] := Replace[p["HoldExpression"], HoldForm[PortDual[x_] |
 
 PortProp[p_, "Name"] := Replace[p["HoldName"], HoldForm[Interpretation[HoldForm[x_] | x_, _] | x_] :> x]
 
+PortProp[p_, "TaggedName"] := Replace[HoldForm[Evaluate[Labeled[p["HoldName"], p["Tags"]]]], HoldForm[x_] :> x, Infinity, Heads -> True]
+
+PortProp[p_, "TaggedFullName"] := Replace[HoldForm[Evaluate[Labeled[p["Apply", #["HoldName"] &], p["Tags"]]]], HoldForm[x_] :> x, Infinity, Heads -> True]
+
 PortProp[p_, "Options"] := Normal[KeyDrop[p["Data"], "Expression"]]
 
 PortProp[p_, "Types"] := Through[Flatten[p["PortTree"]]["Type"]]
@@ -208,9 +216,9 @@ PortProp[p_, "Label"] := ReplaceAll[
 ]
 
 PortProp[p_, "View"] := With[{
-    label = p["Label"], type = p["Type"]
+    label = p["Label"], type = p["Type"], tags = p["Tags"]
 },
-    If[type === $DefaultPortType, Defer[Port[label]], Defer[Port[label, type]]] //. HoldForm[x_] :> x
+    If[type === $DefaultPortType, If[tags === {}, Defer[Port[label]], Defer[Port[label, "Tags" -> tags]]], If[tags === {}, Defer[Port[label, type]], Defer[Port[label, type, "Tags" -> tags]]]] //. HoldForm[x_] :> x
 ]
 
 PortProp[p_, "Dual"] := PortDual[p]
@@ -266,6 +274,15 @@ PortProp[p_, "Apply", f_] := p["PortTree"] /. port_Port :> f[port]
 
 PortProp[_, prop_, ___] := Missing[prop]
 
+
+(* ::Section:: *)
+(* Utilities *)
+
+TagPort[p_Port ? PortQ, tags_] := Port[p, "Tags" -> Join[p["Tags"], Replace[tags, Except[_List] :> {tags}]]]
+
+TagPort[p_, tags_] := TagPort[Port[Unevaluated[p]], tags]
+
+UntagPort[p_ ? PortQ, n : _Integer | All : 1] := Port[p, "Tags" -> With[{tags = p["Tags"]}, Drop[tags, - Min[Length[tags], Replace[n, All :> Length[tags]]]]]]
 
 
 (* ::Section:: *)
