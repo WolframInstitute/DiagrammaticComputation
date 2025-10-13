@@ -17,6 +17,8 @@ DiagramGridWidth
 DiagramGridHeight
 DiagramGridWidthHeight
 
+DiagramGridTree
+
 Begin["Wolfram`DiagrammaticComputation`Diagram`Grid`Private`"];
 
 {$Black, $White} = If[$VersionNumber >= 14.3, {LightDarkSwitched[Black, White], LightDarkSwitched[White, Black]}, {Black, White}]
@@ -26,14 +28,16 @@ Begin["Wolfram`DiagrammaticComputation`Diagram`Grid`Private`"];
 
 identityDiagrams[ports_, styles_] := Splice @ MapThread[IdentityDiagram[#1, "PortArrows" -> {#2}] &, {ports, styles}]
 
-permuteRow[row : {__Diagram}, rowPorts_List, ports_List, func_ : Identity] := Replace[
-    ResourceFunction["PositionLargestBy"][Permutations @ rowPorts, - DamerauLevenshteinDistance[Catenate[#], ports] &, 1],
-    {
-        {i : Except[1]} :> (
-            func @ Permute[row, InversePermutation @ ResourceFunction["PermutationFromIndex"][i, Length[row]]]
-        ),
-        _ -> row
-    }
+permuteRow[row : {__Diagram}, rowPorts_List, ports_List, func_ : Identity] := If[Length[rowPorts] > 9, row,
+    Replace[
+        ResourceFunction["PositionLargestBy"][Permutations @ rowPorts, - DamerauLevenshteinDistance[Catenate[#], ports] &, 1],
+        {
+            {i : Except[1]} :> (
+                func @ Permute[row, InversePermutation @ ResourceFunction["PermutationFromIndex"][i, Length[row]]]
+            ),
+            _ -> row
+        }
+    ]
 ]
 
 PermutationDecompose[perm_List ? PermutationListQ] := Switch[Length[perm], 0, {}, 1, {perm}, _,
@@ -74,14 +78,14 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
    
     If[ ContainsNone[aPorts, bPorts],
         If[ aPorts === {} && bPorts === {},
-            Return[DiagramRightComposition[a, b, "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]], "PortArrows" -> {aStyles[[1]], bStyles[[2]]}]],
+            Return[DiagramRightComposition[a, b, "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]]]],
             Return[RowDiagram[{a, b}, FilterRules[{opts}, Options[RowDiagram]]]]
         ]
     ];
 
     If[ TrueQ[OptionValue["PassThrough"]],
         Return[Diagram[
-            DiagramRightComposition[a, b, "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]], "PortArrows" -> {aStyles[[1]], bStyles[[2]]}],
+            DiagramRightComposition[a, b, "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]]],
             Sequence @@ MapThread[Join, Prepend[{PortDual /@ a["InputPorts"], b["OutputPorts"]}] @ Cases[SequenceAlignment[bPorts, aPorts, Method -> "Local"], {__List}]]
         ]]
     ];
@@ -148,7 +152,7 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
             ]
         ]
     ];
-
+    
     Block[{row, ports, xs, d = None},
         row = Which[
             MatchQ[a["Head"], None | DiagramProduct],
@@ -220,14 +224,13 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
     
     aStyles = a["PortStyles"];
     bStyles = b["PortStyles"];
-  
 	Which[
 		aPorts === bPorts,
-		DiagramComposition[b, a, "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]], "PortArrows" -> {aStyles[[1]], bStyles[[2]]}],
+		DiagramComposition[b, a, "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]]],
 		aPorts === Reverse[bPorts] && a["WireQ"],
-        DiagramComposition[b, DiagramReverse[a], "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]], "PortArrows" -> {Reverse[aStyles[[1]]], bStyles[[2]]}],
+        DiagramComposition[b, DiagramReverse[a], "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]]],
         aPorts === Reverse[bPorts] && b["WireQ"],
-        DiagramComposition[DiagramReverse[b], a, "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]], "PortArrows" -> {aStyles[[1]], Reverse[bStyles[[2]]]}],
+        DiagramComposition[DiagramReverse[b], a, "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]]],
 		Sort[aPorts] === Sort[bPorts],
         With[{perm = FindPermutation[aPorts, bPorts]},
             DiagramComposition[
@@ -254,8 +257,7 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
                 ],
                 a,
                 "ColumnPorts" -> False,
-                FilterRules[{opts}, Options[DiagramComposition]],
-                "PortArrows" -> {aStyles[[1]], bStyles[[2]]}
+                FilterRules[{opts}, Options[DiagramComposition]]
             ]
         ],
 		True,
@@ -324,7 +326,7 @@ DiagramArrange[diagram_Diagram, opts : OptionsPattern[]] := Enclose @ If[
                 AcyclicGraphQ
             ]},
                 If[ TrueQ[OptionValue["AssignPorts"]], DiagramAssignPorts[#, diagram["GraphInputOutputPorts", True]] &, Identity] @
-                    Diagram[#, FilterRules[{opts, diagram["DiagramOptions"], "RowSort" -> True}, Options[Diagram]]] & @
+                    Diagram[#, FilterRules[{opts, diagram["DiagramOptions"], "RowSort" -> True}, FilterRules[Options[Diagram], Except["PortArrows"]]]] & @
                         Switch[OptionValue["NetworkMethod"],
                             "TopologicalSort", RightComposition @@ (Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, TopologicalSort[g]}, "Diagram"]),
                             "Stratify", RightComposition @@ (CircleTimes @@ (Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, Developer`FromPackedArray[#]}, "Diagram"]) & /@ ResourceFunction["VertexStratify"][g]),
@@ -1080,6 +1082,24 @@ gridNetworkWires[grid_, frame_, portFunction_, opts___] := With[{
     wireGraphics[opts] @@@ Values @ Catenate[mergeRules[{#}, rules] & /@ rules]
 ]
 
+
+Options[DiagramGridTree] = Join[Options[DiagramGraphics], Options[NestTree]]
+
+DiagramGridTree[diag_Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
+	diagramOptions = FilterRules[{opts}, Options[DiagramGraphics]]
+},
+	NestTree[
+		Replace[{_Diagram -> {}, Verbatim[Transpose][expr_, _] :> {expr}, expr_ :> List @@ expr}],
+		DiagramDecompose[diag, "Unary" -> True],
+		Infinity,
+		Replace[{d_Diagram :> d, Verbatim[Transpose][_, perm_] :> perm, expr_ :> Head[expr]}]
+		,
+		FilterRules[{opts}, Options[NestTree]],
+		TreeElementLabel -> {TreeCases[CircleTimes] -> "\[CircleTimes]", TreeCases[CircleDot] -> "\[CircleDot]", TreeCases[SuperStar] -> "*", TreeCases[_Cycles] -> "T"},
+		TreeElementLabelFunction -> {TreeCases[_Diagram] -> Function[#["Graphics", diagramOptions, "PortArrows" -> Directive[Haloing[0], Arrowheads[0]], "PortLabels" -> None, ImageSize -> {20, 30}]]},
+		TreeElementStyle -> {TreeCases[_Diagram] -> EdgeForm[StandardBlue]}
+	]
+]
 
 
 End[];

@@ -87,11 +87,12 @@ collectPorts[ports_List] := If[ports === {}, {},
 ]
 
 collectPortsListBy[ports_List, f_] := If[ports === {}, {},
-    FoldList[List /* Replace[{{out1_, in1_}, {out2_, in2_}} :>
+    FoldList[List /* Replace[{{in1_, out1_, {inStyles1_, outStyles1_}}, {in2_, out2_, {inStyles2_, outStyles2_}}} :>
         With[{fout1 = f /@ out1, fin2 = f /@ in2}, {pos1 = FirstPositions[fout1, fin2], pos2 = FirstPositions[fin2, fout1]},
             {
+                Join[in1, Delete[in2, pos2]],
                 Join[Delete[out1, pos1], out2],
-                Join[in1, Delete[in2, pos2]]
+                {Join[inStyles1, Delete[inStyles2, pos2]], Join[Delete[outStyles1, pos1], outStyles2]}
             }
         ]
     ],
