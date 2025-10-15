@@ -128,7 +128,7 @@ lambdaDiagram[tag_, ports_List] := Diagram[
 ]
 
 applicationDiagram[f_, xs_List] := With[{fPort = Port[f], ports = Port /@ xs},
-	Diagram["\[Application]", Append[ports, fPort], TagPort[fPort["Name"] @@ Through[ports["Name"]], Unique["app"]],
+	Diagram["\[Application]", Append[ports, fPort], Interpretation @@ {fPort["Name"] @@ Through[ports["Name"]], Unique["app"]},
 		"Shape" -> "Disk",
 		"Style" -> Lookup[Lookup[Options[Wolfram`Lambda`LambdaTree], ColorRules], "Application"],
 		"ShowLabel" -> False,

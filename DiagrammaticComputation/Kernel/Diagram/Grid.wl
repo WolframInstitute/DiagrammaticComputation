@@ -75,7 +75,6 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
     resetPortsB[];
     aStyles = a["PortStyles"];
     bStyles = b["PortStyles"];
-   
     If[ ContainsNone[aPorts, bPorts],
         If[ aPorts === {} && bPorts === {},
             Return[DiagramRightComposition[a, b, "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]]]],
@@ -226,15 +225,15 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
     bStyles = b["PortStyles"];
 	Which[
 		aPorts === bPorts,
-		DiagramComposition[b, a, "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]]],
+		DiagramComposition[Diagram[b, "PortArrows" -> MapAt[MapThread[If[#1 === Automatic, #2, #1] &, {#, aStyles[[2]]}] &, {1}] @ b["PortStyles"]], a, "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]]],
 		aPorts === Reverse[bPorts] && a["WireQ"],
-        DiagramComposition[b, DiagramReverse[a], "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]]],
+        DiagramComposition[Diagram[b, "PortArrows" -> MapAt[MapThread[If[#1 === Automatic, #2, #1] &, {#, Reverse @ aStyles[[2]]}] &, {1}] @ b["PortStyles"]], DiagramReverse[a], "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]]],
         aPorts === Reverse[bPorts] && b["WireQ"],
-        DiagramComposition[DiagramReverse[b], a, "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]]],
+        DiagramComposition[DiagramReverse[b, "PortArrows" -> MapAt[MapThread[If[#1 === Automatic, #2, #1] &, {#, aStyles[[2]]}] &, Reverse /@ b["PortStyles"], {1}]], a, "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]]],
 		Sort[aPorts] === Sort[bPorts],
         With[{perm = FindPermutation[aPorts, bPorts]},
             DiagramComposition[
-                b,
+                Diagram[b, "PortArrows" -> MapAt[MapThread[If[#1 === Automatic, #2, #1] &, {#, Permute[aStyles[[2]], perm]}] &, {1}] @ b["PortStyles"]],
                 If[ TrueQ[OptionValue["PermutationDecompose"]],
                     With[{decomp = PermutationDecompose[PermutationList[perm, Length[as]]]}, {lens = Length /@ decomp},
                         DiagramProduct @ MapThread[{as, bs, aStyles, bStyles, perm} |->
@@ -326,7 +325,7 @@ DiagramArrange[diagram_Diagram, opts : OptionsPattern[]] := Enclose @ If[
                 AcyclicGraphQ
             ]},
                 If[ TrueQ[OptionValue["AssignPorts"]], DiagramAssignPorts[#, diagram["GraphInputOutputPorts", True]] &, Identity] @
-                    Diagram[#, FilterRules[{opts, diagram["DiagramOptions"], "RowSort" -> True}, FilterRules[Options[Diagram], Except["PortArrows"]]]] & @
+                    Diagram[#, FilterRules[{opts, diagram["DiagramOptions"], "RowSort" -> True}, Options[Diagram]]] & @
                         Switch[OptionValue["NetworkMethod"],
                             "TopologicalSort", RightComposition @@ (Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, TopologicalSort[g]}, "Diagram"]),
                             "Stratify", RightComposition @@ (CircleTimes @@ (Diagram[#, "Center" -> Automatic] & /@ AnnotationValue[{g, Developer`FromPackedArray[#]}, "Diagram"]) & /@ ResourceFunction["VertexStratify"][g]),
