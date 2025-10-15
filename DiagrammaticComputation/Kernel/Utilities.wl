@@ -171,7 +171,7 @@ GridFoliation[g_Graph] /; DirectedGraphQ[g] && AcyclicGraphQ[g] := With[{sources
 			Block[{cones = VertexOutComponent[g, #] & /@ sources, layer},
 				layer = Map[First[WeaklyConnectedGraphComponents[Subgraph[g, #], #]] &, UniqueElements[cones]];
 				RightComposition[
-					(If[Length[layer] == 1, First[#], CircleTimes @@ #] &) @ (OptimalFoliation /@ layer),
+					(If[Length[layer] == 1, First[#], CircleTimes @@ #] &) @ (GridFoliation /@ layer),
 					GridFoliation[Subgraph[g, Complement[Union @@ cones, Union @@ VertexList /@ layer]]]
 				]
 			]
