@@ -72,7 +72,10 @@ $DefaultPortFunction = Function[#["TaggedFullName"]]
 
 $DefaultNetworkPortFunction = Function[#["TaggedName"]]
 
-$DiagramDefaultGraphics = If[#["SingletonNodeQ"], #["Graphics"], #["Grid"]] &
+$DiagramDefaultGraphics = Function @ Show[
+    Which[#["NodeQ"], #["Graphics"], #["NetworkQ"], #["NetGraph"], True, #["Grid"]],
+    BaseStyle -> {GraphicsBoxOptions -> {ImageSize -> If[#["NodeQ"], Tiny, Medium]}, GraphicsHighlightColor -> Magenta}
+]
 
 $Gray = RGBColor[0.952941188969422, 0.9529411889694224, 0.9529411889694221]
 
@@ -113,7 +116,9 @@ Diagram[(CircleDot | Composition)[ds___], opts : OptionsPattern[]] := DiagramCom
 
 Diagram[HoldPattern[RightComposition[ds___]], opts : OptionsPattern[]] := DiagramComposition[##, opts] & @@ Reverse[Diagram /@ {ds}]
 
-Diagram["Identity"[args___], opts : OptionsPattern[]] := IdentityDiagram[args, opts]
+Diagram[Identity, opts : OptionsPattern[]] := EmptyDiagram[opts]
+
+Diagram[("Identity" | Identity)[args___], opts : OptionsPattern[]] := IdentityDiagram[args, opts]
 
 Diagram["Permutation"[args___], opts : OptionsPattern[]] := PermutationDiagram[args, opts]
 
@@ -320,7 +325,7 @@ DiagramSum[ds__Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{subDiagrams
 
 (* horizontal product *)
 
-Options[DiagramProduct] = Join[{"Flat" -> True}, Options[Diagram]]
+Options[DiagramProduct] := Join[{"Flat" -> True}, Options[Diagram]]
 
 DiagramProduct[opts : OptionsPattern[]] := EmptyDiagram[opts]
 
@@ -348,7 +353,7 @@ DiagramProduct[ds__Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{subDiag
 
 Options[SingletonDiagram] = Options[EmptyDiagram] = Options[CupDiagram] = Options[CapDiagram] = Options[IdentityDiagram] = Options[PermutationDiagram] = Options[SpiderDiagram] = Options[CopyDiagram] = Options[Diagram]
 
-SingletonDiagram[diagram_Diagram, opts : OptionsPattern[]] := Diagram[diagram, "Expression" :> Diagram[diagram], opts]
+SingletonDiagram[diagram_Diagram, args___] := Diagram[None, args, "Expression" :> Diagram[diagram], "ShowLabel" -> False, "Shape" -> None, "Outline" -> True]
 
 
 makePorts[xs_List] := Function[Null, Port[Unevaluated[##]], HoldAll] @@@ Flatten @* HoldForm /@ Replace[xs, SuperStar[HoldForm[x_]] :> HoldForm[SuperStar[x]], 1]
@@ -360,10 +365,12 @@ ZeroDiagram[opts : OptionsPattern[]] := Diagram[
     "Outline" -> True
 ]
 
-EmptyDiagram[opts : OptionsPattern[]] := Diagram[
-    opts,
+EmptyDiagram[args___] := Diagram[
+    None,
+    args,
     "ShowLabel" -> False,
-    "Shape" -> None
+    "Shape" -> None,
+    "PortArrows" -> None
 ]
 
 CupDiagram[{x_, y_}, opts : OptionsPattern[]] := Diagram["\[DoubleStruckCapitalI]", {}, {x, y}, opts, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False]
@@ -417,6 +424,8 @@ SpiderDiagram[in_List, out_List, opts : OptionsPattern[]] := Diagram["",
 SpiderDiagram[x : Except[_List], out_, OptionsPattern[]] := SpiderDiagram[{x}, out, opts]
 
 SpiderDiagram[in_, y : Except[_List], OptionsPattern[]] := SpiderDiagram[in, {y}]
+
+SpiderDiagram[x_List] := SpiderDiagram[{}, x]
 
 SpiderDiagram[x_] := SpiderDiagram[{}, {x}]
 
@@ -958,7 +967,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
         Confirm @ diagram["Shape", opts]
     },
     Replace[
-        If[ MatchQ[diagram["OptionValue"["ShowLabel"], opts], None | False],
+        If[ MatchQ[diagram["OptionValue"["ShowLabel"], opts], None | False] || diagram["HoldExpression"] === HoldForm[None],
             "\t\t\t",
             Replace[labelFunction,
                 Automatic :> Function[If[interactiveQ, ClickToCopy, # &][
@@ -975,12 +984,11 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
     ]
 },
     FilterRules[{opts, diagram["DiagramOptions"]}, Options[Graphics]],
-    ImageSize -> Tiny,
     FormatType -> StandardForm
 ]]
 
-Diagram /: MakeBoxes[diagram : Diagram[_Association] ? DiagramQ, form_] := With[{boxes = ToBoxes[Show[
-    If[diagram["NetworkQ"], diagram["NetGraph"], Replace[$DiagramDefaultGraphics, {"Grid" :> diagram["Grid"], f_Function :> f[diagram], _ :> diagram["Graphics"]}]], BaseStyle -> {GraphicsHighlightColor -> Magenta}], form]},
+Diagram /: MakeBoxes[diagram : Diagram[_Association] ? DiagramQ, form_] := With[{boxes = ToBoxes[
+    Replace[$DiagramDefaultGraphics, {"Grid" :> diagram["Grid"], "Network" :> diagram["NetGraph"], f_Function :> f[diagram], _ :> diagram["Graphics"]}], form]},
     diagramBox[boxes, #] & @ diagram
 ]
 
@@ -1102,21 +1110,7 @@ SimplifyDiagram[diag_ ? DiagramQ, opts : OptionsPattern[]] /; diag["NetworkQ"] :
     DiagramNetwork[##, diag["DiagramOptions"], "PortFunction" -> portFunction] & @@ toIdentities @ AnnotationValue[{net, VertexList[net]}, "Diagram"]
 ]
 
-SimplifyDiagram[diag_ ? DiagramQ, opts : OptionsPattern[]] := With[{
-    d = restorePorts @ restorePorts @ DiagramArrange[SimplifyDiagram[diag["Network"], opts], "PortFunction" -> diag["PortFunction"], "AssignPorts" -> True],
-    portFunction = $DefaultPortFunction,
-    in = PortDual /@ diag["InputPorts"],
-    out = diag["OutputPorts"]
-},
-    Which[
-        portFunction /@ PortDual /@ d["InputPorts"] === portFunction /@ in && portFunction /@ d["OutputPorts"] === portFunction /@ out,
-        d,
-        d["InputArity"] == Length[in] && d["OutputArity"] == Length[out],
-        Diagram[SingletonDiagram[d], in, out],
-        True,
-        DiagramNetwork[SingletonDiagram[Diagram[d]], "ShowWireLabels" -> False]
-    ]
-]
+SimplifyDiagram[diag_ ? DiagramQ, opts : OptionsPattern[]] := DiagramArrange[SimplifyDiagram[diag["Network"], opts]]
 
 
 Options[DiagramsGraph] = Join[{"Simplify" -> False, "PortFunction" -> $DefaultNetworkPortFunction}, Options[Graph]];

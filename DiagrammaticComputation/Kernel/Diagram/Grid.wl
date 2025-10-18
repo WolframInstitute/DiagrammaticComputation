@@ -278,8 +278,11 @@ ColumnDiagram[xs : {__Diagram}, opts : OptionsPattern[]] := If[
 
 (* compose horizontally preserving height *)
 
-Options[RowDiagram] := Options[ColumnDiagram]
-RowDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Block[{a = x["FlattenInputs", 1], b = y["FlattenOutputs", 1], aPorts, bPorts, ha, hb, aStyles, bStyles},
+Options[RowDiagram] := Join[{"PadHeight" -> True}, Options[ColumnDiagram]]
+RowDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Block[{a, b, aPorts, bPorts, ha, hb, aStyles, bStyles},
+    If[! TrueQ[OptionValue["PadHeight"]], Return[DiagramProduct[x, y, FilterRules[{opts}, Options[DiagramProduct]]]]];
+    a = x["FlattenInputs", 1];
+    b = y["FlattenOutputs", 1];
 	aPorts = Through[a["InputPorts"]["Dual"]];
 	bPorts = b["OutputPorts"];
     ha = DiagramGridHeight[a];
@@ -309,7 +312,7 @@ RowDiagram[xs : {__Diagram}, opts : OptionsPattern[]] := Fold[RowDiagram[{##}, o
 setDiagram[diagram1_, diagram2_, opts___] := Diagram[diagram1, Function[Null, "Expression" :> ##, HoldAll] @@ diagram2["HoldExpression"], "PortFunction" -> diagram2["PortFunction"], FilterRules[{opts}, Options[Diagram]]]
 
 
-Options[DiagramArrange] := DeleteDuplicatesBy[First] @ Join[{"Network" -> True, "Arrange" -> True, "NetworkMethod" -> "GridFoliation", "AssignPorts" -> False}, Options[ColumnDiagram], Options[DiagramsNetGraph]]
+Options[DiagramArrange] := DeleteDuplicatesBy[First] @ Join[{"Network" -> True, "Arrange" -> True, "NetworkMethod" -> "GridFoliation", "AssignPorts" -> False}, Options[RowDiagram], Options[ColumnDiagram], Options[DiagramsNetGraph]]
 
 DiagramArrange[diagram_Diagram, opts : OptionsPattern[]] := Enclose @ If[
     (TrueQ[diagram["OptionValue"["Arrange"], opts]] || diagram["NetworkQ"]) && TrueQ[diagram["OptionValue"["Decompose"], opts]]
@@ -431,7 +434,7 @@ Options[DiagramDecompose] = {"Network" -> True, "Unary" -> False, "Decompose" ->
 
 DiagramDecompose[diagram_Diagram ? DiagramQ, lvl : (_Integer ? NonNegative) | Infinity : Infinity, opts : OptionsPattern[]] := If[TrueQ[diagram["OptionValue"["Decompose"], opts]] && lvl > 0,
     Replace[diagram["HoldExpression"], {
-        HoldForm[Diagram[d_]] :> {DiagramDecompose[d, lvl - 1, opts]},
+        HoldForm[Diagram[d_]] :> CircleTimes[DiagramDecompose[d, lvl - 1, opts]],
         HoldForm[DiagramProduct[ds___]] :> (DiagramDecompose[#, lvl - 1, opts] & /@ CircleTimes[ds]),
         HoldForm[DiagramComposition[ds___]] :> (DiagramDecompose[#, lvl - 1, opts] & /@ CircleDot[ds]),
         HoldForm[DiagramSum[ds___]] :> (DiagramDecompose[#, lvl - 1, opts] & /@ CirclePlus[ds]),
@@ -449,7 +452,7 @@ DiagramDecompose[diagram_Diagram ? DiagramQ, lvl : (_Integer ? NonNegative) | In
     ,
     diagram["Flatten"]
 ] // If[TrueQ[OptionValue["Ports"]], # -> {Through[diagram["InputPorts"]["Dual"]], diagram["OutputPorts"]} &, Identity] //
-    If[TrueQ[OptionValue["Diagram"]], # -> If[diagram["SingletonNodeQ"], None, diagram] &, Identity]
+    If[TrueQ[OptionValue["Diagram"]], # -> If[diagram["NodeQ"], None, diagram] &, Identity]
 
 gridTranspose[CircleTimes[ds___CircleDot]] := CircleDot @@ ResourceFunction["GeneralizedMapThread"][DiagramDecompose[RowDiagram[Diagram /@ {##}]] &, List @@@ {ds}]
 gridTranspose[CircleDot[ds___CircleTimes]] := CircleTimes @@ ResourceFunction["GeneralizedMapThread"][DiagramDecompose[ColumnDiagram[Diagram /@ Reverse[{##}]]] & , List @@@ {ds}]
@@ -546,8 +549,9 @@ gridArrange[diagram_Diagram -> d_, pos_, {autoWidth_, autoHeight_}, {dx_, dy_}, 
     ], "Item"];
     Diagram[diagram,
         "Center" -> Replace[diagram["OptionValue"["Center"]], {Automatic -> center, Offset[shift_] :> center + shift}],
-        "Width" -> Replace[diagram["OptionValue"["Width"]], Automatic :> If[MatchQ[diagram["OptionValue"["Shape"]], "Circle"] || arity <= 1, 1, ratio * w]],
-        "Height" -> Replace[diagram["OptionValue"["Height"]], Automatic :> Max[h - dy, 1]]
+        "Width" -> Replace[diagram["OptionValue"["Width"]], Automatic :> If[MatchQ[diagram["OptionValue"["Shape"]], "Circle"] || arity <= 1, 1, ratio * w]]
+        (* ,
+        "Height" -> Replace[diagram["OptionValue"["Height"]], Automatic :> Max[h - dy, 1]] *)
     ]
 ]
 
@@ -559,13 +563,13 @@ gridArrange[grid : (head : CircleTimes | CirclePlus)[ds___] -> d_, pos_, {width_
     If[width =!= Automatic, relativeWidths[[-1]] = width - Total[Most[relativeWidths]]];
     positions = Prepend[Accumulate[relativeWidths * (1 + dx)], 0];
     With[{w = Total[relativeWidths] * (1 + dx), h = newHeight},
-        Sow[pos -> Diagram[d,
+        Sow[pos -> If[d === None, EmptyDiagram[], Diagram[d,
             "Center" -> RotationTransform[angle, corner][corner + {w, h} / 2],
             "Width" -> Replace[d["OptionValue"["Width"]], Automatic -> w],
             "Height" -> Replace[d["OptionValue"["Height"]], Automatic -> h],
             "Style" -> None,
             If[head =!= upHead =!= None, "Shape" -> Directive[EdgeForm[Dashing[{Small, Tiny}]]], {}]
-        ],
+        ]],
             "Row"
         ]
     ];
@@ -624,7 +628,7 @@ GridInputPorts[grid_] := Catenate[Extract[grid, gridInputPositions[grid], #["Top
 GridOutputPorts[d_Diagram] := If[d["SingletonNodeQ"], d["BottomPorts"], GridOutputPorts[If[d["NetworkQ"], d["Arrange"], d]["Decompose", "Unary" -> True]]]
 GridOutputPorts[grid_] := Catenate[Extract[grid, gridOutputPositions[grid], #["BottomPorts"] &]]
 
-Options[DiagramGrid] = Join[{
+Options[DiagramGrid] = DeleteDuplicatesBy[First] @ Join[{
     "HorizontalGapSize" -> 1,
     "VerticalGapSize" -> 1,
     "Rotate" -> 0,
@@ -658,7 +662,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
     plotInteractivity = Replace[OptionValue[PlotInteractivity], Automatic -> True],
     dividers
 },
-    grid = DiagramDecompose[DiagramArrange[diagram, FilterRules[{opts}, Options[DiagramArrange]]], "Diagram" -> True, "Unary" -> False, FilterRules[{opts}, Options[DiagramDecompose]]];
+    grid = DiagramDecompose[DiagramArrange[diagram, FilterRules[{opts, diagram["DiagramOptions"]}, Options[DiagramArrange]]], "Diagram" -> True, "Unary" -> False, FilterRules[{opts}, Options[DiagramDecompose]]];
     width = gridWidth[grid];
     height = gridHeight[grid];
 
@@ -671,7 +675,6 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
 
     (* TODO: do something with transpositions *)
     {items, rows, columns, transposes} = Lookup[Reap[grid = gridArrange[grid, {hGapSize, vGapSize}, angle], _, Rule][[2]], {"Item", "Row", "Column", "Transpose"}];
-
     outputPositions = gridOutputPositions[grid];
     inputPositions = gridInputPositions[grid];
     positions = Position[grid, _Diagram, All];
@@ -726,13 +729,10 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
                                         {
                                             ports = MapThread[Join, {portFunction /@ PortDual /@ #["InputPorts"], portFunction /@ #["OutputPorts"]} & /@ parentDiagrams[[All, 2]]]
                                         },
-                                            {
-                                                "PortArrows" -> {
-                                                    Map[If[MemberQ[ports[[1]], #], None, Inherited] &, portFunction /@ PortDual /@ #["InputPorts"]],
-                                                    Map[If[MemberQ[ports[[2]], #], None, Inherited] &, portFunction /@ #["OutputPorts"]]
-                                                },
-                                                "PortLabels" -> None
-                                            }
+                                            (opt |-> opt -> {
+                                                Map[If[MemberQ[ports[[1]], #], None, Inherited] &, portFunction /@ PortDual /@ #["InputPorts"]],
+                                                Map[If[MemberQ[ports[[2]], #], None, Inherited] &, portFunction /@ #["OutputPorts"]]
+                                            }) /@ {"PortArrows", "PortLabels"}
                                         ]
                                     ]
                                 ],
@@ -773,11 +773,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
             }
         ],
         FilterRules[{opts, diagram["DiagramOptions"]}, Options[Graphics]],
-        FormatType -> StandardForm,
-        BaseStyle -> {
-            GraphicsHighlightColor -> Automatic
-        },
-        ImageSize -> Small
+        FormatType -> StandardForm
     ]
 ]
 
@@ -1094,7 +1090,7 @@ DiagramGridTree[diag_Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
 		Replace[{d_Diagram :> d, Verbatim[Transpose][_, perm_] :> perm, expr_ :> Head[expr]}]
 		,
 		FilterRules[{opts}, Options[NestTree]],
-		TreeElementLabel -> {TreeCases[CircleTimes] -> "\[CircleTimes]", TreeCases[CircleDot] -> "\[CircleDot]", TreeCases[SuperStar] -> "*", TreeCases[_Cycles] -> "T"},
+		TreeElementLabel -> {TreeCases[CircleTimes] -> "\[CircleTimes]", TreeCases[CircleDot] -> "\[CircleDot]", TreeCases[List] -> "\[SmallCircle]", TreeCases[SuperStar] -> "*", TreeCases[_Cycles] -> "T"},
 		TreeElementLabelFunction -> {TreeCases[_Diagram] -> Function[#["Graphics", diagramOptions, "PortArrows" -> Directive[Haloing[0], Arrowheads[0]], "PortLabels" -> None, ImageSize -> {20, 30}]]},
 		TreeElementStyle -> {TreeCases[_Diagram] -> EdgeForm[StandardBlue]}
 	]
