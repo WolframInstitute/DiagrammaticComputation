@@ -194,9 +194,9 @@ PortProp[p_, "HoldName"] := Replace[p["HoldExpression"], HoldForm[PortDual[x_] |
 
 PortProp[p_, "Name"] := Replace[p["HoldName"], HoldForm[Interpretation[HoldForm[x_] | x_, _] | x_] :> x]
 
-PortProp[p_, "TaggedName"] := Replace[HoldForm[Evaluate[Labeled[p["HoldName"], p["Tags"]]]], HoldForm[x_] :> x, Infinity, Heads -> True]
+PortProp[p_, "TaggedName"] := Replace[HoldForm[Evaluate[With[{name = p["HoldName"], tags = p["Tags"]}, If[tags === {}, name, Labeled[name, tags]]]]], HoldForm[x_] :> x, Infinity, Heads -> True]
 
-PortProp[p_, "TaggedFullName"] := Replace[HoldForm[Evaluate[Labeled[p["Apply", #["HoldName"] &], p["Tags"]]]], HoldForm[x_] :> x, Infinity, Heads -> True]
+PortProp[p_, "TaggedFullName"] := Replace[HoldForm[Evaluate[With[{name = p["Apply", #["HoldName"] &], tags = p["Tags"]}, If[tags === {}, name, Labeled[name, tags]]]]], HoldForm[x_] :> x, Infinity, Heads -> True]
 
 PortProp[p_, "Options"] := Normal[KeyDrop[p["Data"], "Expression"]]
 
