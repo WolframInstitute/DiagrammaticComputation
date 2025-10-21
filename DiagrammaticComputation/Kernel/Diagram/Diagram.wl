@@ -681,14 +681,18 @@ DiagramProp[d_, "Split", n : _Integer | Infinity | - Infinity : Infinity, dualQ 
     ]
 ]
 
-DiagramProp[d_, "Permute", perm_, dualQ : _ ? BooleanQ : True] := Enclose @ With[
+DiagramProp[d_, "Permute" | "PermuteOutput", perm_, dualQ : _ ? BooleanQ : True] := Enclose @ With[
     {ports = d["Ports"], ordering = ConfirmBy[PermutationList[perm, d["Arity"]], ListQ], dual = If[dualQ, PortDual, Identity]},
     {newPorts = TakeDrop[MapIndexed[If[Xor[#1 <= d["OutputArity"], #2[[1]] <= d["OutputArity"]], dual, Identity][ports[[#1]]] &, ordering], d["OutputArity"]]},
     Diagram[d,
         "OutputPorts" -> newPorts[[1]],
-        "InputPorts" -> newPorts[[2]]
+        "InputPorts" -> newPorts[[2]],
+        "PortArrows" -> Reverse @ TakeDrop[Catenate[Reverse @ d["PortStyles"]][[ordering]], d["OutputArity"]],
+        "PortLabels" -> Reverse @ TakeDrop[Catenate[Reverse @ d["PortLabels"]][[ordering]], d["OutputArity"]]
     ]
 ]
+
+DiagramProp[d_, "PermuteInput", perm_, dualQ : _ ? BooleanQ : True] := d["Permute", Join[Range[d["OutputArity"]], PermutationList[perm, d["InputArity"]] + d["OutputArity"]], dualQ]
 
 DiagramProp[d_, "View"] := With[{
     holdExpr = Replace[d["HoldExpression"],
