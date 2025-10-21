@@ -21,6 +21,7 @@ ToDiagramNetwork
 SingletonDiagram
 ZeroDiagram
 EmptyDiagram
+EmptyDiagramQ
 CapDiagram
 CupDiagram
 IdentityDiagram
@@ -372,18 +373,20 @@ ZeroDiagram[opts : OptionsPattern[]] := Diagram[
     "Outline" -> True
 ]
 
-EmptyDiagram[args___] := Diagram[
+EmptyDiagram[opts : OptionsPattern[]] := Diagram[
     None,
-    args,
     "ShowLabel" -> False,
     "Shape" -> None,
-    "PortArrows" -> None
+    "PortArrows" -> None,
+    opts
 ]
 
-CupDiagram[{x_, y_}, opts : OptionsPattern[]] := Diagram["\[DoubleStruckCapitalI]", {}, {x, y}, opts, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False]
+EmptyDiagramQ[d_Diagram ? DiagramQ] := d["Arity"] == 0 && MatchQ[d["HoldExpression"], HoldForm[None]] && d["OptionValue"["Shape"]] === None && ! TrueQ[d["OptionValue"["ShowLabel"]]]
+
+CupDiagram[{x_, y_}, opts : OptionsPattern[]] := Diagram["\[DoubleStruckCapitalI]", {}, {x, y}, opts, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False, "FloatingPorts" -> True]
 CupDiagram[x_, opts : OptionsPattern[]] := CupDiagram[{x, PortDual[x]}, opts]
 
-CapDiagram[{x_, y_}, opts : OptionsPattern[]] := Diagram["\[DoubleStruckCapitalI]", {x, y}, {}, opts, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False]
+CapDiagram[{x_, y_}, opts : OptionsPattern[]] := Diagram["\[DoubleStruckCapitalI]", {x, y}, {}, opts, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False, "FloatingPorts" -> True]
 CapDiagram[x_, opts : OptionsPattern[]] := CapDiagram[{x, PortDual[x]}, opts]
 
 
@@ -556,7 +559,7 @@ $DiagramHeadPattern = Diagram | DiagramDual | DiagramFlip | DiagramReverse | Dia
 
 DiagramProp[d_, "NodeQ"] := ! MatchQ[d["Head"], $DiagramHeadPattern]
 
-DiagramProp[d_, "SingletonNodeQ"] := d["NodeQ"] || MatchQ[d["Head"], Diagram]
+DiagramProp[d_, "SingletonNodeQ"] := d["NodeQ"] || MatchQ[d["Head"], Diagram | DiagramDual | DiagramFlip | DiagramReverse]
 
 DiagramProp[d_, "Node"] := Replace[d["HoldExpression"], {HoldForm[Evaluate @ $DiagramHeadPattern[diag_Diagram]] :> diag["Node"], _ :> d}]
 
@@ -1058,6 +1061,7 @@ DiagramsPortGraph[diagrams : {___Diagram ? DiagramQ}, opts : OptionsPattern[]] :
 
 DiagramGraphSimplify[g_ ? GraphQ] := Fold[
     {net, v} |-> Block[{d = AnnotationValue[{net, v}, "Diagram"], wires, out, in, ports, dPorts, portWires, portFunction},
+        If[EmptyDiagramQ[d], Return[VertexDelete[net, v], Block]];
         (wires = If[MatchQ[#, "Wires"[_]], First[#], {}]) & @ d["OptionValue"["Shape"]];
         (* portFunction = d["PortFunction"]; *)
         If[wires === {}, Return[net, Block]];

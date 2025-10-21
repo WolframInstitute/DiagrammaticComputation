@@ -23,20 +23,35 @@ Begin["Wolfram`DiagrammaticComputation`Diagram`Grid`Private`"];
 
 {$Black, $White} = If[$VersionNumber >= 14.3, {LightDarkSwitched[Black, White], LightDarkSwitched[White, Black]}, {Black, White}]
 
-(* compose vertically preserving grid structure *)
 
+(* compose vertically preserving grid structure *)
 
 identityDiagrams[ports_, styles_] := Splice @ MapThread[IdentityDiagram[#1, "PortArrows" -> {#2}] &, {ports, styles}]
 
-permuteRow[row : {__Diagram}, rowPorts_List, ports_List, func_ : Identity] := If[Length[rowPorts] > 9, row,
-    Replace[
-        ResourceFunction["PositionLargestBy"][Permutations @ rowPorts, - DamerauLevenshteinDistance[Catenate[#], ports] &, 1],
-        {
-            {i : Except[1]} :> (
-                func @ Permute[row, InversePermutation @ ResourceFunction["PermutationFromIndex"][i, Length[row]]]
-            ),
-            _ -> row
-        }
+permuteRow[a_Diagram, aPorts_List, bPorts_List, i : 1 | -1 : 1] :=
+    Which[
+        a["Head"] === DiagramProduct,
+        With[{row = a["SubDiagrams"]}, {len = Length[row], arities = Through[row[Switch[i, 1, "OutputArity", -1, "InputArity"]]]},
+            Replace[permuteRow[row, TakeList[aPorts, arities], bPorts, i],
+                {permutedQ_, newRow_, perm_} :> {permutedQ || perm =!= Cycles[{}], If[! permutedQ, a, DiagramProduct[newRow, a["DiagramOptions"]]["FlattenOutputs"]], perm}
+            ]
+        ],
+        a["Head"] === DiagramComposition && a["SubDiagrams"][[i]]["Head"] === DiagramProduct,
+        With[{d = a["SubDiagrams"][[i]]}, {row = d["SubDiagrams"]}, {len = Length[row], arities = Through[row[Switch[i, 1, "OutputArity", -1, "InputArity"]]]},
+            Replace[permuteRow[row, TakeList[aPorts, arities], bPorts, i],
+                {permutedQ_, newRow_, perm_} :> {permutedQ || perm =!= Cycles[{}], If[! permutedQ, a, DiagramComposition[ReplacePart[a["SubDiagrams"], i -> DiagramProduct[newRow, d["DiagramOptions"]]["FlattenOutputs"]], a["DiagramOptions"]]], perm}
+            ]
+        ],
+        True,
+        {False, a, Cycles[{}]}
+    ]
+
+permuteRow[row : {__Diagram}, rowPorts_List, ports_List, i : 1 | -1 : 1] := With[{
+    permuted = Thread @ MapThread[Replace[permuteRow[##, i], {_, r_, perm_} :> {r, Permute[#2, perm], perm}] &, {row, rowPorts, TakeList[ports, Length /@ rowPorts]}]
+},
+    If[ Length[rowPorts] > 9,
+        {permuted[[3]] =!= Cycles[{}], permuted[[1]], Cycles[{}]},
+        With[{perm = FindPermutation[permuted[[2]], First @ MaximalBy[Permutations @ permuted[[2]], - DamerauLevenshteinDistance[Catenate[#], ports] &]]}, {True, Permute[permuted[[1]], perm], perm}]
     ]
 ]
 
@@ -70,6 +85,76 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
         bs = Pick[bs, pb];
         bPorts = func /@ bs;
     );
+    floatPorts[] := (
+        Block[{row, ports, xs, d = None},
+            row = Which[
+                MatchQ[a["Head"], None | DiagramProduct],
+                    a["SubDiagrams", 1],
+                a["Head"] === DiagramComposition && MatchQ[a["SubDiagrams"][[1]]["Head"], None | DiagramProduct],
+                    d = a["SubDiagrams"][[1]];
+                    d["SubDiagrams", 1],
+                a["SingletonNodeQ"],
+                    {a},
+                True,
+                    {}
+            ];
+            If[Length[row] == 0, Return[Null, Block]];
+            ports = Through[row["OutputPorts"]];
+            xs = TakeList[aPorts, Length /@ ports];
+            row = MapThread[
+                Diagram[#1, Inherited, Permute[#4, FindPermutation[#2, #3]], #1["DiagramOptions"]] &,
+                {   row,
+                    xs,
+                    First @ MaximalBy[
+                        Tuples[MapThread[If[MatchQ[#1, True | {_, True}], Permutations[#2], {#2}] &, {Through[row["OptionValue"["FloatingPorts"]]], xs}]],
+                        - DamerauLevenshteinDistance[Catenate[#], bPorts] &,
+                        1
+                    ],
+                    ports
+                }
+            ];
+            If[ d === None,
+                a = DiagramProduct[##, a["DiagramOptions"]]["FlattenOutputs"] & @@ row,
+                a = DiagramComposition[##, "ColumnPorts" -> False, a["DiagramOptions"]] & @@ ReplacePart[a["SubDiagrams"], 1 -> DiagramProduct[##, d["DiagramOptions"]]["FlattenOutputs"] & @@ row]
+            ];
+
+            resetPortsA[]
+        ];
+        Block[{row, ports, xs, d = None},
+            row = Which[
+                MatchQ[b["Head"], None | DiagramProduct],
+                    b["SubDiagrams", 1],
+                b["Head"] === DiagramComposition && MatchQ[b["SubDiagrams"][[-1]]["Head"], None | DiagramProduct],
+                    d = b["SubDiagrams"][[-1]];
+                    d["SubDiagrams", 1],
+                b["SingletonNodeQ"],
+                    {b},
+                True,
+                    {}
+            ];
+            If[Length[row] == 0, Return[Null, Block]];
+            ports = Through[row["InputPorts"]];
+            xs = TakeList[bPorts, Length /@ ports];
+            row = MapThread[
+                Diagram[#1, PortDual /@ Permute[#4, FindPermutation[#2, #3]], Inherited, #1["DiagramOptions"]] &,
+                {   row,
+                    xs,
+                    First @ MaximalBy[
+                        Tuples[MapThread[If[MatchQ[#1, True | {True, _}], Permutations[#2], {#2}] &, {Through[row["OptionValue"["FloatingPorts"]]], xs}]],
+                        - DamerauLevenshteinDistance[aPorts, Catenate[#]] &,
+                        1
+                    ],
+                    ports
+                }
+            ];
+            If[ d === None,
+                b = DiagramProduct[##, b["DiagramOptions"]]["FlattenInputs"] & @@ row,
+                b = DiagramComposition[##, "ColumnPorts" -> False, b["DiagramOptions"]] & @@ ReplacePart[b["SubDiagrams"], -1 -> DiagramProduct[##, d["DiagramOptions"]]["FlattenInputs"] & @@ row]
+            ];
+
+            resetPortsB[]
+        ];
+    );
 
     resetPortsA[];
     resetPortsB[];
@@ -89,138 +174,45 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
         ]]
     ];
 
+    floatPorts[];
+
     aStyles = Pick[aStyles[[2]], pa];
     bStyles = Pick[bStyles[[1]], pb];
-
+    
     Replace[SequenceAlignment[Reverse[aPorts], Reverse[bPorts], Method -> "Local"], {
         {left : {l_, {}} | {{}, l_} : {}, {__}, right : {r_, {}} | {{}, r_} : {}} /; ! ({l} =!= {} && {r} =!= {} && IntersectingQ[l, r]) :> (
             Which[
                 MatchQ[left, {_, {}}],
-                    b = RowDiagram[permuteRow[{b, identityDiagrams[Take[as, - Length[l]], Take[aStyles, - Length[l]]]}, Join[{bPorts}, List /@ Take[aPorts, - Length[l]]], aPorts]]["Flatten", 1];
+                    b = RowDiagram[permuteRow[{b, identityDiagrams[Take[as, - Length[l]], Take[aStyles, - Length[l]]]}, Join[{bPorts}, List /@ Take[aPorts, - Length[l]]], aPorts][[2]]]["Flatten", 1];
                     resetPortsB[]
                 ,
                 MatchQ[left, {{}, _}],
-                    a = RowDiagram[permuteRow[{a, identityDiagrams[Take[bs, - Length[l]], Take[bStyles, - Length[l]]]}, Join[{aPorts}, List /@ Take[bPorts, - Length[l]]], bPorts]]["Flatten", 1];
+                    a = RowDiagram[permuteRow[{a, identityDiagrams[Take[bs, - Length[l]], Take[bStyles, - Length[l]]]}, Join[{aPorts}, List /@ Take[bPorts, - Length[l]]], bPorts][[2]]]["Flatten", 1];
                     resetPortsA[]
             ];
             Which[
                 MatchQ[right, {_, {}}],
-                    b = RowDiagram[permuteRow[{identityDiagrams[Take[as, Length[r]], Take[aStyles, Length[r]]], b}, Join[List /@ Take[aPorts, Length[r]], {bPorts}], aPorts]]["Flatten", 1];
+                    b = RowDiagram[permuteRow[{identityDiagrams[Take[as, Length[r]], Take[aStyles, Length[r]]], b}, Join[List /@ Take[aPorts, Length[r]], {bPorts}], aPorts][[2]]]["Flatten", 1];
                     resetPortsB[],
                 MatchQ[right, {{}, _}],
-                    a = RowDiagram[permuteRow[{identityDiagrams[Take[bs, Length[r]], Take[bStyles, Length[r]]], a}, Join[List /@ Take[bPorts, Length[r]], {aPorts}], bPorts]]["Flatten", 1];
+                    a = RowDiagram[permuteRow[{identityDiagrams[Take[bs, Length[r]], Take[bStyles, Length[r]]], a}, Join[List /@ Take[bPorts, Length[r]], {aPorts}], bPorts][[2]]]["Flatten", 1];
                     resetPortsA[]
             ]
         ),
         _ :> With[{inPos = FirstPositions[bPorts, aPorts], outPos = FirstPositions[aPorts, bPorts]}, {ins = Delete[bs, inPos], outs = Delete[as, outPos]},
-            If[ins =!= {}, a = RowDiagram[permuteRow[{identityDiagrams[ins, Delete[bStyles, inPos]], a}, Join[List /@ Delete[bPorts, inPos], {aPorts}], bPorts]]["Flatten", 1]; resetPortsA[]];
-            If[outs =!= {}, b = RowDiagram[permuteRow[{identityDiagrams[outs, Delete[aStyles, outPos]], b}, Join[List /@ Delete[aPorts, outPos], {bPorts}], aPorts]]["Flatten", 1]; resetPortsB[]]
+            If[ins =!= {}, a = RowDiagram[permuteRow[{identityDiagrams[ins, Delete[bStyles, inPos]], a}, Join[List /@ Delete[bPorts, inPos], {aPorts}], bPorts][[2]]]["Flatten", 1]; resetPortsA[]];
+            If[outs =!= {}, b = RowDiagram[permuteRow[{identityDiagrams[outs, Delete[aStyles, outPos]], b}, Join[List /@ Delete[aPorts, outPos], {bPorts}], aPorts][[2]]]["Flatten", 1]; resetPortsB[]]
         ]
     }
     ];
     
     If[ TrueQ[OptionValue["RowSort"]],
-        Which[
-            a["Head"] === DiagramProduct,
-            With[{row = a["SubDiagrams"]}, {len = Length[row], arities = Through[row["OutputArity"]]},
-                permuteRow[row, TakeList[aPorts, arities], bPorts, Apply[Function[a = DiagramProduct[##, a["DiagramOptions"]]["FlattenOutputs"]; resetPortsA[]]]]
-            ],
-            a["Head"] === DiagramComposition && a["SubDiagrams"][[1]]["Head"] === DiagramProduct,
-            With[{d = a["SubDiagrams"][[1]]}, {row = d["SubDiagrams"]}, {len = Length[row], arities = Through[row["OutputArity"]]},
-                permuteRow[row, TakeList[aPorts, arities], bPorts, Apply[Function[
-                    a = ColumnDiagram[Reverse[ReplacePart[a["SubDiagrams"], 1 -> DiagramProduct[##, d["DiagramOptions"]]["FlattenOutputs"]]], opts, a["DiagramOptions"]];
-                    resetPortsA[]]]
-                ]
-            ]
-        ]
+        Replace[permuteRow[a, aPorts, bPorts, 1], {True, newA_, _} :> (a = newA; resetPortsA[])];
+        Replace[permuteRow[b, bPorts, aPorts, -1], {True, newB_, _} :> (b = newB; resetPortsB[])]
     ];
 
-    If[ TrueQ[OptionValue["RowSort"]],
-        Which[
-            b["Head"] === DiagramProduct,
-            With[{row = b["SubDiagrams"]}, {len = Length[row], arities = Through[row["InputArity"]]},
-                permuteRow[row, TakeList[bPorts, arities], aPorts, Apply[Function[b = DiagramProduct[##, b["DiagramOptions"]]["FlattenInputs"]; resetPortsB[]]]]
-                
-            ],
-            b["Head"] === DiagramComposition && b["SubDiagrams"][[-1]]["Head"] === DiagramProduct,
-            With[{d = b["SubDiagrams"][[-1]]}, {row = d["SubDiagrams"]}, {len = Length[row], arities = Through[row["InputArity"]]},
-                permuteRow[row, TakeList[bPorts, arities], aPorts, Apply[Function[
-                    b = ColumnDiagram[Reverse[ReplacePart[b["SubDiagrams"], -1 -> DiagramProduct[##, d["DiagramOptions"]]["FlattenInputs"]]], opts, b["DiagramOptions"]];
-                    resetPortsB[]]]
-                ]
-            ]
-        ]
-    ];
-    
-    Block[{row, ports, xs, d = None},
-        row = Which[
-            MatchQ[a["Head"], None | DiagramProduct],
-                a["SubDiagrams", 1],
-            a["Head"] === DiagramComposition && MatchQ[a["SubDiagrams"][[1]]["Head"], None | DiagramProduct],
-                d = a["SubDiagrams"][[1]];
-                d["SubDiagrams", 1],
-            a["SingletonNodeQ"],
-                {a},
-            True,
-                {}
-        ];
-        If[Length[row] == 0, Return[Null, Block]];
-        ports = Through[row["OutputPorts"]];
-        xs = TakeList[aPorts, Length /@ ports];
-        row = MapThread[
-            Diagram[#1, Inherited, Permute[#4, FindPermutation[#2, #3]], #1["DiagramOptions"]] &,
-            {   row,
-                xs,
-                First @ MaximalBy[
-                    Tuples[MapThread[If[MatchQ[#1, True | {_, True}], Permutations[#2], {#2}] &, {Through[row["OptionValue"["FloatingPorts"]]], xs}]],
-                    - DamerauLevenshteinDistance[Catenate[#], bPorts] &,
-                    1
-                ],
-                ports
-            }
-        ];
-        If[ d === None,
-            a = DiagramProduct[##, a["DiagramOptions"]]["FlattenOutputs"] & @@ row,
-            a = DiagramComposition[##, "ColumnPorts" -> False, a["DiagramOptions"]] & @@ ReplacePart[a["SubDiagrams"], 1 -> DiagramProduct[##, d["DiagramOptions"]]["FlattenOutputs"] & @@ row]
-        ];
-
-        resetPortsA[]
-    ];
-    Block[{row, ports, xs, d = None},
-        row = Which[
-            MatchQ[b["Head"], None | DiagramProduct],
-                b["SubDiagrams", 1],
-            b["Head"] === DiagramComposition && MatchQ[b["SubDiagrams"][[-1]]["Head"], None | DiagramProduct],
-                d = b["SubDiagrams"][[-1]];
-                d["SubDiagrams", 1],
-            b["SingletonNodeQ"],
-                {b},
-            True,
-                {}
-        ];
-        If[Length[row] == 0, Return[Null, Block]];
-        ports = Through[row["InputPorts"]];
-        xs = TakeList[bPorts, Length /@ ports];
-        row = MapThread[
-            Diagram[#1, PortDual /@ Permute[#4, FindPermutation[#2, #3]], Inherited, #1["DiagramOptions"]] &,
-            {   row,
-                xs,
-                First @ MaximalBy[
-                    Tuples[MapThread[If[MatchQ[#1, True | {True, _}], Permutations[#2], {#2}] &, {Through[row["OptionValue"["FloatingPorts"]]], xs}]],
-                    - DamerauLevenshteinDistance[aPorts, Catenate[#]] &,
-                    1
-                ],
-                ports
-            }
-        ];
-        If[ d === None,
-            b = DiagramProduct[##, b["DiagramOptions"]]["FlattenInputs"] & @@ row,
-            b = DiagramComposition[##, "ColumnPorts" -> False, b["DiagramOptions"]] & @@ ReplacePart[b["SubDiagrams"], -1 -> DiagramProduct[##, d["DiagramOptions"]]["FlattenInputs"] & @@ row]
-        ];
-
-        resetPortsB[]
-    ];
-    
+    floatPorts[];
+   
     aStyles = a["PortStyles"];
     bStyles = b["PortStyles"];
 	Which[

@@ -244,8 +244,8 @@ PortProp[p_, "PowerQ"] := MatchQ[p["HoldExpression"], HoldForm[_PortPower]]
 
 PortProp[p_, "PortTree" | "Decompose"] :=
     Replace[p["HoldExpression"], {
-        HoldForm[PortDual[q_]] :> SuperStar[Port[Unevaluated[q], "NeutralQ" -> p["NeutralQ"]]["PortTree"]],
-        HoldForm[PortMinus[q_]] :> OverBar[Port[Unevaluated[q], "NeutralQ" -> p["NeutralQ"]]["PortTree"]],
+        HoldForm[PortDual[q_]] :> SuperStar[Port[Unevaluated[q], "NeutralQ" -> p["NeutralQ"], "Tags" -> p["Tags"]]["PortTree"]],
+        HoldForm[PortMinus[q_]] :> OverBar[Port[Unevaluated[q], "NeutralQ" -> p["NeutralQ"], "Tags" -> p["Tags"]]["PortTree"]],
         HoldForm[PortProduct[ps___]] :> CircleTimes @@ Through[{ps}["PortTree"]],
         HoldForm[PortSum[ps___]] :> CirclePlus @@ Through[{ps}["PortTree"]],
         HoldForm[PortPower[x_, y_]] :> Superscript[x["PortTree"], y["PortTree"]],
