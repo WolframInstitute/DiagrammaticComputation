@@ -17,7 +17,13 @@ Begin["`Private`"]
 
 Options[DiagramHypergraph] = Options[Hypergraph]
 
-DiagramHyperedge[d_Diagram, f_] := Annotation[f /@ Catenate @ d["InputOutputPorts", True], EdgeLabels -> Underoverscript[d["Label"], d["OutputArity"], d["InputArity"]]]
+
+patternLabelArities[d_Diagram] := Total /@Replace[d["PortLabels"], {_BlankSequence | _BlankNullSequence | Verbatim[Pattern][_, _BlankSequence | _BlankNullSequence] -> Infinity, _ -> 1}, {2}]
+
+DiagramHyperedge[d_Diagram, f_] := Annotation[
+	f /@ Catenate @ d["InputOutputPorts", True],
+	EdgeLabels -> (Underoverscript[d["Label"], ##] & @@ (Replace[patternLabelArities[d], Infinity -> _, 1]))
+	]
 
 DiagramHypergraph[ds : {___Diagram}, f_, vs_List, opts : OptionsPattern[]] := Enclose @ ConfirmBy[Hypergraph[vs, DiagramHyperedge[#, f] & /@ ds, "EdgeSymmetry" -> "Ordered", opts], HypergraphQ]
 
@@ -54,13 +60,10 @@ MatchDiagrams[diagrams : {___Diagram}, match : KeyValuePattern[{"Hypergraph" -> 
 				"Expression" -> Replace[#3, Underoverscript[x_, ___] :> x],
 				Thread[
 					{"InputPorts", "OutputPorts"} ->
-					TakeDrop[
 						MapThread[
-							If[#1["DualQ"], PortDual, Port][#2] &,
-							{Catenate @ #1["InputOutputPorts", False], #2}
-						],
-						#1["InputArity"]
-					]
+							MapThread[If[#1, PortDual, Port][#2] &, {PadRight[#1, Length[#2], #1], #2}] &,
+							{Map[#["DualQ"] &, #1["InputOutputPorts", False], {2}], Replace[patternLabelArities[#1], {{Infinity, i_Integer} :> Reverse[TakeDrop[#2, -i]], {i_Integer, _} :> TakeDrop[#2, i]}]}
+						]
 				]
 			] &,
 			{diagrams, newEdges, Replace[newEdges, OptionValue[hg, EdgeLabels], 1]}

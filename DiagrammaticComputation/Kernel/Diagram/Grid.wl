@@ -42,7 +42,7 @@ permuteRow[a_Diagram, aPorts_List, bPorts_List, i : 1 | -1, rowSortQ : _ ? Boole
             ],
         a["Head"] === DiagramComposition,
             With[{as = a["SubDiagrams"], f = a["PortFunction"], opts = FilterRules[a["DiagramOptions"], Except["PortArrows" | "PortLabels"]]},
-                With[{changedQ = Or @@ #[[All, 1]]}, {changedQ, If[changedQ, Switch[i, 1, DiagramComposition, -1, DiagramRightComposition][#[[All, 2]], opts], a], #[[1, 3]]}] & @ FoldPairList[
+                With[{changedQ = Or @@ #[[All, 1]]}, {changedQ, If[changedQ, ColumnDiagram[Switch[i, 1, Reverse[#[[All, 2]]], -1, #[[All, 2]]], opts], a], #[[1, 3]]}] & @ FoldPairList[
                     With[{new = permuteRow[#2, f /@ Switch[i, 1, #2["OutputPorts"], -1, PortDual /@ #2["InputPorts"]], #1, i, rowSortQ]},
                         {
                             new,
@@ -78,7 +78,7 @@ permuteRow[a_Diagram, aPorts_List, bPorts_List, i : 1 | -1, rowSortQ : _ ? Boole
 permuteRow[row : {__Diagram}, rowPorts_List, ports_List, i : 1 | -1, rowSortQ : _ ? BooleanQ : False] :=
     If[ ! rowSortQ || Length[rowPorts] > 9,
         {Or @@ #1, #2, Catenate[#3]} & @@ Thread @ MapThread[permuteRow[##, i, rowSortQ] &, {row, rowPorts, TakeList[ports, Length /@ rowPorts]}],
-        With[{perm = FindPermutation[rowPorts, First @ MaximalBy[Permutations @ rowPorts, - DamerauLevenshteinDistance[Catenate[#], ports] &]]},
+        With[{perm = FindPermutation[rowPorts, First @ MaximalBy[Permutations @ rowPorts, - DamerauLevenshteinDistance[Catenate[#], ports] &, 1]]},
             {perm =!= Cycles[{}] || Or @@ #1, #2, Catenate[#3]} & @@ Thread @ MapThread[permuteRow[##, i, rowSortQ] &, {Permute[row, perm], Permute[rowPorts, perm], TakeList[ports, Length /@ Permute[rowPorts, perm]]}]
         ]
     ]
