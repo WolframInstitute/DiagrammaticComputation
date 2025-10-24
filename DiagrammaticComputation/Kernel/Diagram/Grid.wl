@@ -325,7 +325,7 @@ matchPorts[HoldPattern[Transpose[d_, perm_ : None]], {outputPorts_, inputPorts_}
 DiagramMatchPorts[d_Diagram, ports_] := Diagram[Diagram[matchPorts[DiagramDecompose[d], ports]], "DiagramOptions" -> d["DiagramOptions"]]
 
 
-assignPorts[diagram_Diagram, ports : {inputPorts_, outputPorts_}] := With[{args = Sequence[
+assignPorts[diagram_Diagram, ports : {inputPorts_, outputPorts_}] := Enclose @ With[{args = Sequence[
     If[inheritedQ[inputPorts], Inherited, MapThread[If[inheritedQ[#2], PortDual[#1], #2] &, {diagram["FlatInputPorts"], PadRight[inputPorts, diagram["FlatInputArity"], Inherited]}]],
     If[inheritedQ[outputPorts], Inherited, MapThread[If[inheritedQ[#2], #1, #2] &, {diagram["FlatOutputPorts"], PadRight[outputPorts, diagram["FlatOutputArity"], Inherited]}]],
     diagram["DiagramOptions"]
@@ -358,7 +358,24 @@ Replace[diagram["HoldExpression"], {
 	],
 	HoldForm[DiagramProduct[ds___]] :> ({Diagram[(DiagramProduct @@ #[[1]])["Flatten"], args], #[[2]]} & @ Fold[{state, d} |-> MapAt[Append[state[[1]], #] &, assignPorts[d, state[[2]]], {1}], {{}, ports}, {ds}]),
 	HoldForm[DiagramSum[ds___]] :> ({Diagram[DiagramSum @@ #[[All, 1]], args], {Intersection @@ #[[2, All, 1]], Intersection @@ #[[2, All, 2]]}} & @ (assignPorts[#, ports] & /@ {ds})),
-    (* HoldForm[DiagramNetwork[ds___]] :> ({Diagram[DiagramNetwork @@ #[[1]], args], #[[2]]} & @ Fold[{state, d} |-> MapAt[Append[state[[1]], #] &, assignPorts[d, state[[2]]], {1}], {{}, ports}, {ds}]), *)
+    HoldForm[DiagramNetwork[ds___]] :> Block[{f = diagram["PortFunction"], inputs, outputs, in, out, rules},
+        {inputs, outputs} = diagram["InputOutputPorts"];
+        {in, out} = {
+			If[inheritedQ[inputPorts], inputs, Take[inputPorts, UpTo[Length[inputs]]]],
+			If[inheritedQ[outputPorts], outputs, Take[outputPorts, UpTo[Length[outputs]]]]
+		};
+        rules = Association[
+            Thread[Take[f /@ PortDual /@ inputs, UpTo[Length[in]]] -> Take[in, UpTo[Length[inputs]]]],
+            Thread[Take[f /@ Port /@ outputs, UpTo[Length[out]]] -> Take[out, UpTo[Length[outputs]]]]
+        ];
+        {
+            Diagram[DiagramNetwork[Diagram[#, Replace[f /@ PortDual /@ #["InputPorts"], rules, 1], Replace[f /@ #["OutputPorts"], rules, 1]] & /@ {ds}], args],
+            {
+                Drop[in, UpTo[Length[inputs]]],
+                Drop[out, UpTo[Length[outputs]]]
+            }
+        }
+    ],
 	_ :> {
 		Diagram[diagram, args]
 		,
@@ -370,7 +387,11 @@ Replace[diagram["HoldExpression"], {
 }]
 ]
 
-DiagramAssignPorts[d_Diagram, ports_] := First @ assignPorts[d, ports]
+DiagramAssignPorts[d_Diagram, in_, out_] := DiagramAssignPorts[d, {in, out}]
+
+DiagramAssignPorts[d_Diagram, in_ -> out_] := DiagramAssignPorts[d, {in, out}]
+
+DiagramAssignPorts[d_Diagram, ports_] := Enclose @ First @ Confirm @ assignPorts[d, ports]
 
 DiagramAssignPorts[d_Diagram] := DiagramAssignPorts[d, {PortDual /@ d["InputPorts"], d["OutputPorts"]}]
 
@@ -643,7 +664,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
             All | Automatic,
             With[{subDiagrams = #[[1]] -> Diagram[#[[2]],
                     "LabelFunction" -> ("" &),
-                    "PortLabels" -> {Placed[Automatic, {0, 0}]},
+                    "PortLabels" -> {Placed[Inherited, {0, 0}]},
                     "PortArrowFunction" -> (Nothing &),
                     "Width" -> Min[1, 0.95 ^ (Length[#[[1]]] / 2)] #[[2]]["OptionValue"["Width"]],
                     "Height" -> If[#[[1]] === {}, 1.1, Min[1, 0.85 ^ (Length[#[[1]]] / 2)]] #[[2]]["OptionValue"["Height"]],

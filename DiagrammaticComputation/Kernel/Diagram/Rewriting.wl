@@ -11,6 +11,11 @@ DiagramHypergraph
 
 DiagramReplaceList
 
+DiagramExpressionReplace
+
+RemoveDiagramRule
+DiagramRule
+
 
 Begin["`Private`"]
 
@@ -18,38 +23,32 @@ Begin["`Private`"]
 Options[DiagramHypergraph] = Options[Hypergraph]
 
 
-patternLabelArities[d_Diagram] := Total /@Replace[d["PortLabels"], {_BlankSequence | _BlankNullSequence | Verbatim[Pattern][_, _BlankSequence | _BlankNullSequence] -> Infinity, _ -> 1}, {2}]
+patternLabelArities[d_Diagram] := Total /@ Replace[d["PortLabels"], {_BlankSequence | _BlankNullSequence | Verbatim[Pattern][_, _BlankSequence | _BlankNullSequence] -> Infinity, _ -> 1}, {2}]
 
 DiagramHyperedge[d_Diagram, f_] := Annotation[
 	f /@ Catenate @ d["InputOutputPorts", True],
 	EdgeLabels -> (Underoverscript[d["Label"], ##] & @@ (Replace[patternLabelArities[d], Infinity -> _, 1]))
-	]
+]
+
+labeledVertices[d_Diagram] := With[{f = d["PortFunction"]},
+	Catenate[MapThread[
+		Labeled[#1, Replace[#2, {Automatic :> (Replace[#1, HoldForm[Labeled[l_, __]] :> HoldForm[l]]), False -> None}]] &,
+		{f /@ Catenate @ #["InputOutputPorts", True], Catenate @ #["PortLabels"]}
+	] & /@ DiagramSubdiagrams[d, {1}]]
+]
 
 DiagramHypergraph[ds : {___Diagram}, f_, vs_List, opts : OptionsPattern[]] := Enclose @ ConfirmBy[Hypergraph[vs, DiagramHyperedge[#, f] & /@ ds, "EdgeSymmetry" -> "Ordered", opts], HypergraphQ]
 
 DiagramHypergraph[d_Diagram, opts : OptionsPattern[]] := With[{net = SimplifyDiagram[ToDiagramNetwork[d]]}, {f = net["PortFunction"]},
-	DiagramHypergraph[DiagramSubdiagrams[net, {1}], f, MapThread[Labeled[#1, Replace[#2, {Automatic -> #1, False -> None}]] &, {f /@ net["Ports", True], Catenate @ d["PortLabels"]}], opts]
+	DiagramHypergraph[
+		DiagramSubdiagrams[net, {1}],
+		f,
+		labeledVertices[net],
+		opts
+	]
 ]
 
-
-ConformVertices[h1_Hypergraph, h2_Hypergraph] := Block[{vs1 = VertexList[h1], vs2 = VertexList[h2], targetEdges, targetLabels, vertexRules},
-	targetEdges = EdgeList[h1];
-	targetLabels = Values @ AnnotationValue[h1, EdgeLabels];
-	vertexRules = Catenate @ MapThread[
-		Catch[Thread[Extract[targetEdges, FirstPosition[targetLabels, #2, Throw[Nothing]]] -> (#1 /. Verbatim[Pattern][sym_Symbol, _] :> sym)]] &,
-		{EdgeList[h2], Values @ AnnotationValue[h2, EdgeLabels]}
-	];
-	(* vertexRules = Join[Catch[# -> FirstCase[vs2, Replace[#, HoldForm[Labeled[p_, __]] :> HoldForm[Labeled[p, __]]], Throw[Nothing]]] & /@ vs1, vertexRules]; *)
-	VertexReplace[h1, Join[vertexRules, Thread[Take[vs1, UpTo[Length[vs2]]] -> Take[vs2, UpTo[Length[vs1]]]], vertexRules]]
-]
-
-
-DiagramHypergraphRule[d1_Diagram, d2_Diagram] := With[{h1 = DiagramHypergraph[d1], h2 = DiagramHypergraph[d2]},
-	HypergraphRule[h1, ConformVertices[h2, h1]]
-]
-
-
-MatchDiagrams[diagrams : {___Diagram}, match : KeyValuePattern[{"Hypergraph" -> hg_Hypergraph, "NewEdges" -> newEdges_}]] :=
+MatchDiagrams[diagrams : {___Diagram}, match : KeyValuePattern[{"Hypergraph" -> hg_Hypergraph, "NewEdges" -> newEdges_, "Bindings" -> bindings_}]] :=
 	If[
 		EdgeCount[hg] == 0
 		,
@@ -64,7 +63,8 @@ MatchDiagrams[diagrams : {___Diagram}, match : KeyValuePattern[{"Hypergraph" -> 
 							MapThread[If[#1, PortDual, Port][#2] &, {PadRight[#1, Length[#2], #1], #2}] &,
 							{Map[#["DualQ"] &, #1["InputOutputPorts", False], {2}], Replace[patternLabelArities[#1], {{Infinity, i_Integer} :> Reverse[TakeDrop[#2, -i]], {i_Integer, _} :> TakeDrop[#2, i]}]}
 						]
-				]
+				],
+				"PortLabels" -> (#1["PortLabels"] /. bindings)
 			] &,
 			{diagrams, newEdges, Replace[newEdges, OptionValue[hg, EdgeLabels], 1]}
 		]
@@ -80,17 +80,17 @@ DiagramReplaceList[d_Diagram, src_Diagram -> tgt_Diagram, opts : OptionsPattern[
 	return = OptionValue["Return"],
 	diagramOptions = FilterRules[{opts}, Options[Diagram]]
 },
+	srcHg = ConfirmBy[DiagramHypergraph[src], HypergraphQ];
+	tgtNet = ConfirmBy[SimplifyDiagram @ ToDiagramNetwork @ tgt, DiagramQ];
+	tgtDiagrams = DiagramSubdiagrams[tgtNet, {1}];
+	tgtHg = ConfirmBy[With[{f = tgtNet["PortFunction"]}, DiagramHypergraph[tgtDiagrams, f, labeledVertices[tgtNet]]], HypergraphQ];
+	rule = ConfirmBy[HypergraphRule[srcHg, tgtHg], HypergraphRuleQ];
+	If[return === "Rule", Return[rule]];
 	net = ConfirmBy[SimplifyDiagram @ ToDiagramNetwork[d], DiagramQ];
 	diagrams = DiagramSubdiagrams[net, {1}];
 	hg = ConfirmBy[With[{f = net["PortFunction"]}, DiagramHypergraph[diagrams, f, f /@ net["Ports", True]]], HypergraphQ];
 	If[return === "Hypergraph", Return[hg]];
-	srcHg = ConfirmBy[DiagramHypergraph[src], HypergraphQ];
-	tgtNet = ConfirmBy[SimplifyDiagram @ ToDiagramNetwork @ tgt, DiagramQ];
-	tgtDiagrams = DiagramSubdiagrams[tgtNet, {1}];
-	tgtHg = ConfirmBy[With[{f = tgtNet["PortFunction"]}, DiagramHypergraph[tgtDiagrams, f, f /@ tgtNet["Ports", True]]], HypergraphQ];
-	rule = ConfirmBy[HypergraphRule[srcHg, ConformVertices[tgtHg, srcHg]], HypergraphRuleQ];
-	If[return === "Rule", Return[rule]];
-	matches = ConfirmMatch[rule[hg], {___ ? AssociationQ}];
+	matches = ConfirmMatch[rule[hg, "DistinctVertexLabels" -> False, "DistinctEdgeLabels" -> False], {___ ? AssociationQ}];
 	If[return === "Matches", Return[matches]];
 	nets = Map[
 		With[{
@@ -105,6 +105,45 @@ DiagramReplaceList[d_Diagram, src_Diagram -> tgt_Diagram, opts : OptionsPattern[
 ]
 
 DiagramReplaceList[d_Diagram, rules : {__Rule}, opts : OptionsPattern[]] := Fold[{ds, rule} |-> Catenate[DiagramReplaceList[#, rule, opts] & /@ ds], {d}, rules]
+
+
+DiagramExpressionReplace[d_Diagram, rules_] :=
+	DiagramMap[
+		Diagram[#, "Expression" -> (#["Expression"] /. rules)] &,
+		d
+	]
+
+
+RemoveDiagramRule[d_Diagram] :=
+	DiagramRule[d,
+		SingletonDiagram[
+			EmptyDiagram[], ##,
+			FilterRules[AbsoluteOptions[d], {"PortArrows", "PortLabels", "FloatingPorts"}]
+		] & @@ d["InputOutputPorts", True]
+	]
+
+
+DiagramRule[src_Diagram, tgt_Diagram] := Block[{
+	srcInPorts = PortDual /@ src["InputPorts"],
+	srcOutPorts = src["OutputPorts"],
+	tgtInPorts = PortDual /@ tgt["InputPorts"],
+	tgtOutPorts = tgt["OutputPorts"],
+	labels
+},
+	labels = Symbol["\[FormalP]" <> ToString[#]] & /@
+		Range[Max[Length[srcInPorts] + Length[srcOutPorts], Length[tgtInPorts] + Length[tgtOutPorts]]];
+
+	DiagramAssignPorts[src,
+		MapThread[Labeled[#1, Pattern[#2, _]] &, {srcInPorts, Take[labels, Length[srcInPorts]]}],
+		MapThread[Labeled[#1, Pattern[#2, _]] &, {srcOutPorts, Drop[labels, Length[srcInPorts]]}]
+	] ->
+	DiagramAssignPorts[tgt,
+		MapThread[Labeled, {tgtInPorts, Take[labels, Length[tgtInPorts]]}],
+		MapThread[Labeled, {tgtOutPorts, Drop[labels, Length[tgtInPorts]]}]
+	]
+]
+
+DiagramRule[src_Diagram -> tgt_Diagram] := DiagramRule[src, tgt]
 
 
 End[]
