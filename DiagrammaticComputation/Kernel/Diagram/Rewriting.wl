@@ -26,15 +26,17 @@ Options[DiagramHypergraph] = Options[Hypergraph]
 patternLabelArities[d_Diagram] := Total /@ Replace[d["PortLabels"], {_BlankSequence | _BlankNullSequence | Verbatim[Pattern][_, _BlankSequence | _BlankNullSequence] -> Infinity, _ -> 1}, {2}]
 
 DiagramHyperedge[d_Diagram, f_] := Annotation[
-	f /@ Catenate @ d["InputOutputPorts", True],
+	labeledVerticea[d, f],
 	EdgeLabels -> (Underoverscript[d["Label"], ##] & @@ (Replace[patternLabelArities[d], Infinity -> _, 1]))
 ]
 
+labeledVerticea[d_Diagram, f_] := MapThread[
+	Labeled[#1, Replace[#2, {Automatic :> (Replace[#1, HoldForm[Labeled[l_, __]] :> HoldForm[l]]), False -> None}]] &,
+	{f /@ Catenate @ d["InputOutputPorts", True], Catenate @ d["PortLabels"]}
+]
+
 labeledVertices[d_Diagram] := With[{f = d["PortFunction"]},
-	Catenate[MapThread[
-		Labeled[#1, Replace[#2, {Automatic :> (Replace[#1, HoldForm[Labeled[l_, __]] :> HoldForm[l]]), False -> None}]] &,
-		{f /@ Catenate @ #["InputOutputPorts", True], Catenate @ #["PortLabels"]}
-	] & /@ DiagramSubdiagrams[d, {1}]]
+	Catenate[labeledVerticea[#, f] & /@ DiagramSubdiagrams[d, {1}]]
 ]
 
 DiagramHypergraph[ds : {___Diagram}, f_, vs_List, opts : OptionsPattern[]] := Enclose @ ConfirmBy[Hypergraph[vs, DiagramHyperedge[#, f] & /@ ds, "EdgeSymmetry" -> "Ordered", opts], HypergraphQ]
@@ -88,7 +90,7 @@ DiagramReplaceList[d_Diagram, src_Diagram -> tgt_Diagram, opts : OptionsPattern[
 	If[return === "Rule", Return[rule]];
 	net = ConfirmBy[SimplifyDiagram @ ToDiagramNetwork[d], DiagramQ];
 	diagrams = DiagramSubdiagrams[net, {1}];
-	hg = ConfirmBy[With[{f = net["PortFunction"]}, DiagramHypergraph[diagrams, f, f /@ net["Ports", True]]], HypergraphQ];
+	hg = ConfirmBy[With[{f = net["PortFunction"]}, DiagramHypergraph[diagrams, f, labeledVerticea[net, f]]], HypergraphQ];
 	If[return === "Hypergraph", Return[hg]];
 	matches = ConfirmMatch[rule[hg, "DistinctVertexLabels" -> False, "DistinctEdgeLabels" -> False], {___ ? AssociationQ}];
 	If[return === "Matches", Return[matches]];
