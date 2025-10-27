@@ -15,6 +15,7 @@ DiagramExpressionReplace
 
 RemoveDiagramRule
 DiagramRule
+DuplicateRule
 
 
 Begin["`Private`"]
@@ -38,7 +39,7 @@ DiagramHyperedge[d_Diagram, f_] := Annotation[
 ]
 
 labeledVertices[d_Diagram, f_] := MapThread[
-	Labeled[f[#1], Replace[#2, {Automatic :> (Replace[#1["Name"], HoldForm[Labeled[l_, __]] :> HoldForm[l]]), False -> None}]] &,
+	Labeled[f[#1], Replace[#2, {Automatic :> (Replace[#1["Name"], Labeled[l_, __] :> l]), False -> None}]] &,
 	{Catenate @ d["InputOutputPorts", True], Catenate @ d["PortLabels"], Catenate @ d["PortStyles"]}
 ]
 
@@ -46,7 +47,15 @@ labeledVertices[d_Diagram] := With[{f = d["PortFunction"]},
 	Catenate[labeledVertices[#, f] & /@ DiagramSubdiagrams[d, {1}]]
 ]
 
-DiagramHypergraph[ds : {___Diagram}, f_, vs_List, opts : OptionsPattern[]] := Enclose @ ConfirmBy[Hypergraph[vs, DiagramHyperedge[#, f] & /@ ds, "EdgeSymmetry" -> "Ordered", opts], HypergraphQ]
+DiagramHypergraph[ds : {___Diagram}, f_, vs_List, opts : OptionsPattern[]] := Enclose @ ConfirmBy[
+	Hypergraph[
+		vs,
+		DiagramHyperedge[#, f] & /@ ds,
+		"EdgeSymmetry" -> "Ordered",
+		opts
+	],
+	HypergraphQ
+]
 
 DiagramHypergraph[d_Diagram, opts : OptionsPattern[]] := With[{net = SimplifyDiagram[ToDiagramNetwork[d]]}, {f = net["PortFunction"]},
 	DiagramHypergraph[
@@ -65,14 +74,11 @@ MatchDiagrams[diagrams : {___Diagram}, match : KeyValuePattern[{"Hypergraph" -> 
 		,
 		MapThread[
 			Diagram[#1,
-				"Expression" -> Replace[#3, Underoverscript[x_, ___] :> x],
-				Thread[
-					{"InputPorts", "OutputPorts"} ->
-						MapThread[
-							MapThread[If[#1, PortDual, Port][#2] &, {PadRight[#1, Length[#2], #1], #2}] &,
-							{Map[#["DualQ"] &, #1["InputOutputPorts", False], {2}], Replace[#3, Underoverscript[_, nInputs_, _] :> TakeDrop[#2, Total[Take[#4, nInputs]]]]}
-						]
+				Sequence @@ MapThread[
+					MapThread[If[#1, PortDual, Port][#2] &, {PadRight[#1, Length[#2], #1], #2}] &,
+					{Map[#["DualQ"] &, #1["InputOutputPorts", True], {2}], Replace[#3, Underoverscript[_, nInputs_, _] :> TakeDrop[#2, Total[Take[#4, nInputs]]]]}
 				],
+				Replace[#3, Underoverscript[HoldForm[x_], ___] | x_ :> "Expression" :> x],
 				"PortLabels" -> (#1["PortLabels"] /. bindings)
 			] &,
 			{diagrams, newEdges, Replace[newEdges, OptionValue[hg, EdgeLabels], 1], arities}
@@ -154,6 +160,26 @@ DiagramRule[src_Diagram, tgt_Diagram] := Block[{
 
 DiagramRule[src_Diagram -> tgt_Diagram] := DiagramRule[src, tgt]
 
+
+Options[DuplicateRule] = Options[CopyDiagram];
+
+patternPort[expr : _Symbol | SuperStar[_Symbol]] :=
+	Replace[expr, {sym_Symbol :> Pattern @@ {sym, _}, SuperStar[sym_Symbol] :> SuperStar[Pattern @@ {sym, _}]}]
+
+DuplicateRule[ins : {(_Symbol | SuperStar[_Symbol]) ..}, outs : {(_Symbol | SuperStar[_Symbol]) ..}, opts : OptionsPattern[]] := Block[{
+	copyOpts = {"Shape" -> "Triangle", "Width" -> 1, "Style" -> Hue[0.709, 0.445, 1], opts}, lhs, rhs
+},
+	lhs = DiagramRightComposition[
+		Diagram[\[FormalF]_, patternPort /@ ins, \[FormalX], "PortLabels" -> {Automatic, None}],
+		CopyDiagram[\[FormalX], patternPort /@ outs, copyOpts],
+		Alignment -> Center
+	];
+	rhs = DiagramRightComposition[
+		DiagramProduct @ Map[p |-> CopyDiagram[p, Port[p]["Apply", #] & /@ Range[Length[outs]], copyOpts, "PortLabels" -> {Automatic, None}, "FloatingPorts" -> False], ins],
+		DiagramProduct @ MapIndexed[{p, i} |-> Diagram[\[FormalF], Port[#]["Apply", i[[1]]] & /@ ins, p, "PortLabels" -> {None, Automatic}], outs]
+	];
+	lhs -> rhs
+]
 
 End[]
 

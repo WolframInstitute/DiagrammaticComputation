@@ -752,7 +752,9 @@ DiagramProp[d_, "Name"] := Replace[
         }] @@@ HoldForm[Evaluate[Flatten[Defer @@ (Function[Null, If[DiagramQ[#], #["Name"], Defer[#]], HoldFirst] /@ Unevaluated[{ds}])]]]
 ]
 
-DiagramProp[diagram_, "Label"] := Replace[diagram["HoldExpression"], expr_ :> (expr //. d_Diagram ? DiagramQ :> RuleCondition[d["HoldExpression"]])]
+DiagramProp[diagram_, "Label"] := With[{expr = diagram["Node"]["HoldExpression"]}, {pos = FirstPosition[expr, _Diagram ? DiagramQ]},
+    If[MissingQ[pos], expr, FlattenAt[ReplaceAt[expr, d_Diagram :> RuleCondition[d["Label"]], {pos}], {pos}]]
+]
 
 DiagramProp[diagram_, "Decompose", args___] := DiagramDecompose[diagram, args]
 
@@ -1199,7 +1201,7 @@ DiagramsGraph[diagrams : {___Diagram ? DiagramQ}, opts : OptionsPattern[]] := Bl
         indexedPorts = indexedPorts[[VertexList[graph, _Integer]]];
     ];
     embedding = AssociationThread[
-        If[FreeQ[#, _Pattern], #, Verbatim[#]] & /@ VertexList[graph],
+        VertexList[graph],
         GraphEmbedding[
             EdgeAdd[graph,
                 Catenate[DirectedEdge @@@ Partition[Reverse @ Catenate[#], 2, 1, 1] & /@ MapAt[Reverse, indexedPorts, {All, 2}]],
@@ -1210,13 +1212,13 @@ DiagramsGraph[diagrams : {___Diagram ? DiagramQ}, opts : OptionsPattern[]] := Bl
     embedding = <|
         embedding,
         If[Catenate[#] === {}, Nothing, With[{diagramCenter = Lookup[embedding, Catenate[#][[1, 1]]]},
-            Thread[# -> SortBy[Lookup[embedding, #], ArcTan @@ (# - diagramCenter) &]] & /@ #
+            Thread[# -> SortBy[Lookup[embedding, #], - VectorAngle[{1, 0}, (# - diagramCenter)] &, NumericalOrder]] & /@ #
         ]] & /@ indexedPorts
     |>;
     Graph[
         graph,
         FilterRules[{opts}, Options[Graph]],
-        VertexCoordinates -> Normal[embedding]
+        VertexCoordinates -> Lookup[embedding, VertexList[graph]]
     ]
 ]
 
@@ -1497,8 +1499,8 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Enclose @ Block[{
                             True,
                                 SpiderDiagram[#1, #2, "PortArrows" -> #3] &
                         ][
-                            If[  #1["DualQ"], tagPort[PortDual[portFunction[PortDual[#1]]], {#3}], tagPort[portFunction[#1], {#3}]] & @@@ sIn,
-                            If[! #1["DualQ"], tagPort[PortDual[portFunction[PortDual[#1]]], {#3}], tagPort[portFunction[#1], {#3}]] & @@@ sOut,
+                            If[  #1["DualQ"], With[{x = Unevaluated @@ portFunction[PortDual[#1]]}, tagPort[PortDual[x], {#3}]], With[{x = Unevaluated @@ portFunction[#1]}, tagPort[x, {#3}]]] & @@@ sIn,
+                            If[! #1["DualQ"], With[{x = Unevaluated @@ portFunction[PortDual[#1]]}, tagPort[PortDual[x], {#3}]], With[{x = Unevaluated @@ portFunction[#1]}, tagPort[x, {#3}]]] & @@@ sOut,
                             {sIn[[All, 2]], sOut[[All, 2]]}
                         ]
                     }];
@@ -1535,7 +1537,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Enclose @ Block[{
         AnnotationRules -> Join[
             Thread[diagramVertices -> List /@ Thread["Diagram" -> KeyValueMap[
                 Diagram[#2,
-                    "OutputPorts" -> MapThread[With[{makePort = If[#1["DualQ"], PortDual[Port[#1]["TaggedName"], ##2] &, Port[Port[#1]["TaggedName"], ##2] &]},
+                    "OutputPorts" -> MapThread[With[{makePort = With[{head = If[#1["DualQ"], PortDual, Port]}, With[{x = Unevaluated @@ Port[#1]["TaggedName"]}, head[x, ##2]] &]},
                         FirstCase[edges,
                             edge: DirectedEdge[#2[[1]], tgtIdx_, {{2, _, #2[[3]]}, _, {i_, _, portIdx_}}] :>
                                 With[{tgt = diagrams[tgtIdx]["InputOutputPorts", True][[i]][[portIdx]]},
@@ -1545,7 +1547,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Enclose @ Block[{
                         ]] &,
                         {#2["OutputPorts"], Thread[{#1, 2, Range[#2["OutputArity"]]}]}
                     ],
-                    "InputPorts" -> MapThread[With[{makePort = If[#1["DualQ"], PortDual[Port[#1]["TaggedName"], ##2] &, Port[Port[#1]["TaggedName"], ##2] &]},
+                    "InputPorts" -> MapThread[With[{makePort = With[{head = If[#1["DualQ"], PortDual, Port]}, With[{x = Unevaluated @@ Port[#1]["TaggedName"]}, head[x, ##2]] &]},
                         FirstCase[edges,
                             DirectedEdge[#2[[1]], tgtIdx_, {{1, _, #2[[3]]}, _, {i_, _, portIdx_}}] :>
                             With[{tgt = diagrams[tgtIdx]["InputOutputPorts", True][[i]][[portIdx]]},
@@ -1566,7 +1568,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Enclose @ Block[{
 	Graph[
 		netGraph,
 		FilterRules[{opts}, Options[Graph]],
-		VertexCoordinates -> vertexCoordinates,
+		VertexCoordinates -> Values @ vertexCoordinates,
 		VertexShapeFunction -> Join[
 			Thread[If[FreeQ[#, _Pattern], #, Verbatim[#]] & /@ diagramVertices ->
 				MapThread[{diagram, orientation} |-> With[{
@@ -1770,11 +1772,11 @@ ToDiagramNetwork[d_Diagram, opts : OptionsPattern[]] := Which[
     Diagram[d, Inherited, Inherited, FilterRules[{opts}, Options[Diagram]]]
     ,
     d["SingletonNodeQ"],
-    DiagramNetwork[DiagramAssignPorts[d, MapIndexed[TagPort[#1, {#2}] &, d["InputOutputPorts"], {2}]], FilterRules[{opts}, Options[DiagramNetwork]]]
+    DiagramNetwork[DiagramAssignPorts[d, MapIndexed[TagPort[#1, {#2}] &, d["InputOutputPorts", True], {2}]], FilterRules[{opts}, Options[DiagramNetwork]]]
     ,
     TrueQ[OptionValue["Grid"]],
     DiagramNetwork[
-        toDiagramNetwork[If[TrueQ[OptionValue["Arrange"]], d["Arrange", opts], d]["Decompose", "Unary" -> True, "Diagram" -> True], {}, {}, FilterRules[{opts}, Options[toDiagramNetwork]]],
+        toDiagramNetwork[If[TrueQ[OptionValue["Arrange"]], d["Arrange", opts], d]["Decompose", "Unary" -> False, "Diagram" -> True], {}, {}, FilterRules[{opts}, Options[toDiagramNetwork]]],
         FilterRules[{opts}, Options[Diagram]],
         d["DiagramOptions"]
     ],
@@ -1782,7 +1784,7 @@ ToDiagramNetwork[d_Diagram, opts : OptionsPattern[]] := Which[
     DiagramNetwork[##, opts] & @@ AnnotationValue[{#, VertexList[#]}, "Diagram"] & @ DiagramsNetGraph[d["Graph"]]
 ]
 
-toDiagramNetwork[d_Diagram -> None, pos_, ports_, opts : OptionsPattern[]] := Block[{
+toDiagramNetwork[d_Diagram -> _, pos_, ports_, opts : OptionsPattern[]] := Block[{
     portFunction = OptionValue["PortFunction"],
     uniqueQ = TrueQ[OptionValue["Unique"]],
     mports = ports, port
@@ -1796,9 +1798,9 @@ toDiagramNetwork[d_Diagram -> None, pos_, ports_, opts : OptionsPattern[]] := Bl
                 ,
                 TagPort[#1, {If[uniqueQ, Join[pos, {1}, #2], pos]}]
             ]]] &,
-            d["SubInputPorts"]
+            d["InputPorts"]
         ],
-		"OutputPorts" -> MapIndexed[If[#1["NeutralQ"], #1, With[{p = portFunction[#1]}, TagPort[#1, {If[uniqueQ, Join[pos, {2}, #2], pos]}]]] &, d["SubOutputPorts"]],
+		"OutputPorts" -> MapIndexed[If[#1["NeutralQ"], #1, With[{p = portFunction[#1]}, TagPort[#1, {If[uniqueQ, Join[pos, {2}, #2], pos]}]]] &, d["OutputPorts"]],
         FilterRules[{opts}, Options[Diagram]]
 	]
 }
@@ -1812,7 +1814,7 @@ toDiagramNetwork[CircleTimes[ds___] -> d_, pos_, ports_, opts : OptionsPattern[]
 
 toDiagramNetwork[CircleDot[ds__] -> d_, pos_, ports_, opts : OptionsPattern[]] := With[{f = d["PortFunction"]},
 	Fold[
-        With[{net = toDiagramNetwork[#2, Append[pos, #1[[3]]], Join[f[UntagPort[#]] -> # & /@ #1[[1]]["FlatOutputPorts"], ports], "PortFunction" -> f, opts]},
+        With[{net = toDiagramNetwork[#2, Append[pos, #1[[3]]], Join[f[UntagPort[#]] -> # & /@ #1[[1]]["OutputPorts"], ports], "PortFunction" -> f, opts]},
             {
                 ColumnDiagram[Prepend[net, #1[[1]]], "PortFunction" -> f],
                 Join[#1[[2]], net],
