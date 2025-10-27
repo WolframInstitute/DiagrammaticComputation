@@ -75,13 +75,16 @@ permuteRow[a_Diagram, aPorts_List, bPorts_List, i : 1 | -1, rowSortQ : _ ? Boole
             ]
     ]
 
-permuteRow[row : {__Diagram}, rowPorts_List, ports_List, i : 1 | -1, rowSortQ : _ ? BooleanQ : False] :=
+permuteRow[row : {__Diagram}, rowPorts_List, ports_List, i : 1 | -1, rowSortQ : _ ? BooleanQ : False] := With[{
+    padPorts = MapThread[Replace[#1, Missing[] -> #2] &, {Switch[i, 1, PadRight, -1, PadLeft][ports, Total[Length /@ rowPorts], Missing[]], Catenate[rowPorts]}]
+},
     If[ ! rowSortQ || Length[rowPorts] > 9,
-        {Or @@ #1, #2, Catenate[#3]} & @@ Thread @ MapThread[permuteRow[##, i, rowSortQ] &, {row, rowPorts, TakeList[ports, Length /@ rowPorts]}],
-        With[{perm = FindPermutation[rowPorts, First @ MaximalBy[Permutations @ rowPorts, - DamerauLevenshteinDistance[Catenate[#], ports] &, 1]]},
-            {perm =!= Cycles[{}] || Or @@ #1, #2, Catenate[#3]} & @@ Thread @ MapThread[permuteRow[##, i, rowSortQ] &, {Permute[row, perm], Permute[rowPorts, perm], TakeList[ports, Length /@ Permute[rowPorts, perm]]}]
+        {Or @@ #1, #2, Catenate[#3]} & @@ Thread @ MapThread[permuteRow[##, i, rowSortQ] &, {row, rowPorts, TakeList[padPorts, Length /@ rowPorts]}],
+        With[{perm = FindPermutation[rowPorts, First @ MaximalBy[Permutations @ rowPorts, - DamerauLevenshteinDistance[Catenate[#], padPorts] &, 1]]},
+            {perm =!= Cycles[{}] || Or @@ #1, #2, Catenate[#3]} & @@ Thread @ MapThread[permuteRow[##, i, rowSortQ] &, {Permute[row, perm], Permute[rowPorts, perm], TakeList[padPorts, Length /@ Permute[rowPorts, perm]]}]
         ]
     ]
+]
 
 PermutationDecompose[perm_List ? PermutationListQ] := Switch[Length[perm], 0, {}, 1, {perm}, _,
 	Prepend[PermutationDecompose[PermutationList[InversePermutation @ FindPermutation[#2], Length[#2]]], #1] & @@ NestWhile[Apply[{Append[#1, First[#2]], Rest[#2]} &], TakeDrop[perm, 1], Apply[! PermutationListQ[#1] &]]
@@ -107,12 +110,14 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
         pa = Not /@ Through[as["NeutralQ"]];
         as = Pick[as, pa];
         aPorts = func /@ as;
+        aStyles = Pick[a["PortStyles"][[2]], pa];
     );
     resetPortsB[] := (
         bs = PortDual /@ b["InputPorts"];
         pb = Not /@ Through[bs["NeutralQ"]];
         bs = Pick[bs, pb];
         bPorts = func /@ bs;
+        bStyles = Pick[b["PortStyles"][[1]], pb];
     );
 
     resetPortsA[];
@@ -140,25 +145,29 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
         {left : {l_, {}} | {{}, l_} : {}, {__}, right : {r_, {}} | {{}, r_} : {}} /; ! ({l} =!= {} && {r} =!= {} && IntersectingQ[l, r]) :> (
             Which[
                 MatchQ[left, {_, {}}],
-                    b = RowDiagram[permuteRow[{b, identityDiagrams[Take[as, - Length[l]], Take[aStyles, - Length[l]]]}, Join[{bPorts}, List /@ Take[aPorts, - Length[l]]], aPorts, -1, rowSortQ][[2]]]["Flatten", 1];
+                    b = RowDiagram[permuteRow[{b, identityDiagrams[Take[as, - Length[l]], Take[aStyles, - Length[l]]]}, Join[{bPorts}, List /@ Take[aPorts, - Length[l]]], aPorts, -1, rowSortQ][[2]]];
                     resetPortsB[]
                 ,
                 MatchQ[left, {{}, _}],
-                    a = RowDiagram[permuteRow[{a, identityDiagrams[Take[bs, - Length[l]], Take[bStyles, - Length[l]]]}, Join[{aPorts}, List /@ Take[bPorts, - Length[l]]], bPorts, 1, rowSortQ][[2]]]["Flatten", 1];
+                    a = RowDiagram[permuteRow[{a, identityDiagrams[Take[bs, - Length[l]], Take[bStyles, - Length[l]]]}, Join[{aPorts}, List /@ Take[bPorts, - Length[l]]], bPorts, 1, rowSortQ][[2]]];
                     resetPortsA[]
             ];
             Which[
                 MatchQ[right, {_, {}}],
-                    b = RowDiagram[permuteRow[{identityDiagrams[Take[as, Length[r]], Take[aStyles, Length[r]]], b}, Join[List /@ Take[aPorts, Length[r]], {bPorts}], aPorts, -1, rowSortQ][[2]]]["Flatten", 1];
+                    b = RowDiagram[permuteRow[{identityDiagrams[Take[as, Length[r]], Take[aStyles, Length[r]]], b}, Join[List /@ Take[aPorts, Length[r]], {bPorts}], aPorts, -1, rowSortQ][[2]]];
                     resetPortsB[],
                 MatchQ[right, {{}, _}],
-                    a = RowDiagram[permuteRow[{identityDiagrams[Take[bs, Length[r]], Take[bStyles, Length[r]]], a}, Join[List /@ Take[bPorts, Length[r]], {aPorts}], bPorts, 1, rowSortQ][[2]]]["Flatten", 1];
+                    a = RowDiagram[permuteRow[{identityDiagrams[Take[bs, Length[r]], Take[bStyles, Length[r]]], a}, Join[List /@ Take[bPorts, Length[r]], {aPorts}], bPorts, 1, rowSortQ][[2]]];
                     resetPortsA[]
             ]
         ),
-        _ :> With[{inPos = FirstPositions[bPorts, aPorts], outPos = FirstPositions[aPorts, bPorts]}, {ins = Delete[bs, inPos], outs = Delete[as, outPos]},
-            If[ins =!= {}, a = RowDiagram[permuteRow[{identityDiagrams[ins, Delete[bStyles, inPos]], a}, Join[List /@ Delete[bPorts, inPos], {aPorts}], bPorts, 1, rowSortQ][[2]]]["Flatten", 1]; resetPortsA[]];
-            If[outs =!= {}, b = RowDiagram[permuteRow[{identityDiagrams[outs, Delete[aStyles, outPos]], b}, Join[List /@ Delete[aPorts, outPos], {bPorts}], aPorts, -1, rowSortQ][[2]]]["Flatten", 1]; resetPortsB[]]
+        _ :> Block[{inPos, outPos, ins, outs},
+            inPos = FirstPositions[bPorts, aPorts];
+            ins = Delete[bs, inPos];
+            If[ins =!= {}, a = RowDiagram[permuteRow[{identityDiagrams[ins, Delete[bStyles, inPos]], a}, Join[List /@ Delete[bPorts, inPos], {aPorts}], bPorts, 1, rowSortQ][[2]]]; resetPortsA[]];
+            outPos = FirstPositions[aPorts, bPorts];
+            outs = Delete[as, outPos];
+            If[outs =!= {}, b = RowDiagram[permuteRow[{b, identityDiagrams[outs, Delete[aStyles, outPos]]}, Join[{bPorts}, List /@ Delete[aPorts, outPos]], aPorts, -1, rowSortQ][[2]]]; resetPortsB[]]
         ]
     }
     ];
@@ -183,7 +192,7 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
                     With[{decomp = PermutationDecompose[PermutationList[perm, Length[as]]]}, {lens = Length /@ decomp},
                         DiagramProduct @ MapThread[{as, bs, aStyles, bStyles, perm} |->
                             PermutationDiagram[as -> bs, perm, "PortArrows" -> MapAt[Permute[#, perm] &, {2}] @ Thread @ MapThread[
-                                PadRight[#, 2, Replace[#, {} -> Automatic]] & @ DeleteCases[Automatic] @ Which[! #1["DualQ"] && #2["DualQ"], {#3, #3}, #1["DualQ"] && ! #2["DualQ"], {#4, #4}, True, {#3, #4}] &,
+                                PadRight[#, 2, Replace[#, {} -> Automatic]] & @ DeleteCases[Automatic] @ Which[! #1["DualQ"] && #2["DualQ"], {#3, #3, #4}, #1["DualQ"] && ! #2["DualQ"], {#4, #4, #3}, True, {#3, #4}] &,
                                 {as, bs, aStyles, Permute[bStyles, InversePermutation[perm]]}
                             ]],
                             Append[TakeList[#, lens] & /@ {as, bs, Pick[aStyles[[2]], pa], Pick[bStyles[[1]], pb]}, PermutationCycles /@ decomp]
@@ -358,18 +367,28 @@ Replace[diagram["HoldExpression"], {
 	],
 	HoldForm[DiagramProduct[ds___]] :> ({Diagram[(DiagramProduct @@ #[[1]])["Flatten"], args], #[[2]]} & @ Fold[{state, d} |-> MapAt[Append[state[[1]], #] &, assignPorts[d, state[[2]]], {1}], {{}, ports}, {ds}]),
 	HoldForm[DiagramSum[ds___]] :> ({Diagram[DiagramSum @@ #[[All, 1]], args], {Intersection @@ #[[2, All, 1]], Intersection @@ #[[2, All, 2]]}} & @ (assignPorts[#, ports] & /@ {ds})),
-    HoldForm[DiagramNetwork[ds___]] :> Block[{f = diagram["PortFunction"], inputs, outputs, in, out, rules},
-        {inputs, outputs} = diagram["InputOutputPorts"];
+    HoldForm[DiagramNetwork[ds___]] :> Block[{f = diagram["PortFunction"], portDual, dualQ, inputs, outputs, in, out, rules},
+        portDual = Replace[{(h : Annotation | Style | Labeled)[x_, args___] :> h[portDual[x], args], p_ :> PortDual[p]}];
+        dualQ = Replace[{(h : Annotation | Style | Labeled)[x_, ___] :> dualQ[x], p_Port :> p["DualQ"]}];
+        {inputs, outputs} = diagram["InputOutputPorts", True];
         {in, out} = {
 			If[inheritedQ[inputPorts], inputs, Take[inputPorts, UpTo[Length[inputs]]]],
 			If[inheritedQ[outputPorts], outputs, Take[outputPorts, UpTo[Length[outputs]]]]
 		};
         rules = Association[
-            Thread[Take[f /@ PortDual /@ inputs, UpTo[Length[in]]] -> Take[in, UpTo[Length[inputs]]]],
-            Thread[Take[f /@ Port /@ outputs, UpTo[Length[out]]] -> Take[out, UpTo[Length[outputs]]]]
+            Thread[Take[f /@ inputs, UpTo[Length[in]]] -> portDual /@ Take[in, UpTo[Length[inputs]]]],
+            Thread[Take[f /@ outputs, UpTo[Length[out]]] -> Take[out, UpTo[Length[outputs]]]]
         ];
         {
-            Diagram[DiagramNetwork[Diagram[#, Replace[f /@ PortDual /@ #["InputPorts"], rules, 1], Replace[f /@ #["OutputPorts"], rules, 1]] & /@ {ds}], args],
+            Diagram[
+                DiagramNetwork[
+                    assignPorts[#, {
+                        Map[p |-> Lookup[rules, f[p], p, If[p["DualQ"] == dualQ[#], #, portDual[#]] &], PortDual /@ #["InputPorts"]],
+                        Map[p |-> Lookup[rules, f[p], p, If[p["DualQ"] == dualQ[#], #, portDual[#]] &], #["OutputPorts"]]
+                    }][[1]] & /@ {ds}
+                ],
+                args
+            ],
             {
                 Drop[in, UpTo[Length[inputs]]],
                 Drop[out, UpTo[Length[outputs]]]
@@ -791,14 +810,14 @@ wireGraphics[opts___][{outPort_, out_, outStyle_, outLabel_, ___}, {inPort_, in_
                 If[ outStyle === None,
                     {},
                     With[{arrowheads = Arrowheads[{{from * arrowSize, .5}}]},
-                        If[MatchQ[outStyle, _Function], {arrowheads, outStyle[#, "Grid"]} &, {arrowheads, Replace[outStyle, Placed[x_, _] :> x], Arrow @ BSplineCurve @ #} &] @ {out[[1]], p, (in[[1]] + out[[1]]) / 2}
+                        If[MatchQ[outStyle, _Function], {arrowheads, outStyle[#, "Grid"]} &, {arrowheads, Replace[outStyle, Placed[x_, _] :> x], Arrow @ BSplineCurve @ If[outDual, Reverse[#], #]} &] @ {out[[1]], p, (in[[1]] + out[[1]]) / 2}
                     ]
                 ]
                 ,
                 If[ inStyle === None,
                     {},
                     With[{arrowheads = Arrowheads[{{- to * arrowSize, .5}}]},
-                        If[MatchQ[inStyle, _Function], {arrowheads, inStyle[#, "Grid"]} &, {arrowheads, Replace[inStyle, Placed[x_, _] :> x], Arrow @ BSplineCurve @ #} &] @  {(in[[1]] + out[[1]]) / 2, q, in[[1]]}
+                        If[MatchQ[inStyle, _Function], {arrowheads, inStyle[#, "Grid"]} &, {arrowheads, Replace[inStyle, Placed[x_, _] :> x], Arrow @ BSplineCurve @ If[! inDual, Reverse[#], #]} &] @  {(in[[1]] + out[[1]]) / 2, q, in[[1]]}
                     ]
                 ]
             }

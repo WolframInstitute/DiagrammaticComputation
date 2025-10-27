@@ -23,20 +23,27 @@ Begin["`Private`"]
 Options[DiagramHypergraph] = Options[Hypergraph]
 
 
-patternLabelArities[d_Diagram] := Total /@ Replace[d["PortLabels"], {_BlankSequence | _BlankNullSequence | Verbatim[Pattern][_, _BlankSequence | _BlankNullSequence] -> Infinity, _ -> 1}, {2}]
+patternLabelArities[d_Diagram] := Total /@ Replace[
+	d["PortLabels"],
+	{
+		_BlankSequence | _BlankNullSequence | Verbatim[Pattern][_, _BlankSequence | _BlankNullSequence] -> Infinity,
+		_ -> 1
+	},
+	{2}
+]
 
 DiagramHyperedge[d_Diagram, f_] := Annotation[
-	labeledVerticea[d, f],
+	labeledVertices[d, f],
 	EdgeLabels -> (Underoverscript[d["Label"], ##] & @@ (Replace[patternLabelArities[d], Infinity -> _, 1]))
 ]
 
-labeledVerticea[d_Diagram, f_] := MapThread[
-	Labeled[#1, Replace[#2, {Automatic :> (Replace[#1, HoldForm[Labeled[l_, __]] :> HoldForm[l]]), False -> None}]] &,
-	{f /@ Catenate @ d["InputOutputPorts", True], Catenate @ d["PortLabels"]}
+labeledVertices[d_Diagram, f_] := MapThread[
+	Labeled[f[#1], Replace[#2, {Automatic :> (Replace[#1["Name"], HoldForm[Labeled[l_, __]] :> HoldForm[l]]), False -> None}]] &,
+	{Catenate @ d["InputOutputPorts", True], Catenate @ d["PortLabels"], Catenate @ d["PortStyles"]}
 ]
 
 labeledVertices[d_Diagram] := With[{f = d["PortFunction"]},
-	Catenate[labeledVerticea[#, f] & /@ DiagramSubdiagrams[d, {1}]]
+	Catenate[labeledVertices[#, f] & /@ DiagramSubdiagrams[d, {1}]]
 ]
 
 DiagramHypergraph[ds : {___Diagram}, f_, vs_List, opts : OptionsPattern[]] := Enclose @ ConfirmBy[Hypergraph[vs, DiagramHyperedge[#, f] & /@ ds, "EdgeSymmetry" -> "Ordered", opts], HypergraphQ]
@@ -50,7 +57,7 @@ DiagramHypergraph[d_Diagram, opts : OptionsPattern[]] := With[{net = SimplifyDia
 	]
 ]
 
-MatchDiagrams[diagrams : {___Diagram}, match : KeyValuePattern[{"Hypergraph" -> hg_Hypergraph, "NewEdges" -> newEdges_, "Bindings" -> bindings_}]] :=
+MatchDiagrams[diagrams : {___Diagram}, match : KeyValuePattern[{"Hypergraph" -> hg_Hypergraph, "MatchEdgePositions" -> pos_, "NewEdges" -> newEdges_, "Bindings" -> bindings_, "EdgeArities" -> arities_}]] :=
 	If[
 		EdgeCount[hg] == 0
 		,
@@ -63,12 +70,12 @@ MatchDiagrams[diagrams : {___Diagram}, match : KeyValuePattern[{"Hypergraph" -> 
 					{"InputPorts", "OutputPorts"} ->
 						MapThread[
 							MapThread[If[#1, PortDual, Port][#2] &, {PadRight[#1, Length[#2], #1], #2}] &,
-							{Map[#["DualQ"] &, #1["InputOutputPorts", False], {2}], Replace[patternLabelArities[#1], {{Infinity, i_Integer} :> Reverse[TakeDrop[#2, -i]], {i_Integer, _} :> TakeDrop[#2, i]}]}
+							{Map[#["DualQ"] &, #1["InputOutputPorts", False], {2}], Replace[#3, Underoverscript[_, nInputs_, _] :> TakeDrop[#2, Total[Take[#4, nInputs]]]]}
 						]
 				],
 				"PortLabels" -> (#1["PortLabels"] /. bindings)
 			] &,
-			{diagrams, newEdges, Replace[newEdges, OptionValue[hg, EdgeLabels], 1]}
+			{diagrams, newEdges, Replace[newEdges, OptionValue[hg, EdgeLabels], 1], arities}
 		]
 	]
 
@@ -90,7 +97,7 @@ DiagramReplaceList[d_Diagram, src_Diagram -> tgt_Diagram, opts : OptionsPattern[
 	If[return === "Rule", Return[rule]];
 	net = ConfirmBy[SimplifyDiagram @ ToDiagramNetwork[d], DiagramQ];
 	diagrams = DiagramSubdiagrams[net, {1}];
-	hg = ConfirmBy[With[{f = net["PortFunction"]}, DiagramHypergraph[diagrams, f, labeledVerticea[net, f]]], HypergraphQ];
+	hg = ConfirmBy[With[{f = net["PortFunction"]}, DiagramHypergraph[diagrams, f, labeledVertices[net, f]]], HypergraphQ];
 	If[return === "Hypergraph", Return[hg]];
 	matches = ConfirmMatch[rule[hg, "DistinctVertexLabels" -> False, "DistinctEdgeLabels" -> False], {___ ? AssociationQ}];
 	If[return === "Matches", Return[matches]];
@@ -103,7 +110,7 @@ DiagramReplaceList[d_Diagram, src_Diagram -> tgt_Diagram, opts : OptionsPattern[
 		] &,
 		matches
 	];
-	Diagram[#, diagramOptions] & /@ If[nets === {}, {d}, Diagram[#, Inherited, Inherited, FilterRules[d["DiagramOptions"], Except["PortArrows" | "PortLabels"]]] & /@ If[d["NetworkQ"], nets, DiagramArrange /@ nets]]
+	Diagram[#, diagramOptions] & /@ If[nets === {}, {d}, Diagram[#, Inherited, Inherited, FilterRules[d["DiagramOptions"], Except["PortArrows" | "PortLabels" | "PortFunction"]]] & /@ If[d["NetworkQ"], nets, DiagramArrange /@ nets]]
 ]
 
 DiagramReplaceList[d_Diagram, rules : {__Rule}, opts : OptionsPattern[]] := Fold[{ds, rule} |-> Catenate[DiagramReplaceList[#, rule, opts] & /@ ds], {d}, rules]

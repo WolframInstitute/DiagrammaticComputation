@@ -172,7 +172,7 @@ Diagram[expr : {} | Except[_Association | _Diagram | OptionsPattern[]],
                 Function[p,
                     Replace[Unevaluated[p], Labeled[Style[p_, s___], l_, ___] | Style[Labeled[p_, l_, ___], s___] | Labeled[p_, l_, ___] | Style[p_, s___] | p_ :> (
                         Sow[First[{l}, Inherited], "OutputLabel"];
-                        Sow[Replace[Directive[s], Directive[] -> Inherited], "OutputStyle"];
+                        Sow[Replace[Directive[s], {Directive[Directive[dir___]] :> Directive[dir], Directive[] -> Inherited}], "OutputStyle"];
                         Port[Unevaluated[p]]
                     )],
                     HoldFirst
@@ -183,7 +183,7 @@ Diagram[expr : {} | Except[_Association | _Diagram | OptionsPattern[]],
                 Function[p,
                     Replace[Unevaluated[p], Labeled[Style[p_, s___], l_, ___] | Style[Labeled[p_, l_, ___], s___] | Labeled[p_, l_, ___] | Style[p_, s___] | p_ :> (
                         Sow[First[{l}, Inherited], "InputLabel"];
-                        Sow[Replace[Directive[s], Directive[] -> Inherited], "InputStyle"];
+                        Sow[Replace[Directive[s], {Directive[Directive[dir___]] :> Directive[dir], Directive[] -> Inherited}], "InputStyle"];
                         PortDual[Unevaluated[p]])
                     ],
                     HoldFirst
@@ -1152,9 +1152,9 @@ SimplifyDiagram[diag_ ? DiagramQ, opts : OptionsPattern[]] /; diag["NetworkQ"] :
     net = DiagramsNetGraph[
         diag["Graph", "Simplify" -> True, "PortFunction" -> portFunction],
         FilterRules[{opts}, Options[DiagramsNetGraph]],
-        "PortFunction" -> portFunction, "UnarySpiders" -> False, "BinarySpiders" -> False, "TagPorts" -> False
+        "PortFunction" -> portFunction, "Spiders" -> False, "TagPorts" -> False
     ];
-    Diagram[DiagramAssignPorts[DiagramNetwork[toIdentities @ AnnotationValue[{net, VertexList[net]}, "Diagram"]], diag["AnnotatedInputOutputPorts", True]], diag["DiagramOptions"]]
+    Diagram[DiagramAssignPorts[DiagramNetwork[toIdentities @ AnnotationValue[{net, VertexList[net]}, "Diagram"]], diag["AnnotatedInputOutputPorts", True]], FilterRules[diag["DiagramOptions"], Except["PortFunction"]]]
 ]
 
 SimplifyDiagram[diag_ ? DiagramQ, opts : OptionsPattern[]] := DiagramArrange[SimplifyDiagram[diag["Network"], opts, "TagPorts" -> True]]
@@ -1408,6 +1408,7 @@ Options[DiagramsNetGraph] = DeleteDuplicatesBy[First] @ Join[{
     "Orientation" -> Automatic,
     "UnarySpiders" -> True,
     "BinarySpiders" -> True,
+    "Spiders" -> True,
     "SpiderMethod" -> 1,
     "RemoveCycles" -> False,
     "TagPorts" -> True 
@@ -1430,6 +1431,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Enclose @ Block[{
 	wireLabelsQ = TrueQ[OptionValue["ShowWireLabels"]],
     unarySpiders = OptionValue["UnarySpiders"],
     binarySpiders = OptionValue["BinarySpiders"],
+    spiders = OptionValue["Spiders"],
     tagPort = If[TrueQ[OptionValue["TagPorts"]], TagPort, #1 &],
     portFunction = OptionValue["PortFunction"]
 },
@@ -1462,7 +1464,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Enclose @ Block[{
 		edges = Sort @ Map[v |->
 			Block[{in = Sort @ Cases[EdgeList[graph], _[w_, Verbatim[v], ___] :> w], out = Sort @ Cases[EdgeList[graph], _[Verbatim[v], w_, ___] :> w], wirePorts, sIn, sOut},
 				wirePorts = Sort @ Join[in, out];
-				If[ Length[wirePorts] > 2 ||
+				If[ MatchQ[spiders, True | All | Full] && (Length[wirePorts] > 2 ||
                     Length[wirePorts] == 1 && MatchQ[unarySpiders, True] ||
                     Length[wirePorts] == 2 && Switch[binarySpiders,
                         All | Full,
@@ -1473,7 +1475,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Enclose @ Block[{
                             SameQ @@ wirePorts[[All, 2]] || SameQ @@ Lookup[ports, wirePorts, None, #["DualQ"] &],
                         _,
                             False
-                    ]
+                    ])
                     ,
                     {sIn, sOut} = Switch[
                         OptionValue["SpiderMethod"],
@@ -1495,8 +1497,8 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Enclose @ Block[{
                             True,
                                 SpiderDiagram[#1, #2, "PortArrows" -> #3] &
                         ][
-                            If[  #1["DualQ"], TagPort[PortDual[portFunction[PortDual[#1]]], {#3}], TagPort[portFunction[#1], {#3}]] & @@@ sIn,
-                            If[! #1["DualQ"], TagPort[PortDual[portFunction[PortDual[#1]]], {#3}], TagPort[portFunction[#1], {#3}]] & @@@ sOut,
+                            If[  #1["DualQ"], tagPort[PortDual[portFunction[PortDual[#1]]], {#3}], tagPort[portFunction[#1], {#3}]] & @@@ sIn,
+                            If[! #1["DualQ"], tagPort[PortDual[portFunction[PortDual[#1]]], {#3}], tagPort[portFunction[#1], {#3}]] & @@@ sOut,
                             {sIn[[All, 2]], sOut[[All, 2]]}
                         ]
                     }];
@@ -1589,7 +1591,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Enclose @ Block[{
 		EdgeShapeFunction -> With[{diagrams = Join[diagrams, AssociationThread[spiderVertices -> spiderDiagrams]]}, Replace[edges, {
 				edge : DirectedEdge[v_, w_, {{i : 1 | 2, _Integer, p_Integer}, ___, {j : 1 | 2, _Integer, q_Integer}}] :> If[FreeQ[edge, _Pattern], edge, Verbatim[edge]] -> Block[{
 					point1, point2, normal1, normal2, orientation1 = orientations[v], orientation2 = orientations[w],
-                    defaultPoint = rad * scale * Normalize[Subtract @@ Lookup[vertexCoordinates, {w, v}]],
+                    defaultPoint = rad * scale * Normalize[Subtract @@ Lookup[embedding, {w, v}]],
                     style1, style2, label1, label2,
                     diagram1 = diagrams[v], diagram2 = diagrams[w],
                     port1, port2,
@@ -1792,11 +1794,11 @@ toDiagramNetwork[d_Diagram -> None, pos_, ports_, opts : OptionsPattern[]] := Bl
                 mports = DeleteElements[mports, 1 -> {port}];
                 port[[2]]["Dual"]
                 ,
-                TagPort[PortDual[p], {If[uniqueQ, Join[pos, {1}, #2], pos]}]
+                TagPort[#1, {If[uniqueQ, Join[pos, {1}, #2], pos]}]
             ]]] &,
             d["SubInputPorts"]
         ],
-		"OutputPorts" -> MapIndexed[If[#1["NeutralQ"], #1, With[{p = portFunction[#1]}, TagPort[p, {If[uniqueQ, Join[pos, {2}, #2], pos]}]]] &, d["SubOutputPorts"]],
+		"OutputPorts" -> MapIndexed[If[#1["NeutralQ"], #1, With[{p = portFunction[#1]}, TagPort[#1, {If[uniqueQ, Join[pos, {2}, #2], pos]}]]] &, d["SubOutputPorts"]],
         FilterRules[{opts}, Options[Diagram]]
 	]
 }
