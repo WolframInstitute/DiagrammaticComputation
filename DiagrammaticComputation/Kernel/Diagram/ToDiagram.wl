@@ -218,7 +218,7 @@ LambdaDiagrams[Interpretation["\[Lambda]", var_][body_][arg_], depth_, opts : Op
 
 LambdaDiagrams[Interpretation["\[Lambda]", var_][Interpretation[_Integer, var_]], _, OptionsPattern[]] := With[{tag = HoldForm[var]}, {lambdaDiagram[tag, {tag}], varDiagram[tag]}]
 
-LambdaDiagrams[Interpretation["\[Lambda]", var_][Interpretation[_Integer, body_]], _, OptionsPattern[]] := {lambdaDiagram[HoldForm[var], {HoldForm[body]}]}
+LambdaDiagrams[Interpretation["\[Lambda]", var_][Interpretation[_Integer, body_]], _, OptionsPattern[]] := {lambdaDiagram[HoldForm[var], {HoldForm[body]}], If[TrueQ[OptionValue["AddErasers"]], eraserDiagram[tag], Nothing]}
 
 LambdaDiagrams[Interpretation["\[Lambda]", var_][body_], depth_, opts : OptionsPattern[]] := Block[{bodyDiagram = DiagramNetwork @@ LambdaDiagrams[body, depth + 1, opts], tag = HoldForm[var], inputs, outputs},
 	inputs = bodyDiagram["SubInputPorts"];
@@ -272,8 +272,10 @@ LambdaDiagram[expr_, depth_Integer : 0, opts : OptionsPattern[]] := Block[{lambd
 	colorFunction = OptionValue[ColorFunction];
 	DiagramNetwork[##, opts, "ShowPortLabels" -> False, "PortLabels" -> False, "ShowWireLabels" -> False] & @@ 
 		Map[
-			If[	MatchQ[#["HoldExpression"], HoldForm[Style[Subscript["\[Lambda]", _], __]]],
+			Switch[#["HoldExpression"],
+				HoldForm[Style[Subscript["\[Lambda]", _], __]],
 				Diagram[#, If[coloredQ, "Style" -> colorFunction[lambdaIdx++], {}]],
+				_,
 				#
 			] &,
 			LambdaDiagrams[Wolfram`Lambda`TagLambda[expr, "Alphabet"], depth, FilterRules[{opts}, Options[LambdaDiagrams]]]

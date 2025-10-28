@@ -1017,7 +1017,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
         Confirm @ diagram["Shape", opts]
     },
     Replace[
-        If[ MatchQ[diagram["OptionValue"["ShowLabel"], opts], None | False] || diagram["HoldExpression"] === HoldForm[None],
+        If[ MatchQ[diagram["OptionValue"["ShowLabel"], opts], None | False] || diagram["Label"] === HoldForm[None],
             "\t\t\t",
             Replace[labelFunction,
                 Automatic :> Function[If[interactiveQ, ClickToCopy, # &][
@@ -1533,6 +1533,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Enclose @ Block[{
 		]
 	][[2]], {}];
 	vertices = Join[diagramVertices, spiderVertices];
+    vertexCoordinates = Thread[If[FreeQ[#, _Pattern], #, Verbatim[#]] & /@ vertices -> Join[MapThread[Replace[#1, {Automatic -> #2, Offset[x_] :> #2 + x}] &, {Through[Values[diagrams]["OptionValue"["Center"]]], Lookup[embedding, diagramVertices]}], Lookup[embedding, spiderVertices]]];
     netGraph = Graph[vertices, edges,
         AnnotationRules -> Join[
             Thread[diagramVertices -> List /@ Thread["Diagram" -> KeyValueMap[
@@ -1561,14 +1562,13 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Enclose @ Block[{
                 diagrams
             ]]],
             Thread[spiderVertices -> List /@ Thread["Diagram" -> spiderDiagrams]]
-        ]
+        ],
+        VertexCoordinates -> Values @ vertexCoordinates
     ];
     If[TrueQ[OptionValue["RemoveCycles"]], netGraph = Confirm @ RemoveDiagramsNetGraphCycles[normalEdges @ netGraph, FilterRules[{opts}, Options[RemoveDiagramsNetGraphCycles]]]];
-    vertexCoordinates = Thread[If[FreeQ[#, _Pattern], #, Verbatim[#]] & /@ vertices -> Join[MapThread[Replace[#1, {Automatic -> #2, Offset[x_] :> #2 + x}] &, {Through[Values[diagrams]["OptionValue"["Center"]]], Lookup[embedding, diagramVertices]}], Lookup[embedding, spiderVertices]]];
 	Graph[
 		netGraph,
 		FilterRules[{opts}, Options[Graph]],
-		VertexCoordinates -> Values @ vertexCoordinates,
 		VertexShapeFunction -> Join[
 			Thread[If[FreeQ[#, _Pattern], #, Verbatim[#]] & /@ diagramVertices ->
 				MapThread[{diagram, orientation} |-> With[{
@@ -1612,8 +1612,8 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Enclose @ Block[{
                     normal1 = (points1[[-1]] - points1[[1]]) * scale * 3;
                     point2 = points2[[1]] * scale;
                     normal2 = (points2[[-1]] - points2[[1]]) * scale * 3;
-                    orientation1 = If[TrueQ[diagram1["OptionValue"["FloatingPorts"]]], Missing[], orientations[v]];
-                    orientation2 = If[TrueQ[diagram2["OptionValue"["FloatingPorts"]]], Missing[], orientations[w]];
+                    orientation1 = If[! diagram1["WireQ"] && TrueQ[diagram1["OptionValue"["FloatingPorts"]]], Missing[], orientations[v]];
+                    orientation2 = If[! diagram2["WireQ"] && TrueQ[diagram2["OptionValue"["FloatingPorts"]]], Missing[], orientations[w]];
 					point1 = If[MissingQ[orientation1], defaultPoint, RotationTransform[{{0, 1}, orientation1}] @ point1];
 					normal1 = If[MissingQ[orientation1], {0, 0}, RotationTransform[{{0, 1}, orientation1}] @ normal1];
 					point2 = If[MissingQ[orientation2], - defaultPoint, RotationTransform[{{0, 1}, orientation2}] @ point2];

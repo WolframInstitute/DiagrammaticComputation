@@ -26,7 +26,7 @@ Begin["Wolfram`DiagrammaticComputation`Diagram`Grid`Private`"];
 
 (* compose vertically preserving grid structure *)
 
-identityDiagrams[ports_, styles_] := Splice @ MapThread[IdentityDiagram[#1, "PortArrows" -> {#2}] &, {ports, styles}]
+identityDiagrams[ports_, styles_] := Splice @ MapThread[IdentityDiagram[#1, "PortArrows" -> {#2}, "PortLabels" -> None] &, {ports, styles}]
 
 permuteRow[a_Diagram, aPorts_List, bPorts_List, i : 1 | -1, rowSortQ : _ ? BooleanQ : False] :=
     Which[
@@ -608,10 +608,12 @@ gridInputPositions[grid_ -> _, pos_] := gridInputPositions[grid, Append[pos, 1]]
 gridInputPositions[grid_] := gridInputPositions[grid, {}]
 
 GridInputPorts[d_Diagram] := If[d["SingletonNodeQ"], d["TopPorts"], GridInputPorts[If[d["NetworkQ"], d["Arrange"], d]["Decompose", "Unary" -> True]]]
-GridInputPorts[grid_] := Catenate[Extract[grid, gridInputPositions[grid], #["TopPorts"] &]]
+(* GridInputPorts[grid_] := Catenate[Extract[grid, gridInputPositions[grid], #["TopPorts"] &]] *)
+GridInputPorts[grid_] := Diagram[grid /. (d_ -> _) :> d]["TopPorts"]
 
 GridOutputPorts[d_Diagram] := If[d["SingletonNodeQ"], d["BottomPorts"], GridOutputPorts[If[d["NetworkQ"], d["Arrange"], d]["Decompose", "Unary" -> True]]]
-GridOutputPorts[grid_] := Catenate[Extract[grid, gridOutputPositions[grid], #["BottomPorts"] &]]
+(* GridOutputPorts[grid_] := Catenate[Extract[grid, gridOutputPositions[grid], #["BottomPorts"] &]] *)
+GridOutputPorts[grid_] := Diagram[grid /. (d_ -> _) :> d]["BottomPorts"]
 
 Options[DiagramGrid] = DeleteDuplicatesBy[First] @ Join[{
     "HorizontalGapSize" -> 1,
@@ -647,7 +649,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
     plotInteractivity = Replace[OptionValue[PlotInteractivity], Automatic -> True],
     dividers
 },
-    grid = DiagramDecompose[DiagramArrange[diagram, FilterRules[{opts, diagram["DiagramOptions"]}, Options[DiagramArrange]]], "Diagram" -> True, "Unary" -> False, FilterRules[{opts}, Options[DiagramDecompose]]];
+    grid = DiagramDecompose[DiagramArrange[diagram, FilterRules[{opts}, Options[DiagramArrange]]], "Diagram" -> True, "Unary" -> False, FilterRules[{opts}, Options[DiagramDecompose]]];
     width = gridWidth[grid];
     height = gridHeight[grid];
 

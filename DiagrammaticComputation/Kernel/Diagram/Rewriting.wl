@@ -10,6 +10,7 @@ BeginPackage["Wolfram`DiagrammaticComputation`Diagram`Rewriting`", {
 DiagramHypergraph
 
 DiagramReplaceList
+DiagramReplace
 
 DiagramExpressionReplace
 
@@ -18,7 +19,11 @@ DiagramRule
 
 DuplicateRule
 EraserRule
+InteractRule
 DuplicateInteractRule
+
+DiagramCopySplit
+
 
 
 Begin["`Private`"]
@@ -36,9 +41,12 @@ patternLabelArities[d_Diagram] := Total /@ Replace[
 	{2}
 ]
 
-DiagramHyperedge[d_Diagram, f_, pattQ : _ ? BooleanQ] := Annotation[
-	labeledVertices[d, f],
-	EdgeLabels -> (Underoverscript[d["Label"], ##] & @@ If[pattQ && TrueQ[d["OptionValue"["FloatingPorts"]]], {_, _}, Replace[patternLabelArities[d], Infinity -> _, 1]])
+DiagramHyperedge[d_Diagram, f_, pattQ : _ ? BooleanQ] := With[{unordered = pattQ && TrueQ[d["OptionValue"["FloatingPorts"]]]},
+	Annotation[
+		labeledVertices[d, f],
+		EdgeLabels -> (Underoverscript[d["Label"], #2, #1] & @@ If[unordered, {_, _}, Replace[patternLabelArities[d], Infinity -> _, 1]]),
+		"EdgeSymmetry" -> If[unordered, "Unordered", "Ordered"]
+	]
 ]
 
 labeledVertices[d_Diagram, f_] := MapThread[
@@ -87,7 +95,7 @@ MatchDiagrams[
 				Diagram[#1,
 					Sequence @@ MapThread[
 						MapThread[If[#1, PortDual, Port][#2] &, {PadRight[#1, Length[#2], #1], #2}] &,
-						{Map[#["DualQ"] &, #1["InputOutputPorts", True], {2}], Replace[#3, Underoverscript[_, nInputs_, _] :> TakeDrop[#2, Total[Take[#4, nInputs]]]]}
+						{Map[#["DualQ"] &, #1["InputOutputPorts", True], {2}], Replace[#3, Underoverscript[_, _, nInputs_] :> TakeDrop[#2, Total[Take[#4, nInputs]]]]}
 					],
 					Replace[#3, Underoverscript[HoldForm[x_], ___] | x_ :> "Expression" :> x],
 					"PortLabels" -> (#1["PortLabels"] /. bindings),
@@ -101,7 +109,7 @@ MatchDiagrams[
 
 Options[DiagramReplaceList] = Join[{"Return" -> Automatic}, Options[Diagram]]
 
-DiagramReplaceList[d_Diagram, src_Diagram -> tgt_Diagram, opts : OptionsPattern[]] := Enclose @ Block[{
+DiagramReplaceList[d_Diagram, src_Diagram -> tgt_Diagram, n : _Integer | Infinity : Infinity, opts : OptionsPattern[]] := Enclose @ Block[{
 	srcHg, tgtNet, tgtHg, tgtDiagrams, rule, net, diagrams, hg, nets,
 	srcF = src["PortFunction"], tgtF = tgt["PortFunction"],
 	matches,
@@ -118,8 +126,9 @@ DiagramReplaceList[d_Diagram, src_Diagram -> tgt_Diagram, opts : OptionsPattern[
 	diagrams = DiagramSubdiagrams[net, {1}];
 	hg = ConfirmBy[With[{f = net["PortFunction"]}, DiagramHypergraph[diagrams, f, labeledVertices[net, f]]], HypergraphQ];
 	If[return === "Hypergraph", Return[hg]];
-	matches = ConfirmMatch[rule[hg, "DistinctVertexLabels" -> False, "DistinctEdgeLabels" -> False], {___ ? AssociationQ}];
+	matches = ConfirmMatch[rule[hg, "DistinctVertexLabels" -> False, "DistinctEdgeLabels" -> False, "SymmetryMethod" -> None], {___ ? AssociationQ}];
 	If[return === "Matches", Return[matches]];
+	matches = Take[matches, UpTo[n]];
 	nets = Map[
 		With[{
 			newNet = SimplifyDiagram @ DiagramNetwork[Join[Delete[diagrams, #["MatchEdgePositions"]], MatchDiagrams[diagrams, tgtDiagrams, #]]],
@@ -129,10 +138,17 @@ DiagramReplaceList[d_Diagram, src_Diagram -> tgt_Diagram, opts : OptionsPattern[
 		] &,
 		matches
 	];
-	Diagram[#, diagramOptions] & /@ If[nets === {}, {d}, Diagram[#, Inherited, Inherited, FilterRules[d["DiagramOptions"], Except["PortArrows" | "PortLabels" | "PortFunction"]]] & /@ If[d["NetworkQ"], nets, DiagramArrange /@ nets]]
+	Diagram[#, Inherited, Inherited, FilterRules[{diagramOptions, d["DiagramOptions"]}, Except["PortArrows" | "PortLabels" | "PortFunction"]]] & /@ If[d["NetworkQ"], nets, DiagramArrange /@ nets]
 ]
 
 DiagramReplaceList[d_Diagram, rules : {__Rule}, opts : OptionsPattern[]] := Fold[{ds, rule} |-> Catenate[DiagramReplaceList[#, rule, opts] & /@ ds], {d}, rules]
+
+
+DiagramReplace[d_Diagram, rules_List, opts : OptionsPattern[]] := First[FoldWhile[DiagramReplaceList[d, #2, 1, opts] &, {}, rules, # === {} &], d]
+
+DiagramReplace[d_Diagram, rule_, opts : OptionsPattern[]] := First[DiagramReplaceList[d, rule, 1, opts], d]
+
+DiagramReplace[rule_][d_Diagram] := DiagramReplace[d, rule]
 
 
 DiagramExpressionReplace[d_Diagram, rules_] :=
@@ -198,14 +214,54 @@ DuplicateRule[ins : {(_Symbol | SuperStar[_Symbol]) ...}, outs : {(_Symbol | Sup
 
 EraserRule[ports : {(_Symbol | SuperStar[_Symbol]) ...}, opts : OptionsPattern[]] := DuplicateRule[ports, {}, "Expression" :> None, "Style" -> Automatic]
 
-DuplicateInteractRule[ins : {(_Symbol | SuperStar[_Symbol]) ...}, outs : {(_Symbol | SuperStar[_Symbol]) ...}, opts : OptionsPattern[]] /; Length[ins] == Length[outs] := Block[{
-	copyOpts = {opts, "Shape" -> "Triangle", "Width" -> 1, "PortLabels" -> {None, Automatic}},
-	lhs, rhs
+
+Options[InteractRule] = Join[{"Bend" -> False}, Options[Diagram]]
+
+InteractRule[expr1_, expr2_, ins : {(_Symbol | SuperStar[_Symbol]) ...}, outs : {(_Symbol | SuperStar[_Symbol]) ...}, opts : OptionsPattern[]] /; Length[ins] == Length[outs] := Block[{
+	diagramOpts = FilterRules[{opts, "Width" -> 1, "PortLabels" -> {None, Automatic}}, Options[Diagram]],
+	d, lhs, rhs
 },
-	lhs = DiagramArrange @ DiagramNetwork[CopyDiagram[SuperStar[_], patternPort /@ ins, copyOpts], CopyDiagram[_, patternPort /@ outs, copyOpts], Alignment -> Center];
-	rhs = DiagramProduct[MapThread[IdentityDiagram[#1 -> #2] &, {ins, outs}]];
+	d = Diagram[expr1, SuperStar[_], patternPort /@ ins, diagramOpts];
+	lhs = DiagramArrange @ DiagramNetwork[
+		If[	TrueQ[OptionValue["Bend"]], d, DiagramFlip[d]],
+		Diagram[expr2, _, patternPort /@ outs, diagramOpts],
+		Alignment -> Center
+	];
+	rhs = DiagramProduct[MapThread[IdentityDiagram[PortDual[#1] -> #2] &, {ins, outs}]];
 	lhs -> rhs	
 ]
+
+DuplicateInteractRule[ins : {(_Symbol | SuperStar[_Symbol]) ...}, outs : {(_Symbol | SuperStar[_Symbol]) ...}, opts : OptionsPattern[]] /; Length[ins] == Length[outs] :=
+	InteractRule["Copy", "Copy", ins, outs, opts, "Shape" -> "Triangle", "Style" -> Hue[0.709, 0.445, 1], "ShowLabel" -> False, "FloatingPorts" -> True]
+
+
+DiagramCopySplit[d_Diagram] := If[d["NetworkQ"], Identity, DiagramArrange][
+	DiagramNetwork[
+		Map[
+			diag |->
+			If[
+				MatchQ[diag["Arities"], {1, i_} /; i > 2]
+				,
+				Splice @ FoldPairList[
+					With[{outs = Replace[#2[[1]], None :> Unique["x"], 1]}, {
+						Diagram[diag, #1, outs,
+							"PortArrows" -> {Inherited, #2[[2]]},
+							"PortLabels" -> {Inherited, #2[[3]]},
+							"Shape" -> Replace[diag["OptionValue"["Shape"]], "Wires"[_] :> "Wires"[{{1, 2}, {1, 3}}]]],
+						Last[outs]
+					}] &,
+					PortDual @ First @ diag["InputPorts"],
+					Thread[{MapAt[None &, {;; -2, -1}] @ Partition[diag["OutputPorts"], 2, 1], Partition[diag["PortStyles"][[2]], 2, 1], Partition[diag["PortLabels"][[2]], 2, 1]}]
+				]
+				,
+				diag
+			],
+			AnnotationValue[{#, VertexList[#]}, "Diagram"] & @ d["NetGraph", "UnarySpiders" -> False]
+		],
+		FilterRules[d["DiagramOptions"], Except["PortFunction"]]
+	]
+]
+
 
 End[]
 
