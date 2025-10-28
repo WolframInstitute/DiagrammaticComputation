@@ -15,13 +15,16 @@ DiagramExpressionReplace
 
 RemoveDiagramRule
 DiagramRule
+
 DuplicateRule
+EraserRule
+DuplicateInteractRule
 
 
 Begin["`Private`"]
 
 
-Options[DiagramHypergraph] = Options[Hypergraph]
+Options[DiagramHypergraph] = Join[{"Pattern" -> False}, Options[Hypergraph]]
 
 
 patternLabelArities[d_Diagram] := Total /@ Replace[
@@ -33,9 +36,9 @@ patternLabelArities[d_Diagram] := Total /@ Replace[
 	{2}
 ]
 
-DiagramHyperedge[d_Diagram, f_] := Annotation[
+DiagramHyperedge[d_Diagram, f_, pattQ : _ ? BooleanQ] := Annotation[
 	labeledVertices[d, f],
-	EdgeLabels -> (Underoverscript[d["Label"], ##] & @@ (Replace[patternLabelArities[d], Infinity -> _, 1]))
+	EdgeLabels -> (Underoverscript[d["Label"], ##] & @@ If[pattQ && TrueQ[d["OptionValue"["FloatingPorts"]]], {_, _}, Replace[patternLabelArities[d], Infinity -> _, 1]])
 ]
 
 labeledVertices[d_Diagram, f_] := MapThread[
@@ -50,9 +53,9 @@ labeledVertices[d_Diagram] := With[{f = d["PortFunction"]},
 DiagramHypergraph[ds : {___Diagram}, f_, vs_List, opts : OptionsPattern[]] := Enclose @ ConfirmBy[
 	Hypergraph[
 		vs,
-		DiagramHyperedge[#, f] & /@ ds,
+		DiagramHyperedge[#, f, TrueQ[OptionValue["Pattern"]]] & /@ ds,
 		"EdgeSymmetry" -> "Ordered",
-		opts
+		FilterRules[{opts}, Options[Hypergraph]]
 	],
 	HypergraphQ
 ]
@@ -77,7 +80,7 @@ MatchDiagrams[
 		{EmptyDiagram[]}
 		,
 		With[{
-			holdBindings = Normal @ KeyMap[HoldForm, HoldForm /@ Association[bindings]],
+			holdBindings = Append[_ -> Missing[]] @ Normal @ KeyMap[HoldForm, HoldForm /@ Association[bindings]],
 			optionRules = Append[_ -> {}] @ Thread[Through[srcDiagrams["HoldExpression"]] -> Through[srcDiagrams["DiagramOptions"]]]
 		},
 			MapThread[
@@ -105,7 +108,7 @@ DiagramReplaceList[d_Diagram, src_Diagram -> tgt_Diagram, opts : OptionsPattern[
 	return = OptionValue["Return"],
 	diagramOptions = FilterRules[{opts}, Options[Diagram]]
 },
-	srcHg = ConfirmBy[DiagramHypergraph[src], HypergraphQ];
+	srcHg = ConfirmBy[DiagramHypergraph[src, "Pattern" -> True], HypergraphQ];
 	tgtNet = ConfirmBy[SimplifyDiagram @ ToDiagramNetwork @ tgt, DiagramQ];
 	tgtDiagrams = DiagramSubdiagrams[tgtNet, {1}];
 	tgtHg = ConfirmBy[With[{f = tgtNet["PortFunction"]}, DiagramHypergraph[tgtDiagrams, f, labeledVertices[tgtNet]]], HypergraphQ];
@@ -171,13 +174,13 @@ DiagramRule[src_Diagram, tgt_Diagram] := Block[{
 DiagramRule[src_Diagram -> tgt_Diagram] := DiagramRule[src, tgt]
 
 
-Options[DuplicateRule] = Options[CopyDiagram];
+Options[DuplicateRule] = Options[EraserRule] = Options[DuplicateInteractRule] = Options[Diagram];
 
 patternPort[expr : _Symbol | SuperStar[_Symbol]] :=
 	Replace[expr, {sym_Symbol :> Pattern @@ {sym, _}, SuperStar[sym_Symbol] :> SuperStar[Pattern @@ {sym, _}]}]
 
-DuplicateRule[ins : {(_Symbol | SuperStar[_Symbol]) ..}, outs : {(_Symbol | SuperStar[_Symbol]) ..}, opts : OptionsPattern[]] := Block[{
-	copyOpts = {opts, "FloatingPorts" -> False, "Shape" -> "Triangle", "Width" -> 1, "Style" -> Hue[0.709, 0.445, 1]},
+DuplicateRule[ins : {(_Symbol | SuperStar[_Symbol]) ...}, outs : {(_Symbol | SuperStar[_Symbol]) ...}, opts : OptionsPattern[]] := Block[{
+	copyOpts = {opts, "Shape" -> "Triangle", "Width" -> 1, "Style" -> Hue[0.709, 0.445, 1]},
 	nodeOpts = {"Shape" -> "UpsideDownTriangle", "Width" -> 1},
 	lhs, rhs
 },
@@ -191,6 +194,17 @@ DuplicateRule[ins : {(_Symbol | SuperStar[_Symbol]) ..}, outs : {(_Symbol | Supe
 		DiagramProduct @ MapIndexed[{p, i} |-> Diagram[\[FormalF], Port[#]["Apply", i[[1]]] & /@ ins, p, "PortLabels" -> {None, Automatic}, nodeOpts], outs]
 	];
 	lhs -> rhs
+]
+
+EraserRule[ports : {(_Symbol | SuperStar[_Symbol]) ...}, opts : OptionsPattern[]] := DuplicateRule[ports, {}, "Expression" :> None, "Style" -> Automatic]
+
+DuplicateInteractRule[ins : {(_Symbol | SuperStar[_Symbol]) ...}, outs : {(_Symbol | SuperStar[_Symbol]) ...}, opts : OptionsPattern[]] /; Length[ins] == Length[outs] := Block[{
+	copyOpts = {opts, "Shape" -> "Triangle", "Width" -> 1, "PortLabels" -> {None, Automatic}},
+	lhs, rhs
+},
+	lhs = DiagramArrange @ DiagramNetwork[CopyDiagram[SuperStar[_], patternPort /@ ins, copyOpts], CopyDiagram[_, patternPort /@ outs, copyOpts], Alignment -> Center];
+	rhs = DiagramProduct[MapThread[IdentityDiagram[#1 -> #2] &, {ins, outs}]];
+	lhs -> rhs	
 ]
 
 End[]

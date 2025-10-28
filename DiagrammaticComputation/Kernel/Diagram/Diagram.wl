@@ -466,7 +466,7 @@ SpiderDiagram[x_List] := SpiderDiagram[{}, x]
 SpiderDiagram[x_] := SpiderDiagram[{}, {x}]
 
 
-CopyDiagram[x_, xs : {__}, opts : OptionsPattern[]] := Diagram["Copy", x, xs, opts, "Shape" -> "Wires"[Thread[{1, Range[2, Length[xs] + 1]}]], "ShowLabel" -> False, "FloatingPorts" -> True]
+CopyDiagram[x_, xs : {___}, opts : OptionsPattern[]] := Diagram["Copy", x, xs, opts, "Shape" -> "Wires"[Thread[{1, Range[2, Length[xs] + 1]}]], "ShowLabel" -> False, "FloatingPorts" -> True]
 
 CopyDiagram[xs : {x_, ___}, opts : OptionsPattern[]] := CopyDiagram[x, xs, opts]
 
@@ -1592,7 +1592,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Enclose @ Block[{
 		],
 		EdgeShapeFunction -> With[{diagrams = Join[diagrams, AssociationThread[spiderVertices -> spiderDiagrams]]}, Replace[edges, {
 				edge : DirectedEdge[v_, w_, {{i : 1 | 2, _Integer, p_Integer}, ___, {j : 1 | 2, _Integer, q_Integer}}] :> If[FreeQ[edge, _Pattern], edge, Verbatim[edge]] -> Block[{
-					point1, point2, normal1, normal2, orientation1 = orientations[v], orientation2 = orientations[w],
+					point1, point2, normal1, normal2, orientation1, orientation2,
                     defaultPoint = rad * scale * Normalize[Subtract @@ Lookup[embedding, {w, v}]],
                     style1, style2, label1, label2,
                     diagram1 = diagrams[v], diagram2 = diagrams[w],
@@ -1612,6 +1612,8 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Enclose @ Block[{
                     normal1 = (points1[[-1]] - points1[[1]]) * scale * 3;
                     point2 = points2[[1]] * scale;
                     normal2 = (points2[[-1]] - points2[[1]]) * scale * 3;
+                    orientation1 = If[TrueQ[diagram1["OptionValue"["FloatingPorts"]]], Missing[], orientations[v]];
+                    orientation2 = If[TrueQ[diagram2["OptionValue"["FloatingPorts"]]], Missing[], orientations[w]];
 					point1 = If[MissingQ[orientation1], defaultPoint, RotationTransform[{{0, 1}, orientation1}] @ point1];
 					normal1 = If[MissingQ[orientation1], {0, 0}, RotationTransform[{{0, 1}, orientation1}] @ normal1];
 					point2 = If[MissingQ[orientation2], - defaultPoint, RotationTransform[{{0, 1}, orientation2}] @ point2];
