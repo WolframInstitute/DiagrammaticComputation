@@ -66,22 +66,32 @@ DiagramHypergraph[d_Diagram, opts : OptionsPattern[]] := With[{net = SimplifyDia
 	]
 ]
 
-MatchDiagrams[diagrams : {___Diagram}, match : KeyValuePattern[{"Hypergraph" -> hg_Hypergraph, "MatchEdgePositions" -> pos_, "NewEdges" -> newEdges_, "Bindings" -> bindings_, "EdgeArities" -> arities_}]] :=
+MatchDiagrams[
+	srcDiagrams : {___Diagram},
+	tgtDiagrams : {___Diagram},
+	match : KeyValuePattern[{"Hypergraph" -> hg_Hypergraph, "MatchEdgePositions" -> pos_, "NewEdges" -> newEdges_, "Bindings" -> bindings_, "EdgeArities" -> arities_}]
+] :=
 	If[
 		EdgeCount[hg] == 0
 		,
 		{EmptyDiagram[]}
 		,
-		MapThread[
-			Diagram[#1,
-				Sequence @@ MapThread[
-					MapThread[If[#1, PortDual, Port][#2] &, {PadRight[#1, Length[#2], #1], #2}] &,
-					{Map[#["DualQ"] &, #1["InputOutputPorts", True], {2}], Replace[#3, Underoverscript[_, nInputs_, _] :> TakeDrop[#2, Total[Take[#4, nInputs]]]]}
-				],
-				Replace[#3, Underoverscript[HoldForm[x_], ___] | x_ :> "Expression" :> x],
-				"PortLabels" -> (#1["PortLabels"] /. bindings)
-			] &,
-			{diagrams, newEdges, Replace[newEdges, OptionValue[hg, EdgeLabels], 1], arities}
+		With[{
+			holdBindings = Normal @ KeyMap[HoldForm, HoldForm /@ Association[bindings]],
+			optionRules = Append[_ -> {}] @ Thread[Through[srcDiagrams["HoldExpression"]] -> Through[srcDiagrams["DiagramOptions"]]]
+		},
+			MapThread[
+				Diagram[#1,
+					Sequence @@ MapThread[
+						MapThread[If[#1, PortDual, Port][#2] &, {PadRight[#1, Length[#2], #1], #2}] &,
+						{Map[#["DualQ"] &, #1["InputOutputPorts", True], {2}], Replace[#3, Underoverscript[_, nInputs_, _] :> TakeDrop[#2, Total[Take[#4, nInputs]]]]}
+					],
+					Replace[#3, Underoverscript[HoldForm[x_], ___] | x_ :> "Expression" :> x],
+					"PortLabels" -> (#1["PortLabels"] /. bindings),
+					Replace[Replace[#1["HoldExpression"], holdBindings], optionRules]
+				] &,
+				{tgtDiagrams, newEdges, Replace[newEdges, OptionValue[hg, EdgeLabels], 1], arities}
+			]
 		]
 	]
 
@@ -109,7 +119,7 @@ DiagramReplaceList[d_Diagram, src_Diagram -> tgt_Diagram, opts : OptionsPattern[
 	If[return === "Matches", Return[matches]];
 	nets = Map[
 		With[{
-			newNet = SimplifyDiagram @ DiagramNetwork[Join[Delete[diagrams, #["MatchEdgePositions"]], MatchDiagrams[tgtDiagrams, #]]],
+			newNet = SimplifyDiagram @ DiagramNetwork[Join[Delete[diagrams, #["MatchEdgePositions"]], MatchDiagrams[diagrams, tgtDiagrams, #]]],
 			freeVertices = Complement[Union @@ EdgeList[#], VertexList[#]] & @ #["Hypergraph"]
 		},
 			If[freeVertices === {}, newNet, SingletonDiagram[newNet, freeVertices]]
@@ -167,16 +177,18 @@ patternPort[expr : _Symbol | SuperStar[_Symbol]] :=
 	Replace[expr, {sym_Symbol :> Pattern @@ {sym, _}, SuperStar[sym_Symbol] :> SuperStar[Pattern @@ {sym, _}]}]
 
 DuplicateRule[ins : {(_Symbol | SuperStar[_Symbol]) ..}, outs : {(_Symbol | SuperStar[_Symbol]) ..}, opts : OptionsPattern[]] := Block[{
-	copyOpts = {"Shape" -> "Triangle", "Width" -> 1, "Style" -> Hue[0.709, 0.445, 1], opts}, lhs, rhs
+	copyOpts = {opts, "FloatingPorts" -> False, "Shape" -> "Triangle", "Width" -> 1, "Style" -> Hue[0.709, 0.445, 1]},
+	nodeOpts = {"Shape" -> "UpsideDownTriangle", "Width" -> 1},
+	lhs, rhs
 },
 	lhs = DiagramRightComposition[
-		Diagram[\[FormalF]_, patternPort /@ ins, \[FormalX], "PortLabels" -> {Automatic, None}],
+		Diagram[\[FormalF]_, patternPort /@ ins, \[FormalX], "PortLabels" -> {Automatic, None}, nodeOpts],
 		CopyDiagram[\[FormalX], patternPort /@ outs, copyOpts],
 		Alignment -> Center
 	];
 	rhs = DiagramRightComposition[
-		DiagramProduct @ Map[p |-> CopyDiagram[p, Port[p]["Apply", #] & /@ Range[Length[outs]], copyOpts, "PortLabels" -> {Automatic, None}, "FloatingPorts" -> False], ins],
-		DiagramProduct @ MapIndexed[{p, i} |-> Diagram[\[FormalF], Port[#]["Apply", i[[1]]] & /@ ins, p, "PortLabels" -> {None, Automatic}], outs]
+		DiagramProduct @ Map[p |-> CopyDiagram[p, Port[p]["Apply", #] & /@ Range[Length[outs]], copyOpts, "PortLabels" -> {Automatic, None}], ins],
+		DiagramProduct @ MapIndexed[{p, i} |-> Diagram[\[FormalF], Port[#]["Apply", i[[1]]] & /@ ins, p, "PortLabels" -> {None, Automatic}, nodeOpts], outs]
 	];
 	lhs -> rhs
 ]
