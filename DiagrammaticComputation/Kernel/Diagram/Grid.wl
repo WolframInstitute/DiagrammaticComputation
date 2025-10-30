@@ -28,11 +28,11 @@ Begin["Wolfram`DiagrammaticComputation`Diagram`Grid`Private`"];
 
 identityDiagrams[ports_, styles_] := Splice @ MapThread[IdentityDiagram[#1, "PortArrows" -> {#2}, "PortLabels" -> None] &, {ports, styles}]
 
-permuteRow[a_Diagram, aPorts_List, bPorts_List, i : 1 | -1, rowSortQ : _ ? BooleanQ : False] :=
+permuteRow[a_Diagram, aPorts_List, bPorts_List, dir : 1 | -1, rowSortQ : _ ? BooleanQ : False, score_Function : Function[- DamerauLevenshteinDistance[#1, #2]]] :=
     Which[
         a["Head"] === DiagramProduct,
-            With[{row = a["SubDiagrams"]}, {len = Length[row], arities = Through[row[Switch[i, 1, "OutputArity", -1, "InputArity"]]]},
-                Replace[permuteRow[row, TakeList[aPorts, arities], bPorts, i, rowSortQ],
+            With[{row = a["SubDiagrams"]}, {len = Length[row], arities = Through[row[Switch[dir, 1, "OutputArity", -1, "InputArity"]]]},
+                Replace[permuteRow[row, TakeList[aPorts, arities], bPorts, dir, rowSortQ, score],
                     {changedQ_, newRow_, newPorts_} :> {
                         changedQ,
                         If[! changedQ, a, DiagramProduct[newRow, FilterRules[a["DiagramOptions"], Except["PortArrows" | "PortLabels"]]]],
@@ -42,26 +42,26 @@ permuteRow[a_Diagram, aPorts_List, bPorts_List, i : 1 | -1, rowSortQ : _ ? Boole
             ],
         a["Head"] === DiagramComposition,
             With[{as = a["SubDiagrams"], f = a["PortFunction"], opts = FilterRules[a["DiagramOptions"], Except["PortArrows" | "PortLabels"]]},
-                With[{changedQ = Or @@ #[[All, 1]]}, {changedQ, If[changedQ, ColumnDiagram[Switch[i, 1, Reverse[#[[All, 2]]], -1, #[[All, 2]]], opts], a], #[[1, 3]]}] & @ FoldPairList[
-                    With[{new = permuteRow[#2, f /@ Switch[i, 1, #2["OutputPorts"], -1, PortDual /@ #2["InputPorts"]], #1, i, rowSortQ]},
+                With[{changedQ = Or @@ #[[All, 1]]}, {changedQ, If[changedQ, ColumnDiagram[Switch[dir, 1, Reverse[#[[All, 2]]], -1, #[[All, 2]]], "RowSort" -> False, opts], a], #[[1, 3]]}] & @ FoldPairList[
+                    With[{new = permuteRow[#2, f /@ Switch[dir, 1, #2["OutputPorts"], -1, PortDual /@ #2["InputPorts"]], #1, dir, rowSortQ, score]},
                         {
                             new,
-                            f /@ Switch[i, 1, PortDual /@ new[[2]]["InputPorts"], -1, new[[2]]["OutputPorts"]]
+                            f /@ Switch[dir, 1, PortDual /@ new[[2]]["InputPorts"], -1, new[[2]]["OutputPorts"]]
                         }
                     ] &,
                     bPorts,
-                    Switch[i, 1, as, -1, Reverse[as]]
+                    Switch[dir, 1, as, -1, Reverse[as]]
                 ]
             ],
         True,
             With[{
                 perm = If[
-                    Length[aPorts] <= 9 && MatchQ[a["OptionValue"["FloatingPorts"]], True | Switch[i, 1, {_, True}, -1, {True, _}]],
+                    Length[aPorts] <= 9 && MatchQ[a["OptionValue"["FloatingPorts"]], True | Switch[dir, 1, {_, True}, -1, {True, _}]],
                     FindPermutation[
                         aPorts,
                         First @ MaximalBy[
                             Permutations[aPorts],
-                            - DamerauLevenshteinDistance[#, bPorts] &,
+                            score[#, bPorts] &,
                             1
                         ]
                     ],
@@ -70,18 +70,39 @@ permuteRow[a_Diagram, aPorts_List, bPorts_List, i : 1 | -1, rowSortQ : _ ? Boole
             },
                 If[ perm === Cycles[{}],
                     {False, a, aPorts},
-                    {True, a[Switch[i, 1, "PermuteOutput", -1, "PermuteInput"], perm], Permute[aPorts, perm]}
+                    {True, a[Switch[dir, 1, "PermuteOutput", -1, "PermuteInput"], perm], Permute[aPorts, perm]}
                 ]
             ]
     ]
 
-permuteRow[row : {__Diagram}, rowPorts_List, ports_List, i : 1 | -1, rowSortQ : _ ? BooleanQ : False] := With[{
-    padPorts = MapThread[Replace[#1, Missing[] -> #2] &, {Switch[i, 1, PadRight, -1, PadLeft][ports, Total[Length /@ rowPorts], Missing[]], Catenate[rowPorts]}]
+foldPermuteRow[row_, rowPorts_, ports_, dir_, rowSortQ_, score_] :=
+    {Or @@ #1, #2, Catenate[#3]} & @@ Thread @ FoldPairList[
+        With[
+            {curRowPorts = #1, curRow = #2[[1]], curPorts = #2[[2]], pos = #2[[3]]},
+            {newRowData = permuteRow[curRow, curRowPorts[[pos]], curPorts, dir, rowSortQ, Function[score[Catenate[ReplacePart[curRowPorts, pos -> #1]], ports]]]}
+            ,
+            {
+                newRowData,
+                ReplacePart[curRowPorts, pos -> newRowData[[3]]]
+            }
+        ] &,
+        rowPorts,
+        Thread[{row, TakeList[ports, Length /@ rowPorts], Range[Length[row]]}]
+    ]
+
+permuteRow[row : {__Diagram}, rowPorts_List, ports_List, dir : 1 | -1, rowSortQ : _ ? BooleanQ : False, score_Function : Function[- DamerauLevenshteinDistance[#1, #2]]] := With[{
+    padPorts = MapThread[Replace[#1, Missing[] -> #2] &, {Switch[dir, 1, PadRight, -1, PadLeft][ports, Total[Length /@ rowPorts], Missing[]], Catenate[rowPorts]}]
 },
-    If[ ! rowSortQ || Length[rowPorts] > 9,
-        {Or @@ #1, #2, Catenate[#3]} & @@ Thread @ MapThread[permuteRow[##, i, rowSortQ] &, {row, rowPorts, TakeList[padPorts, Length /@ rowPorts]}],
-        With[{perm = FindPermutation[rowPorts, First @ MaximalBy[Permutations @ rowPorts, - DamerauLevenshteinDistance[Catenate[#], padPorts] &, 1]]},
-            {perm =!= Cycles[{}] || Or @@ #1, #2, Catenate[#3]} & @@ Thread @ MapThread[permuteRow[##, i, rowSortQ] &, {Permute[row, perm], Permute[rowPorts, perm], TakeList[padPorts, Length /@ Permute[rowPorts, perm]]}]
+    If[ ! rowSortQ || Length[rowPorts] > 9
+        ,
+        foldPermuteRow[row, rowPorts, padPorts, dir, rowSortQ, score]
+        ,
+        First @ MaximalBy[
+            With[{perm = FindPermutation[rowPorts, #]},
+                MapAt[perm =!= Cycles[{}] || # &, {1}] @ foldPermuteRow[Permute[row, perm], #, padPorts, dir, rowSortQ, score]
+            ] & /@ Permutations[rowPorts],
+            score[#[[3]], padPorts] &,
+            1
         ]
     ]
 ]
@@ -92,7 +113,11 @@ PermutationDecompose[perm_List ? PermutationListQ] := Switch[Length[perm], 0, {}
 
 PermutationCompose[perms : {___ ? PermutationListQ}] := Fold[Join[#1, #2 + Length[#1]] &, {}, perms]
 
-Options[ColumnDiagram] := Join[{"PortOrderingFunction" -> Automatic, "Direction" -> Down, "RowSort" -> False, "PassThrough" -> False, "PermutationDecompose" -> True}, Options[Diagram]]
+Options[ColumnDiagram] := DeleteDuplicatesBy[First] @ Join[
+    {"PortOrderingFunction" -> Automatic, "Direction" -> Down, "RowSort" -> False, "PassThrough" -> False, "PermutationDecompose" -> True},
+    Options[DiagramComposition],
+    Options[Daigram]
+]
 
 ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPattern[]] := Module[{
     func = OptionValue["PortFunction"],
@@ -171,9 +196,14 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
         ]
     }
     ];
-
-    Replace[permuteRow[a, aPorts, bPorts, 1, rowSortQ], {True, newA_, _} :> (a = newA; resetPortsA[])];
-    Replace[permuteRow[b, bPorts, aPorts, -1, rowSortQ], {True, newB_, _} :> (b = newB; resetPortsB[])];
+    
+    If[ MatchQ[OptionValue[Direction], Top | Up],
+        Replace[permuteRow[b, bPorts, aPorts, -1, rowSortQ], {True, newB_, _} :> (b = newB; resetPortsB[])];
+        Replace[permuteRow[a, aPorts, bPorts, 1, rowSortQ], {True, newA_, _} :> (a = newA; resetPortsA[])]
+        ,
+        Replace[permuteRow[a, aPorts, bPorts, 1, rowSortQ], {True, newA_, _} :> (a = newA; resetPortsA[])];
+        Replace[permuteRow[b, bPorts, aPorts, -1, rowSortQ], {True, newB_, _} :> (b = newB; resetPortsB[])]
+    ];
 
     aStyles = a["PortStyles"];
     bStyles = b["PortStyles"];
@@ -649,7 +679,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
     plotInteractivity = Replace[OptionValue[PlotInteractivity], Automatic -> True],
     dividers
 },
-    grid = DiagramDecompose[DiagramArrange[diagram, FilterRules[{opts}, Options[DiagramArrange]]], "Diagram" -> True, "Unary" -> False, FilterRules[{opts}, Options[DiagramDecompose]]];
+    grid = DiagramDecompose[DiagramArrange[diagram, FilterRules[{opts, diagram["DiagramOptions"]}, Options[DiagramArrange]]], "Diagram" -> True, "Unary" -> False, FilterRules[{opts}, Options[DiagramDecompose]]];
     width = gridWidth[grid];
     height = gridHeight[grid];
 
