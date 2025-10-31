@@ -19,8 +19,8 @@ DiagramRule
 
 DuplicateRule
 EraserRule
-InteractRule
-DuplicateInteractRule
+AnnihilateRule
+DuplicateAnnihilateRule
 
 DiagramCopySplit
 
@@ -50,7 +50,7 @@ DiagramHyperedge[d_Diagram, f_, pattQ : _ ? BooleanQ] := With[{unordered = pattQ
 ]
 
 labeledVertices[d_Diagram, f_] := MapThread[
-	Labeled[f[#1], Replace[#2, {Automatic :> (Replace[#1["Name"], Labeled[l_, __] :> l]), False -> None}]] &,
+	Labeled[f[#1], {Replace[#2, {Automatic :> (Replace[#1["Name"], Labeled[l_, __] :> l]), False -> None}], #["DualQ"]}] &,
 	{Catenate @ d["InputOutputPorts", True], Catenate @ d["PortLabels"], Catenate @ d["PortStyles"]}
 ]
 
@@ -141,7 +141,12 @@ DiagramReplaceList[d_Diagram, src_Diagram -> tgt_Diagram, n : _Integer | Infinit
 	Diagram[#, Inherited, Inherited, FilterRules[{diagramOptions, d["DiagramOptions"]}, Except["PortArrows" | "PortLabels" | "PortFunction"]]] & /@ If[d["NetworkQ"], nets, DiagramArrange /@ nets]
 ]
 
-DiagramReplaceList[d_Diagram, rules : {__Rule}, opts : OptionsPattern[]] := Fold[{ds, rule} |-> Catenate[DiagramReplaceList[#, rule, opts] & /@ ds], {d}, rules]
+DiagramReplaceList[d_Diagram, rules : {__Rule}, opts : OptionsPattern[]] := Switch[OptionValue["Return"],
+	"Hypergraph",
+	DiagramHypergraph[d],
+	_,
+	DiagramReplaceList[d, #, opts] & /@ rules
+]
 
 
 DiagramReplace[d_Diagram, rules_List, opts : OptionsPattern[]] := First[FoldWhile[DiagramReplaceList[d, #2, 1, opts] &, {}, rules, # === {} &], d]
@@ -190,7 +195,7 @@ DiagramRule[src_Diagram, tgt_Diagram] := Block[{
 DiagramRule[src_Diagram -> tgt_Diagram] := DiagramRule[src, tgt]
 
 
-Options[DuplicateRule] = Options[EraserRule] = Options[DuplicateInteractRule] = Options[Diagram];
+Options[DuplicateRule] = Options[EraserRule] = Options[DuplicateAnnihilateRule] = Options[Diagram];
 
 patternPort[expr : _Symbol | SuperStar[_Symbol]] :=
 	Replace[expr, {sym_Symbol :> Pattern @@ {sym, _}, SuperStar[sym_Symbol] :> SuperStar[Pattern @@ {sym, _}]}]
@@ -215,9 +220,9 @@ DuplicateRule[ins : {(_Symbol | SuperStar[_Symbol]) ...}, outs : {(_Symbol | Sup
 EraserRule[ports : {(_Symbol | SuperStar[_Symbol]) ...}, opts : OptionsPattern[]] := DuplicateRule[ports, {}, "Expression" :> None, "Style" -> Automatic]
 
 
-Options[InteractRule] = Join[{"Bend" -> False}, Options[Diagram]]
+Options[AnnihilateRule] = Join[{"Bend" -> False}, Options[Diagram]]
 
-InteractRule[expr1_, expr2_, ins : {(_Symbol | SuperStar[_Symbol]) ...}, outs : {(_Symbol | SuperStar[_Symbol]) ...}, opts : OptionsPattern[]] /; Length[ins] == Length[outs] := Block[{
+AnnihilateRule[expr1_, expr2_, ins : {(_Symbol | SuperStar[_Symbol]) ...}, outs : {(_Symbol | SuperStar[_Symbol]) ...}, opts : OptionsPattern[]] /; Length[ins] == Length[outs] := Block[{
 	diagramOpts = FilterRules[{opts, "Width" -> 1, "PortLabels" -> {None, Automatic}}, Options[Diagram]],
 	d, lhs, rhs
 },
@@ -231,8 +236,8 @@ InteractRule[expr1_, expr2_, ins : {(_Symbol | SuperStar[_Symbol]) ...}, outs : 
 	lhs -> rhs	
 ]
 
-DuplicateInteractRule[ins : {(_Symbol | SuperStar[_Symbol]) ...}, outs : {(_Symbol | SuperStar[_Symbol]) ...}, opts : OptionsPattern[]] /; Length[ins] == Length[outs] :=
-	InteractRule["Copy", "Copy", ins, outs, opts, "Shape" -> "Triangle", "Style" -> Hue[0.709, 0.445, 1], "ShowLabel" -> False, "FloatingPorts" -> True]
+DuplicateAnnihilateRule[ins : {(_Symbol | SuperStar[_Symbol]) ...}, outs : {(_Symbol | SuperStar[_Symbol]) ...}, opts : OptionsPattern[]] /; Length[ins] == Length[outs] :=
+	AnnihilateRule["Copy", "Copy", ins, outs, opts, "Shape" -> "Triangle", "Style" -> Hue[0.709, 0.445, 1], "ShowLabel" -> False, "FloatingPorts" -> True]
 
 
 DiagramCopySplit[d_Diagram] := If[d["NetworkQ"], Identity, DiagramArrange][
