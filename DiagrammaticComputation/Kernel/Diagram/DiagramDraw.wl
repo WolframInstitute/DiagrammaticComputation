@@ -47,7 +47,7 @@ DiagramDraw[diagram_ : <||>, opts : OptionsPattern[]] := DynamicModule[{
 	dragBoxQ = False, dragConnectorQ = False,
 	wire = None, targetConnector = None,
 	graphicsEnteredQ = False,
-	graphics, canvas, widget
+	graphics, canvas, boxId = 1
 },
 	do[action_] := (
 		AppendTo[actions, action];
@@ -55,7 +55,7 @@ DiagramDraw[diagram_ : <||>, opts : OptionsPattern[]] := DynamicModule[{
 			action,
 			{
 				"AddBox"[pos : {Repeated[{_Real, _Real}, {2, Infinity}]}] :> (
-					AppendTo[boxes, Unique[] -> "Box"[pos, {}]]
+					AppendTo[boxes, boxId++ -> "Box"[pos, {}]]
 				),
 				"SelectBox"[Key[boxId_] | boxId_] :> If[MemberQ[selectedBoxes, boxId], selectedBoxes = DeleteElements[selectedBoxes, {boxId}], AppendTo[selectedBoxes, boxId]],
 				"SelectConnector"[Key[boxId_] | boxId_, connectorId_] :> If[MemberQ[selectedConnectors, {boxId, connectorId}],
@@ -178,10 +178,10 @@ DiagramDraw[diagram_ : <||>, opts : OptionsPattern[]] := DynamicModule[{
 					CopyToClipboard[<|"Boxes" -> boxes, "Wires" -> wires|>]
 				],
 				Button["Copy Diagram",
-					CopyToClipboard[DiagramNetwork[##, "UnarySpiders" -> False, "BinarySpiders" -> False, "Orientation" -> False, "ShowWireLabels" -> False, VertexCoordinates -> MapIndexed[#2[[1]] -> Mean @ #1[[1]] &, Values[boxes]]] & @@
+					CopyToClipboard[DiagramNetwork[##, "Orientation" -> False, "ShowWireLabels" -> False, VertexCoordinates -> MapIndexed[#2[[1]] -> Mean @ #1[[1]] &, Values[boxes]]] & @@
 						KeyValueMap[
 							Diagram[#1,
-								Replace[#1 /@ Range[Length[#2[[2]]]], Rule @@@ Apply[Construct, wires, {2}], 1],
+								Replace[#1 /@ Range[Length[#2[[2]]]], Append[Rule @@@ Apply[Construct, wires, {2}], x_ :> PortDual[x]], 1],
 								"Width" -> Abs[#2[[1, 2, 1]] - #2[[1, 1, 1]]],
 								"Height" -> Abs[#2[[1, 2, 2]] - #2[[1, 1, 2]]],
 								"LabelFunction" -> ("" &),

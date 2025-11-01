@@ -308,6 +308,7 @@ DiagramFlip[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
     ],
     "PortArrows" -> Reverse[d["PortStyles", opts]],
     "PortLabels" -> Reverse[d["PortLabels", opts]],
+    "FloatingPorts" -> Replace[d["OptionValue"["FloatingPorts"], opts], floats : {_, _} :> Reverse[floats]],
     "DiagramOptions" -> d["DiagramOptions"]
 ]
 
@@ -989,18 +990,18 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
 }, Graphics[If[TrueQ["PortsFirst"], Identity, Permute[#, Cycles[{{2, 3}}]] &] @ {
     Arrowheads @ If[shape === "Point", {{Small, .7}}, Small],
     MapThread[{ports, ps, arrows, labels, dir} |->
-        MapThread[{x, p, arrow, label} |-> {
+        MapThread[{x, p, arrow, label, i} |-> {
             If[ MatchQ[arrow, None | False],
                 Nothing,
-                {Replace[arrow, True | Automatic | _Function -> Nothing], Replace[portArrowFunction[x, p, dir], True | Automatic | Inherited :> Arrow[If[x["DualQ"], Reverse, Identity][p]]]}
+                {Replace[arrow, True | Automatic | _Function -> Nothing], Replace[portArrowFunction[x, p, dir, i], {True | Automatic | Inherited :> Arrow[If[x["DualQ"], Reverse, Identity][p]], False | None -> Nothing}]}
             ],
             With[{
                 labelExpr = Replace[label, Placed[e_, _] :> e],
-                newLabel = Replace[label, {Placed[l_, pos_] :> Placed[Replace[portLabelFunction[x, l, dir], Placed[e_, _] :> e], pos], l_ :> portLabelFunction[x, l, dir]}]
+                newLabel = Replace[label, {Placed[l_, pos_] :> Placed[Replace[portLabelFunction[x, l, dir, i], Placed[e_, _] :> e], pos], l_ :> portLabelFunction[x, l, dir, i]}]
             }, If[ MatchQ[labelExpr, None | False],
                 Nothing,
                 Replace[newLabel, Placed[l_, pos_] | l_ :> If[l === None, Nothing, Text[
-                        l /. Inherited :> $DefaultPortLabelFunction[x, labelExpr, dir],
+                        l /. Inherited :> $DefaultPortLabelFunction[x, labelExpr, dir, i],
                         With[{v = (p[[-1]] - p[[1]]) 3 / 4, s = PadLeft[Flatten[Replace[{pos}, {{Right} -> {2, 0}, {Left} -> {- 2, 0}, {Top | Up} -> {0, 2}, {Bottom | Down} -> {0, - 2}, {Center} -> {0, 0}, {} -> {0, 2}}]], 2, 0]},
                             p[[1]] + s[[2]] * v + s[[1]] * RotationTransform[Replace[dir, {Top -> Pi / 2, Bottom -> - Pi / 2}]][v]
                         ]
@@ -1008,7 +1009,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
                 ]
             ]]
         },
-           {ports, ps, arrows, labels}
+           {ports, ps, arrows, labels, Range[Length[ps]]}
         ],
         {{diagram["InputPorts"], diagram["OutputPorts"]}, points, portArrows, portLabels, {Top, Bottom}}
     ],
@@ -1156,6 +1157,9 @@ SimplifyDiagram[diag_ ? DiagramQ, opts : OptionsPattern[]] /; diag["NetworkQ"] :
         FilterRules[{opts}, Options[DiagramsNetGraph]],
         "PortFunction" -> portFunction, "Spiders" -> False, "TagPorts" -> False
     ];
+    If[ VertexCount[net] == 0,
+        Return[SingletonDiagram[EmptyDiagram[], diag["AnnotatedInputOutputPorts", True]]];
+    ];
     Diagram[DiagramAssignPorts[DiagramNetwork[toIdentities @ AnnotationValue[{net, VertexList[net]}, "Diagram"]], diag["AnnotatedInputOutputPorts", True]], FilterRules[diag["DiagramOptions"], Except["PortFunction"]]]
 ]
 
@@ -1205,7 +1209,7 @@ DiagramsGraph[diagrams : {___Diagram ? DiagramQ}, opts : OptionsPattern[]] := Bl
         GraphEmbedding[
             EdgeAdd[graph,
                 Catenate[DirectedEdge @@@ Partition[Reverse @ Catenate[#], 2, 1, 1] & /@ MapAt[Reverse, indexedPorts, {All, 2}]],
-                FilterRules[{opts}, {VertexCoordinates, GraphLayout}]
+                FilterRules[{opts}, {GraphLayout}]
             ]
         ]
     ];
@@ -1615,9 +1619,9 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Enclose @ Block[{
                     orientation1 = If[! diagram1["WireQ"] && TrueQ[diagram1["OptionValue"["FloatingPorts"]]], Missing[], orientations[v]];
                     orientation2 = If[! diagram2["WireQ"] && TrueQ[diagram2["OptionValue"["FloatingPorts"]]], Missing[], orientations[w]];
 					point1 = If[MissingQ[orientation1], defaultPoint, RotationTransform[{{0, 1}, orientation1}] @ point1];
-					normal1 = If[MissingQ[orientation1], {0, 0}, RotationTransform[{{0, 1}, orientation1}] @ normal1];
+					normal1 = If[MissingQ[orientation1], defaultPoint - point1, RotationTransform[{{0, 1}, orientation1}] @ normal1];
 					point2 = If[MissingQ[orientation2], - defaultPoint, RotationTransform[{{0, 1}, orientation2}] @ point2];
-					normal2 = If[MissingQ[orientation2], {0, 0}, RotationTransform[{{0, 1}, orientation2}] @ normal2];
+					normal2 = If[MissingQ[orientation2], point2 - defaultPoint, RotationTransform[{{0, 1}, orientation2}] @ normal2];
 					With[{
                         a = VectorSymbol["p", 2], b = VectorSymbol["q", 2],
                         lindep = v === w && TrueQ[Quiet[Chop[Det[{normal1, normal2}]]] == 0],
@@ -1642,7 +1646,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Enclose @ Block[{
                                         {style, Arrow @ BSplineCurve @ #} &
                                     ] @ {
                                         a + point1, a + point1 + normal1,
-                                        If[lindep, (a + b) / 2 + 2 * RotationTransform[Pi / 2][normal1], Nothing],
+                                        If[{v, i} === {w, j}, Nothing, If[lindep, (a + b) / 2 + 2 * RotationTransform[Pi / 2][normal1], Nothing]],
                                         b + point2 + normal2, b + point2
                                     }
                                 ]
@@ -1727,32 +1731,6 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Enclose @ Block[{
 					]
 				]
             ],
-            (* ,
-				edge : DirectedEdge[v_Integer, _, {{i : 1 | 2, _Integer, p_Integer}, _}] | DirectedEdge[_, v_Integer, {_, {i : 1 | 2, _Integer, p_Integer}}] :>  If[FreeQ[edge, _Pattern], edge, Verbatim[edge]] -> Block[{
-					point, normal, orientation = orientations[v], portCoords = Lookup[embedding, Key[{v, i, p}]],
-                    style = diagrams[v]["PortStyles"][[i, p]],
-                    diagram = diagrams[v],
-                    port, points,
-                    hold
-				},
-                    port = diagram[Replace[i, {1 -> "InputPorts", 2 -> "OutputPorts"}]][[p]];
-                    points = diagram["PortArrows"][[i, p]];
-                    point = points[[1]] * scale;
-                    normal = (points[[-1]] - points[[1]]) * scale * 3;
-					point = RotationTransform[{{0, 1}, orientation}] @ point;
-					normal = RotationTransform[{{0, 1}, orientation}] @ normal;
-
-					With[{a = VectorSymbol["p", 2], b = VectorSymbol["q", 2]},
-						Function[Evaluate @ If[style === None, {}, {
-							With[{arrowheads = Arrowheads[If[port["DualQ"], {{-arrowSize, .5}}, {{arrowSize, .5}}]]},
-                                If[ MatchQ[style, _Function],
-                                    {arrowheads, hold[style][#, "Net"]} &,
-                                    {arrowheads, Replace[style, Automatic -> Nothing], Arrow @ BSplineCurve @ #} &
-                                ]
-                            ] @ {a + point, a + point + normal, b + scale Normalize[portCoords - b], b + rad scale Normalize[portCoords - b]}
-						}]] /. With[{s = If[IntegerQ[edge[[1]]], 1, -1]}, {a :> #[[s]], b :> #[[-s]], hold[expr_] :> expr}]
-					]
-				], *)
 				_ -> Nothing
 			},
 			1

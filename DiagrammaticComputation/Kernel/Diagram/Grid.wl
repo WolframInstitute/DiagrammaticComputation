@@ -165,46 +165,19 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
 
     aStyles = Pick[aStyles[[2]], pa];
     bStyles = Pick[bStyles[[1]], pb];
-    
-    Replace[SequenceAlignment[Reverse[aPorts], Reverse[bPorts], Method -> "Local"], {
-        {left : {l_, {}} | {{}, l_} : {}, {__}, right : {r_, {}} | {{}, r_} : {}} /; ! ({l} =!= {} && {r} =!= {} && IntersectingQ[l, r]) :> (
-            Which[
-                MatchQ[left, {_, {}}],
-                    b = RowDiagram[permuteRow[{b, identityDiagrams[Take[as, - Length[l]], Take[aStyles, - Length[l]]]}, Join[{bPorts}, List /@ Take[aPorts, - Length[l]]], aPorts, -1, rowSortQ][[2]]];
-                    resetPortsB[]
-                ,
-                MatchQ[left, {{}, _}],
-                    a = RowDiagram[permuteRow[{a, identityDiagrams[Take[bs, - Length[l]], Take[bStyles, - Length[l]]]}, Join[{aPorts}, List /@ Take[bPorts, - Length[l]]], bPorts, 1, rowSortQ][[2]]];
-                    resetPortsA[]
-            ];
-            Which[
-                MatchQ[right, {_, {}}],
-                    b = RowDiagram[permuteRow[{identityDiagrams[Take[as, Length[r]], Take[aStyles, Length[r]]], b}, Join[List /@ Take[aPorts, Length[r]], {bPorts}], aPorts, -1, rowSortQ][[2]]];
-                    resetPortsB[],
-                MatchQ[right, {{}, _}],
-                    a = RowDiagram[permuteRow[{identityDiagrams[Take[bs, Length[r]], Take[bStyles, Length[r]]], a}, Join[List /@ Take[bPorts, Length[r]], {aPorts}], bPorts, 1, rowSortQ][[2]]];
-                    resetPortsA[]
-            ]
-        ),
-        _ :> Block[{inPos, outPos, ins, outs},
-            inPos = FirstPositions[bPorts, aPorts];
-            ins = Delete[bs, inPos];
-            If[ins =!= {}, a = RowDiagram[permuteRow[{identityDiagrams[ins, Delete[bStyles, inPos]], a}, Join[List /@ Delete[bPorts, inPos], {aPorts}], bPorts, 1, rowSortQ][[2]]]; resetPortsA[]];
-            outPos = FirstPositions[aPorts, bPorts];
-            outs = Delete[as, outPos];
-            If[outs =!= {}, b = RowDiagram[permuteRow[{b, identityDiagrams[outs, Delete[aStyles, outPos]]}, Join[{bPorts}, List /@ Delete[aPorts, outPos]], aPorts, -1, rowSortQ][[2]]]; resetPortsB[]]
-        ]
-    }
-    ];
-    
-    If[ MatchQ[OptionValue[Direction], Top | Up],
-        Replace[permuteRow[b, bPorts, aPorts, -1, rowSortQ], {True, newB_, _} :> (b = newB; resetPortsB[])];
-        Replace[permuteRow[a, aPorts, bPorts, 1, rowSortQ], {True, newA_, _} :> (a = newA; resetPortsA[])]
-        ,
-        Replace[permuteRow[a, aPorts, bPorts, 1, rowSortQ], {True, newA_, _} :> (a = newA; resetPortsA[])];
-        Replace[permuteRow[b, bPorts, aPorts, -1, rowSortQ], {True, newB_, _} :> (b = newB; resetPortsB[])]
-    ];
 
+    Block[{inPos, ins, outPos, outs},
+        inPos = FirstPositions[Verbatim /@ bPorts, aPorts];
+        ins = Delete[bs, inPos];
+        If[ins =!= {}, a = RowDiagram[permuteRow[{identityDiagrams[ins, Delete[bStyles, inPos]], a}, Join[List /@ Delete[bPorts, inPos], {aPorts}], bPorts, 1, rowSortQ][[2]]]; resetPortsA[]];
+        outPos = FirstPositions[Verbatim /@ aPorts, bPorts];
+        outs = Delete[as, outPos];
+        If[outs =!= {}, b = RowDiagram[permuteRow[{b, identityDiagrams[outs, Delete[aStyles, outPos]]}, Join[{bPorts}, List /@ Delete[aPorts, outPos]], aPorts, -1, rowSortQ][[2]]]; resetPortsB[]]
+    ];
+    
+    Replace[permuteRow[a, aPorts, bPorts, 1, rowSortQ], {True, newA_, _} :> (a = newA; resetPortsA[])];
+    Replace[permuteRow[b, bPorts, aPorts, -1, rowSortQ], {True, newB_, _} :> (b = newB; resetPortsB[])];
+    
     aStyles = a["PortStyles"];
     bStyles = b["PortStyles"];
  
@@ -251,12 +224,12 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
 
 ColumnDiagram[{}, opts : OptionsPattern[]] := EmptyDiagram[opts]
 
-ColumnDiagram[xs : {__Diagram}, opts : OptionsPattern[]] := If[
+ColumnDiagram[xs : {__Diagram}, opts : OptionsPattern[]] := Enclose @ If[
     MatchQ[OptionValue["Direction"], Up | Top]
     ,
-    Fold[ColumnDiagram[{#2, #1}, opts] &, Reverse[xs]]
+    Fold[Confirm @ ColumnDiagram[{#2, #1}, opts] &, Reverse[xs]]
     ,
-    Fold[ColumnDiagram[{##}, opts] &, xs]
+    Fold[Confirm @ ColumnDiagram[{##}, opts] &, xs]
 ]
     
 
@@ -688,6 +661,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
     wireLabels = diagram["OptionValue"["WireLabels"], opts],
     frames = diagram["OptionValue"["Frames"], opts],
     alignment = diagram["OptionValue"[Alignment], opts],
+    smooth = diagram["OptionValue"["SmoothWires"], opts],
     plotInteractivity = Replace[OptionValue[PlotInteractivity], Automatic -> True],
     dividers
 },
@@ -711,8 +685,9 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
     unlabeledGrid = Fold[
         With[{diagramPos = {#2[[1]]}, portPos = Catenate[Prepend[#[[1]]] /@ #[[2, All, 3 ;;]] & /@ #2[[2]]]},
             MapAt[
-                With[{val = ReplacePart[ConstantArray[None, #] & /@ #["Arities"], Inherited, portPos]},
-                    Diagram[#, "PortArrows" -> val, "PortLabels" -> val]
+                Diagram[#,
+                    "PortArrowFunction" -> Function[If[MemberQ[portPos, {Replace[#3, {Top -> 1, Bottom -> 2}], #4}], Inherited, None]],
+                    "PortLabelFunction" -> Function[If[MemberQ[portPos, {Replace[#3, {Top -> 1, Bottom -> 2}], #4}], Inherited, None]]
                 ] &,
                 #1,
                 diagramPos
@@ -737,7 +712,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
         ]
     };
 
-    If[TrueQ[OptionValue["SmoothWires"]], SmoothGraphicsCurves, Identity] @ Graphics[
+    Switch[smooth, True, SmoothGraphicsCurves, _List, SmoothGraphicsCurves[#, Sequence @@ smooth] &, _, Identity] @ Graphics[
         Switch[frames,
             All | Automatic,
             With[{subDiagrams = Append[#[[1]], 2] -> Diagram[#[[2]],
