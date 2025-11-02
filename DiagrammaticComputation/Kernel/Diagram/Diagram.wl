@@ -467,7 +467,7 @@ SpiderDiagram[x_List] := SpiderDiagram[{}, x]
 SpiderDiagram[x_] := SpiderDiagram[{}, {x}]
 
 
-CopyDiagram[x_, xs : {___}, opts : OptionsPattern[]] := Diagram["Copy", x, xs, opts, "Shape" -> "Wires"[Thread[{1, Range[2, Length[xs] + 1]}]], "ShowLabel" -> False, "FloatingPorts" -> True]
+CopyDiagram[x_, xs : {___}, opts : OptionsPattern[]] := Diagram["Copy", x, xs, opts, "Shape" -> "Wires"[Thread[{1, Range[2, Length[xs] + 1]}]], "ShowLabel" -> False, "FloatingPorts" -> {False, True}]
 
 CopyDiagram[xs : {x_, ___}, opts : OptionsPattern[]] := CopyDiagram[x, xs, opts]
 
@@ -819,8 +819,10 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
             Automatic | dir_Directive :> {dir, transform @ Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c]},
             "RoundedRectangle" :> transform @ Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c, RoundingRadius -> {{Right, Bottom} -> .1 (w + h)}],
             "RoundRectangle" :> transform @ Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c, RoundingRadius -> .1 (w + h)],
-            "UpsideDownTriangle" :> transform @ Polygon[{{- w / 2, h / 2}, {0, - h / 2}, {w / 2, h / 2}} + Threaded[c]],
-            "Triangle" :> transform @ Polygon[{{- w / 2, - h / 2}, {0, h / 2}, {w / 2, - h / 2}} + Threaded[c]],
+            "UpsideDownTriangle" :> transform @ Triangle[{{- w / 2, h / 2}, {0, - h / 2}, {w / 2, h / 2}} + Threaded[c]],
+            "Triangle" :> transform @ Triangle[{{- w / 2, - h / 2}, {0, h / 2}, {w / 2, - h / 2}} + Threaded[c]],
+            "RoundedUpsideDownTriangle" :> transform @ ResourceFunction["RoundedPolygon"][{{- w / 2, h / 2}, {0, - h / 2}, {w / 2, h / 2}} + Threaded[c], {0.1, 0, 0.1}],
+            "RoundedTriangle" :> transform @ ResourceFunction["RoundedPolygon"][{{- w / 2, - h / 2}, {0, h / 2}, {w / 2, - h / 2}} + Threaded[c], {0.1, 0, 0.1}],
             "Circle" :> transform @ Circle[c, {w, h} / 2],
             "Disk" :> transform @ Disk[c, {w, h} / 2],
             "CrossWires" :> With[{
@@ -971,7 +973,8 @@ Options[DiagramGraphics] = Join[{
     "PortLabelFunction" -> Automatic,
     "PortsFirst" -> True,
     "Outline" -> None,
-    "Style" -> Automatic
+    "Style" -> Automatic,
+    "LabelStyle" -> Automatic
 }, Options[Graphics]];
 
 DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[{
@@ -980,6 +983,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
     center = diagram["Center", opts],
     shape = diagram["OptionValue"["Shape"], opts],
     style = Replace[diagram["OptionValue"["Style"], opts], {Automatic -> Directive[EdgeForm[Directive[Opacity[.5], $Black]], FaceForm[$Gray]], None -> Nothing}],
+    labelStyle = Replace[diagram["OptionValue"["LabelStyle"], opts], {Automatic -> $Black, None -> Nothing}],
     interactiveQ = Replace[OptionValue[PlotInteractivity], Automatic -> True]
 }, {
     portArrows = diagram["PortStyles", opts],
@@ -1017,22 +1021,25 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
         style,
         Confirm @ diagram["Shape", opts]
     },
-    Replace[
-        If[ MatchQ[diagram["OptionValue"["ShowLabel"], opts], None | False] || diagram["Label"] === HoldForm[None],
-            "\t\t\t",
-            Replace[labelFunction,
-                Automatic :> Function[If[interactiveQ, ClickToCopy, # &][
-                    #["Label"],
-                    #["View"]
-                ]]
-            ] @ diagram
-        ],
-        {
-            Placed[l_, Offset[offset_]] :> Text[l, center + offset],
-            Placed[l_, pos_] :> Text[l, pos],
-            label_ :> Text[label, center]
-        }
-    ]
+    {
+        labelStyle,
+        Replace[
+            If[ MatchQ[diagram["OptionValue"["ShowLabel"], opts], None | False] || diagram["Label"] === HoldForm[None],
+                "\t\t\t",
+                Replace[labelFunction,
+                    Automatic :> Function[If[interactiveQ, ClickToCopy, # &][
+                        #["Label"],
+                        #["View"]
+                    ]]
+                ] @ diagram
+            ],
+            {
+                Placed[l_, Offset[offset_]] :> Text[l, center + offset],
+                Placed[l_, pos_] :> Text[l, pos],
+                label_ :> Text[label, center]
+            }
+        ]
+    }
 },
     FilterRules[{opts, diagram["DiagramOptions"]}, Options[Graphics]],
     FormatType -> StandardForm
@@ -1736,6 +1743,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Enclose @ Block[{
 			1
 		]
         ],
+        EdgeStyle -> $Black,
 		(* VertexLabels -> (If[FreeQ[#, _Pattern], #, Verbatim[#]] -> If[wireLabelsQ, Placed[ClickToCopy[InterpretationForm[#], #], Center], None] & /@ spiderVertices), *)
 		BaseStyle -> {FormatType -> StandardForm}
 	]

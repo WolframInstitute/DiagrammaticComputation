@@ -17,15 +17,26 @@ DiagramExpressionReplace
 RemoveDiagramRule
 DiagramRule
 
+EraserDiagram
+
 DuplicateRule
 EraserRule
 AnnihilateRule
 DuplicateAnnihilateRule
 EraserAnnihilateRule
+DuplicateEraserRule
 
 DiagramCopySplit
 
 
+$LambdaInteractionRules = <|
+	"BetaReduce" -> AnnihilateRule[Subscript["\[Lambda]", _], "\[Application]", {var, SuperStar[body]}, {SuperStar[arg], beta}],
+	"Dup" -> DuplicateRule[{x1, SuperStar[x2]}, {y1, y1}],
+	"DupReduce" -> DuplicateAnnihilateRule[{SuperStar[x1], SuperStar[x2]}, {y1, y2}],
+	"Erase" -> EraserRule[{SuperStar[x], y}],
+	"EraseReduce" -> EraserAnnihilateRule[],
+	"EraseDup" -> DuplicateEraserRule[x, y]
+|>
 
 Begin["`Private`"]
 
@@ -114,7 +125,7 @@ MatchDiagrams[
 	]
 
 
-Options[DiagramReplaceList] = Join[{"Return" -> Automatic}, Options[Diagram]]
+Options[DiagramReplaceList] = Join[{"Return" -> Automatic, "IgnoreArity" -> True}, Options[Diagram]]
 
 DiagramReplaceList[d_Diagram, src_Diagram -> tgt_Diagram, n : _Integer | Infinity : Infinity, opts : OptionsPattern[]] := Enclose @ Block[{
 	srcHg, tgtNet, tgtHg, tgtDiagrams, rule, net, diagrams, hg, nets,
@@ -123,7 +134,7 @@ DiagramReplaceList[d_Diagram, src_Diagram -> tgt_Diagram, n : _Integer | Infinit
 	return = OptionValue["Return"],
 	diagramOptions = FilterRules[{opts}, Options[Diagram]]
 },
-	srcHg = ConfirmBy[DiagramHypergraph[src, "Pattern" -> True], HypergraphQ];
+	srcHg = ConfirmBy[DiagramHypergraph[src, "Pattern" -> TrueQ[OptionValue["IgnoreArity"]]], HypergraphQ];
 	tgtNet = ConfirmBy[SimplifyDiagram @ ToDiagramNetwork @ tgt, DiagramQ];
 	tgtDiagrams = DiagramSubdiagrams[tgtNet, {1}];
 	tgtHg = ConfirmBy[With[{f = tgtNet["PortFunction"]}, DiagramHypergraph[tgtDiagrams, f, labeledVertices[tgtNet]]], HypergraphQ];
@@ -193,11 +204,11 @@ DiagramRule[src_Diagram, tgt_Diagram] := Block[{
 
 	DiagramAssignPorts[src,
 		MapThread[Labeled[#1, Pattern[#2, _]] &, {srcInPorts, Take[labels, Length[srcInPorts]]}],
-		MapThread[Labeled[#1, Pattern[#2, _]] &, {srcOutPorts, Drop[labels, Length[srcInPorts]]}]
+		MapThread[Labeled[#1, Pattern[#2, _]] &, {srcOutPorts, Take[Drop[labels, Length[srcInPorts]], Length[srcOutPorts]]}]
 	] ->
 	DiagramAssignPorts[tgt,
 		MapThread[Labeled, {tgtInPorts, Take[labels, Length[tgtInPorts]]}],
-		MapThread[Labeled, {tgtOutPorts, Drop[labels, Length[tgtInPorts]]}]
+		MapThread[Labeled, {tgtOutPorts, Take[Drop[labels, Length[tgtInPorts]], Length[tgtOutPorts]]}]
 	]
 ]
 
@@ -206,50 +217,87 @@ DiagramRule[src_Diagram -> tgt_Diagram] := DiagramRule[src, tgt]
 
 Options[DuplicateRule] = Options[EraserRule] = Options[DuplicateAnnihilateRule] = Options[Diagram];
 
-patternPort[expr : _Symbol | SuperStar[_Symbol]] :=
-	Replace[expr, {sym_Symbol :> Pattern @@ {sym, _}, SuperStar[sym_Symbol] :> SuperStar[Pattern @@ {sym, _}]}]
+makePattern[expr_] :=
+	Replace[Unevaluated[expr], {
+		sym : Except[None, _Symbol] :> Pattern @@ Hold[sym, _],
+		SuperStar[sym : Except[None, _Symbol]] :> SuperStar[Pattern @@ Hold[sym, _]],
+		p_Port :> p["Apply", With[{name = #["HoldName"]}, If[MatchQ[name, HoldForm[_Symbol]], Pattern @@ Append[name, _], #]] &]
+	}]
 
-DuplicateRule[ins : {(_Symbol | SuperStar[_Symbol]) ...}, outs : {(_Symbol | SuperStar[_Symbol]) ...}, opts : OptionsPattern[]] := Block[{
-	copyOpts = {opts, "Shape" -> "Triangle", "Width" -> 1, "Style" -> Hue[0.709, 0.445, 1], "FloatingPorts" -> {False, True}},
-	nodeOpts = {"Shape" -> "UpsideDownTriangle", "Width" -> 1},
+SetAttributes[makePattern, HoldFirst]
+
+$CopyOptions = {
+	"Shape" -> "RoundedTriangle",
+	"Width" -> 1, "Height" -> 1,
+	"Style" -> Hue[0.709, 0.445, 1],
+	"ShowLabel" -> False,
+	"FloatingPorts" -> {False, True}
+}
+
+$Port = (_Symbol | SuperStar[_Symbol])
+
+DuplicateRule[ins : {$Port ...}, outs : {$Port ...}, opts : OptionsPattern[]] :=
+	DuplicateRule[Diagram[\[FormalF], ins, \[FormalX], "Shape" -> "RoundedUpsideDownTriangle", "Width" -> 1, "Height" -> 1, "PortLabels" -> {Automatic, None}], outs, opts]
+
+DuplicateRule[d_Diagram, outs : {$Port ...}, opts : OptionsPattern[]] /; d["OutputArity"] == 1 := Block[{
+	copyOpts = {opts, $CopyOptions},
+	ins = d["InputPorts"],
 	lhs, rhs
 },
 	lhs = DiagramRightComposition[
-		Diagram[\[FormalF]_, patternPort /@ ins, \[FormalX], "PortLabels" -> {Automatic, None}, nodeOpts],
-		CopyDiagram[\[FormalX], patternPort /@ outs, copyOpts],
-		Alignment -> Center
+		Diagram[d, makePattern /@ ins, Inherited, "Expression" -> makePattern @@ d["HoldExpression"]],
+		CopyDiagram[d["OutputPorts"], makePattern /@ outs, copyOpts],
+		Alignment -> Center,
+		ImageSize -> {Automatic, 192}
 	];
 	rhs = DiagramRightComposition[
 		DiagramProduct @ Map[p |-> CopyDiagram[p, Port[p]["Apply", #] & /@ Range[Length[outs]], copyOpts, "PortLabels" -> {Automatic, None}], ins],
-		DiagramProduct @ MapIndexed[{p, i} |-> Diagram[\[FormalF], Port[#]["Apply", i[[1]]] & /@ ins, p, "PortLabels" -> {None, Automatic}, nodeOpts], outs]
+		DiagramProduct @ MapIndexed[{p, i} |-> Diagram[d, #["Apply", i[[1]]] & /@ ins, p, "PortLabels" -> {None, Automatic}], outs],
+		ImageSize -> {Automatic, 192}
 	];
 	lhs -> rhs
 ]
 
-EraserRule[ports : {(_Symbol | SuperStar[_Symbol]) ...}, opts : OptionsPattern[]] := DuplicateRule[ports, {}, "Expression" :> None, "Style" -> Automatic]
+EraserDiagram[p_, opts : OptionsPattern[]] := Diagram[None, p, opts, "Shape" -> "Disk" ,"Width" -> 1 / 2, "Height" -> 1 / 2, "PortLabels" -> None]
+
+EraserRule[ports : {$Port ...}, opts : OptionsPattern[]] := DuplicateRule[EraserDiagram[\[FormalX]], ports, {}, opts, "Style" -> Automatic, "ShowLabel" -> True, "Expression" -> _]
 
 
 Options[AnnihilateRule] = Join[{"Bend" -> False}, Options[Diagram]]
 
-AnnihilateRule[expr1_, expr2_, ins : {(_Symbol | SuperStar[_Symbol]) ...}, outs : {(_Symbol | SuperStar[_Symbol]) ...}, opts : OptionsPattern[]] /; Length[ins] == Length[outs] := Block[{
-	diagramOpts = FilterRules[{opts, "Width" -> 1, "PortLabels" -> {None, Automatic}}, Options[Diagram]],
+AnnihilateRule[expr1_, expr2_, ins : {$Port ...}, outs : {$Port ...}, opts : OptionsPattern[]] /; Length[ins] == Length[outs] := Block[{
+	diagramOpts = FilterRules[{opts, "Shape" -> "RoundedTriangle", "Width" -> 1, "PortLabels" -> {None, Automatic}}, Options[Diagram]],
 	d, lhs, rhs
 },
-	d = Diagram[expr1, SuperStar[_], patternPort /@ ins, diagramOpts];
+	d = Diagram[expr1, SuperStar[_], makePattern /@ ins, diagramOpts];
 	lhs = DiagramArrange @ DiagramNetwork[
 		If[	TrueQ[OptionValue["Bend"]], d, DiagramFlip[d]],
-		Diagram[expr2, _, patternPort /@ outs, diagramOpts],
-		Alignment -> Center
+		Diagram[expr2, _, makePattern /@ outs, diagramOpts],
+		Alignment -> Center,
+		ImageSize -> {Automatic, 192}
 	];
-	rhs = DiagramProduct[MapThread[IdentityDiagram[PortDual[#1] -> #2] &, {ins, outs}]];
+	rhs = DiagramProduct[
+		MapThread[IdentityDiagram[PortDual[#1] -> #2] &, {ins, outs}],
+		ImageSize -> {Automatic, 192},
+		AspectRatio -> 2
+	];
 	lhs -> rhs	
 ]
 
-DuplicateAnnihilateRule[ins : {(_Symbol | SuperStar[_Symbol]) ...}, outs : {(_Symbol | SuperStar[_Symbol]) ...}, opts : OptionsPattern[]] /; Length[ins] == Length[outs] :=
-	AnnihilateRule["Copy", "Copy", ins, outs, opts, "Shape" -> "Triangle", "Style" -> Hue[0.709, 0.445, 1], "ShowLabel" -> False, "FloatingPorts" -> {False, True}]
+DuplicateAnnihilateRule[ins : {$Port ...}, outs : {$Port ...}, opts : OptionsPattern[]] /; Length[ins] == Length[outs] :=
+	AnnihilateRule["Copy", "Copy", ins, outs, opts, $CopyOptions]
 
 EraserAnnihilateRule[opts : OptionsPattern[]] :=
-	AnnihilateRule[None, None, {}, {}, "Shape" -> "Triangle", opts]
+	AnnihilateRule[None, None, {}, {}, "Shape" -> "Disk" ,"Width" -> 1 / 2, "Height" -> 1 / 2, opts]
+
+DuplicateEraserRule[in : $Port, out : $Port, opts : OptionsPattern[]] :=
+	DiagramArrange @ DiagramNetwork[
+		EraserDiagram[SuperStar[\[FormalX]]],
+		CopyDiagram[makePattern @ in, {\[FormalX], makePattern @ out}, "PortLabels" -> {Automatic, {None, Automatic}}, $CopyOptions],
+		opts,
+		ImageSize -> {Automatic, 192}
+	] -> IdentityDiagram[in -> out, ImageSize -> {Automatic, 192}]
+
 
 DiagramCopySplit[d_Diagram] := If[d["NetworkQ"], Identity, DiagramArrange][
 	DiagramNetwork[

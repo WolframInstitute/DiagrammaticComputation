@@ -120,10 +120,12 @@ SystemModelDiagram[sm : HoldPattern[_SystemModel], path_, opts : OptionsPattern[
 ]
 
 lambdaDiagram[tag_, ports_List] := Diagram[
-	Style[Subscript["\[Lambda]", tag], Bold, Black],
+	Subscript["\[Lambda]", tag],
 	Prepend[ports, PortDual[Interpretation[tag, \[FormalX][tag]]]], Subscript["\[Lambda]", tag],
 	"Shape" -> "RoundRectangle",
 	"Style" -> Lookup[Lookup[Options[Wolfram`Lambda`LambdaTree], ColorRules], "Lambda"],
+	"LabelStyle" -> Directive[FontWeight -> Bold, Black],
+	"PortLabels" -> None,
 	"Width" -> 1 / GoldenRatio, "Height" -> 1
 ]
 
@@ -132,13 +134,14 @@ applicationDiagram[f_, xs_List] := With[{fPort = Port[f], ports = Port /@ xs},
 		"Shape" -> "Disk",
 		"Style" -> Lookup[Lookup[Options[Wolfram`Lambda`LambdaTree], ColorRules], "Application"],
 		"ShowLabel" -> False,
+		"PortLabels" -> None,
 		"Width" -> 1 / 2, "Height" -> 1 / 2
 	]
 ]
 
-varDiagram[tag_] := CupDiagram[{PortDual[Interpretation[tag, \[FormalX][tag]]], tag}]
+varDiagram[tag_] := CupDiagram[{PortDual[Interpretation[tag, \[FormalX][tag]]], tag}, "PortLabels" -> None]
 
-eraserDiagram[tag_] := Diagram[None, PortDual[Interpretation[tag, \[FormalX][tag]]], "Shape" -> "UpsideDownTriangle"]
+eraserDiagram[tag_] := Diagram[None, PortDual[Interpretation[tag, \[FormalX][tag]]], "Shape" -> "Disk", "Width" -> 1 / 2, "Height" -> 1 / 2, "PortLabels" -> None]
 
 
 Options[LambdaDiagrams] = {"AddErasers" -> False}

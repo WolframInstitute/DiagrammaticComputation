@@ -26,7 +26,7 @@ Begin["Wolfram`DiagrammaticComputation`Diagram`Grid`Private`"];
 
 (* compose vertically preserving grid structure *)
 
-identityDiagrams[ports_, styles_] := Splice @ MapThread[IdentityDiagram[#1, "PortArrows" -> {#2}, "PortLabels" -> None] &, {ports, styles}]
+identityDiagrams[ports_, styles_, labels_] := Splice @ MapThread[IdentityDiagram[#1, "PortArrows" -> {#2}, "PortLabels" -> {#3}] &, {ports, styles, labels}]
 
 permuteRow[a_Diagram, aPorts_List, bPorts_List, dir : 1 | -1, rowSortQ : _ ? BooleanQ : False, score_Function : Function[- DamerauLevenshteinDistance[#1, #2]]] :=
     Which[
@@ -124,6 +124,7 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
     a, b, pa, pb,
     as, bs,
     aStyles, bStyles,
+    aLabels, bLabels,
     aPorts, bPorts,
     resetPortsA, resetPortsB,
     rowSortQ = TrueQ[OptionValue["RowSort"]]
@@ -136,6 +137,7 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
         as = Pick[as, pa];
         aPorts = func /@ as;
         aStyles = Pick[a["PortStyles"][[2]], pa];
+        aLabels = Pick[a["PortLabels"][[2]], pa];
     );
     resetPortsB[] := (
         bs = PortDual /@ b["InputPorts"];
@@ -143,12 +145,12 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
         bs = Pick[bs, pb];
         bPorts = func /@ bs;
         bStyles = Pick[b["PortStyles"][[1]], pb];
+        bLabels = Pick[b["PortLabels"][[1]], pb];
     );
 
     resetPortsA[];
     resetPortsB[];
-    aStyles = a["PortStyles"];
-    bStyles = b["PortStyles"];
+
     If[ ContainsNone[aPorts, bPorts],
         If[ aPorts === {} && bPorts === {},
             Return[DiagramRightComposition[a, b, "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]]]],
@@ -163,53 +165,48 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
         ]]
     ];
 
-    aStyles = Pick[aStyles[[2]], pa];
-    bStyles = Pick[bStyles[[1]], pb];
-
     Block[{inPos, ins, outPos, outs},
         inPos = FirstPositions[Verbatim /@ bPorts, aPorts];
         ins = Delete[bs, inPos];
-        If[ins =!= {}, a = RowDiagram[permuteRow[{identityDiagrams[ins, Delete[bStyles, inPos]], a}, Join[List /@ Delete[bPorts, inPos], {aPorts}], bPorts, 1, rowSortQ][[2]]]; resetPortsA[]];
+        If[ins =!= {}, a = RowDiagram[permuteRow[{identityDiagrams[ins, Delete[bStyles, inPos], Delete[bLabels, inPos]], a}, Join[List /@ Delete[bPorts, inPos], {aPorts}], bPorts, 1, rowSortQ][[2]]]; resetPortsA[]];
         outPos = FirstPositions[Verbatim /@ aPorts, bPorts];
         outs = Delete[as, outPos];
-        If[outs =!= {}, b = RowDiagram[permuteRow[{b, identityDiagrams[outs, Delete[aStyles, outPos]]}, Join[{bPorts}, List /@ Delete[aPorts, outPos]], aPorts, -1, rowSortQ][[2]]]; resetPortsB[]]
+        If[outs =!= {}, b = RowDiagram[permuteRow[{b, identityDiagrams[outs, Delete[aStyles, outPos], Delete[aLabels, outPos]]}, Join[{bPorts}, List /@ Delete[aPorts, outPos]], aPorts, -1, rowSortQ][[2]]]; resetPortsB[]]
     ];
     
     Replace[permuteRow[a, aPorts, bPorts, 1, rowSortQ], {True, newA_, _} :> (a = newA; resetPortsA[])];
     Replace[permuteRow[b, bPorts, aPorts, -1, rowSortQ], {True, newB_, _} :> (b = newB; resetPortsB[])];
     
-    aStyles = a["PortStyles"];
-    bStyles = b["PortStyles"];
- 
 	Which[
 		aPorts === bPorts,
-		DiagramComposition[Diagram[b, "PortArrows" -> MapAt[MapThread[If[#1 === Automatic, #2, #1] &, {#, aStyles[[2]]}] &, {1}] @ b["PortStyles"]], a, "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]]],
+		DiagramComposition[b, a, "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]]],
 		aPorts === Reverse[bPorts] && a["WireQ"],
-        DiagramComposition[Diagram[b, "PortArrows" -> MapAt[MapThread[If[#1 === Automatic, #2, #1] &, {#, Reverse @ aStyles[[2]]}] &, {1}] @ b["PortStyles"]], DiagramReverse[a], "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]]],
+        DiagramComposition[b, DiagramReverse[a], "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]]],
         aPorts === Reverse[bPorts] && b["WireQ"],
-        DiagramComposition[DiagramReverse[b, "PortArrows" -> MapAt[MapThread[If[#1 === Automatic, #2, #1] &, {#, aStyles[[2]]}] &, Reverse /@ b["PortStyles"], {1}]], a, "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]]],
+        DiagramComposition[DiagramReverse[b], a, "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]]],
 		Sort[aPorts] === Sort[bPorts],
         With[{perm = FindPermutation[aPorts, bPorts]},
             DiagramComposition[
-                Diagram[b, "PortArrows" -> MapAt[MapThread[If[#1 === Automatic, #2, #1] &, {#, Permute[aStyles[[2]], perm]}] &, {1}] @ b["PortStyles"]],
+                b,
                 If[ TrueQ[OptionValue["PermutationDecompose"]],
                     With[{decomp = PermutationDecompose[PermutationList[perm, Length[as]]]}, {lens = Length /@ decomp},
-                        DiagramProduct @ MapThread[{as, bs, aStyles, bStyles, perm} |->
-                            PermutationDiagram[as -> bs, perm, "PortArrows" -> MapAt[Permute[#, perm] &, {2}] @ Thread @ MapThread[
-                                PadRight[#, 2, Replace[#, {} -> Automatic]] & @ DeleteCases[Automatic] @ Which[! #1["DualQ"] && #2["DualQ"], {#3, #3, #4}, #1["DualQ"] && ! #2["DualQ"], {#4, #4, #3}, True, {#3, #4}] &,
-                                {as, bs, aStyles, Permute[bStyles, InversePermutation[perm]]}
-                            ]],
-                            Append[TakeList[#, lens] & /@ {as, bs, Pick[aStyles[[2]], pa], Pick[bStyles[[1]], pb]}, PermutationCycles /@ decomp]
+                        DiagramProduct @ MapThread[{as, bs, aStyles, bStyles, aLabels, bLabels, perm} |->
+                            PermutationDiagram[as -> bs, perm, Thread[{"PortArrows", "PortLabels"} -> (MapAt[Permute[#, perm] &, {2}] /@ Thread /@ Thread @ MapThread[
+                                    PadRight[#, 2, Replace[#, {} -> Automatic]] & /@ DeleteCases[Automatic] /@
+                                        Which[! #1["DualQ"] && #2["DualQ"], {{#3, #3, #4}, {#5, #5, #6}}, #1["DualQ"] && ! #2["DualQ"], {{#4, #4, #3}, {#6, #6, #5}}, True, {{#3, #4}, {#5, #6}}] &,
+                                    {as, bs, aStyles, Permute[bStyles, InversePermutation[perm]], aLabels, Permute[bLabels, InversePermutation[perm]]}
+                            ])]],
+                            Append[TakeList[#, lens] & /@ {as, bs, aStyles, bStyles, aLabels, bLabels}, PermutationCycles /@ decomp]
                         ]
                     ]
                     ,
                     PermutationDiagram[
                         as -> bs,
                         perm,
-                        "PortArrows" -> MapAt[Permute[#, perm] &, {2}] @ Thread @ MapThread[
-                            PadRight[#, 2, Replace[#, {} -> Automatic]] & @ DeleteCases[Automatic] @ Which[! #1["DualQ"] && #2["DualQ"], {#3, #3}, #1["DualQ"] && ! #2["DualQ"], {#4, #4}, True, {#3, #4}] &,
-                            {as, bs, Pick[aStyles[[2]], pa], Permute[Pick[bStyles[[1]], pb], InversePermutation[perm]]}
-                        ]
+                        Thread[{"PortArrows", "PortLabels"} -> (MapAt[Permute[#, perm] &, {2}] /@ Thread /@ Thread @ MapThread[
+                            PadRight[#, 2, Replace[#, {} -> Automatic]] & /@ DeleteCases[Automatic] /@ Which[! #1["DualQ"] && #2["DualQ"], {{#3, #3, #4}, {#5, #5, #6}}, #1["DualQ"] && ! #2["DualQ"], {{#4, #4, #3}, {#6, #6, #5}}, True, {{#3, #4}, {#5, #6}}] &,
+                            {as, bs, aStyles, Permute[bStyles, InversePermutation[perm]], aLabels, Permute[bLabels, InversePermutation[perm]]}
+                        ])]
                     ]
                 ],
                 a,
@@ -237,7 +234,7 @@ ColumnDiagram[xs : {__Diagram}, opts : OptionsPattern[]] := Enclose @ If[
 (* compose horizontally preserving height *)
 
 Options[RowDiagram] := Join[{"PadHeight" -> True}, Options[ColumnDiagram]]
-RowDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Block[{a, b, aPorts, bPorts, ha, hb, aStyles, bStyles},
+RowDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Block[{a, b, aPorts, bPorts, ha, hb, aStyles, bStyles, aLabels, bLabels},
     If[! TrueQ[OptionValue["PadHeight"]], Return[DiagramProduct[x, y, FilterRules[{opts}, Options[DiagramProduct]]]]];
     a = x["FlattenInputs", 1];
     b = y["FlattenOutputs", 1];
@@ -247,18 +244,17 @@ RowDiagram[{x_Diagram, y_Diagram}, opts : OptionsPattern[]] := Block[{a, b, aPor
     hb = DiagramGridHeight[b];
     aStyles = a["PortStyles"];
     bStyles = b["PortStyles"];
-    Diagram[
-        Which[
-            ha > hb,
-            DiagramProduct[a, DiagramComposition[##, FilterRules[{opts}, Options[DiagramComposition]], "PortArrows" -> bStyles] & @@
-                Append[ConstantArray[IdentityDiagram[bPorts, "PortArrows" -> {bStyles[[2]]}], ha - hb], b], FilterRules[{opts}, Options[DiagramProduct]]],
-            ha < hb,
-            DiagramProduct[DiagramComposition[##, FilterRules[{opts}, Options[DiagramComposition]], "PortArrows" -> aStyles] & @@
-                Prepend[ConstantArray[IdentityDiagram[aPorts, "PortArrows" -> {aStyles[[1]]}], hb - ha], a], b, FilterRules[{opts}, Options[DiagramProduct]]],
-            True,
-            DiagramProduct[a, b, FilterRules[{opts}, Options[DiagramProduct]]]
-        ]["Flatten", 1],
-        "PortArrows" -> Join[aStyles, bStyles, 2]
+    aLabels = a["PortLabels"];
+    bLabels = b["PortLabels"];
+    Which[
+        ha > hb,
+        DiagramProduct[a, DiagramComposition[##, FilterRules[{opts}, Options[DiagramComposition]]] & @@
+            Append[ConstantArray[IdentityDiagram[bPorts, "PortArrows" -> {bStyles[[2]]}, "PortLabels" -> {bLabels[[2]]}], ha - hb], b], FilterRules[{opts}, Options[DiagramProduct]]],
+        ha < hb,
+        DiagramProduct[DiagramComposition[##, FilterRules[{opts}, Options[DiagramComposition]]] & @@
+            Prepend[ConstantArray[IdentityDiagram[aPorts, "PortArrows" -> {aStyles[[1]]}, "PortLabels" -> {aLabels[[1]]}], hb - ha], a], b, FilterRules[{opts}, Options[DiagramProduct]]],
+        True,
+        DiagramProduct[a, b, FilterRules[{opts}, Options[DiagramProduct]]]
     ]
 ]
 
