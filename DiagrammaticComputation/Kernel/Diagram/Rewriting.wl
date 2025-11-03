@@ -8,6 +8,7 @@ BeginPackage["Wolfram`DiagrammaticComputation`Diagram`Rewriting`", {
 }]
 
 DiagramHypergraph
+DiagramHypergraphRule
 
 DiagramReplaceList
 DiagramReplace
@@ -19,22 +20,24 @@ DiagramRule
 
 EraserDiagram
 
-DuplicateRule
+CommutationRule
 EraserRule
-AnnihilateRule
-DuplicateAnnihilateRule
-EraserAnnihilateRule
+AnnihilationRule
+DuplicateAnnihilationRule
+EraserAnnihilationRule
 DuplicateEraserRule
 
 DiagramCopySplit
 
 
 $LambdaInteractionRules = <|
-	"BetaReduce" -> AnnihilateRule[Subscript["\[Lambda]", _], "\[Application]", {var, SuperStar[body]}, {SuperStar[arg], beta}],
-	"Dup" -> DuplicateRule[{x1, SuperStar[x2]}, {y1, y1}],
-	"DupReduce" -> DuplicateAnnihilateRule[{SuperStar[x1], SuperStar[x2]}, {y1, y2}],
+	"BetaReduce" -> AnnihilationRule[Subscript["\[Lambda]", _], "\[Application]", {var, SuperStar[body]}, {SuperStar[arg], beta}],
+	"Dup" -> CommutationRule[{x1, SuperStar[x2]}, {y1, y2}],
+	"DualDup" -> CommutationRule[{x1, SuperStar[x2]}, {y1, y2}, "Dual" -> True, "Bend" -> True],
+	"DupReduce" -> DuplicateAnnihilationRule[{SuperStar[x1], SuperStar[x2]}, {y1, y2}],
+	"DupSwapReduce" -> DuplicateAnnihilationRule[{SuperStar[x1], SuperStar[x2]}, {y1, y2}, "Reverse" -> True],
 	"Erase" -> EraserRule[{SuperStar[x], y}],
-	"EraseReduce" -> EraserAnnihilateRule[],
+	"EraseReduce" -> EraserAnnihilationRule[],
 	"EraseDup" -> DuplicateEraserRule[x, y]
 |>
 
@@ -53,19 +56,30 @@ patternLabelArities[d_Diagram] := Total /@ Replace[
 	{2}
 ]
 
-DiagramHyperedge[d_Diagram, f_, pattQ : _ ? BooleanQ] := With[{floatPorts = Replace[d["OptionValue"["FloatingPorts"]], {True -> {True, True}, Except[{Repeated[_ ? BooleanQ, {2}]}] -> {False, False}}]},
+DiagramHyperedge[d_Diagram, f_, pattQ : _ ? BooleanQ] := With[{floatPorts = d["OptionValue"["FloatingPorts"]], n = d["InputArity"], m = d["OutputArity"]}, {
+	perm = FindPermutation[Range[n + m], Join[n + Range[m], Range[n]]]
+},
 	Annotation[
 		labeledVertices[d, f],
 		EdgeLabels -> (Underoverscript[d["Label"], #2, #1] -> Through[Catenate[d["InputOutputPorts"]]["DualQ"]] & @@
 			If[pattQ, {_, _}, Replace[patternLabelArities[d], Infinity -> _, 1]]),
 		"EdgeSymmetry" -> Switch[floatPorts,
-			{True, True}, "Unordered",
-			{False, False}, "Ordered",
-			{True, False}, Cycles[{#}] & /@ Subsets[Range[d["InputArity"]], {2}],
-			{False, True}, Cycles[{#}] & /@ Subsets[d["InputArity"] + Range[d["OutputArity"]], {2}]
+			True, "Unordered",
+			False, {Cycles[{}], perm},
+			{True, False}, Join[
+				GroupElements[PermutationGroup[Cycles[{#}] & /@ Subsets[Range[n], {2}]]],
+				PermutationProduct[perm, #] & /@ GroupElements[PermutationGroup[Cycles[{#}] & /@ Subsets[m + Range[n], {2}]]]
+			],
+			{False, True}, Join[
+				GroupElements[PermutationGroup[Cycles[{#}] & /@ Subsets[n + Range[m], {2}]]],
+				PermutationProduct[perm, #] & /@ GroupElements[PermutationGroup[Cycles[{#}] & /@ Subsets[Range[m], {2}]]]
+			]
 		]
 	]
 ]
+
+DiagramHypergraphRule[src_Diagram -> tgt_Diagram, opts : OptionsPattern[]] :=
+	HypergraphRule[DiagramHypergraph[src, "Pattern" -> True], DiagramHypergraph[tgt], opts]
 
 labeledVertices[d_Diagram, f_] := MapThread[
 	Labeled[f[#1], Replace[#2, {Automatic :> (Replace[#1["Name"], Labeled[l_, __] :> l]), False -> None}]] &,
@@ -106,18 +120,19 @@ MatchDiagrams[
 		{EmptyDiagram[]}
 		,
 		With[{
-			holdBindings = Append[_ -> Missing[]] @ Normal @ KeyMap[HoldForm, HoldForm /@ Association[bindings]],
-			optionRules = Append[_ -> {}] @ Thread[Through[srcDiagrams["HoldExpression"]] -> Through[srcDiagrams["DiagramOptions"]]]
+			holdBindings = Normal @ KeyMap[HoldForm, HoldForm /@ Association[bindings]],
+			optionRules = Append[_ -> {}] @ Thread[Through[#["Label"]] -> Through[#["DiagramOptions"]]] & @ Extract[srcDiagrams, pos]
 		},
 			MapThread[
-				Diagram[#1,
-					Sequence @@ MapThread[
-						MapThread[If[#1, PortDual, Port][#2] &, {PadRight[#1, Length[#2], #1], #2}] &,
-						{Map[#["DualQ"] &, #1["InputOutputPorts", True], {2}], Replace[#3, (Underoverscript[_, _, nInputs_] -> _) :> TakeDrop[#2, Total[Take[#4, nInputs]]]]}
-					],
-					Replace[#3, (Underoverscript[HoldForm[x_], ___] -> _) | x_ :> "Expression" :> x],
-					"PortLabels" -> (#1["PortLabels"] /. bindings),
-					Replace[Replace[#1["HoldExpression"], holdBindings], optionRules]
+				With[{expr = Replace[#3, (Underoverscript[HoldForm[x_], ___] -> _) | x_ :> x]},
+					Diagram[
+						DiagramExpressionReplace[#1, _ :> expr],
+						Sequence @@ MapThread[
+							MapThread[If[#1, PortDual, Port][#2] &, {PadRight[#1, Length[#2], #1], #2}] &,
+							{Map[#["DualQ"] &, #1["InputOutputPorts", True], {2}], Replace[#3, (Underoverscript[_, _, nInputs_] -> _) :> TakeDrop[#2, Total[Take[#4, nInputs]]]]}
+						],
+						Replace[Replace[#1["Label"], holdBindings], optionRules]
+					]
 				] &,
 				{tgtDiagrams, newEdges, Replace[newEdges, OptionValue[hg, EdgeLabels], 1], arities}
 			]
@@ -178,7 +193,7 @@ DiagramReplace[rule_][d_Diagram, opts : OptionsPattern[]] := DiagramReplace[d, r
 
 DiagramExpressionReplace[d_Diagram, rules_] :=
 	DiagramMap[
-		Diagram[#, "Expression" -> (#["Expression"] /. rules)] &,
+		Diagram[#, "Expression" :> ## & @@ ReplaceAt[#["HoldExpression"], rules, {1}]] &,
 		d
 	]
 
@@ -236,63 +251,96 @@ $CopyOptions = {
 
 $Port = (_Symbol | SuperStar[_Symbol])
 
-DuplicateRule[ins : {$Port ...}, outs : {$Port ...}, opts : OptionsPattern[]] :=
-	DuplicateRule[Diagram[\[FormalF], ins, \[FormalX], "Shape" -> "RoundedUpsideDownTriangle", "Width" -> 1, "Height" -> 1, "PortLabels" -> {Automatic, None}], outs, opts]
+Options[CommutationRule] = Join[{"Bend" -> False, "Dual" -> False}, Options[Diagram]]
 
-DuplicateRule[d_Diagram, outs : {$Port ...}, opts : OptionsPattern[]] /; d["OutputArity"] == 1 := Block[{
-	copyOpts = {opts, $CopyOptions},
-	ins = d["InputPorts"],
+CommutationRule[ins : {$Port ...}, outs : {$Port ...}, opts : OptionsPattern[]] :=
+	CommutationRule[
+		Diagram[\[FormalF], ins, \[FormalX],
+			FilterRules[{opts}, Options[Diagram]],
+			"Shape" -> "RoundedUpsideDownTriangle", "Width" -> 1, "Height" -> 1, "PortLabels" -> {Automatic, None}
+		],
+		CopyDiagram[\[FormalX], outs, $CopyOptions, "PortLabels" -> {None, Automatic}],
+		opts
+	]
+
+CommutationRule[d_Diagram, outPorts : {$Port ...}, opts : OptionsPattern[]] /; d["OutputArity"] == 1 := 
+	CommutationRule[d, CopyDiagram[x, outs, "PortLabels" -> {None, Automatic}, FilterRules[{opts, $CopyOptions}, Optsion[Diagram]]], FilterRules[{opts}, Except[Options[Diagram]]]]
+
+CommutationRule[d_Diagram, c_Diagram, opts : OptionsPattern[]] /; c["InputArity"] == d["OutputArity"] == 1 := Block[{
+	diag, copy,
+	bendQ = TrueQ[OptionValue["Bend"]], dualQ = TrueQ[OptionValue["Dual"]],
+	ins = d["InputPorts"], outs = c["OutputPorts"],
+	x = First[d["OutputPorts"]],
 	lhs, rhs
 },
-	lhs = DiagramRightComposition[
-		Diagram[d, makePattern /@ ins, Inherited, "Expression" -> makePattern @@ d["HoldExpression"]],
-		CopyDiagram[d["OutputPorts"], makePattern /@ outs, copyOpts],
+	If[ dualQ,
+		ins = PortDual /@ ins;
+		outs = PortDual /@ outs;
+		x = PortDual @ x
+	];
+	diag = DiagramExpressionReplace[Diagram[d, makePattern /@ ins, x, opts], _ -> makePattern @@ d["HoldExpression"]];
+	copy = Diagram[c, x, makePattern /@ outs, "PortLabels" -> {None, Automatic}];
+	lhs = ColumnDiagram[
+		If[	bendQ,
+			{CupDiagram[x], DiagramProduct[DiagramFlip @ diag, copy]}
+			,
+			{diag, copy}
+		],
 		Alignment -> Center,
 		ImageSize -> {Automatic, 192}
 	];
-	rhs = DiagramRightComposition[
-		DiagramProduct @ Map[p |-> CopyDiagram[p, Port[p]["Apply", #] & /@ Range[Length[outs]], copyOpts, "PortLabels" -> {Automatic, None}], ins],
+	rhs = If[bendQ, DiagramFlip, Identity] @ DiagramRightComposition[
+		DiagramProduct @ Map[p |-> Diagram[c, p, Port[p]["Apply", #] & /@ Range[Length[outs]], "PortLabels" -> {Automatic, None}], ins],
 		DiagramProduct @ MapIndexed[{p, i} |-> Diagram[d, #["Apply", i[[1]]] & /@ ins, p, "PortLabels" -> {None, Automatic}], outs],
 		ImageSize -> {Automatic, 192}
 	];
 	lhs -> rhs
 ]
 
-EraserDiagram[p_, opts : OptionsPattern[]] := Diagram[None, p, opts, "Shape" -> "Disk" ,"Width" -> 1 / 2, "Height" -> 1 / 2, "PortLabels" -> None]
+EraserDiagram[p_, opts : OptionsPattern[]] := Diagram["\[Epsilon]", p, {}, opts, "Shape" -> "Disk", "Width" -> 1 / 2, "Height" -> 1 / 2, "PortLabels" -> None]
 
-EraserRule[ports : {$Port ...}, opts : OptionsPattern[]] := DuplicateRule[EraserDiagram[\[FormalX]], ports, {}, opts, "Style" -> Automatic, "ShowLabel" -> True, "Expression" -> _]
+EraserRule[ports : {$Port ...}, opts : OptionsPattern[]] := CommutationRule[
+	DiagramFlip[EraserDiagram[\[FormalX]], "Singleton" -> False],
+	Diagram[_, \[FormalX], ports, "Shape" -> "RoundedTriangle", "Width" -> 1, "Height" -> 1, "FloatingPorts" -> {False, True}],
+	opts
+]
 
 
-Options[AnnihilateRule] = Join[{"Bend" -> False}, Options[Diagram]]
+Options[AnnihilationRule] = Join[{"Bend" -> False, "Reverse" -> False}, Options[Diagram]]
 
-AnnihilateRule[expr1_, expr2_, ins : {$Port ...}, outs : {$Port ...}, opts : OptionsPattern[]] /; Length[ins] == Length[outs] := Block[{
-	diagramOpts = FilterRules[{opts, "Shape" -> "RoundedTriangle", "Width" -> 1, "PortLabels" -> {None, Automatic}}, Options[Diagram]],
-	d, lhs, rhs
+AnnihilationRule[d1_Diagram, d2_Diagram, opts : OptionsPattern[]] := Block[{
+	ins = d1["OutputPorts"], outs = d2["OutputPorts"],
+	lhs, rhs
 },
-	d = Diagram[expr1, SuperStar[_], makePattern /@ ins, diagramOpts];
 	lhs = DiagramArrange @ DiagramNetwork[
-		If[	TrueQ[OptionValue["Bend"]], d, DiagramFlip[d]],
-		Diagram[expr2, _, makePattern /@ outs, diagramOpts],
+		If[	TrueQ[OptionValue["Bend"]], Identity, DiagramFlip] @ Diagram[d1, makePattern /@ ins],
+		Diagram[d2, makePattern /@ outs],
 		Alignment -> Center,
 		ImageSize -> {Automatic, 192}
 	];
 	rhs = DiagramProduct[
-		MapThread[IdentityDiagram[PortDual[#1] -> #2] &, {ins, outs}],
+		MapThread[IdentityDiagram[PortDual[#1] -> #2] &, {ins, If[TrueQ[OptionValue["Reverse"]], Reverse[outs], outs]}],
 		ImageSize -> {Automatic, 192},
 		AspectRatio -> 2
 	];
-	lhs -> rhs	
+	lhs -> rhs
 ]
 
-DuplicateAnnihilateRule[ins : {$Port ...}, outs : {$Port ...}, opts : OptionsPattern[]] /; Length[ins] == Length[outs] :=
-	AnnihilateRule["Copy", "Copy", ins, outs, opts, $CopyOptions]
+AnnihilationRule[expr1_, expr2_, ins : {$Port ...}, outs : {$Port ...}, opts : OptionsPattern[]] /; Length[ins] == Length[outs] := With[{
+	diagramOpts = FilterRules[{opts, "Shape" -> "RoundedTriangle", "Width" -> 1, "PortLabels" -> {None, Automatic}}, Options[Diagram]]
+},
+	AnnihilationRule[Diagram[expr1, SuperStar[_], ins, diagramOpts], Diagram[expr2, _, outs, diagramOpts], FilterRules[{opts}, Except[Options[Diagram]]]]
+]
 
-EraserAnnihilateRule[opts : OptionsPattern[]] :=
-	AnnihilateRule[None, None, {}, {}, "Shape" -> "Disk" ,"Width" -> 1 / 2, "Height" -> 1 / 2, opts]
+DuplicateAnnihilationRule[ins : {$Port ...}, outs : {$Port ...}, opts : OptionsPattern[]] /; Length[ins] == Length[outs] :=
+	AnnihilationRule["Copy", "Copy", ins, outs, opts, $CopyOptions]
+
+EraserAnnihilationRule[opts : OptionsPattern[]] :=
+	AnnihilationRule[EraserDiagram[\[FormalX]], EraserDiagram[SuperStar[\[FormalX]]], opts]
 
 DuplicateEraserRule[in : $Port, out : $Port, opts : OptionsPattern[]] :=
 	DiagramArrange @ DiagramNetwork[
-		EraserDiagram[SuperStar[\[FormalX]]],
+		EraserDiagram[\[FormalX]],
 		CopyDiagram[makePattern @ in, {\[FormalX], makePattern @ out}, "PortLabels" -> {Automatic, {None, Automatic}}, $CopyOptions],
 		opts,
 		ImageSize -> {Automatic, 192}

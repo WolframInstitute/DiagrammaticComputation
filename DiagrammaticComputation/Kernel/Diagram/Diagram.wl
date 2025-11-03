@@ -256,7 +256,6 @@ Diagram /: OptionValue[d_Diagram ? DiagramQ, opts_ : {},  arg_] := d["AbsoluteOp
 Options[DiagramDual] := Join[{"Singleton" -> True}, Options[Diagram]]
 
 DiagramDual[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
-    d,
     opts,
     Replace[d["HoldExpression"], {
         _[(head : (DiagramSum | DiagramComposition | DiagramProduct | DiagramNetwork))[ds___]] :>
@@ -275,14 +274,12 @@ DiagramDual[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
             "InputPorts" -> Through[d["FlatInputPorts"]["Dual"]]
         }
     ],
-     If[TrueQ[OptionValue["Singleton"]], "Shape" -> Automatic, {}],
     "DiagramOptions" -> d["DiagramOptions"]
 ]
 
 Options[DiagramFlip] := Join[{"Singleton" -> True}, Options[Diagram]]
 
 DiagramFlip[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
-    d,
     opts,
     Replace[d["HoldExpression"], {
         _[DiagramComposition[ds___]] :> ("Expression" :> DiagramComposition[##] & @@ Reverse[DiagramFlip[#, opts] & /@ {ds}]),
@@ -303,19 +300,25 @@ DiagramFlip[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
         }
     ],
     If[ ! TrueQ[OptionValue["Singleton"]],
-        "Shape" -> Replace[d["OptionValue"["Shape"]], "Wires"[wires_List] :> With[{ins = d["InputArity"], outs = d["OutputArity"]}, "Wires"[wires /. w_Integer :> If[w > ins, w - ins, w + outs]]]],
+        "Shape" -> Replace[d["OptionValue"["Shape"]], {
+            "Wires"[wires_List] :> With[{ins = d["InputArity"], outs = d["OutputArity"]}, "Wires"[wires /. w_Integer :> If[w > ins, w - ins, w + outs]]],
+            "Triangle" -> "UpsideDownTriangle",
+            "RoundedTriangle" -> "RoundedUpsideDownTriangle",
+            "UpsideDownTriangle" -> "Triangle",
+            "RoundedUpsideDownTriangle" -> "RoundedTriangle",
+            _ :> GeometricTransformation[d["Shape"], ReflectionTransform[{0, 1}, d["Center"]]]
+        }],
         {}
     ],
     "PortArrows" -> Reverse[d["PortStyles", opts]],
     "PortLabels" -> Reverse[d["PortLabels", opts]],
     "FloatingPorts" -> Replace[d["OptionValue"["FloatingPorts"], opts], floats : {_, _} :> Reverse[floats]],
-    "DiagramOptions" -> d["DiagramOptions"]
+    "DiagramOptions" -> FilterRules[d["DiagramOptions"], Except["PortArrows" | "PortLabels" | "FloatingPorts" | "Shape"]]
 ]
 
 Options[DiagramReverse] := Join[{"Singleton" -> True}, Options[Diagram]]
 
 DiagramReverse[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
-    d,
     opts,
     Replace[d["HoldExpression"], {
         _[DiagramProduct[ds___]] :> ("Expression" :> DiagramProduct[##] & @@ Reverse[DiagramReverse[#, opts] & /@ {ds}]),
@@ -330,10 +333,13 @@ DiagramReverse[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
     "PortArrows" -> (Reverse /@ d["PortStyles", opts]),
     "PortLabels" -> (Reverse /@ d["PortLabels", opts]),
     If[ ! TrueQ[OptionValue["Singleton"]],
-        "Shape" -> Replace[d["OptionValue"["Shape"]], "Wires"[wires_List] :> With[{ins = d["InputArity"], outs = d["OutputArity"]}, "Wires"[wires /. w_Integer :> If[w > ins, 2 * ins + outs - w + 1, ins - w + 1]]]],
+        "Shape" -> Replace[d["OptionValue"["Shape"]], {
+            "Wires"[wires_List] :> With[{ins = d["InputArity"], outs = d["OutputArity"]}, "Wires"[wires /. w_Integer :> If[w > ins, 2 * ins + outs - w + 1, ins - w + 1]]],
+            _ :> GeometricTransformation[d["Shape"], ReflectionTransform[{1, 0}, d["Center"]]]
+        }],
         {}
     ],
-    "DiagramOptions" -> d["DiagramOptions"]
+    "DiagramOptions" -> FilterRules[d["DiagramOptions"], Except["PortArrows" | "PortLabels" | "Shape"]]
 ]
 
 
@@ -522,7 +528,7 @@ DiagramNetwork[ds___Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
 
         Sequence @@ Block[{graph = DiagramsGraph[subDiagrams, FilterRules[{opts}, Options[DiagramsGraph]]], diagrams = Through[subDiagrams["Flatten"]], freeWires, edges},
             freeWires = Alternatives @@ Cases[Pick[VertexList[graph], VertexDegree[graph], 1], _HoldForm];
-            edges = EdgeList[graph];
+            edges = SortBy[EdgeList[graph], {#[[1]], #[[2]]} &];
             {"InputPorts" -> #1[[All, 1]], "OutputPorts" -> #2[[All, 1]], "PortArrows" -> {#1[[All, 2]], #2[[All, 2]]}, "PortLabels" -> {#1[[All, 3]], #2[[All, 3]]}} & @@
                 Lookup[GroupBy[Cases[edges, DirectedEdge[freeWires, {diagramId_, i_, portId_}] | DirectedEdge[{diagramId_, i_, portId_}, freeWires] :>
                     With[{d = diagrams[[diagramId]]}, {d["InputOutputPorts"][[i]][[portId]], d["PortStyles"][[i]][[portId]], d["PortLabels"][[i]][[portId]]}]], #[[1]]["DualQ"] &], {True, False}, {}]
@@ -1002,16 +1008,16 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
             With[{
                 labelExpr = Replace[label, Placed[e_, _] :> e],
                 newLabel = Replace[label, {Placed[l_, pos_] :> Placed[Replace[portLabelFunction[x, l, dir, i], Placed[e_, _] :> e], pos], l_ :> portLabelFunction[x, l, dir, i]}]
-            }, If[ MatchQ[labelExpr, None | False],
-                Nothing,
-                Replace[newLabel, Placed[l_, pos_] | l_ :> If[l === None, Nothing, Text[
-                        l /. Inherited :> $DefaultPortLabelFunction[x, labelExpr, dir, i],
+            }, 
+                Replace[newLabel, Placed[l_, pos_] | l_ :> With[{ll = l /. Inherited :> $DefaultPortLabelFunction[x, labelExpr, dir, i]},
+                    If[ MatchQ[ll, None | False], Nothing, Text[
+                        ll,
                         With[{v = (p[[-1]] - p[[1]]) 3 / 4, s = PadLeft[Flatten[Replace[{pos}, {{Right} -> {2, 0}, {Left} -> {- 2, 0}, {Top | Up} -> {0, 2}, {Bottom | Down} -> {0, - 2}, {Center} -> {0, 0}, {} -> {0, 2}}]], 2, 0]},
                             p[[1]] + s[[2]] * v + s[[1]] * RotationTransform[Replace[dir, {Top -> Pi / 2, Bottom -> - Pi / 2}]][v]
                         ]
-                    ]]
+                    ]]]
                 ]
-            ]]
+            ]
         },
            {ports, ps, arrows, labels, Range[Length[ps]]}
         ],
@@ -1027,11 +1033,14 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
             If[ MatchQ[diagram["OptionValue"["ShowLabel"], opts], None | False] || diagram["Label"] === HoldForm[None],
                 "\t\t\t",
                 Replace[labelFunction,
-                    Automatic :> Function[If[interactiveQ, ClickToCopy, # &][
-                        #["Label"],
-                        #["View"]
-                    ]]
-                ] @ diagram
+                    Automatic :> Function[Placed[
+                        If[interactiveQ, ClickToCopy, # &][
+                            #["Label"],
+                            #["View"]
+                        ],
+                        RegionCentroid[Region[#["Shape"]]]
+                    ]
+                ]] @ diagram
             ],
             {
                 Placed[l_, Offset[offset_]] :> Text[l, center + offset],
@@ -1108,7 +1117,7 @@ DiagramsPortGraph[diagrams : {___Diagram ? DiagramQ}, opts : OptionsPattern[]] :
 DiagramGraphSimplify[g_ ? GraphQ] := Fold[
     {net, v} |-> Block[{d = AnnotationValue[{net, v}, "Diagram"], wires, out, in, ports, dPorts, portWires, portFunction},
         If[EmptyDiagramQ[d], Return[VertexDelete[net, v], Block]];
-        (wires = If[MatchQ[#, "Wires"[_]], First[#], {}]) & @ d["OptionValue"["Shape"]];
+        (wires = If[MatchQ[#, "Wires"[ws : {{_, _} ...}] /; AllTrue[Thread[ws], DuplicateFreeQ]], First[#], {}]) & @ d["OptionValue"["Shape"]];
         (* portFunction = d["PortFunction"]; *)
         If[wires === {}, Return[net, Block]];
         in = EdgeList[net, DirectedEdge[_, v]];
@@ -1160,14 +1169,15 @@ SimplifyDiagram[diag_ ? DiagramQ, opts : OptionsPattern[]] /; diag["NetworkQ"] :
 	net
 },
     net = DiagramsNetGraph[
-        diag["Graph", "Simplify" -> True, "PortFunction" -> portFunction],
+        DiagramNetwork[AnnotationValue[{#, VertexList[#]}, "Diagram"] & @ diag["NetGraph", "UnarySpiders" -> False, "BinarySpiders" -> False]]["Graph", "Simplify" -> True, "PortFunction" -> portFunction],
         FilterRules[{opts}, Options[DiagramsNetGraph]],
-        "PortFunction" -> portFunction, "Spiders" -> False, "TagPorts" -> False
+        "PortFunction" -> portFunction, "UnarySpiders" -> False, "BinarySpiders" -> False, "TagPorts" -> False
     ];
     If[ VertexCount[net] == 0,
         Return[SingletonDiagram[EmptyDiagram[], diag["AnnotatedInputOutputPorts", True]]];
     ];
-    Diagram[DiagramAssignPorts[DiagramNetwork[toIdentities @ AnnotationValue[{net, VertexList[net]}, "Diagram"]], diag["AnnotatedInputOutputPorts", True]], FilterRules[diag["DiagramOptions"], Except["PortFunction"]]]
+    net = DiagramNetwork[toIdentities @ AnnotationValue[{net, VertexList[net]}, "Diagram"]];
+    Diagram[DiagramAssignPorts[net, diag["AnnotatedInputOutputPorts", True]], FilterRules[diag["DiagramOptions"], Except["PortFunction"]]]
 ]
 
 SimplifyDiagram[diag_ ? DiagramQ, opts : OptionsPattern[]] := DiagramArrange[SimplifyDiagram[diag["Network"], opts, "TagPorts" -> True]]
@@ -1582,12 +1592,11 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Enclose @ Block[{
 		FilterRules[{opts}, Options[Graph]],
 		VertexShapeFunction -> Join[
 			Thread[If[FreeQ[#, _Pattern], #, Verbatim[#]] & /@ diagramVertices ->
-				MapThread[{diagram, orientation} |-> With[{
+				MapThread[{diagram, orientation, v} |-> With[{
 						shape = First @ diagram["Graphics",
                             "Center" -> Automatic,
-                            "PortArrowFunction" -> (Nothing &),
-                            "PortLabels" -> If[portLabelsQ, Automatic, None],
-                            "LabelFunction" -> Function[d, d["Label"]]
+                            "PortArrowFunction" -> Function[With[{tag = {Replace[#3, {Top -> 1, Bottom -> 2}], _, #4}}, If[MemberQ[edges, DirectedEdge[v, _, {tag, __}] | DirectedEdge[_, v, {__, tag}]], None, Inherited]]],
+                            "PortLabels" -> If[portLabelsQ, Automatic, None]
                         ],
 						transform = RotationTransform[{{0, 1}, orientation}] @* ScalingTransform[scale {1, 1}]
 					},
@@ -1596,7 +1605,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Enclose @ Block[{
 							GeometricTransformation[shape, TranslationTransform[#1] @* transform]
 						}]
 					],
-					{Values[diagrams], Values[orientations]}
+					{Values[diagrams], Values[orientations], diagramVertices}
 				]
 			],
 			Thread[If[FreeQ[#, _Pattern], #, Verbatim[#]] & /@ spiderVertices -> With[{radius = rad * scale}, Function[Circle[#1, radius]]]]

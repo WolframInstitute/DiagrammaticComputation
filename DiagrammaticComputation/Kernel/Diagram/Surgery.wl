@@ -79,7 +79,7 @@ DiagramMap[f_, d_Diagram, lvl : (_Integer ? NonNegative) | Infinity : Infinity] 
             _ :> Diagram[f[d]]
         }]
         ,
-        Diagram[f[d]]
+        Diagram[f[d], d["DiagramOptions"]]
     ],
     DiagramQ
 ]
