@@ -301,19 +301,24 @@ DiagramFlip[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
     ],
     If[ ! TrueQ[OptionValue["Singleton"]],
         "Shape" -> Replace[d["OptionValue"["Shape"]], {
+            Automatic | "Rectangle" -> Automatic,
             "Wires"[wires_List] :> With[{ins = d["InputArity"], outs = d["OutputArity"]}, "Wires"[wires /. w_Integer :> If[w > ins, w - ins, w + outs]]],
             "Triangle" -> "UpsideDownTriangle",
             "RoundedTriangle" -> "RoundedUpsideDownTriangle",
             "UpsideDownTriangle" -> "Triangle",
             "RoundedUpsideDownTriangle" -> "RoundedTriangle",
+            "Croissant" -> "UpsideDownCroissant",
+            "UpsideDownCroissant" -> "Croissant",
+            "Bracket" -> "UpsideDownBracket",
+            "UpsideDownBracket" -> "Bracket",
             _ :> GeometricTransformation[d["Shape"], ReflectionTransform[{0, 1}, d["Center"]]]
         }],
         {}
     ],
-    "PortArrows" -> Reverse[d["PortStyles", opts]],
+    "PortArrows" -> MapThread[MapThread[Placed, {##}] &, Reverse /@ {d["PortStyles", opts], Map[ReflectionTransform[{0, 1}, d["Center"]], d["PortArrows", opts], {2}]}],
     "PortLabels" -> Reverse[d["PortLabels", opts]],
     "FloatingPorts" -> Replace[d["OptionValue"["FloatingPorts"], opts], floats : {_, _} :> Reverse[floats]],
-    "DiagramOptions" -> FilterRules[d["DiagramOptions"], Except["PortArrows" | "PortLabels" | "FloatingPorts" | "Shape"]]
+    "DiagramOptions" -> If[d["FlipQ"], d["Node"]["DiagramOptions"], FilterRules[d["DiagramOptions"], Except["PortArrows" | "PortLabels" | "FloatingPorts" | "Shape"]]]
 ]
 
 Options[DiagramReverse] := Join[{"Singleton" -> True}, Options[Diagram]]
@@ -330,7 +335,7 @@ DiagramReverse[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
     }],
     "OutputPorts" -> Reverse[Through[d["FlatOutputPorts"]["Reverse"]]],
     "InputPorts" -> Reverse[Through[d["FlatInputPorts"]["Reverse"]]],
-    "PortArrows" -> (Reverse /@ d["PortStyles", opts]),
+    "PortArrows" -> MapThread[Placed, {Reverse /@ d["PortStyles", opts], Reverse /@ ReflectionTransform[{1, 0}, d["Center"]] @ d["PortArrows", opts]}, 2],
     "PortLabels" -> (Reverse /@ d["PortLabels", opts]),
     If[ ! TrueQ[OptionValue["Singleton"]],
         "Shape" -> Replace[d["OptionValue"["Shape"]], {
@@ -339,7 +344,7 @@ DiagramReverse[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
         }],
         {}
     ],
-    "DiagramOptions" -> FilterRules[d["DiagramOptions"], Except["PortArrows" | "PortLabels" | "Shape"]]
+    "DiagramOptions" -> If[d["ReverseQ"], d["Node"]["DiagramOptions"], FilterRules[d["DiagramOptions"], Except["PortArrows" | "PortLabels" | "Shape"]]]
 ]
 
 
@@ -822,7 +827,7 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
         node["OptionValue"["Shape"], opts],
         {
             None -> {},
-            Automatic | dir_Directive :> {dir, transform @ Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c]},
+            Automatic | "Rectangle" | "Square" | dir_Directive :> {dir, transform @ Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c]},
             "RoundedRectangle" :> transform @ Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c, RoundingRadius -> {{Right, Bottom} -> .1 (w + h)}],
             "RoundRectangle" :> transform @ Rectangle[{- w / 2, - h / 2} + c, {w / 2 , h / 2} + c, RoundingRadius -> .1 (w + h)],
             "UpsideDownTriangle" :> transform @ Triangle[{{- w / 2, h / 2}, {0, - h / 2}, {w / 2, h / 2}} + Threaded[c]],
@@ -831,6 +836,16 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
             "RoundedTriangle" :> transform @ ResourceFunction["RoundedPolygon"][{{- w / 2, - h / 2}, {0, h / 2}, {w / 2, - h / 2}} + Threaded[c], {0.1, 0, 0.1}],
             "Circle" :> transform @ Circle[c, {w, h} / 2],
             "Disk" :> transform @ Disk[c, {w, h} / 2],
+            "Croissant" :> transform @ FilledCurve[BSplineCurve /@ {
+                {{- w / 2, - h / 2}, {- w / 2, h / 2}, {0, h / 2}, {w / 2, h / 2}, {w / 2, - h / 2}} + Threaded[c],
+                {{w / 2, - h / 2}, {w / 2, 0}, {0, 0}, {- w / 2, 0}, {- w / 2, - h / 2}} + Threaded[c]
+            }],
+            "Bracket" :> transform @ Line[{{- w / 2, h / 2}, {- w / 2, - h / 2}, {w / 2, - h / 2}, {w / 2, h / 2}} + Threaded[c]],
+            "UpsideDownCroissant" :> transform @ FilledCurve[BSplineCurve /@ {
+                {{- w / 2, h / 2}, {- w / 2, - h / 2}, {0, - h / 2}, {w / 2, - h / 2}, {w / 2, h / 2}} + Threaded[c],
+                {{w / 2, h / 2}, {w / 2, 0}, {0, 0}, {- w / 2, 0}, {- w / 2, h / 2}} + Threaded[c]
+            }],
+            "UpsideDownBracket" :> transform @ Line[{{- w / 2, - h / 2}, {- w / 2, h / 2}, {w / 2, h / 2}, {w / 2, - h / 2}} + Threaded[c]],
             "CrossWires" :> With[{
                 points = d["PortArrows", opts],
                 inputs = PositionIndex[func /@ Through[d["InputPorts"]["Dual"]]],
@@ -891,7 +906,7 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := Block[{
     c = Replace[d["Center", opts], _Offset -> {0, 0}],
     a = d["OptionValue"["Angle"], opts],
     s = d["OptionValue"["Spacing"], opts],
-    shape = d["OptionValue"["Shape"], opts],
+    shape = d["Node"]["OptionValue"["Shape"], opts],
     arities = {d["InputArity"], d["OutputArity"]},
     arrows = fillAutomatic[d["OptionValue"["PortArrows"], opts], arities, True],
     transform = RotationTransform[a, c],
@@ -901,7 +916,7 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := Block[{
         MapThread[Replace[#1, {Placed[_, p_] :> Replace[p, Automatic :> If[#2["NeutralQ"], Left, Top]], _ :> If[#2["NeutralQ"], Left, Top]}] &, {arrows[[1]], d["InputPorts"]}],
         MapThread[Replace[#1, {Placed[_, p_] :> Replace[p, Automatic :> If[#2["NeutralQ"], Right, Bottom]], _ :> If[#2["NeutralQ"], Right, Bottom]}] &, {arrows[[2]], d["OutputPorts"]}]
     ];
-    placeArrow = Function @ With[{dx = s / (Lookup[placeArity, #1, 0] + 1)}, {x = Lookup[placeShift, #1, (1 - s) / 2 + dx]},
+    placeArrow = Function @ With[{dx = s / (Lookup[placeArity, #1, 1] + 1)}, {x = Lookup[placeShift, #1, (1 - s) / 2 + dx]},
         placeShift = <|placeShift, #1 -> x + dx|>;
         Replace[#1, {
             Right :> {{w / 2, (1 / 2 - x) h}, {w / 2 + 1 / 4, (1 / 2 - x) h}},
@@ -917,6 +932,8 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := Block[{
                 _ :> Replace[shape, {
                     "Circle" | "Disk" :> With[{p = {w Cos[#1], h Sin[#1]}}, {c + p / 2, c + p / 2 + Normalize[p] / 4}],
                     "Point" :> With[{p = {w Cos[#1], h Sin[#1]}}, {c, c + Normalize[p]}],
+                    "Bracket" :> {c, c + {0, h}},
+                    "UpsideDownCroissant" :> {c, c + {0, h}},
                     _ :> placeArrow[If[#4["NeutralQ"], Left, Top]]
                 }]
             }] &,
@@ -934,6 +951,8 @@ DiagramProp[d_, "PortArrows", opts : OptionsPattern[]] := Block[{
                 _ :> Replace[shape, {
                     "Circle" | "Disk" :> With[{p = {w Cos[#1], h Sin[#1]}}, {c + p / 2, c + p / 2 + Normalize[p] / 4}],
                     "Point" :> With[{p = {w Cos[#1], h Sin[#1]}}, {c, c + Normalize[p]}],
+                    "Croissant" :> {c, c + {0, - h}},
+                    "UpsideDownBracket" :> {c, c + {0, - h}},
                     _ :> placeArrow[If[#4["NeutralQ"], Right, Bottom]]
                 }]
             }] &,
@@ -980,17 +999,18 @@ Options[DiagramGraphics] = Join[{
     "PortsFirst" -> True,
     "Outline" -> None,
     "Style" -> Automatic,
-    "LabelStyle" -> Automatic
+    "LabelStyle" -> Automatic,
+    PlotInteractivity -> False
 }, Options[Graphics]];
 
 DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[{
     points = diagram["PortArrows", opts],
     arities = {diagram["InputArity"], diagram["OutputArity"]},
-    center = diagram["Center", opts],
+    center = Replace[diagram["Center", opts], _Offset -> {0, 0}],
     shape = diagram["OptionValue"["Shape"], opts],
     style = Replace[diagram["OptionValue"["Style"], opts], {Automatic -> Directive[EdgeForm[Directive[Opacity[.5], $Black]], FaceForm[$Gray]], None -> Nothing}],
     labelStyle = Replace[diagram["OptionValue"["LabelStyle"], opts], {Automatic -> $Black, None -> Nothing}],
-    interactiveQ = Replace[OptionValue[PlotInteractivity], Automatic -> True]
+    interactiveQ = Replace[diagram["OptionValue"[PlotInteractivity], opts], Automatic -> True]
 }, {
     portArrows = diagram["PortStyles", opts],
     portLabels = diagram["PortLabels", opts],
@@ -1030,15 +1050,15 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
     {
         labelStyle,
         Replace[
-            If[ MatchQ[diagram["OptionValue"["ShowLabel"], opts], None | False] || diagram["Label"] === HoldForm[None],
+            If[ MatchQ[diagram["OptionValue"["ShowLabel"], opts], None | False],
                 "\t\t\t",
                 Replace[labelFunction,
                     Automatic :> Function[Placed[
                         If[interactiveQ, ClickToCopy, # &][
-                            #["Label"],
+                            Replace[#["Label"], HoldForm[None] -> "\t\t\t"],
                             #["View"]
                         ],
-                        RegionCentroid[Region[#["Shape"]]]
+                        FirstCase[#["Shape"], r_GeometricTransformation :> RegionCentroid[r], {0, 0}, All]
                     ]
                 ]] @ diagram
             ],

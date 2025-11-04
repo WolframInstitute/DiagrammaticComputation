@@ -638,7 +638,8 @@ Options[DiagramGrid] = DeleteDuplicatesBy[First] @ Join[{
     "SmoothWires" -> False,
     Spacings -> 1.6,
     Dividers -> None,
-    Alignment -> Automatic
+    Alignment -> Automatic,
+    PlotInteractivity -> False
 }, Options[DiagramArrange], Options[DiagramDecompose], Options[DiagramGraphics], Options[Graphics]
 ]
 DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
@@ -658,7 +659,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
     frames = diagram["OptionValue"["Frames"], opts],
     alignment = diagram["OptionValue"[Alignment], opts],
     smooth = diagram["OptionValue"["SmoothWires"], opts],
-    plotInteractivity = Replace[OptionValue[PlotInteractivity], Automatic -> True],
+    plotInteractivity = Replace[diagram["OptionValue"[PlotInteractivity], opts], Automatic -> True],
     dividers
 },
     grid = DiagramDecompose[DiagramArrange[diagram, FilterRules[{opts, diagram["DiagramOptions"]}, Options[DiagramArrange]]], "Diagram" -> True, "Unary" -> False, FilterRules[{opts}, Options[DiagramDecompose]]];
