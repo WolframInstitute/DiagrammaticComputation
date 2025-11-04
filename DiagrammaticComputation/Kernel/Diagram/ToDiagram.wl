@@ -119,9 +119,9 @@ SystemModelDiagram[sm : HoldPattern[_SystemModel], path_, opts : OptionsPattern[
 	]
 ]
 
-lambdaDiagram[tag_, port_] := Diagram[
-	Subscript["\[Lambda]", tag],
-	{PortDual[Interpretation[tag, \[FormalX][tag]]], port},
+lambdaDiagram[tag_, port_, level_ : None] := Diagram[
+	If[level === None, Subscript["\[Lambda]", tag], Interpretation[level, Subscript["\[Lambda]", tag]]],
+	{PortDual[Interpretation[Evaluate[If[level === None, tag, tag[level]]], \[FormalX]]], port},
 	Subscript["\[Lambda]", tag],
 	"Shape" -> "RoundRectangle",
 	"Style" -> Lookup[Lookup[Options[Wolfram`Lambda`LambdaTree], ColorRules], "Lambda"],
@@ -130,11 +130,15 @@ lambdaDiagram[tag_, port_] := Diagram[
 	"Width" -> 1 / GoldenRatio, "Height" -> 1
 ]
 
-applicationDiagram[f_, xs_List] := With[{fPort = Port[f], ports = Port /@ xs},
-	Diagram["\[Application]", Append[ports, fPort], Interpretation @@ {fPort["Name"] @@ Through[ports["Name"]], Unique["app"]},
+applicationDiagram[f_, xs_List, level_ : None] := With[{fPort = Port[f], ports = Port /@ xs},
+	Diagram[
+		If[level === None, "\[Application]", Interpretation[level, "\[Application]"]],
+		Append[ports, fPort],
+		Interpretation @@ {fPort["Name"] @@ Through[ports["Name"]], Unique["app"]},
 		"Shape" -> "Disk",
 		"Style" -> Lookup[Lookup[Options[Wolfram`Lambda`LambdaTree], ColorRules], "Application"],
-		"ShowLabel" -> False,
+		"LabelStyle" -> Directive[FontWeight -> Bold, Black],
+		"ShowLabel" -> level =!= None,
 		"PortLabels" -> None,
 		"Width" -> 1 / 2, "Height" -> 1 / 2
 	]
@@ -145,39 +149,56 @@ varDiagram[tag_] := CupDiagram[{PortDual[Interpretation[tag, \[FormalX][tag]]], 
 eraserDiagram[tag_] := Diagram[None, PortDual[Interpretation[tag, \[FormalX][tag]]], "Shape" -> "Disk", "Width" -> 1 / 2, "Height" -> 1 / 2, "PortLabels" -> None]
 
 
-Options[LambdaDiagrams] = {}
+Options[LambdaDiagrams] = Options[LambdaGridDiagram] = {"AddCroissantBrackets" -> False}
 
-rootPort[d_Diagram, def_] := First[d["GraphOutputPorts"], def]
+rootPort[d_Diagram] := First[d["OutputPorts"]]
 
 auxPorts[d_Diagram] := Complement[d["OutputPorts"], d["GraphOutputPorts"]]
 
-LambdaDiagrams[Interpretation["\[Lambda]", var_][body_], depth_, opts : OptionsPattern[]] := Block[{
-	bodyDiagram = DiagramNetwork @ LambdaDiagrams[body, depth + 1, opts],
-	tag = HoldForm[var]
+LambdaDiagrams[Interpretation["\[Lambda]", var_][body_], depth_, level_, opts : OptionsPattern[]] := Block[{
+	bodyDiagram = DiagramNetwork @ LambdaDiagrams[body, depth + 1, level, opts],
+	tag = HoldForm[var],
+	lvl = If[TrueQ[OptionValue["AddCroissantBrackets"]], level, None]
 },
 	Join[
 		{
-			lambdaDiagram[tag, rootPort[bodyDiagram, Replace[body, {Interpretation[_, bodyTag_] :> HoldForm[bodyTag], _ -> tag}]]],
-			varDiagram[tag]
+			lambdaDiagram[tag, rootPort[bodyDiagram], lvl]
 		},
 		bodyDiagram["SubDiagrams"]
 	]
 ]
 
-LambdaDiagrams[Interpretation[_Integer | _HoldForm, _], _, OptionsPattern[]] := {}
-
-LambdaDiagrams[f_[xs___], depth_, opts : OptionsPattern[]] := Block[{fDiagram, xDiagrams = DiagramNetwork @ LambdaDiagrams[#, depth, opts] & /@ {xs}, port, argPorts},
-	fDiagram = DiagramNetwork @ LambdaDiagrams[f, depth, opts];
-	port = rootPort[fDiagram, Replace[f, Interpretation[_, fTag_] :> HoldForm[fTag]]];
-	argPorts = MapThread[rootPort[#1, Replace[#2, Interpretation[_, xTag_] :> HoldForm[xTag]]] &, {xDiagrams, {xs}}];
-	Join[
-		{applicationDiagram[port, argPorts]},
-		fDiagram["SubDiagrams"],
-		Catenate[Through[xDiagrams["SubDiagrams"]]]
+LambdaDiagrams[Interpretation[_Integer | _HoldForm, var_], _, level_, OptionsPattern[]] := With[{tag = HoldForm[var]},
+	If[	TrueQ[OptionValue["AddCroissantBrackets"]],
+		Diagram[level, PortDual[tag[level]], PortDual[Interpretation[tag[level], \[FormalX]]], "Shape" -> "Croissant", "Width" -> 1, "Height" -> 1 / 2, "LabelStyle" -> Directive[FontWeight -> Bold, Black]],
+		IdentityDiagram[PortDual[tag[level]] -> PortDual[Interpretation[tag, \[FormalX]]]]
 	]
 ]
-LambdaDiagrams[Null | None, _, OptionsPattern[]] := {Diagram[None, Interpretation["*", Evaluate[Unique[]]], "Shape" -> "Disk", "Width" -> 1 / 2, "Height" -> 1 / 2, "ShowLabel" -> False]}
-LambdaDiagrams[x_, _, OptionsPattern[]] := {Diagram[Unevaluated[x], Interpretation[x, Evaluate[Unique[]]], "Shape" -> "Disk", "Width" -> 1 / 2, "Height" -> 1 / 2]}
+
+LambdaDiagrams[f_[xs___], depth_, level_, opts : OptionsPattern[]] := Block[{
+	fDiagram, xDiagrams
+},
+	fDiagram = DiagramNetwork @ LambdaDiagrams[f, depth, level, opts];
+	xDiagrams = DiagramNetwork @ LambdaDiagrams[#, depth, level + 1, opts] & /@ {xs};
+	Join[
+		{applicationDiagram[rootPort[fDiagram], rootPort /@ xDiagrams, If[TrueQ[OptionValue["AddCroissantBrackets"]], level, None]]},
+		fDiagram["SubDiagrams"],
+		Catenate[Through[xDiagrams["SubDiagrams"]]],
+		If[	TrueQ[OptionValue["AddCroissantBrackets"]],
+			Map[
+				Diagram[
+					level,
+					#, #["Apply", Replace[#["HoldName"], HoldForm[Interpretation[label_[_], tag_]] :> Interpretation[label[level], tag]] &],
+					"Shape" -> "Bracket", "Width" -> 1, "Height" -> 1 / 2, "LabelStyle" -> Directive[FontWeight -> Bold]
+				] &,
+				Catenate[Through[xDiagrams["InputPorts"]]]
+			],
+			{}
+		]
+	]
+]
+LambdaDiagrams[Null | None, _, _, OptionsPattern[]] := {Diagram[None, Interpretation["*", Evaluate[Unique[]]], "Shape" -> "Disk", "Width" -> 1 / 2, "Height" -> 1 / 2, "ShowLabel" -> False]}
+LambdaDiagrams[x_, _, _, OptionsPattern[]] := {Diagram[Unevaluated[x], Interpretation[x, Evaluate[Unique[]]], "Shape" -> "Disk", "Width" -> 1 / 2, "Height" -> 1 / 2]}
 
 
 ToDiagram::missing = "Lambda package is not loaded. Please install the package with \!\(\*TemplateBox[List[StyleBox[TagBox[RowBox[List[\"PacletInstall\", \
@@ -187,7 +208,7 @@ Rule[StripOnInput, False]], RowBox[List[\"PacletInstall\", \"[\", \
 \"\\\"Wolfram/Lambda\\\"\", \"]\"]]], \"ClickToCopy2\"]\)";
 
 Options[LambdaDiagram] := Join[{"AddErasers" -> False, "Colored" -> False}, Options[LambdaDiagrams], Options[Wolfram`Lambda`LambdaTree, ColorFunction], Options[DiagramNetwork]];
-LambdaDiagram[expr_, depth_Integer : 0, opts : OptionsPattern[]] := Block[{net, lambdaIdx = 1, coloredQ = TrueQ[OptionValue["Colored"]], colorFunction},
+LambdaDiagram[expr_, depth_Integer : 0, level_Integer : 0, opts : OptionsPattern[]] := Block[{net, lambdaIdx = 1, coloredQ = TrueQ[OptionValue["Colored"]], colorFunction},
 	Quiet[Check[Needs["Wolfram`Lambda`"], Message[ToDiagram::missing]; Return[$Failed]], {Get::noopen, Needs::nocont}];
 	colorFunction = OptionValue[ColorFunction];
 	net = SimplifyDiagram @ DiagramNetwork @ Map[
@@ -197,7 +218,7 @@ LambdaDiagram[expr_, depth_Integer : 0, opts : OptionsPattern[]] := Block[{net, 
 			_,
 			#
 		] &,
-		LambdaDiagrams[Wolfram`Lambda`TagLambda[Wolfram`Lambda`UnscopedLambda[expr]], depth, FilterRules[{opts}, Options[LambdaDiagrams]]]
+		LambdaDiagrams[Wolfram`Lambda`TagLambda[Wolfram`Lambda`UnscopedLambda[expr]], depth, level, FilterRules[{opts}, Options[LambdaDiagrams]]]
 	];
 	Diagram[
 		If[ TrueQ[OptionValue["AddErasers"]],

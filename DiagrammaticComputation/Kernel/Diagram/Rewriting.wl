@@ -31,14 +31,46 @@ DiagramCopySplit
 
 
 $LambdaInteractionRules = <|
-	"BetaReduce" -> AnnihilationRule[Subscript["\[Lambda]", _], "\[Application]", {SuperStar[var], body}, {SuperStar[arg], app}],
-	"Dup" -> CommutationRule[{x1, SuperStar[x2]}, {y1, y2}],
-	"DualDup" -> CommutationRule[{x1, SuperStar[x2]}, {y1, y2}, "Dual" -> True, "Bend" -> True],
-	"DupReduce" -> DuplicateAnnihilationRule[{x1, x2}, {y1, y2}, "Bend" -> True],
-	"DupSwapReduce" -> DuplicateAnnihilationRule[{x1, x2}, {y1, y2}, "Bend" -> True, "Reverse" -> True],
-	"Erase" -> EraserRule[{SuperStar[x], y}],
-	"EraseReduce" -> EraserAnnihilationRule[],
-	"EraseDup" -> DuplicateEraserRule[x, y]
+	"BetaReduce" :> AnnihilationRule[Subscript["\[Lambda]", _], "\[Application]", {SuperStar[var], body}, {SuperStar[arg], app}],
+	"DupReduce" :> DuplicateAnnihilationRule[{x1, x2}, {y1, y2}, "Bend" -> True],
+	"DupSwapReduce" :> DuplicateAnnihilationRule[{x1, x2}, {y1, y2}, "Bend" -> True, "Reverse" -> True],
+	"Dup" :> CommutationRule[{x1, SuperStar[x2]}, {y1, y2}],
+	"DualDup" :> CommutationRule[{x1, SuperStar[x2]}, {y1, y2}, "Dual" -> True, "Bend" -> True],
+	"Erase" :> EraserRule[{SuperStar[x], y}],
+	"EraseReduce" :> EraserAnnihilationRule[],
+	"EraseDup" :> DuplicateEraserRule[x, y]
+|>
+
+$CroissantBracketRules = <|
+	"BetaReduce" :> AnnihilationRule[Interpretation[i_, _], Interpretation[i_, _], {SuperStar[var], body}, {SuperStar[arg], app}],
+	"Dup" :> CommutationRule[Interpretation[i_, _], Interpretation[j_, _], {x1, SuperStar[x2]}, {y1, y2}],
+	"DualDup" :> CommutationRule[Interpretation[i_, _], Interpretation[j_, _], {x1, SuperStar[x2]}, {y1, y2}, "Bend" -> True],
+	"CroissantIdentity" :> AnnihilationRule[Diagram[i, a, b, "Shape" -> "UpsideDownCroissant", "Height" -> 1 / 2, "Width" -> 1]],
+	"BracketIdentity" :> AnnihilationRule[Diagram[i, a, b, "Shape" -> "UpsideDownBracket", "Height" -> 1 / 2, "Width" -> 1]],
+	"CroissantPropagation" :> DiagramArrange @ DiagramNetwork[
+		Diagram[i_, a_, 1, "Shape" -> "Croissant", "Height" -> 1 / 2, "Width" -> 1, "PortLabels" -> {True, False}],
+		Diagram[f_[j_], 1, {b, c}, "Shape" -> "RoundedTriangle", "Width" -> 1, "PortLabels" -> {False, True}],
+		Alignment -> Center,
+		ImageSize -> {Automatic, 192}
+	] -> DiagramArrange @ DiagramNetwork[
+		Diagram[Unevaluated @ f[j + 1], a, {2, 3}, "Shape" -> "RoundedTriangle", "Width" -> 1, "PortLabels" -> {False, True}],
+		Diagram[i, 2, b, "Shape" -> "Croissant", "Height" -> 1 / 2, "Width" -> 1, "PortLabels" -> {False, True}],
+		Diagram[i, 3, c, "Shape" -> "Croissant", "Height" -> 1 / 2, "Width" -> 1, "PortLabels" -> {False, True}],
+		Alignment -> Center,
+		ImageSize -> {Automatic, 192}
+	],
+	"BracketPropagation" :> DiagramArrange @ DiagramNetwork[
+		Diagram[i_, a_, 1, "Shape" -> "Bracket", "Height" -> 1 / 2, "Width" -> 1, "PortLabels" -> {True, False}],
+		Diagram[f_[j_], 1, {b, c}, "Shape" -> "RoundedTriangle", "Width" -> 1, "PortLabels" -> {False, True}],
+		Alignment -> Center,
+		ImageSize -> {Automatic, 192}
+	] -> DiagramArrange @ DiagramNetwork[
+		Diagram[Unevaluated @ f[j - 1], a, {2, 3}, "Shape" -> "RoundedTriangle", "Width" -> 1],
+		Diagram[i, 2, b, "Shape" -> "Bracket", "Height" -> 1 / 2, "Width" -> 1, "PortLabels" -> {False, True}],
+		Diagram[i, 3, c, "Shape" -> "Bracket", "Height" -> 1 / 2, "Width" -> 1, "PortLabels" -> {False, True}],
+		Alignment -> Center,
+		ImageSize -> {Automatic, 192}
+	]
 |>
 
 Begin["`Private`"]
@@ -257,13 +289,15 @@ $Port = (_Symbol | SuperStar[_Symbol])
 
 Options[CommutationRule] = Join[{"Bend" -> False, "Dual" -> False}, Options[Diagram]]
 
-CommutationRule[ins : {$Port ...}, outs : {$Port ...}, opts : OptionsPattern[]] :=
+CommutationRule[ins : {$Port ...}, outs : {$Port ...}, opts : OptionsPattern[]] := CommutationRule[\[FormalF], "Copy", ins, outs, opts]
+
+CommutationRule[expr1_, expr2_, ins : {$Port ...}, outs : {$Port ...}, opts : OptionsPattern[]] :=
 	CommutationRule[
-		Diagram[\[FormalF], _, ins,
+		Diagram[expr1, _, ins,
 			FilterRules[{opts}, Options[Diagram]],
 			"Shape" -> "RoundedTriangle", "Width" -> 1, "Height" -> 1, "FloatingPorts" -> {False, True}, "PortLabels" -> {None, Automatic}
 		],
-		CopyDiagram[_, outs, $CopyOptions, "PortLabels" -> {None, Automatic}],
+		Diagram[expr2, _, outs, $CopyOptions, "PortLabels" -> {None, Automatic}],
 		opts
 	]
 
@@ -291,7 +325,7 @@ CommutationRule[d_Diagram, c_Diagram, opts : OptionsPattern[]] /; d["InputArity"
 			,
 			{diag = DiagramFlip[diag, "Singleton" -> False], copy}
 		],
-		diagOpts
+		diagOpts, If[bendQ, "HorizontalGapSize" -> 0, {}]
 	];
 	rhs = ColumnDiagram[{
 			DiagramProduct @ Map[p |-> Diagram[c, p, Port[p]["Apply", #] & /@ Range[Length[outs]], "PortLabels" -> {Automatic, None}], ins],
@@ -321,14 +355,16 @@ AnnihilationRule[d1_Diagram, d2_Diagram, opts : OptionsPattern[]] /; d1["InputAr
 	ins = d1["OutputPorts"], outs = d2["OutputPorts"],
 	port = First[d1["InputPorts"]],
 	lhs, rhs,
+	bendQ = TrueQ[OptionValue["Bend"]],
 	diagOpts = FilterRules[{opts, Alignment -> Center, ImageSize -> {Automatic, 192}}, Options[Diagram]]
 },
 	lhs = ColumnDiagram[
-		If[	TrueQ[OptionValue["Bend"]],
+		If[	bendQ,
 			{CupDiagram[port], DiagramProduct[Diagram[makePattern @ d1, port, PortDual /@ makePattern /@ ins], Diagram[makePattern @ d2, PortDual[port], makePattern /@ outs]]},
 			{DiagramDual[DiagramFlip[Diagram[makePattern @ d1, makePattern /@ ins], "Singleton" -> False], "Singleton" -> False], Diagram[makePattern @ d2, PortDual[port], makePattern /@ outs]}
 		],
-		diagOpts
+		diagOpts,
+		If[bendQ, "HorizontalGapSize" -> 0, {}]
 	];
 	
 	rhs = DiagramProduct[
