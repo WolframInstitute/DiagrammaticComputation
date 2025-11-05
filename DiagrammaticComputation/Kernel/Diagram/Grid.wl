@@ -28,11 +28,11 @@ Begin["Wolfram`DiagrammaticComputation`Diagram`Grid`Private`"];
 
 identityDiagrams[ports_, styles_, labels_] := Splice @ MapThread[IdentityDiagram[#1, "PortArrows" -> {#2}, "PortLabels" -> {#3}] &, {ports, styles, labels}]
 
-permuteRow[a_Diagram, aPorts_List, bPorts_List, dir : 1 | -1, rowSortQ : _ ? BooleanQ : False, score_Function : Function[- DamerauLevenshteinDistance[#1, #2]]] :=
+permuteRow[a_Diagram, aPorts_List, bPorts_List, dir : 1 | -1, rowSortLevel : _Integer | Infinity, score_Function : Function[- DamerauLevenshteinDistance[#1, #2]]] :=
     Which[
         a["Head"] === DiagramProduct,
             With[{row = a["SubDiagrams"]}, {len = Length[row], arities = Through[row[Switch[dir, 1, "OutputArity", -1, "InputArity"]]]},
-                Replace[permuteRow[row, TakeList[aPorts, arities], bPorts, dir, rowSortQ, score],
+                Replace[permuteRow[row, TakeList[aPorts, arities], bPorts, dir, rowSortLevel - 1, score],
                     {changedQ_, newRow_, newPorts_} :> {
                         changedQ,
                         If[! changedQ, a, DiagramProduct[newRow, FilterRules[a["DiagramOptions"], Except["PortArrows" | "PortLabels"]]]],
@@ -43,7 +43,7 @@ permuteRow[a_Diagram, aPorts_List, bPorts_List, dir : 1 | -1, rowSortQ : _ ? Boo
         a["Head"] === DiagramComposition,
             With[{as = a["SubDiagrams"], f = a["PortFunction"], opts = FilterRules[a["DiagramOptions"], Except["PortArrows" | "PortLabels"]]},
                 With[{changedQ = Or @@ #[[All, 1]]}, {changedQ, If[changedQ, ColumnDiagram[Switch[dir, 1, Reverse[#[[All, 2]]], -1, #[[All, 2]]], "RowSort" -> False, opts], a], #[[1, 3]]}] & @ FoldPairList[
-                    With[{new = permuteRow[#2, f /@ Switch[dir, 1, #2["OutputPorts"], -1, PortDual /@ #2["InputPorts"]], #1, dir, rowSortQ, score]},
+                    With[{new = permuteRow[#2, f /@ Switch[dir, 1, #2["OutputPorts"], -1, PortDual /@ #2["InputPorts"]], #1, dir, rowSortLevel - 1, score]},
                         {
                             new,
                             f /@ Switch[dir, 1, PortDual /@ new[[2]]["InputPorts"], -1, new[[2]]["OutputPorts"]]
@@ -75,11 +75,11 @@ permuteRow[a_Diagram, aPorts_List, bPorts_List, dir : 1 | -1, rowSortQ : _ ? Boo
             ]
     ]
 
-foldPermuteRow[row_, rowPorts_, ports_, dir_, rowSortQ_, score_] :=
+foldPermuteRow[row_, rowPorts_, ports_, dir_, rowSortLevel_, score_] :=
     {Or @@ #1, #2, Catenate[#3]} & @@ Thread @ FoldPairList[
         With[
             {curRowPorts = #1, curRow = #2[[1]], curPorts = #2[[2]], pos = #2[[3]]},
-            {newRowData = permuteRow[curRow, curRowPorts[[pos]], curPorts, dir, rowSortQ, Function[score[Catenate[ReplacePart[curRowPorts, pos -> #1]], ports]]]}
+            {newRowData = permuteRow[curRow, curRowPorts[[pos]], curPorts, dir, rowSortLevel - 1, Function[score[Catenate[ReplacePart[curRowPorts, pos -> #1]], ports]]]}
             ,
             {
                 newRowData,
@@ -90,16 +90,16 @@ foldPermuteRow[row_, rowPorts_, ports_, dir_, rowSortQ_, score_] :=
         Thread[{row, TakeList[ports, Length /@ rowPorts], Range[Length[row]]}]
     ]
 
-permuteRow[row : {__Diagram}, rowPorts_List, ports_List, dir : 1 | -1, rowSortQ : _ ? BooleanQ : False, score_Function : Function[- DamerauLevenshteinDistance[#1, #2]]] := With[{
+permuteRow[row : {__Diagram}, rowPorts_List, ports_List, dir : 1 | -1, rowSortLevel : _Integer | Infinity : Infinity, score_Function : Function[- DamerauLevenshteinDistance[#1, #2]]] := With[{
     padPorts = MapThread[Replace[#1, Missing[] -> #2] &, {Switch[dir, 1, PadRight, -1, PadLeft][ports, Total[Length /@ rowPorts], Missing[]], Catenate[rowPorts]}]
 },
-    If[ ! rowSortQ || Length[rowPorts] > 9
+    If[ rowSortLevel < 1 || Length[rowPorts] > 9
         ,
-        foldPermuteRow[row, rowPorts, padPorts, dir, rowSortQ, score]
+        foldPermuteRow[row, rowPorts, padPorts, dir, rowSortLevel, score]
         ,
         First @ MaximalBy[
             With[{perm = FindPermutation[rowPorts, #]},
-                MapAt[perm =!= Cycles[{}] || # &, {1}] @ foldPermuteRow[Permute[row, perm], #, padPorts, dir, rowSortQ, score]
+                MapAt[perm =!= Cycles[{}] || # &, {1}] @ foldPermuteRow[Permute[row, perm], #, padPorts, dir, rowSortLevel, score]
             ] & /@ Permutations[rowPorts],
             score[#[[3]], padPorts] &,
             1
@@ -127,8 +127,10 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
     aLabels, bLabels,
     aPorts, bPorts,
     resetPortsA, resetPortsB,
-    rowSortQ = TrueQ[OptionValue["RowSort"]]
+    rowSortLevel = Replace[OptionValue["RowSort"], {True -> Infinity, Except[_Integer] -> 0}],
+    aRowSortLevel, bRowSortLevel
 },
+    aRowSortLevel = bRowSortLevel = rowSortLevel;
     a = x["FlattenOutputs"];
     b = y["FlattenInputs"];
     resetPortsA[] := (
@@ -168,15 +170,15 @@ ColumnDiagram[{x_Diagram ? DiagramQ, y_Diagram ? DiagramQ}, opts : OptionsPatter
     Block[{inPos, ins, outPos, outs},
         inPos = FirstPositions[Verbatim /@ bPorts, aPorts];
         ins = Delete[bs, inPos];
-        If[ins =!= {}, a = RowDiagram[permuteRow[{identityDiagrams[ins, Delete[bStyles, inPos], Delete[bLabels, inPos]], a}, Join[List /@ Delete[bPorts, inPos], {aPorts}], bPorts, 1, rowSortQ][[2]]]; resetPortsA[]];
+        If[ins =!= {}, a = RowDiagram[permuteRow[{identityDiagrams[ins, Delete[bStyles, inPos], Delete[bLabels, inPos]], a}, Join[List /@ Delete[bPorts, inPos], {aPorts}], bPorts, 1, ++aRowSortLevel][[2]]]; resetPortsA[]];
         outPos = FirstPositions[Verbatim /@ aPorts, bPorts];
         outs = Delete[as, outPos];
-        If[outs =!= {}, b = RowDiagram[permuteRow[{b, identityDiagrams[outs, Delete[aStyles, outPos], Delete[aLabels, outPos]]}, Join[{bPorts}, List /@ Delete[aPorts, outPos]], aPorts, -1, rowSortQ][[2]]]; resetPortsB[]]
+        If[outs =!= {}, b = RowDiagram[permuteRow[{b, identityDiagrams[outs, Delete[aStyles, outPos], Delete[aLabels, outPos]]}, Join[{bPorts}, List /@ Delete[aPorts, outPos]], aPorts, -1, ++bRowSortLevel][[2]]]; resetPortsB[]]
     ];
-    
-    Replace[permuteRow[a, aPorts, bPorts, 1, rowSortQ], {True, newA_, _} :> (a = newA; resetPortsA[])];
-    Replace[permuteRow[b, bPorts, aPorts, -1, rowSortQ], {True, newB_, _} :> (b = newB; resetPortsB[])];
-    
+
+    Replace[permuteRow[a, aPorts, bPorts, 1, aRowSortLevel], {True, newA_, _} :> (a = newA; resetPortsA[])];
+    Replace[permuteRow[b, bPorts, aPorts, -1, bRowSortLevel], {True, newB_, _} :> (b = newB; resetPortsB[])];
+
 	Which[
 		aPorts === bPorts,
 		DiagramComposition[b, a, "ColumnPorts" -> False, FilterRules[{opts}, Options[DiagramComposition]]],

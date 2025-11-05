@@ -27,7 +27,10 @@ DuplicateAnnihilationRule
 EraserAnnihilationRule
 DuplicateEraserRule
 
+PropagationRule
+
 DiagramCopySplit
+
 
 
 $LambdaInteractionRules = <|
@@ -43,34 +46,14 @@ $LambdaInteractionRules = <|
 
 $CroissantBracketRules = <|
 	"BetaReduce" :> AnnihilationRule[Interpretation[i_, _], Interpretation[i_, _], {SuperStar[var], body}, {SuperStar[arg], app}],
-	"Dup" :> CommutationRule[Interpretation[i_, _], Interpretation[j_, _], {x1, SuperStar[x2]}, {y1, y2}],
-	"DualDup" :> CommutationRule[Interpretation[i_, _], Interpretation[j_, _], {x1, SuperStar[x2]}, {y1, y2}, "Bend" -> True],
+	"Dup" :> CommutationRule[Interpretation[i, _], Interpretation[j, _], {x1, SuperStar[x2]}, {y1, y2}, "ShowLabel" -> True],
+	"DualDup" :> CommutationRule[Interpretation[i, _], Interpretation[j, _], {x1, SuperStar[x2]}, {y1, y2}, "ShowLabel" -> True, "Bend" -> True],
 	"CroissantIdentity" :> AnnihilationRule[Diagram[i, a, b, "Shape" -> "UpsideDownCroissant", "Height" -> 1 / 2, "Width" -> 1]],
 	"BracketIdentity" :> AnnihilationRule[Diagram[i, a, b, "Shape" -> "UpsideDownBracket", "Height" -> 1 / 2, "Width" -> 1]],
-	"CroissantPropagation" :> DiagramArrange @ DiagramNetwork[
-		Diagram[i_, a_, 1, "Shape" -> "Croissant", "Height" -> 1 / 2, "Width" -> 1, "PortLabels" -> {True, False}],
-		Diagram[f_[j_], 1, {b, c}, "Shape" -> "RoundedTriangle", "Width" -> 1, "PortLabels" -> {False, True}],
-		Alignment -> Center,
-		ImageSize -> {Automatic, 192}
-	] -> DiagramArrange @ DiagramNetwork[
-		Diagram[Unevaluated @ f[j + 1], a, {2, 3}, "Shape" -> "RoundedTriangle", "Width" -> 1, "PortLabels" -> {False, True}],
-		Diagram[i, 2, b, "Shape" -> "Croissant", "Height" -> 1 / 2, "Width" -> 1, "PortLabels" -> {False, True}],
-		Diagram[i, 3, c, "Shape" -> "Croissant", "Height" -> 1 / 2, "Width" -> 1, "PortLabels" -> {False, True}],
-		Alignment -> Center,
-		ImageSize -> {Automatic, 192}
-	],
-	"BracketPropagation" :> DiagramArrange @ DiagramNetwork[
-		Diagram[i_, a_, 1, "Shape" -> "Bracket", "Height" -> 1 / 2, "Width" -> 1, "PortLabels" -> {True, False}],
-		Diagram[f_[j_], 1, {b, c}, "Shape" -> "RoundedTriangle", "Width" -> 1, "PortLabels" -> {False, True}],
-		Alignment -> Center,
-		ImageSize -> {Automatic, 192}
-	] -> DiagramArrange @ DiagramNetwork[
-		Diagram[Unevaluated @ f[j - 1], a, {2, 3}, "Shape" -> "RoundedTriangle", "Width" -> 1],
-		Diagram[i, 2, b, "Shape" -> "Bracket", "Height" -> 1 / 2, "Width" -> 1, "PortLabels" -> {False, True}],
-		Diagram[i, 3, c, "Shape" -> "Bracket", "Height" -> 1 / 2, "Width" -> 1, "PortLabels" -> {False, True}],
-		Alignment -> Center,
-		ImageSize -> {Automatic, 192}
-	]
+	"CroissantPropagation" :> PropagationRule[a, {b, c}, "Shape" -> "Croissant"],
+	"DualCroissantPropagation" :> PropagationRule[a, {SuperStar[b], c}, "Shape" -> "Croissant"],
+	"BracketPropagation" :> PropagationRule[a, {b, c}, "Shape" -> "Bracket"],
+	"DualBracketPropagation" :> PropagationRule[a, {SuperStar[b], c}, "Shape" -> "Bracket"]
 |>
 
 Begin["`Private`"]
@@ -268,6 +251,7 @@ Options[DuplicateRule] = Options[EraserRule] = Options[DuplicateAnnihilateRule] 
 makePattern[expr_] := With[{rules = {
 		sym : Except[None, _Symbol] :> Pattern @@ Hold[sym, _],
 		SuperStar[sym : Except[None, _Symbol]] :> SuperStar[Pattern @@ Hold[sym, _]],
+		Interpretation[sym_Symbol, tag_] :> Interpretation[Evaluate[Pattern @@ Hold[sym, _]], tag],
 		p_Port :> p["Apply", With[{name = #["HoldName"]}, If[MatchQ[name, HoldForm[_Symbol]], Pattern @@ Append[name, _], #]] &]
 	}
 },
@@ -297,7 +281,7 @@ CommutationRule[expr1_, expr2_, ins : {$Port ...}, outs : {$Port ...}, opts : Op
 			FilterRules[{opts}, Options[Diagram]],
 			"Shape" -> "RoundedTriangle", "Width" -> 1, "Height" -> 1, "FloatingPorts" -> {False, True}, "PortLabels" -> {None, Automatic}
 		],
-		Diagram[expr2, _, outs, $CopyOptions, "PortLabels" -> {None, Automatic}],
+		Diagram[expr2, _, outs, FilterRules[{opts, $CopyOptions, "PortLabels" -> {None, Automatic}}, Options[Diagram]]],
 		opts
 	]
 
@@ -318,7 +302,7 @@ CommutationRule[d_Diagram, c_Diagram, opts : OptionsPattern[]] /; d["InputArity"
 		port = PortDual @ port
 	];
 	diag = DiagramDual[Diagram[makePattern @ d, PortDual[port], makePattern /@ ins], "Singleton" -> False];
-	copy = Diagram[c, PortDual[port], makePattern /@ outs, "PortLabels" -> {None, Automatic}];
+	copy = Diagram[makePattern @ c, PortDual[port], makePattern /@ outs, "PortLabels" -> {None, Automatic}];
 	lhs = ColumnDiagram[
 		If[	bendQ,
 			{CupDiagram[port], DiagramProduct[diag, copy]}
@@ -396,28 +380,65 @@ DuplicateEraserRule[in : $Port, out : $Port, opts : OptionsPattern[]] :=
 	] -> IdentityDiagram[in -> out, ImageSize -> {Automatic, 192}]
 
 
+
+PropagationRule[a : $Port, bs : {$Port ...}, opts : OptionsPattern[]] := Block[{lhs, rhs},
+	lhs = DiagramArrange @ DiagramNetwork[
+		Diagram[i_, makePattern @ a, 1, opts, "Height" -> 1 / 2, "Width" -> 1, "PortLabels" -> {True, False}],
+		Diagram[j_, 1, makePattern /@ bs, "Shape" -> "RoundedTriangle", "Width" -> 1, "PortLabels" -> {False, True}, "FloatingPorts" -> {False, True}],
+		Alignment -> Center,
+		ImageSize -> {Automatic, 192}
+	];
+	rhs = DiagramArrange @ DiagramNetwork[
+		Prepend[
+			MapIndexed[Diagram[i, #2 + 1, #1, opts, "Height" -> 1 / 2, "Width" -> 1, "PortLabels" -> {False, True}] &, bs],
+			Diagram[Unevaluated[j + 1], a, 1 + Range[Length[bs]], "Shape" -> "RoundedTriangle", "Width" -> 1, "PortLabels" -> {True, False}, "FloatingPorts" -> {False, True}]
+		],
+		Alignment -> Center,
+		ImageSize -> {Automatic, 192}
+	];
+	lhs -> rhs
+]
+
+
 DiagramCopySplit[d_Diagram] := If[d["NetworkQ"], Identity, DiagramArrange][
 	DiagramNetwork[
 		Map[
 			diag |->
-			If[
-				MatchQ[diag["Arities"], {1, i_} /; i > 2]
-				,
+			Which[
+				MatchQ[diag["Arities"], {1, i_} /; i > 2],
 				Splice @ FoldPairList[
-					With[{outs = Replace[#2[[1]], None :> Unique["x"], 1]}, {
-						Diagram[diag, #1, outs,
+					With[{i = #1[[2]]}, {outs = Replace[#2[[1]], Missing[p_] :> p["Apply", Replace[#["HoldName"], {
+							HoldForm[Interpretation[label_, tag_]] :> Interpretation[label, tag[i]],
+							HoldForm[label_] :> Interpretation[label, i]
+						}] &], 1]}, {
+						Diagram[diag, #1[[1]], outs,
 							"PortArrows" -> {Inherited, #2[[2]]},
 							"PortLabels" -> {Inherited, #2[[3]]},
 							"Shape" -> Replace[diag["OptionValue"["Shape"]], "Wires"[_] :> "Wires"[{{1, 2}, {1, 3}}]]],
-						Last[outs]
+						{Last[outs], i + 1}
 					}] &,
-					PortDual @ First @ diag["InputPorts"],
-					Thread[{MapAt[None &, {;; -2, -1}] @ Partition[diag["OutputPorts"], 2, 1], Partition[diag["PortStyles"][[2]], 2, 1], Partition[diag["PortLabels"][[2]], 2, 1]}]
-				]
-				,
+					{PortDual @ First @ diag["InputPorts"], 1},
+					Thread[{MapAt[Missing, {;; -2, -1}] @ Partition[diag["OutputPorts"], 2, 1], Partition[diag["PortStyles"][[2]], 2, 1], Partition[diag["PortLabels"][[2]], 2, 1]}]
+				],
+				MatchQ[diag["Arities"], {i_, 1} /; i > 2],
+				Splice @ FoldPairList[
+					With[{i = #1[[2]]}, {ins = Replace[#2[[1]], Missing[p_] :> p["Apply", Replace[#["HoldName"], {
+							HoldForm[Interpretation[label_, tag_]] :> Interpretation[label, tag[i]],
+							HoldForm[label_] :> Interpretation[label, i]
+						}] &], 1]}, {
+						Diagram[diag, ins, #1[[1]],
+							"PortArrows" -> {#2[[2]], Inherited},
+							"PortLabels" -> {#2[[3]], Inherited},
+							"Shape" -> Replace[diag["OptionValue"["Shape"]], "Wires"[_] :> "Wires"[{{3, 1}, {3, 2}}]]],
+						{Last[ins], i + 1}
+					}] &,
+					{First @ diag["OutputPorts"], 1},
+					Thread[{MapAt[Missing, {;; -2, -1}] @ Partition[PortDual /@ diag["InputPorts"], 2, 1], Partition[diag["PortStyles"][[1]], 2, 1], Partition[diag["PortLabels"][[1]], 2, 1]}]
+				],
+				True,
 				diag
 			],
-			AnnotationValue[{#, VertexList[#]}, "Diagram"] & @ d["NetGraph", "UnarySpiders" -> False]
+			AnnotationValue[{#, VertexList[#]}, "Diagram"] & @ d["NetGraph", "UnarySpiders" -> False, "SpiderMethod" -> 2]
 		],
 		FilterRules[d["DiagramOptions"], Except["PortFunction"]]
 	]
