@@ -183,7 +183,7 @@ Diagram[expr : {} | Except[_Association | _Diagram | OptionsPattern[]],
                 Function[p,
                     Replace[Unevaluated[p], Labeled[Style[p_, s___], l_, ___] | Style[Labeled[p_, l_, ___], s___] | Labeled[p_, l_, ___] | Style[p_, s___] | p_ :> (
                         Sow[First[{l}, Inherited], "InputLabel"];
-                        Sow[Replace[Directive[s], {Directive[Directive[dir___]] :> Directive[dir], Directive[] -> Inherited}], "InputStyle"];
+                        Sow[Replace[Directive[s], {Directive[Style[q_, t___]] :> Style[q, t], Directive[Directive[dir___]] :> Style[Inherited, dir], Directive[] -> Inherited, _ :> Style[Inherited, s]}], "InputStyle"];
                         PortDual[Unevaluated[p]])
                     ],
                     HoldFirst
@@ -216,9 +216,17 @@ Diagram[expr : Except[_Association | _Diagram | OptionsPattern[]], opts : Option
 
 (* merge options *)
 
-inheritExpresion[expr_, deps_List, def_ : Automatic] := With[{pos = Position[expr, Inherited]},
-    ReplacePart[expr, DeleteCases[Catenate[(dep |->
-        {{##}} -> ResourceFunction["LookupPart"][dep, Sequence[##], Automatic] & @@@ pos) /@ deps], _ -> Inherited]] /. Inherited -> def
+inheritExpresion[expr_, deps_List, def_ : Automatic] := With[{pos = Position[expr, Inherited], headPos = Position[expr, (Style | Labeled | Annotation)[Inherited, ___]]},
+    ReplacePart[
+        expr, 
+        DeleteCases[_ -> Inherited] @ Flatten[(dep |->
+            {
+                {Append[{##}, 1]} -> ResourceFunction["LookupPart"][dep, Sequence[##], Automatic] & @@@ headPos,
+                {{##}} -> ResourceFunction["LookupPart"][dep, Sequence[##], Automatic] & @@@ pos
+            }) /@ deps,
+            2
+        ]
+    ] /. Inherited -> def
 ]
 
 
@@ -1021,9 +1029,9 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
     Arrowheads @ If[shape === "Point", {{Small, .7}}, Small],
     MapThread[{ports, ps, arrows, labels, dir} |->
         MapThread[{x, p, arrow, label, i} |-> {
-            If[ MatchQ[arrow, None | False],
+            If[ MatchQ[arrow, None],
                 Nothing,
-                {Replace[arrow, True | Automatic | _Function -> Nothing], Replace[portArrowFunction[x, p, dir, i], {True | Automatic | Inherited :> Arrow[If[x["DualQ"], Reverse, Identity][p]], False | None -> Nothing}]}
+                {Replace[arrow, {True | Automatic | _Function | Style[True | Automatic | _Function, style___] :> style, False | Style[False, style__] :> Directive[Arrowheads[0], style]}], Replace[portArrowFunction[x, p, dir, i], {True | Automatic | Inherited :> Arrow[If[x["DualQ"], Reverse, Identity][p]], None | False -> Nothing}]}
             ],
             With[{
                 labelExpr = Replace[label, Placed[e_, _] :> e],
@@ -1665,7 +1673,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Enclose @ Block[{
                         p1 = points1, p2 = points2,
                         label = Replace[Replace[label2, {Automatic -> label1, _ -> label2}], {Placed[Automatic | True, _] | Automatic | True -> port1, Placed[l_, _] :> l}]
                     },
-						With[{primitive = If[style1 === style2 || style1 === Automatic || style2 === Automatic,
+						With[{primitive = If[style1 === style2 || MatchQ[style1, Automatic] || MatchQ[style2, Automatic],
                             {
                                 Arrowheads[
                                     If[ port1["DualQ"] != port2["DualQ"],
@@ -1676,10 +1684,10 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Enclose @ Block[{
                                         }
                                     ]
                                 ],
-                                With[{style = Replace[style1, Automatic :> Replace[style2, Automatic -> {}]]},
+                                With[{style = Replace[style1, Automatic -> style2]},
                                     If[ MatchQ[style, _Function],
                                         hold[style][#, "Net"] &,
-                                        {style, Arrow @ BSplineCurve @ #} &
+                                        {Replace[style, {Automatic | Style[Automatic, s___] :> s, False | Style[False, s___] :> Splice[{Arrowheads[0], s}]}], Arrow @ BSplineCurve @ #} &
                                     ] @ {
                                         a + point1, a + point1 + normal1,
                                         If[{v, i} === {w, j}, Nothing, If[lindep, (a + b) / 2 + 2 * RotationTransform[Pi / 2][normal1], Nothing]],
@@ -1695,7 +1703,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Enclose @ Block[{
                                     },
                                         If[ MatchQ[style1, _Function],
                                             {arrowheads, hold[style1][#, "Net"]} &,
-                                            {arrowheads, Replace[style1, Automatic -> Nothing], Arrow @ BSplineCurve @ #} &
+                                            {arrowheads, Replace[style1, {Automatic | Style[Automatic, s___] :> s, False | Style[False, s___] :> Splice[{Arrowheads[0], s}]}], Arrow @ BSplineCurve @ #} &
                                         ]
                                     ] @ {
                                         a + point1, a + point1 + normal1,
@@ -1711,7 +1719,7 @@ DiagramsNetGraph[graph_Graph, opts : OptionsPattern[]] := Enclose @ Block[{
                                     },
                                         If[ MatchQ[style2, _Function],
                                             {arrowheads, hold[style2][#, "Net"]} &,
-                                            {arrowheads, Replace[style2, Automatic -> Nothing], Arrow @ BSplineCurve @ #} &
+                                            {arrowheads, Replace[style2, {Automatic | Style[Automatic, s___] :> s, False | Style[False, s___] :> Splice[{Arrowheads[0], s}]}], Arrow @ BSplineCurve @ #} &
                                         ]
                                     ] @ {
                                         (* a + point1, a + point1 + normal1, *)

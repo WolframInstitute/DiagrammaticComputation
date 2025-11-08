@@ -821,7 +821,7 @@ wireGraphics[opts___][{outPort_, out_, outStyle_, outLabel_, ___}, {inPort_, in_
                 },
                     If[ MatchQ[style, _Function],
                         {arrowheads, style[#, "Grid"]} &,
-                        {arrowheads, Replace[style, Placed[x_, _] :> x], Arrow @ BSplineCurve @ If[outDual && outDual == ! inDual, Reverse[#], #]} &
+                        {arrowheads, Replace[style, {Placed[x_, _] :> x, False | Style[False, style__] :> Splice[{Arrowheads[0], style}]}], Arrow @ BSplineCurve @ If[outDual && outDual == ! inDual, Reverse[#], #]} &
                     ]
                 ] @ With[{p = out[[1]] + gapSize (out[[2]] - out[[1]]), q = in[[1]] + gapSize (in[[2]] - in[[1]])},
                     If[
@@ -842,14 +842,14 @@ wireGraphics[opts___][{outPort_, out_, outStyle_, outLabel_, ___}, {inPort_, in_
                 If[ outStyle === None,
                     {},
                     With[{arrowheads = Arrowheads[{{from * arrowSize, .5}}]},
-                        If[MatchQ[outStyle, _Function], {arrowheads, outStyle[#, "Grid"]} &, {arrowheads, Replace[outStyle, Placed[x_, _] :> x], Arrow @ BSplineCurve @ If[outDual, Reverse[#], #]} &] @ {out[[1]], p, (in[[1]] + out[[1]]) / 2}
+                        If[MatchQ[outStyle, _Function], {arrowheads, outStyle[#, "Grid"]} &, {arrowheads, Replace[outStyle, {Placed[x_, _] :> x, False | Style[False, style__] :> Splice[{Arrowheads[0], style}]}], Arrow @ BSplineCurve @ If[outDual, Reverse[#], #]} &] @ {out[[1]], p, (in[[1]] + out[[1]]) / 2}
                     ]
                 ]
                 ,
                 If[ inStyle === None,
                     {},
                     With[{arrowheads = Arrowheads[{{- to * arrowSize, .5}}]},
-                        If[MatchQ[inStyle, _Function], {arrowheads, inStyle[#, "Grid"]} &, {arrowheads, Replace[inStyle, Placed[x_, _] :> x], Arrow @ BSplineCurve @ If[! inDual, Reverse[#], #]} &] @  {(in[[1]] + out[[1]]) / 2, q, in[[1]]}
+                        If[MatchQ[inStyle, _Function], {arrowheads, inStyle[#, "Grid"]} &, {arrowheads, Replace[inStyle, {Placed[x_, _] :> x, False | Style[False, style__] :> Splice[{Arrowheads[0], style}]}], Arrow @ BSplineCurve @ If[! inDual, Reverse[#], #]} &] @  {(in[[1]] + out[[1]]) / 2, q, in[[1]]}
                     ]
                 ]
             }
