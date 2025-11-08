@@ -170,7 +170,7 @@ LambdaDiagrams[Interpretation["\[Lambda]", var_][body_], depth_, level_, opts : 
 
 LambdaDiagrams[Interpretation[_, var_], depth_, level_, OptionsPattern[]] := With[{label = HoldForm[var]},
 	If[	TrueQ[OptionValue["AddCroissantBrackets"]],
-		{Diagram[level, label, Interpretation[label, depth[level]], "Shape" -> "Croissant", "Width" -> 1, "Height" -> 1 / 2, "LabelStyle" -> Directive[FontWeight -> Bold, Black]]},
+		{Diagram[Interpretation[level, "Croissant"], label, Interpretation[label, depth[level]], "Shape" -> "Croissant", "Width" -> 1, "Height" -> 1 / 2, "LabelStyle" -> Directive[FontWeight -> Bold, Black]]},
 		{IdentityDiagram[label -> Interpretation[label, depth[level]]]}
 	]
 ]
@@ -190,7 +190,7 @@ LambdaDiagrams[f_[xs___], depth_, level_, opts : OptionsPattern[]] := Block[{
 					Join[
 						DiagramAssignPorts[#, {newPorts, Inherited}]["SubDiagrams"],
 						MapThread[
-							Diagram[level, PortDual[#2], PortDual[#1], "Shape" -> "Bracket", "Width" -> 1, "Height" -> 1 / 2, "LabelStyle" -> Directive[FontWeight -> Bold]] &,
+							Diagram[Interpretation[level, "Bracket"], PortDual[#2], PortDual[#1], "Shape" -> "Bracket", "Width" -> 1, "Height" -> 1 / 2, "LabelStyle" -> Directive[FontWeight -> Bold]] &,
 							{oldPorts, newPorts}
 						]
 					]

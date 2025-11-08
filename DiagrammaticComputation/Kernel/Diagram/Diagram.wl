@@ -1197,7 +1197,7 @@ SimplifyDiagram[diag_ ? DiagramQ, opts : OptionsPattern[]] /; diag["NetworkQ"] :
 	net
 },
     net = DiagramsNetGraph[
-        DiagramNetwork[AnnotationValue[{#, VertexList[#]}, "Diagram"] & @ diag["NetGraph", "UnarySpiders" -> False, "BinarySpiders" -> False]]["Graph", "Simplify" -> True, "PortFunction" -> portFunction],
+        DiagramNetwork[AnnotationValue[{#, VertexList[#]}, "Diagram"] & @ diag["NetGraph", "UnarySpiders" -> False, "BinarySpiders" -> False, "SpiderMethod" -> 2]]["Graph", "Simplify" -> True, "PortFunction" -> portFunction],
         FilterRules[{opts}, Options[DiagramsNetGraph]],
         "PortFunction" -> portFunction, "UnarySpiders" -> False, "BinarySpiders" -> False, "TagPorts" -> False
     ];

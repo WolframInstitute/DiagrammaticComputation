@@ -12,6 +12,7 @@ DiagramHypergraphRule
 
 DiagramReplaceList
 DiagramReplace
+DiagramNestReplace
 
 DiagramExpressionReplace
 
@@ -45,15 +46,17 @@ $LambdaInteractionRules = <|
 |>
 
 $CroissantBracketRules = <|
-	"BetaReduce" :> AnnihilationRule[Interpretation[i_, _], Interpretation[i_, _], {SuperStar[var], body}, {SuperStar[arg], app}],
+	"BetaReduce" :> AnnihilationRule[Interpretation[i, _], Interpretation[i, _], {SuperStar[var], body}, {SuperStar[arg], app}],
+	"DupReduce" :> AnnihilationRule[Interpretation[i, _], Interpretation[i, _], {SuperStar[x1], x2}, {SuperStar[y1], SuperStar[y2]}],
 	"Dup" :> CommutationRule[Interpretation[i, _], Interpretation[j, _], {x1, SuperStar[x2]}, {y1, y2}, "ShowLabel" -> True],
+	"DupDup" :> CommutationRule[Interpretation[i, _], Interpretation[j, _], {x1, x2}, {y1, y2}, "ShowLabel" -> True, "Bend" -> True, $CopyOptions],
 	"DualDup" :> CommutationRule[Interpretation[i, _], Interpretation[j, _], {x1, SuperStar[x2]}, {y1, y2}, "ShowLabel" -> True, "Bend" -> True],
 	"CroissantIdentity" :> AnnihilationRule[Diagram[i, a, b, "Shape" -> "UpsideDownCroissant", "Height" -> 1 / 2, "Width" -> 1]],
 	"BracketIdentity" :> AnnihilationRule[Diagram[i, a, b, "Shape" -> "UpsideDownBracket", "Height" -> 1 / 2, "Width" -> 1]],
-	"CroissantPropagation" :> PropagationRule[a, {b, c}, "Shape" -> "Croissant"],
-	"DualCroissantPropagation" :> PropagationRule[a, {SuperStar[b], c}, "Shape" -> "Croissant"],
-	"BracketPropagation" :> PropagationRule[a, {b, c}, "Shape" -> "Bracket"],
-	"DualBracketPropagation" :> PropagationRule[a, {SuperStar[b], c}, "Shape" -> "Bracket"]
+	"CroissantPropagation" :> PropagationRule[a, {b, c}, # - 1 &, "Shape" -> "Croissant"],
+	"DualCroissantPropagation" :> PropagationRule[a, {SuperStar[b], c}, # - 1 &, "Shape" -> "Croissant"],
+	"BracketPropagation" :> PropagationRule[a, {b, c}, # + 1 &, "Shape" -> "Bracket"],
+	"DualBracketPropagation" :> PropagationRule[a, {SuperStar[b], c}, # + 1 &, "Shape" -> "Bracket"]
 |>
 
 Begin["`Private`"]
@@ -76,8 +79,8 @@ DiagramHyperedge[d_Diagram, f_, pattQ : _ ? BooleanQ] := With[{floatPorts = d["O
 },
 	Annotation[
 		labeledVertices[d, f],
-		EdgeLabels -> ((d["OptionValue"["Shape"]] -> Underoverscript[d["Label"], #2, #1]) -> Through[Catenate[d["InputOutputPorts"]]["DualQ"]] & @@
-			If[pattQ, {_, _}, Replace[patternLabelArities[d], Infinity -> _, 1]]),
+		EdgeLabels -> ((d["OptionValue"["Shape"]] -> Underoverscript[d["Label"], #2, #1]) & @@ If[pattQ, {_, _}, Replace[patternLabelArities[d], Infinity -> _, 1]]) ->
+			MapThread[If[pattQ && MatchQ[#2, False | Style[False, __]], _, #1] &, {Through[Catenate[d["InputOutputPorts"]]["DualQ"]], Catenate[d["PortStyles"]]}],
 		"EdgeSymmetry" -> Switch[floatPorts,
 			True, "Unordered",
 			False, {Cycles[{}], perm},
@@ -127,7 +130,7 @@ DiagramHypergraph[d_Diagram, opts : OptionsPattern[]] := With[{net = SimplifyDia
 MatchDiagrams[
 	srcDiagrams : {___Diagram},
 	tgtDiagrams : {___Diagram},
-	match : KeyValuePattern[{"Hypergraph" -> hg_Hypergraph, "MatchEdgePositions" -> pos_, "NewEdges" -> newEdges_, "Bindings" -> bindings_, "EdgeArities" -> arities_}]
+	match : KeyValuePattern[{"Hypergraph" -> hg_Hypergraph, "NewEdges" -> newEdges_, "Bindings" -> bindings_, "EdgeArities" -> arities_}]
 ] :=
 	If[
 		EdgeCount[hg] == 0
@@ -136,7 +139,7 @@ MatchDiagrams[
 		,
 		With[{
 			holdBindings = Normal @ KeyMap[HoldForm, HoldForm /@ Association[bindings]],
-			optionRules = Append[_ -> {}] @ Thread[Through[#["Label"]] -> Through[#["DiagramOptions"]]] & @ Extract[srcDiagrams, pos]
+			optionRules = Append[_ -> {}] @ Thread[Through[#["Label"]] -> Through[#["DiagramOptions"]]] & @ srcDiagrams
 		},
 			MapThread[
 				With[{expr = Replace[#3, ((_ -> Underoverscript[HoldForm[x_], ___]) -> _) | x_ :> x]},
@@ -179,7 +182,7 @@ DiagramReplaceList[d_Diagram, src_Diagram -> tgt_Diagram, n : _Integer | Infinit
 	matches = Take[matches, UpTo[n]];
 	nets = Map[
 		With[{
-			newNet = SimplifyDiagram @ DiagramNetwork[Join[Delete[diagrams, #["MatchEdgePositions"]], MatchDiagrams[diagrams, tgtDiagrams, #]]],
+			newNet = SimplifyDiagram @ DiagramNetwork[Join[Delete[diagrams, #["MatchEdgePositions"]], MatchDiagrams[Extract[diagrams, #["MatchEdgePositions"]], tgtDiagrams, #]]],
 			freeVertices = Complement[Union @@ EdgeList[#], VertexList[#]] & @ #["Hypergraph"]
 		},
 			If[freeVertices === {}, newNet, SingletonDiagram[newNet, freeVertices]]
@@ -205,6 +208,29 @@ DiagramReplace[d_Diagram, rule_, opts : OptionsPattern[]] := First[DiagramReplac
 
 DiagramReplace[rule_][d_Diagram, opts : OptionsPattern[]] := DiagramReplace[d, rule, opts]
 
+
+DiagramNestReplace[d_Diagram, rules : {__Rule}, n_Integer, opts : OptionsPattern[]] := Enclose @ Block[{
+	hg, hgRules = DiagramHypergraphRule /@ rules
+},
+	net = ConfirmBy[SimplifyDiagram @ ToDiagramNetwork[d], DiagramQ];
+	diagrams = DiagramSubdiagrams[net, {1}];
+	hg = ConfirmBy[With[{f = net["PortFunction"]}, DiagramHypergraph[diagrams, f, labeledVertices[net]]], HypergraphQ];
+	matches = Rest @ NestWhileList[
+		With[{curHg = Lookup[#1[[2]], "Hypergraph"]},
+			FoldWhile[
+				Catch[#2 -> First[#2[curHg, "DistinctVertexLabels" -> False, "DistinctEdgeLabels" -> False, "SymmetryMethod" -> None], Throw[None -> Missing[]]]] &,
+				None -> Missing[],
+				hgRules,
+				MissingQ[#[[2]]] &
+			]
+		 ] &,
+		None -> <|"Hypergraph" -> hg|>,
+		KeyExistsQ[#[[2]], "Hypergraph"] &,
+		1,
+		n
+	];
+	matches
+]
 
 DiagramExpressionReplace[d_Diagram, rules_] :=
 	DiagramMap[
@@ -381,17 +407,17 @@ DuplicateEraserRule[in : $Port, out : $Port, opts : OptionsPattern[]] :=
 
 
 
-PropagationRule[a : $Port, bs : {$Port ...}, opts : OptionsPattern[]] := Block[{lhs, rhs},
+PropagationRule[a : $Port, bs : {$Port ...}, f_, opts : OptionsPattern[]] := Block[{lhs, rhs},
 	lhs = DiagramArrange @ DiagramNetwork[
-		Diagram[i_, makePattern @ a, 1, opts, "Height" -> 1 / 2, "Width" -> 1, "PortLabels" -> {True, False}],
-		Diagram[j_, 1, makePattern /@ bs, "Shape" -> "RoundedTriangle", "Width" -> 1, "PortLabels" -> {False, True}, "FloatingPorts" -> {False, True}],
+		Diagram[Interpretation[\[FormalI]_, itag_], makePattern @ a, 1, opts, "Height" -> 1 / 2, "Width" -> 1, "PortLabels" -> {True, False}],
+		Diagram[Interpretation[\[FormalJ]_, jtag_], 1, makePattern /@ bs, "Shape" -> "RoundedTriangle", "Width" -> 1, "PortLabels" -> {False, True}, "FloatingPorts" -> {False, True}],
 		Alignment -> Center,
 		ImageSize -> {Automatic, 192}
 	];
 	rhs = DiagramArrange @ DiagramNetwork[
 		Prepend[
-			MapIndexed[Diagram[i, #2 + 1, #1, opts, "Height" -> 1 / 2, "Width" -> 1, "PortLabels" -> {False, True}] &, bs],
-			Diagram[Unevaluated[j + 1], a, 1 + Range[Length[bs]], "Shape" -> "RoundedTriangle", "Width" -> 1, "PortLabels" -> {True, False}, "FloatingPorts" -> {False, True}]
+			MapIndexed[Diagram[Interpretation[\[FormalI], itag], #2 + 1, #1, opts, "Height" -> 1 / 2, "Width" -> 1, "PortLabels" -> {False, True}] &, bs],
+			Diagram[Interpretation[f[\[FormalJ]], jtag], a, 1 + Range[Length[bs]], "Shape" -> "RoundedTriangle", "Width" -> 1, "PortLabels" -> {True, False}, "FloatingPorts" -> {False, True}]
 		],
 		Alignment -> Center,
 		ImageSize -> {Automatic, 192}
