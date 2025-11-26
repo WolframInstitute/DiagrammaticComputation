@@ -3,7 +3,7 @@ BeginPackage["Wolfram`DiagrammaticComputation`"]
 EndPackage[]
 
 Scan[
-    (ClearAll[Evaluate[# <> "*"], Evaluate[# <> "`**`*"]]; Get[#]) &,
+    (ClearAll[Evaluate[# <> "*"], Evaluate[# <> "**`*"]]; Get[#]) &,
     {
         "Wolfram`DiagrammaticComputation`Port`",
         "Wolfram`DiagrammaticComputation`Diagram`",

@@ -172,7 +172,7 @@ Diagram[expr : {} | Except[_Association | _Diagram | OptionsPattern[]],
                 Function[p,
                     Replace[Unevaluated[p], Labeled[Style[p_, s___], l_, ___] | Style[Labeled[p_, l_, ___], s___] | Labeled[p_, l_, ___] | Style[p_, s___] | p_ :> (
                         Sow[First[{l}, Inherited], "OutputLabel"];
-                        Sow[Replace[Directive[s], {Directive[Directive[dir___]] :> Directive[dir], Directive[] -> Inherited}], "OutputStyle"];
+                        Sow[Replace[Directive[s], {Directive[Style[q_, t___]] :> Style[q, t], Directive[Directive[dir___]] :> Style[Inherited, dir], Directive[False] -> False, Directive[] -> Inherited, _ :> Style[Inherited, s]}], "OutputStyle"];
                         Port[Unevaluated[p]]
                     )],
                     HoldFirst
@@ -183,7 +183,7 @@ Diagram[expr : {} | Except[_Association | _Diagram | OptionsPattern[]],
                 Function[p,
                     Replace[Unevaluated[p], Labeled[Style[p_, s___], l_, ___] | Style[Labeled[p_, l_, ___], s___] | Labeled[p_, l_, ___] | Style[p_, s___] | p_ :> (
                         Sow[First[{l}, Inherited], "InputLabel"];
-                        Sow[Replace[Directive[s], {Directive[Style[q_, t___]] :> Style[q, t], Directive[Directive[dir___]] :> Style[Inherited, dir], Directive[] -> Inherited, _ :> Style[Inherited, s]}], "InputStyle"];
+                        Sow[Replace[Directive[s], {Directive[Style[q_, t___]] :> Style[q, t], Directive[Directive[dir___]] :> Style[Inherited, dir], Directive[False] -> False, Directive[] -> Inherited, _ :> Style[Inherited, s]}], "InputStyle"];
                         PortDual[Unevaluated[p]])
                     ],
                     HoldFirst
@@ -886,7 +886,7 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
             },
                 {
                     Haloing[],
-                    With[{p = ps[[First[#]]], style = Replace[SelectFirst[styles[[#]], ! MatchQ[#, Automatic | True | _Function] &, Nothing], None -> Nothing], dual = ports[[First[#]]]["DualQ"]},
+                    With[{p = ps[[First[#]]], style = Replace[SelectFirst[styles[[#]], ! MatchQ[#, Automatic | True | _Function] &, Nothing], None | False | Style[False, s___] :> s], dual = ports[[First[#]]]["DualQ"]},
                         {style, BSplineCurve[If[dual, Identity, Reverse] @ {p[[1]], 2 * p[[1]] - p[[2]], 2 * #[[1]] - #[[2]], #[[1]]}] & /@ DeleteCases[None] @ ps[[Rest[#]]]}
                     ] & /@ wires // If[d["FlipQ"], GeometricTransformation[#, RotationTransform[2 a, c] @* ReflectionTransform[{0, 1}, c]] &, Identity] //
                         If[d["ReverseQ"], GeometricTransformation[#, ReflectionTransform[{1, 0}, c]] &, Identity]
