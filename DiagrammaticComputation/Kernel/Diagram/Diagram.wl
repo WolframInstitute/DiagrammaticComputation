@@ -1936,24 +1936,41 @@ diagramTensor[diagram_Diagram, opts : OptionsPattern[]] := Replace[diagram["Hold
 	]
 	,
 	_ :>
-        Replace[diagram["Expression"], {
-            "\[DoubleStruckCapitalI]" :> Enclose @ With[
+        If[ diagram["WireQ"]
+            ,
+            Enclose @ With[
                 {wires = First @ ConfirmMatch[diagram["OptionValue"["Shape"]], "Wires"[_]]},
-                {outputPorts = Join[diagram["InputPorts"], diagram["OutputPorts"]][[wires[[All, 2]]]]},
+                {
+                    nInputs = diagram["InputArity"],
+                    nOutputs = diagram["OutputArity"]
+                },
+                {
+                    nPorts = nInputs + nOutputs,
+                    allPorts = Join[diagram["InputPorts"], diagram["OutputPorts"]]
+                },
+                {
+                    symIdxOrder = Join[wires[[All, 1]], wires[[All, 2]]],
+                    outputPorts = allPorts[[wires[[All, 2]]]],
+                    networkOrder = Join[Range[nInputs + 1, nPorts], Range[nInputs]]
+                },
                 {
                     tensor = SymbolicIdentityArray[portDimension /@ outputPorts],
-                    perm = ConfirmBy[FindPermutation[wires[[All, 1]], wires[[All, 2]] - Length[wires]], PermutationCyclesQ]}
+                    perm = FindPermutation[symIdxOrder, networkOrder]
+                }
                 ,
                 If[perm === Cycles[{}], tensor, Inactive[Transpose][tensor, perm]]
-            ],
-            Interpretation["1", Identity] :> SymbolicIdentityArray[portDimension /@ diagram["OutputPorts"]],
-            Interpretation["\[Pi]", perm_Cycles] :> Inactive[Transpose][SymbolicIdentityArray[portDimension /@ diagram["OutputPorts"]], perm],
-            Annotation[expr_, OptionsPattern[{"Tensor" -> None, "Domain" -> Sequence[], "Symmetry" -> Sequence[]}]] | expr_ :>
-                If[ OptionValue["Tensor"] === None,
-                    Switch[diagram["Arity"], 1, VectorSymbol, 2, MatrixSymbol, _, ArraySymbol][expr, portDimension /@ diagram["Ports"], OptionValue["Domain"], OptionValue["Symmetry"]],
-                    OptionValue["Tensor"]
-                ]
-        }]
+            ]
+            ,
+            Replace[diagram["Expression"], {
+                Interpretation["1", Identity] :> SymbolicIdentityArray[portDimension /@ diagram["OutputPorts"]],
+                Interpretation["\[Pi]", perm_Cycles] :> Inactive[Transpose][SymbolicIdentityArray[portDimension /@ diagram["OutputPorts"]], perm],
+                Annotation[expr_, OptionsPattern[{"Tensor" -> None, "Domain" -> Sequence[], "Symmetry" -> Sequence[]}]] | expr_ :>
+                    If[ OptionValue["Tensor"] === None,
+                        Switch[diagram["Arity"], 1, VectorSymbol, 2, MatrixSymbol, _, ArraySymbol][expr, portDimension /@ diagram["Ports"], OptionValue["Domain"], OptionValue["Symmetry"]],
+                        OptionValue["Tensor"]
+                    ]
+            }]
+        ]
 }]
 
 Options[DiagramTensor] = Join[Options[diagramTensor] , Options[DiagramArrange]]
