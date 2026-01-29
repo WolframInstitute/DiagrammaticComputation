@@ -1,3 +1,1066 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:49863fd6901d7729477fa108ebd9c7efeb26a8bf546df041dadc2310f9bdcf4c
-size 43046
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     42891,       1058]
+NotebookOptionsPosition[     36624,        923]
+NotebookOutlinePosition[     37394,        948]
+CellTagsIndexPosition[     37315,        943]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["DiagramSum", "ObjectName",
+ CellID->34372633,ExpressionUUID->"8088b8db-21fa-421c-a66b-ac3308af7b72"],
+
+Cell[TextData[{
+ Cell["   ", "ModInfo",ExpressionUUID->"90ceed47-f186-4c0e-ba38-92899be75347"],
+ Cell[BoxData[
+  RowBox[{"DiagramSum", "[", 
+   RowBox[{
+    SubscriptBox[
+     StyleBox["d", "TI"], 
+     StyleBox["1", "TR"]], ",", 
+    SubscriptBox[
+     StyleBox["d", "TI"], 
+     StyleBox["2", "TR"]], ",", 
+    SubscriptBox[
+     StyleBox["d", "TI"], 
+     StyleBox["3", "TR"]], ",", 
+    StyleBox["\[Ellipsis]", "TR"]}], "]"}]], "InlineFormula",ExpressionUUID->
+  "d9c00e2d-d31c-4c73-a5c7-c8741e58dcd0"],
+ " \[LineSeparator]represents a choice composition of the diagrams ",
+ Cell[BoxData[
+  SubscriptBox[
+   StyleBox["d", "TI"], 
+   StyleBox["1", "TR"]]], "InlineFormula",ExpressionUUID->
+  "5b3f6483-d005-4bd2-bacb-5ff20485e622"],
+ ", ",
+ Cell[BoxData[
+  SubscriptBox[
+   StyleBox["d", "TI"], 
+   StyleBox["2", "TR"]]], "InlineFormula",ExpressionUUID->
+  "e7f41cf4-fbf6-48f6-bd3f-9f782cec4a7b"],
+ ", ",
+ Cell[BoxData[
+  SubscriptBox[
+   StyleBox["d", "TI"], 
+   StyleBox["3", "TR"]]], "InlineFormula",ExpressionUUID->
+  "79f2b575-b7d1-4b5c-b7bb-21755cccfee7"],
+ ", ",
+ Cell[BoxData[
+  StyleBox["\[Ellipsis]", "TR"]], "InlineFormula",ExpressionUUID->
+  "6bb4475b-1416-41a1-8bd5-06f051e150a7"],
+ "."
+}], "Usage",
+ CellChangeTimes->{{3.961749372938929*^9, 3.961749379570149*^9}},
+ CellID->27741788,ExpressionUUID->"e2c5c6cb-0aa5-4374-b179-2c6fcd7bb24c"],
+
+Cell["XXXX", "Notes",
+ CellID->252279517,ExpressionUUID->"a7ac03a1-4d7c-4573-9727-95d2cfed55ed"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "See Also",
+ Cell[BoxData[
+  TemplateBox[{"SeeAlso", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Insert links to any related reference (function) pages.", 
+        "MoreInfoText"], BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "4c2374e2-4b92-48d6-a9af-05af4ed4f293"]
+}], "SeeAlsoSection",
+ CellID->929123041,ExpressionUUID->"e2e3d4a9-5777-407a-a968-88bd084c7b98"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  ButtonBox["Diagram",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/Diagram"]], 
+  "InlineSeeAlsoFunction",
+  TaggingRules->{"PageType" -> "Function"},ExpressionUUID->
+  "bb961347-544c-412a-9ab9-449120909171"],
+ StyleBox[" \[FilledVerySmallSquare] ", "InlineSeparator"],
+ Cell[BoxData[
+  ButtonBox["DiagramProduct",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/DiagramProduct"]], 
+  "InlineSeeAlsoFunction",
+  TaggingRules->{"PageType" -> "Function"},ExpressionUUID->
+  "60fcf8d2-3519-4205-9e1a-2a0301828bbd"],
+ StyleBox[" \[FilledVerySmallSquare] ", "InlineSeparator"],
+ Cell[BoxData[
+  ButtonBox["DiatramComposition",
+   BaseStyle->"Link",
+   ButtonData->
+    "paclet:Wolfram/DiagrammaticComputation/ref/DiatramComposition"]], 
+  "InlineSeeAlsoFunction",
+  TaggingRules->{"PageType" -> "Function"},ExpressionUUID->
+  "a07f885c-b85a-467b-af79-9db291c1c8dc"],
+ StyleBox[" \[FilledVerySmallSquare] ", "InlineSeparator"],
+ Cell[BoxData[
+  ButtonBox["DiagramNetwork",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/DiagramNetwork"]], 
+  "InlineSeeAlsoFunction",
+  TaggingRules->{"PageType" -> "Function"},ExpressionUUID->
+  "bb64b04d-7bec-445a-ad12-ece2783948c1"],
+ StyleBox[" \[FilledVerySmallSquare] ", "InlineSeparator"],
+ Cell[BoxData[
+  ButtonBox["Alternatives",
+   BaseStyle->"Link",
+   ButtonData->"paclet:ref/Alternatives"]], "InlineSeeAlsoFunction",
+  TaggingRules->{"PageType" -> "Function"},ExpressionUUID->
+  "5cbca93d-5b0d-4799-bc7d-73729205d46d"],
+ Cell[BoxData[
+  RowBox[{
+  Cell[TextData[StyleBox[
+   " \[FilledVerySmallSquare] ", "InlineSeparator"]],ExpressionUUID->
+    "92474adf-d14f-456d-83b2-e3e5945c51ef"], 
+   DynamicModuleBox[{$CellContext`nbobj$$ = NotebookObject[
+    "cc58206c-6c53-47d7-852b-4be6605588cd", 
+     "7973cb87-db4f-400c-b23f-5112e1d16d3b"], $CellContext`cellobj$$ = 
+    CellObject[
+    "2ae69bca-cf1f-43ca-8090-038ffdf98821", 
+     "3a29a24f-83c0-4eda-b8c3-b507ac49bc49"]}, 
+    TemplateBox[{
+      GraphicsBox[{{
+         Thickness[0.06], 
+         StrokeForm[
+          Hue[0.4167, 0.406, 0.502]], 
+         CircleBox[{0, 0}]}, {
+         Thickness[0.06], 
+         StrokeForm[
+          Hue[0.4167, 0.406, 0.502]], 
+         LineBox[{{0, 0.62}, {0, -0.62}}]}, {
+         Thickness[0.06], 
+         StrokeForm[
+          Hue[0.4167, 0.406, 0.502]], 
+         LineBox[{{-0.62, 0}, {0.62, 0}}]}}, 
+       ImagePadding -> {{1., 1.}, {2.4, 1.}}, ImageSize -> 16, 
+       PlotRange -> {{-1.06, 1.06}, {-1.06, 1.06}}, 
+       BaselinePosition -> (Center -> 
+        Center)], $CellContext`nbobj$$, $CellContext`cellobj$$},
+     "InlineListingAddButton"],
+    Initialization:>($CellContext`nbobj$$ = 
+      EvaluationNotebook[]; $CellContext`cellobj$$ = EvaluationCell[])]}]], 
+  "InlineListingAddButton",ExpressionUUID->
+  "2ae69bca-cf1f-43ca-8090-038ffdf98821"]
+}], "SeeAlso",
+ CellChangeTimes->{{3.9617493851416407`*^9, 3.961749411468046*^9}},
+ CellID->1417352750,ExpressionUUID->"bc44d332-69b5-4739-a421-9503e0a3411d"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Tech Notes",
+ Cell[BoxData[
+  TemplateBox[{"TechNotes", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell["Insert links to related tech notes.", "MoreInfoText"], BaseStyle -> 
+       "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "bd6c104f-eb7d-4256-be90-5d6a2e3b61a3"]
+}], "TechNotesSection",
+ CellID->1559056726,ExpressionUUID->"c745cccb-5744-4ffb-831b-56afdc1e7cf1"],
+
+Cell["XXXX", "Tutorials",
+ CellID->1618416835,ExpressionUUID->"f6bfbc7d-f8d5-415a-abe7-1fc95ebd448e"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Related Guides", "MoreAboutSection",
+ CellID->703872943,ExpressionUUID->"725667f7-af95-4e99-b716-39909584d193"],
+
+Cell["XXXX", "MoreAbout",
+ CellID->1652625325,ExpressionUUID->"6f311f99-c11d-448f-bf1e-37000530ee5b"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Related Links",
+ Cell[BoxData[
+  TemplateBox[{"RelatedLinks", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Insert links to any related page, including web pages.", 
+        "MoreInfoText"], BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "c22ca99f-1758-42f5-92cb-c501a0932f93"]
+}], "RelatedLinksSection",
+ CellID->120346977,ExpressionUUID->"c1811412-e912-4c0e-92e9-732bd40ad992"],
+
+Cell["XXXX", "RelatedLinks",
+ CellID->1889530612,ExpressionUUID->"359d16da-292d-4ce3-9622-6abc6cca98d3"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Examples Initialization",
+ Cell[BoxData[
+  TemplateBox[{"ExamplesInitialization", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Input that is to be evaluated before any examples are run, e.g. \
+Needs[\[Ellipsis]].", "MoreInfoText"], BaseStyle -> "IFrameBox"]], 
+     "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "a395dee7-9b39-4502-834f-3ae3479116da"]
+}], "ExamplesInitializationSection",
+ CellID->352824048,ExpressionUUID->"2df76f0a-a8c1-40d0-ab5a-75c100310a0e"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<Wolfram`DiagrammaticComputation`\>\"", 
+  "]"}]], "ExampleInitialization",
+ CellID->711425369,ExpressionUUID->"938c0f7e-919d-437b-ae65-f633515daddc"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[GridBox[{
+    {
+     StyleBox[
+      RowBox[{"Basic", " ", "Examples"}], "PrimaryExamplesSection"], 
+     ButtonBox[
+      RowBox[{
+       RowBox[{"More", " ", "Examples"}], " ", "\[RightTriangle]"}],
+      BaseStyle->"ExtendedExamplesLink",
+      ButtonData:>"ExtendedExamples"]}
+   }],
+  $Line = 0; Null]], "PrimaryExamplesSection",
+ CellID->1884713934,ExpressionUUID->"5ed5a848-63dd-48ac-a9f0-61f80100c1e1"],
+
+Cell["Sum diagrams together:", "ExampleText",
+ CellChangeTimes->{{3.933963719303685*^9, 3.933963725262353*^9}, {
+  3.9617467584766607`*^9, 3.961746763233334*^9}, {3.96174942380582*^9, 
+  3.961749469856236*^9}},
+ CellID->220978366,ExpressionUUID->"2aacb74c-7660-4544-b806-7d67dbf46147"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"DiagramSum", "[", 
+  RowBox[{
+   RowBox[{"Diagram", "[", 
+    RowBox[{"\"\<A\>\"", ",", 
+     RowBox[{"{", 
+      RowBox[{"a", ",", "b"}], "}"}], ",", "c"}], "]"}], ",", 
+   RowBox[{"Diagram", "[", 
+    RowBox[{"\"\<B\>\"", ",", "d", ",", "e"}], "]"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.932717225838138*^9, 3.932717279582526*^9}, {
+  3.9339637000718307`*^9, 3.933963702058694*^9}, {3.9617494275555058`*^9, 
+  3.961749427956916*^9}},
+ CellLabel->"In[1]:=",
+ CellID->82542637,ExpressionUUID->"5d1a4665-664f-4f39-99af-af4289d342c4"],
+
+Cell[BoxData[
+ InterpretationBox[
+  GraphicsBox[{{
+     {EdgeForm[GrayLevel[0]], FaceForm[{GrayLevel[0.9], Opacity[0.5]}], 
+      GeometricTransformationBox[
+       RectangleBox[{0.125, 0.5}, {3.875, 1.5}], {{{1., 0.}, {0., 1.}}, {0., 
+        0.}}], InsetBox[
+       TemplateBox[{
+         TagBox["\"A\"", HoldForm], 
+         RowBox[{"Diagram", "[", 
+           RowBox[{"\"A\"", ",", 
+             RowBox[{"{", 
+               RowBox[{
+                 RowBox[{"Port", "[", "a", "]"}], ",", 
+                 RowBox[{"Port", "[", "b", "]"}]}], "}"}], ",", 
+             RowBox[{"Port", "[", "c", "]"}], ",", 
+             RowBox[{"\"PortArrows\"", "\[Rule]", 
+               RowBox[{"{", 
+                 RowBox[{"None", ",", "None"}], "}"}]}], ",", 
+             RowBox[{"\"PortLabels\"", "\[Rule]", 
+               RowBox[{"{", 
+                 RowBox[{"None", ",", "None"}], "}"}]}], ",", 
+             RowBox[{"\"PortLabelFunction\"", "\[Rule]", 
+               RowBox[{"(", 
+                 RowBox[{
+                   RowBox[{"If", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"#3", "===", "Top"}], "&&", 
+                    RowBox[{"!", 
+                    RowBox[{"#1", "[", "\"NeutralQ\"", "]"}]}]}], ",", "None",
+                     ",", 
+                    RowBox[{"Placed", "[", 
+                    RowBox[{"Inherited", ",", 
+                    RowBox[{"{", 
+                    RowBox[{
+                    RowBox[{"-", 
+                    FractionBox["2", "3"]}], ",", "1"}], "}"}]}], "]"}]}], 
+                    "]"}], "&"}], ")"}]}], ",", 
+             RowBox[{"\"PortArrowFunction\"", "\[Rule]", 
+               RowBox[{"(", 
+                 RowBox[{"Nothing", "&"}], ")"}]}], ",", 
+             RowBox[{"\"Center\"", "\[Rule]", 
+               RowBox[{"{", 
+                 RowBox[{"2.`", ",", "1.`"}], "}"}]}], ",", 
+             RowBox[{"\"Width\"", "\[Rule]", "3.75`"}], ",", 
+             RowBox[{"\"Height\"", "\[Rule]", "1"}], ",", 
+             RowBox[{"\"Angle\"", "\[Rule]", "0"}], ",", 
+             RowBox[{"\"Spacing\"", "\[Rule]", "1.6`"}], ",", 
+             RowBox[{"Alignment", "\[Rule]", "Automatic"}], ",", 
+             RowBox[{"\"PortOrderingFunction\"", "\[Rule]", "Automatic"}]}], 
+           "]"}]},
+        "ClickToCopy2"], {2., 1.}], 
+      {Arrowheads[Small], {{}, {}}, {}}}, 
+     {EdgeForm[GrayLevel[0]], FaceForm[{GrayLevel[0.9], Opacity[0.5]}], 
+      GeometricTransformationBox[
+       RectangleBox[{4.5, 0.5}], {{{1., 0.}, {0., 1.}}, {0., 0.}}], InsetBox[
+       TemplateBox[{
+         TagBox["\"B\"", HoldForm], 
+         RowBox[{"Diagram", "[", 
+           RowBox[{"\"B\"", ",", 
+             RowBox[{"Port", "[", "d", "]"}], ",", 
+             RowBox[{"Port", "[", "e", "]"}], ",", 
+             RowBox[{"\"PortArrows\"", "\[Rule]", 
+               RowBox[{"{", 
+                 RowBox[{"None", ",", "None"}], "}"}]}], ",", 
+             RowBox[{"\"PortLabels\"", "\[Rule]", 
+               RowBox[{"{", 
+                 RowBox[{"None", ",", "None"}], "}"}]}], ",", 
+             RowBox[{"\"PortLabelFunction\"", "\[Rule]", 
+               RowBox[{"(", 
+                 RowBox[{
+                   RowBox[{"If", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"#3", "===", "Top"}], "&&", 
+                    RowBox[{"!", 
+                    RowBox[{"#1", "[", "\"NeutralQ\"", "]"}]}]}], ",", "None",
+                     ",", 
+                    RowBox[{"Placed", "[", 
+                    RowBox[{"Inherited", ",", 
+                    RowBox[{"{", 
+                    RowBox[{
+                    RowBox[{"-", 
+                    FractionBox["2", "3"]}], ",", "1"}], "}"}]}], "]"}]}], 
+                    "]"}], "&"}], ")"}]}], ",", 
+             RowBox[{"\"PortArrowFunction\"", "\[Rule]", 
+               RowBox[{"(", 
+                 RowBox[{"Nothing", "&"}], ")"}]}], ",", 
+             RowBox[{"\"Center\"", "\[Rule]", 
+               RowBox[{"{", 
+                 RowBox[{"5.`", ",", "1.`"}], "}"}]}], ",", 
+             RowBox[{"\"Width\"", "\[Rule]", "1"}], ",", 
+             RowBox[{"\"Height\"", "\[Rule]", "1"}], ",", 
+             RowBox[{"\"Angle\"", "\[Rule]", "0"}], ",", 
+             RowBox[{"\"Spacing\"", "\[Rule]", "1.6`"}], ",", 
+             RowBox[{"Alignment", "\[Rule]", "Automatic"}], ",", 
+             RowBox[{"\"PortOrderingFunction\"", "\[Rule]", "Automatic"}]}], 
+           "]"}]},
+        "ClickToCopy2"], {5., 1.}], 
+      {Arrowheads[Small], {}, {}}}}, {
+     {Arrowheads[{{Small, 0.5}}], {}, 
+      ArrowBox[BSplineCurveBox[{{3., 2.1}, {3., 1.85}, {0.9999999999999998, 
+        1.75}, {0.9999999999999998, 1.5}}]], InsetBox[
+       TemplateBox[{
+         InterpretationBox[
+          RowBox[{
+            RowBox[{
+              TagBox["a", HoldForm], "\[CircleTimes]", 
+              TagBox["b", HoldForm]}], "\[CirclePlus]", 
+            TagBox["d", HoldForm]}], 
+          
+          Wolfram`DiagrammaticComputation`Port`Port[<|
+           "Expression" :> Wolfram`DiagrammaticComputation`Port`PortSum[
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> 
+                Wolfram`DiagrammaticComputation`Port`PortProduct[
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> $CellContext`a, "NeutralQ" -> False, 
+                    "Type" -> \[FormalCapitalT]|>], 
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> $CellContext`b, "NeutralQ" -> False, 
+                    "Type" -> \[FormalCapitalT]|>]], "NeutralQ" -> False, 
+                "Type" -> SuperStar[
+                  CircleTimes[
+                   SuperStar[\[FormalCapitalT]], 
+                   SuperStar[\[FormalCapitalT]]]]|>], 
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> $CellContext`d, "NeutralQ" -> False, 
+                "Type" -> \[FormalCapitalT]|>]], "NeutralQ" -> False, "Type" -> 
+            CirclePlus[
+              SuperStar[
+               CircleTimes[
+                SuperStar[\[FormalCapitalT]], 
+                SuperStar[\[FormalCapitalT]]]], \[FormalCapitalT]]|>], 
+          Tooltip -> RowBox[{
+             SuperscriptBox[
+              RowBox[{"(", 
+                RowBox[{
+                  SuperscriptBox["\[FormalCapitalT]", "*"], "\[CircleTimes]", 
+                  
+                  SuperscriptBox["\[FormalCapitalT]", "*"]}], ")"}], "*"], 
+             "\[CirclePlus]", "\[FormalCapitalT]"}]]},
+        "ClickToCopy"], {1.9712652114433655, 1.895782628522115}]}, 
+     {Arrowheads[{{Small, 0.5}}], {}, 
+      ArrowBox[BSplineCurveBox[{{3., 2.1}, {3., 1.85}, {3., 1.75}, {3., 
+        1.5}}]], InsetBox[
+       TemplateBox[{
+         InterpretationBox[
+          RowBox[{
+            RowBox[{
+              TagBox["a", HoldForm], "\[CircleTimes]", 
+              TagBox["b", HoldForm]}], "\[CirclePlus]", 
+            TagBox["d", HoldForm]}], 
+          
+          Wolfram`DiagrammaticComputation`Port`Port[<|
+           "Expression" :> Wolfram`DiagrammaticComputation`Port`PortSum[
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> 
+                Wolfram`DiagrammaticComputation`Port`PortProduct[
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> $CellContext`a, "NeutralQ" -> False, 
+                    "Type" -> \[FormalCapitalT]|>], 
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> $CellContext`b, "NeutralQ" -> False, 
+                    "Type" -> \[FormalCapitalT]|>]], "NeutralQ" -> False, 
+                "Type" -> SuperStar[
+                  CircleTimes[
+                   SuperStar[\[FormalCapitalT]], 
+                   SuperStar[\[FormalCapitalT]]]]|>], 
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> $CellContext`d, "NeutralQ" -> False, 
+                "Type" -> \[FormalCapitalT]|>]], "NeutralQ" -> False, "Type" -> 
+            CirclePlus[
+              SuperStar[
+               CircleTimes[
+                SuperStar[\[FormalCapitalT]], 
+                SuperStar[\[FormalCapitalT]]]], \[FormalCapitalT]]|>], 
+          Tooltip -> RowBox[{
+             SuperscriptBox[
+              RowBox[{"(", 
+                RowBox[{
+                  SuperscriptBox["\[FormalCapitalT]", "*"], "\[CircleTimes]", 
+                  
+                  SuperscriptBox["\[FormalCapitalT]", "*"]}], ")"}], "*"], 
+             "\[CirclePlus]", "\[FormalCapitalT]"}]]},
+        "ClickToCopy"], {2.9, 1.8}]}, 
+     {Arrowheads[{{-Small, 0.5}}], {}, 
+      ArrowBox[BSplineCurveBox[{{3., -0.10000000000000009`}, {3., 
+        0.1499999999999999}, {2., 0.25}, {2., 0.5}}]], InsetBox[
+       TemplateBox[{
+         InterpretationBox[
+          RowBox[{
+            TagBox["c", HoldForm], "\[CirclePlus]", 
+            TagBox["e", HoldForm]}], 
+          
+          Wolfram`DiagrammaticComputation`Port`Port[<|
+           "Expression" :> Wolfram`DiagrammaticComputation`Port`PortSum[
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> $CellContext`c, "NeutralQ" -> False, 
+                "Type" -> \[FormalCapitalT]|>], 
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> $CellContext`e, "NeutralQ" -> False, 
+                "Type" -> \[FormalCapitalT]|>]], "NeutralQ" -> False, "Type" -> 
+            CirclePlus[\[FormalCapitalT], \[FormalCapitalT]]|>], Tooltip -> 
+          RowBox[{"\[FormalCapitalT]", "\[CirclePlus]", 
+             "\[FormalCapitalT]"}]]},
+        "ClickToCopy"], {2.551449575542753, 0.28574929257125437}]}, 
+     {Arrowheads[{{Small, 0.5}}], {}, 
+      ArrowBox[BSplineCurveBox[{{3., 2.1}, {3., 1.85}, {5., 1.75}, {5., 
+        1.5}}]], InsetBox[
+       TemplateBox[{
+         InterpretationBox[
+          RowBox[{
+            RowBox[{
+              TagBox["a", HoldForm], "\[CircleTimes]", 
+              TagBox["b", HoldForm]}], "\[CirclePlus]", 
+            TagBox["d", HoldForm]}], 
+          
+          Wolfram`DiagrammaticComputation`Port`Port[<|
+           "Expression" :> Wolfram`DiagrammaticComputation`Port`PortSum[
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> 
+                Wolfram`DiagrammaticComputation`Port`PortProduct[
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> $CellContext`a, "NeutralQ" -> False, 
+                    "Type" -> \[FormalCapitalT]|>], 
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> $CellContext`b, "NeutralQ" -> False, 
+                    "Type" -> \[FormalCapitalT]|>]], "NeutralQ" -> False, 
+                "Type" -> SuperStar[
+                  CircleTimes[
+                   SuperStar[\[FormalCapitalT]], 
+                   SuperStar[\[FormalCapitalT]]]]|>], 
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> $CellContext`d, "NeutralQ" -> False, 
+                "Type" -> \[FormalCapitalT]|>]], "NeutralQ" -> False, "Type" -> 
+            CirclePlus[
+              SuperStar[
+               CircleTimes[
+                SuperStar[\[FormalCapitalT]], 
+                SuperStar[\[FormalCapitalT]]]], \[FormalCapitalT]]|>], 
+          Tooltip -> RowBox[{
+             SuperscriptBox[
+              RowBox[{"(", 
+                RowBox[{
+                  SuperscriptBox["\[FormalCapitalT]", "*"], "\[CircleTimes]", 
+                  
+                  SuperscriptBox["\[FormalCapitalT]", "*"]}], ")"}], "*"], 
+             "\[CirclePlus]", "\[FormalCapitalT]"}]]},
+        "ClickToCopy"], {3.9712652114433653, 1.704217371477885}]}, 
+     {Arrowheads[{{-Small, 0.5}}], {}, 
+      ArrowBox[BSplineCurveBox[{{3., -0.10000000000000009`}, {3., 
+        0.1499999999999999}, {5., 0.25}, {5., 0.5}}]], InsetBox[
+       TemplateBox[{
+         InterpretationBox[
+          RowBox[{
+            TagBox["c", HoldForm], "\[CirclePlus]", 
+            TagBox["e", HoldForm]}], 
+          
+          Wolfram`DiagrammaticComputation`Port`Port[<|
+           "Expression" :> Wolfram`DiagrammaticComputation`Port`PortSum[
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> $CellContext`c, "NeutralQ" -> False, 
+                "Type" -> \[FormalCapitalT]|>], 
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> $CellContext`e, "NeutralQ" -> False, 
+                "Type" -> \[FormalCapitalT]|>]], "NeutralQ" -> False, "Type" -> 
+            CirclePlus[\[FormalCapitalT], \[FormalCapitalT]]|>], Tooltip -> 
+          RowBox[{
+            "\[FormalCapitalT]", "\[CirclePlus]", "\[FormalCapitalT]"}]]},
+        "ClickToCopy"], {4.028734788556634, 0.10421737147788482}]}}, {}, 
+    {EdgeForm[GrayLevel[0]], FaceForm[None], 
+     GeometricTransformationBox[
+      RectangleBox[{0, -0.10000000000000009}, {6, 2.1}], {{{1, 0}, {0, 1}}, {
+       0, 0}}], InsetBox["\<\"\"\>", {3, 1}], 
+     {Arrowheads[Small], {
+       {EdgeForm[GrayLevel[0.85]], FaceForm[{GrayLevel[1], Opacity[1]}], 
+        DiskBox[{3., 2.1}, Offset[10]]}, InsetBox[
+        TemplateBox[{
+          InterpretationBox[
+           RowBox[{
+             RowBox[{
+               TagBox["a", HoldForm], "\[CircleTimes]", 
+               TagBox["b", HoldForm]}], "\[CirclePlus]", 
+             TagBox["d", HoldForm]}], 
+           
+           Wolfram`DiagrammaticComputation`Port`Port[<|
+            "Expression" :> Wolfram`DiagrammaticComputation`Port`PortSum[
+               
+               Wolfram`DiagrammaticComputation`Port`Port[<|
+                "Expression" :> 
+                 Wolfram`DiagrammaticComputation`Port`PortProduct[
+                   
+                   Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> $CellContext`a, "NeutralQ" -> False, 
+                    "Type" -> \[FormalCapitalT]|>], 
+                   
+                   Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> $CellContext`b, "NeutralQ" -> False, 
+                    "Type" -> \[FormalCapitalT]|>]], "NeutralQ" -> False, 
+                 "Type" -> SuperStar[
+                   CircleTimes[
+                    SuperStar[\[FormalCapitalT]], 
+                    SuperStar[\[FormalCapitalT]]]]|>], 
+               
+               Wolfram`DiagrammaticComputation`Port`Port[<|
+                "Expression" :> $CellContext`d, "NeutralQ" -> False, 
+                 "Type" -> \[FormalCapitalT]|>]], "NeutralQ" -> False, "Type" -> 
+             CirclePlus[
+               SuperStar[
+                CircleTimes[
+                 SuperStar[\[FormalCapitalT]], 
+                 SuperStar[\[FormalCapitalT]]]], \[FormalCapitalT]]|>], 
+           Tooltip -> RowBox[{
+              SuperscriptBox[
+               RowBox[{"(", 
+                 RowBox[{
+                   SuperscriptBox["\[FormalCapitalT]", "*"], "\[CircleTimes]", 
+                   SuperscriptBox["\[FormalCapitalT]", "*"]}], ")"}], "*"], 
+              "\[CirclePlus]", "\[FormalCapitalT]"}]], 
+          RowBox[{"Port", "[", 
+            RowBox[{
+              SuperscriptBox[
+               RowBox[{"(", 
+                 RowBox[{
+                   RowBox[{"a", "\[CircleTimes]", "b"}], "\[CirclePlus]", 
+                   "d"}], ")"}], "*"], ",", 
+              SuperscriptBox[
+               RowBox[{"(", 
+                 RowBox[{
+                   SuperscriptBox[
+                    RowBox[{"(", 
+                    RowBox[{
+                    SuperscriptBox["\[FormalCapitalT]", "*"], 
+                    "\[CircleTimes]", 
+                    SuperscriptBox["\[FormalCapitalT]", "*"]}], ")"}], "*"], 
+                   "\[CirclePlus]", "\[FormalCapitalT]"}], ")"}], "*"]}], 
+            "]"}]},
+         "ClickToCopy2"], {3., 2.1}]}, {
+       {EdgeForm[GrayLevel[0.85]], FaceForm[{GrayLevel[1], Opacity[1]}], 
+        DiskBox[{3., -0.10000000000000009`}, Offset[10]]}, InsetBox[
+        TemplateBox[{
+          InterpretationBox[
+           RowBox[{
+             TagBox["c", HoldForm], "\[CirclePlus]", 
+             TagBox["e", HoldForm]}], 
+           
+           Wolfram`DiagrammaticComputation`Port`Port[<|
+            "Expression" :> Wolfram`DiagrammaticComputation`Port`PortSum[
+               
+               Wolfram`DiagrammaticComputation`Port`Port[<|
+                "Expression" :> $CellContext`c, "NeutralQ" -> False, 
+                 "Type" -> \[FormalCapitalT]|>], 
+               
+               Wolfram`DiagrammaticComputation`Port`Port[<|
+                "Expression" :> $CellContext`e, "NeutralQ" -> False, 
+                 "Type" -> \[FormalCapitalT]|>]], "NeutralQ" -> False, "Type" -> 
+             CirclePlus[\[FormalCapitalT], \[FormalCapitalT]]|>], Tooltip -> 
+           RowBox[{"\[FormalCapitalT]", "\[CirclePlus]", 
+              "\[FormalCapitalT]"}]], 
+          RowBox[{"Port", "[", 
+            RowBox[{
+              RowBox[{"c", "\[CirclePlus]", "e"}], ",", 
+              
+              RowBox[{"\[FormalCapitalT]", "\[CirclePlus]", 
+                "\[FormalCapitalT]"}]}], "]"}]},
+         "ClickToCopy2"], {3., -0.10000000000000009}]}}}, 
+    {EdgeForm[{GrayLevel[0], Thickness[Tiny]}], FaceForm[None]}},
+   BaseStyle->{GraphicsHighlightColor -> RGBColor[1, 0, 1]},
+   FormatType->StandardForm,
+   ImageSize->{362.59375, Automatic}],
+  Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+   "DiagramOptions" -> {}, "Expression" :> 
+    Wolfram`DiagrammaticComputation`Diagram`DiagramSum[
+      Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+       "DiagramOptions" -> {}, "Expression" :> "A", "InputPorts" -> {
+          
+          Wolfram`DiagrammaticComputation`Port`Port[<|
+           "Expression" :> 
+            Wolfram`DiagrammaticComputation`Port`PortDual[$CellContext`a], 
+            "NeutralQ" -> False, "Type" -> SuperStar[\[FormalCapitalT]]|>], 
+          
+          Wolfram`DiagrammaticComputation`Port`Port[<|
+           "Expression" :> 
+            Wolfram`DiagrammaticComputation`Port`PortDual[$CellContext`b], 
+            "NeutralQ" -> False, "Type" -> SuperStar[\[FormalCapitalT]]|>]}, 
+        "OutputPorts" -> {
+          
+          Wolfram`DiagrammaticComputation`Port`Port[<|
+           "Expression" :> $CellContext`c, "NeutralQ" -> False, 
+            "Type" -> \[FormalCapitalT]|>]}|>], 
+      Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+       "DiagramOptions" -> {}, "Expression" :> "B", "InputPorts" -> {
+          
+          Wolfram`DiagrammaticComputation`Port`Port[<|
+           "Expression" :> 
+            Wolfram`DiagrammaticComputation`Port`PortDual[$CellContext`d], 
+            "NeutralQ" -> False, "Type" -> SuperStar[\[FormalCapitalT]]|>]}, 
+        "OutputPorts" -> {
+          
+          Wolfram`DiagrammaticComputation`Port`Port[<|
+           "Expression" :> $CellContext`e, "NeutralQ" -> False, 
+            "Type" -> \[FormalCapitalT]|>]}|>]], "InputPorts" -> {
+      Wolfram`DiagrammaticComputation`Port`Port[<|
+       "Expression" :> Wolfram`DiagrammaticComputation`Port`PortDual[
+          Wolfram`DiagrammaticComputation`Port`PortSum[
+           
+           Wolfram`DiagrammaticComputation`Port`Port[<|
+            "Expression" :> Wolfram`DiagrammaticComputation`Port`PortProduct[
+               
+               Wolfram`DiagrammaticComputation`Port`Port[<|
+                "Expression" :> $CellContext`a, "NeutralQ" -> False, 
+                 "Type" -> \[FormalCapitalT]|>], 
+               
+               Wolfram`DiagrammaticComputation`Port`Port[<|
+                "Expression" :> $CellContext`b, "NeutralQ" -> False, 
+                 "Type" -> \[FormalCapitalT]|>]], "NeutralQ" -> False, "Type" -> 
+             SuperStar[
+               CircleTimes[
+                SuperStar[\[FormalCapitalT]], 
+                SuperStar[\[FormalCapitalT]]]]|>], 
+           
+           Wolfram`DiagrammaticComputation`Port`Port[<|
+            "Expression" :> $CellContext`d, "NeutralQ" -> False, 
+             "Type" -> \[FormalCapitalT]|>]]], "NeutralQ" -> False, "Type" -> 
+        SuperStar[
+          CirclePlus[
+           SuperStar[
+            CircleTimes[
+             SuperStar[\[FormalCapitalT]], 
+             SuperStar[\[FormalCapitalT]]]], \[FormalCapitalT]]]|>]}, 
+    "OutputPorts" -> {
+      Wolfram`DiagrammaticComputation`Port`Port[<|
+       "Expression" :> Wolfram`DiagrammaticComputation`Port`PortSum[
+          
+          Wolfram`DiagrammaticComputation`Port`Port[<|
+           "Expression" :> $CellContext`c, "NeutralQ" -> False, 
+            "Type" -> \[FormalCapitalT]|>], 
+          
+          Wolfram`DiagrammaticComputation`Port`Port[<|
+           "Expression" :> $CellContext`e, "NeutralQ" -> False, 
+            "Type" -> \[FormalCapitalT]|>]], "NeutralQ" -> False, "Type" -> 
+        CirclePlus[\[FormalCapitalT], \[FormalCapitalT]]|>]}|>]]], "Output",
+ CellChangeTimes->{3.961749430241761*^9},
+ CellLabel->"Out[1]=",
+ CellID->1165285681,ExpressionUUID->"2217210c-69d6-4eec-9b6b-79aa93afce41"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "More Examples",
+ Cell[BoxData[
+  TemplateBox[{"MoreExamples", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell["Extended examples in standardized sections.", "MoreInfoText"], 
+       BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "e29bea5c-7a1b-42e5-93b3-5786a5df1790"]
+}], "ExtendedExamplesSection",
+ CellTags->"ExtendedExamples",
+ CellID->1003295488,ExpressionUUID->"b2983262-1f3d-48da-82f2-beff5c792fbe"],
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "Scope", "ExampleSection",ExpressionUUID->
+   "ee77e77a-fb98-4b94-b602-c62d7130b2b7"],
+  $Line = 0; Null]], "ExampleSection",
+ CellID->345670572,ExpressionUUID->"16b43259-5649-41ca-b273-6cdfb727b1f3"],
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "Generalizations & Extensions", "ExampleSection",ExpressionUUID->
+   "c72e2f57-9518-49da-90ce-f025b45f55e8"],
+  $Line = 0; Null]], "ExampleSection",
+ CellID->742038469,ExpressionUUID->"66bd5292-1db5-4a92-a63e-e6cb96105ff2"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "Options", "ExampleSection",ExpressionUUID->
+   "8e1d7b34-b63d-4e9c-a7e5-1a207a78d5ca"],
+  $Line = 0; Null]], "ExampleSection",
+ CellID->1003010354,ExpressionUUID->"841c24d7-6a28-414d-9e7a-678fa4856e1f"],
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "XXXX", "ExampleSubsection",ExpressionUUID->
+   "fce82c6f-fc84-458e-b23e-27b4924cf540"],
+  $Line = 0; Null]], "ExampleSubsection",
+ CellID->1995874375,ExpressionUUID->"b73bc41a-3788-423d-9bf7-b8ebfcabf1c8"],
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "XXXX", "ExampleSubsection",ExpressionUUID->
+   "d999c6a3-3b79-4301-93d5-749cb520023f"],
+  $Line = 0; Null]], "ExampleSubsection",
+ CellID->966054485,ExpressionUUID->"a9595948-3a9b-4815-b9ad-b21aed164cd3"]
+}, Open  ]],
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "Applications", "ExampleSection",ExpressionUUID->
+   "e4db0583-11dc-467d-9b98-7ba79e656950"],
+  $Line = 0; Null]], "ExampleSection",
+ CellID->1501358075,ExpressionUUID->"18001db3-0930-4d90-b0a6-73e66bd29b3d"],
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "Properties & Relations", "ExampleSection",ExpressionUUID->
+   "375d4e53-382b-4cf0-aeaf-c171da9288a0"],
+  $Line = 0; Null]], "ExampleSection",
+ CellID->392314275,ExpressionUUID->"178bbc03-c29a-46bc-899a-f36d133087a2"],
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "Possible Issues", "ExampleSection",ExpressionUUID->
+   "a588e341-a6c1-4170-9282-4fb1bef4e6ae"],
+  $Line = 0; Null]], "ExampleSection",
+ CellID->851223635,ExpressionUUID->"8b078dd7-6d3f-49e7-ae65-169b57a09339"],
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "Interactive Examples", "ExampleSection",ExpressionUUID->
+   "e300d476-2980-4231-aae4-6ece27d34df4"],
+  $Line = 0; Null]], "ExampleSection",
+ CellID->2127060778,ExpressionUUID->"908c607e-f8cd-4494-85a1-4aaf9441c8d1"],
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "Neat Examples", "ExampleSection",ExpressionUUID->
+   "22b9d4e1-463a-4da9-8156-07f9252f1657"],
+  $Line = 0; Null]], "ExampleSection",
+ CellID->350224237,ExpressionUUID->"63b9c250-64eb-48aa-8153-faf6adf808af"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Metadata", "MetadataSection",
+ CellID->2113558479,ExpressionUUID->"f3020897-528d-48aa-a987-7c3b815a3b55"],
+
+Cell[TextData[{
+ "New in: ",
+ Cell["XX", "HistoryData",
+  CellTags->"New",ExpressionUUID->"954b791e-eb04-4442-bce6-076e1ea82181"],
+ " | Modified in: ",
+ Cell[" ", "HistoryData",
+  CellTags->"Modified",ExpressionUUID->"25196230-a9c7-43fb-901d-8761ee95430e"],
+ " | Obsolete in: ",
+ Cell[" ", "HistoryData",
+  CellTags->"Obsolete",ExpressionUUID->
+  "723caf96-51ff-4f90-a959-58bc7e0ad37f"]
+}], "History",
+ CellID->1050351526,ExpressionUUID->"0bca2280-7471-41e3-a74e-fd4fe07d4376"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Categorization",
+ Cell[BoxData[
+  TemplateBox[{"Metadata", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Metadata such as page URI, context, and type of documentation page.", 
+        "MoreInfoText"], BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "a37940b5-5122-4e02-bd08-8491dddb99cb"]
+}], "CategorizationSection",
+ CellID->942519142,ExpressionUUID->"1820244a-4bb1-45a5-87cc-ee370e021291"],
+
+Cell["Symbol", "Categorization",
+ CellLabel->"Entity Type",
+ CellID->1079839322,ExpressionUUID->"e98d9012-fc66-4a56-882b-77d17d60b022"],
+
+Cell["Wolfram/DiagrammaticComputation", "Categorization",
+ CellLabel->"Paclet Name",
+ CellID->475184057,ExpressionUUID->"a8c13774-59bf-40b0-b835-e53a32cf26fa"],
+
+Cell["Wolfram`DiagrammaticComputation`", "Categorization",
+ CellLabel->"Context",
+ CellID->2074246453,ExpressionUUID->"aa8ca63a-10ff-4e4b-9fca-895fa9de6f75"],
+
+Cell["Wolfram/DiagrammaticComputation/ref/DiagramSum", "Categorization",
+ CellLabel->"URI",
+ CellID->1758093820,ExpressionUUID->"e7afdc96-bec9-46c4-b3a0-b75715f9e2fc"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Keywords", "KeywordsSection",
+ CellID->1055333667,ExpressionUUID->"78cc6389-982b-406e-9f38-49d95b893e15"],
+
+Cell["XXXX", "Keywords",
+ CellID->925500696,ExpressionUUID->"b0adfc96-2e73-4e06-aa64-7443140a890d"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Syntax Templates", "TemplatesSection",
+ CellID->666142451,ExpressionUUID->"00e572e3-e7fd-4d63-8053-6fd65d6468d2"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Additional Function Template",
+ CellID->1023922146,ExpressionUUID->"16fa705a-9767-45da-a3fb-b0ced4b85e7f"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Arguments Pattern",
+ CellID->1273044411,ExpressionUUID->"759bfa75-ae54-47ca-9003-bc8bb346d291"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Local Variables",
+ CellID->677840616,ExpressionUUID->"cf27719d-f8ba-4ddb-b115-d7cfb1d35019"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Color Equal Signs",
+ CellID->66485777,ExpressionUUID->"17aa0e18-7422-43c9-bbc3-4a1e8455b9a2"]
+}, Closed]]
+}, Open  ]]
+},
+WindowSize->{700, 770},
+WindowMargins->{{173, Automatic}, {133, Automatic}},
+TaggingRules-><|"Paclet" -> "Wolfram/DiagrammaticComputation"|>,
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (June 6, 2025)",
+StyleDefinitions->FrontEnd`FileName[{"Wolfram"}, "FunctionPageStylesExt.nb", 
+  CharacterEncoding -> "UTF-8"],
+ExpressionUUID->"cc58206c-6c53-47d7-852b-4be6605588cd"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "ExtendedExamples"->{
+  Cell[30795, 749, 488, 13, 56, "ExtendedExamplesSection",ExpressionUUID->"b2983262-1f3d-48da-82f2-beff5c792fbe",
+   CellTags->"ExtendedExamples",
+   CellID->1003295488]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"ExtendedExamples", 37120, 936}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 106, 1, 72, "ObjectName",ExpressionUUID->"8088b8db-21fa-421c-a66b-ac3308af7b72",
+ CellID->34372633],
+Cell[685, 25, 1355, 41, 76, "Usage",ExpressionUUID->"e2c5c6cb-0aa5-4374-b179-2c6fcd7bb24c",
+ CellID->27741788],
+Cell[2043, 68, 96, 1, 26, "Notes",ExpressionUUID->"a7ac03a1-4d7c-4573-9727-95d2cfed55ed",
+ CellID->252279517]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2176, 74, 458, 13, 38, "SeeAlsoSection",ExpressionUUID->"e2e3d4a9-5777-407a-a968-88bd084c7b98",
+ CellID->929123041],
+Cell[2637, 89, 3092, 76, 36, "SeeAlso",ExpressionUUID->"bc44d332-69b5-4739-a421-9503e0a3411d",
+ CellID->1417352750]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5766, 170, 436, 12, 39, "TechNotesSection",ExpressionUUID->"c745cccb-5744-4ffb-831b-56afdc1e7cf1",
+ CellID->1559056726],
+Cell[6205, 184, 101, 1, 17, "Tutorials",ExpressionUUID->"f6bfbc7d-f8d5-415a-abe7-1fc95ebd448e",
+ CellID->1618416835]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6343, 190, 117, 1, 37, "MoreAboutSection",ExpressionUUID->"725667f7-af95-4e99-b716-39909584d193",
+ CellID->703872943],
+Cell[6463, 193, 101, 1, 17, "MoreAbout",ExpressionUUID->"6f311f99-c11d-448f-bf1e-37000530ee5b",
+ CellID->1652625325]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6601, 199, 472, 13, 38, "RelatedLinksSection",ExpressionUUID->"c1811412-e912-4c0e-92e9-732bd40ad992",
+ CellID->120346977],
+Cell[7076, 214, 104, 1, 17, "RelatedLinks",ExpressionUUID->"359d16da-292d-4ce3-9622-6abc6cca98d3",
+ CellID->1889530612]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7217, 220, 530, 14, 68, "ExamplesInitializationSection",ExpressionUUID->"2df76f0a-a8c1-40d0-ab5a-75c100310a0e",
+ CellID->352824048],
+Cell[7750, 236, 191, 3, 46, "ExampleInitialization",ExpressionUUID->"938c0f7e-919d-437b-ae65-f633515daddc",
+ CellID->711425369]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7978, 244, 443, 12, 70, "PrimaryExamplesSection",ExpressionUUID->"5ed5a848-63dd-48ac-a9f0-61f80100c1e1",
+ CellID->1884713934],
+Cell[8424, 258, 285, 4, 23, "ExampleText",ExpressionUUID->"2aacb74c-7660-4544-b806-7d67dbf46147",
+ CellID->220978366],
+Cell[CellGroupData[{
+Cell[8734, 266, 560, 13, 26, "Input",ExpressionUUID->"5d1a4665-664f-4f39-99af-af4289d342c4",
+ CellID->82542637],
+Cell[9297, 281, 21449, 462, 159, "Output",ExpressionUUID->"2217210c-69d6-4eec-9b6b-79aa93afce41",
+ CellID->1165285681]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[30795, 749, 488, 13, 56, "ExtendedExamplesSection",ExpressionUUID->"b2983262-1f3d-48da-82f2-beff5c792fbe",
+ CellTags->"ExtendedExamples",
+ CellID->1003295488],
+Cell[31286, 764, 241, 5, 32, "ExampleSection",ExpressionUUID->"16b43259-5649-41ca-b273-6cdfb727b1f3",
+ CellID->345670572],
+Cell[31530, 771, 264, 5, 20, "ExampleSection",ExpressionUUID->"66bd5292-1db5-4a92-a63e-e6cb96105ff2",
+ CellID->742038469],
+Cell[CellGroupData[{
+Cell[31819, 780, 244, 5, 20, "ExampleSection",ExpressionUUID->"841c24d7-6a28-414d-9e7a-678fa4856e1f",
+ CellID->1003010354],
+Cell[32066, 787, 247, 5, 23, "ExampleSubsection",ExpressionUUID->"b73bc41a-3788-423d-9bf7-b8ebfcabf1c8",
+ CellID->1995874375],
+Cell[32316, 794, 246, 5, 19, "ExampleSubsection",ExpressionUUID->"a9595948-3a9b-4815-b9ad-b21aed164cd3",
+ CellID->966054485]
+}, Open  ]],
+Cell[32577, 802, 249, 5, 32, "ExampleSection",ExpressionUUID->"18001db3-0930-4d90-b0a6-73e66bd29b3d",
+ CellID->1501358075],
+Cell[32829, 809, 258, 5, 20, "ExampleSection",ExpressionUUID->"178bbc03-c29a-46bc-899a-f36d133087a2",
+ CellID->392314275],
+Cell[33090, 816, 251, 5, 20, "ExampleSection",ExpressionUUID->"8b078dd7-6d3f-49e7-ae65-169b57a09339",
+ CellID->851223635],
+Cell[33344, 823, 257, 5, 20, "ExampleSection",ExpressionUUID->"908c607e-f8cd-4494-85a1-4aaf9441c8d1",
+ CellID->2127060778],
+Cell[33604, 830, 249, 5, 20, "ExampleSection",ExpressionUUID->"63b9c250-64eb-48aa-8153-faf6adf808af",
+ CellID->350224237]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[33890, 840, 111, 1, 71, "MetadataSection",ExpressionUUID->"f3020897-528d-48aa-a987-7c3b815a3b55",
+ CellID->2113558479],
+Cell[34004, 843, 477, 12, 25, "History",ExpressionUUID->"0bca2280-7471-41e3-a74e-fd4fe07d4376",
+ CellID->1050351526],
+Cell[CellGroupData[{
+Cell[34506, 859, 484, 13, 20, "CategorizationSection",ExpressionUUID->"1820244a-4bb1-45a5-87cc-ee370e021291",
+ CellID->942519142],
+Cell[34993, 874, 135, 2, 70, "Categorization",ExpressionUUID->"e98d9012-fc66-4a56-882b-77d17d60b022",
+ CellID->1079839322],
+Cell[35131, 878, 159, 2, 70, "Categorization",ExpressionUUID->"a8c13774-59bf-40b0-b835-e53a32cf26fa",
+ CellID->475184057],
+Cell[35293, 882, 157, 2, 70, "Categorization",ExpressionUUID->"aa8ca63a-10ff-4e4b-9fca-895fa9de6f75",
+ CellID->2074246453],
+Cell[35453, 886, 167, 2, 70, "Categorization",ExpressionUUID->"e7afdc96-bec9-46c4-b3a0-b75715f9e2fc",
+ CellID->1758093820]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[35657, 893, 111, 1, 20, "KeywordsSection",ExpressionUUID->"78cc6389-982b-406e-9f38-49d95b893e15",
+ CellID->1055333667],
+Cell[35771, 896, 99, 1, 70, "Keywords",ExpressionUUID->"b0adfc96-2e73-4e06-aa64-7443140a890d",
+ CellID->925500696]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[35907, 902, 119, 1, 20, "TemplatesSection",ExpressionUUID->"00e572e3-e7fd-4d63-8053-6fd65d6468d2",
+ CellID->666142451],
+Cell[36029, 905, 149, 2, 70, "Template",ExpressionUUID->"16fa705a-9767-45da-a3fb-b0ced4b85e7f",
+ CellID->1023922146],
+Cell[36181, 909, 138, 2, 70, "Template",ExpressionUUID->"759bfa75-ae54-47ca-9003-bc8bb346d291",
+ CellID->1273044411],
+Cell[36322, 913, 135, 2, 70, "Template",ExpressionUUID->"cf27719d-f8ba-4ddb-b115-d7cfb1d35019",
+ CellID->677840616],
+Cell[36460, 917, 136, 2, 70, "Template",ExpressionUUID->"17aa0e18-7422-43c9-bbc3-4a1e8455b9a2",
+ CellID->66485777]
+}, Closed]]
+}, Open  ]]
+}
+]
+*)
+

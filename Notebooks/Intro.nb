@@ -1,0 +1,481 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     19643,        473]
+NotebookOptionsPosition[     15404,        410]
+NotebookOutlinePosition[     15797,        426]
+CellTagsIndexPosition[     15754,        423]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Introduction to Diagrammatic Computation", "Section",
+ CellChangeTimes->{{3.96186865304944*^9, 
+  3.961868656536272*^9}},ExpressionUUID->"6a89f44c-040d-4787-acbe-\
+baebab5b17e6"],
+
+Cell["\<\
+Diagrammatic Computation (DC) involves representing operations and their \
+connections visually, much like diagrams in mathematics or engineering. This \
+approach emphasizes modular building blocks that can be composed in various \
+ways to model complex systems. To illustrate these concepts computationally, \
+we start by installing and loading the paclet\
+\>", "Text",
+ CellChangeTimes->{{3.96186865304944*^9, 3.9618686622272053`*^9}, {
+   3.961868809466013*^9, 3.961868831917783*^9}, {3.96186890085317*^9, 
+   3.9618689819207067`*^9}, 
+   3.961919954429468*^9},ExpressionUUID->"fa3bbc6f-2be9-4100-b8e8-\
+e68d984d4b59"],
+
+Cell[BoxData[
+ RowBox[{"PacletInstall", "[", "\"\<Wolfram/DiagrammaticComputation\>\"", 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.9618688575305643`*^9, 3.961868864319706*^9}},
+ CellLabel->"In[37]:=",ExpressionUUID->"de4987e3-c642-4fec-b6b6-67438babc3bb"],
+
+Cell[BoxData[
+ RowBox[{"<<", "Wolfram`DiagrammaticComputation`"}]], "Input",
+ CellChangeTimes->{{3.961868867947661*^9, 3.961868875117219*^9}},
+ CellLabel->"In[39]:=",ExpressionUUID->"0a242705-8bab-46af-9fb3-c353e3363bc9"],
+
+Cell[CellGroupData[{
+
+Cell["Core Ideas of Diagrammatic Thinking", "Subsection",
+ CellChangeTimes->{{3.96186865304944*^9, 
+  3.961868661177373*^9}},ExpressionUUID->"f3b33049-3027-45f8-82fd-\
+cac49ebc6828"],
+
+Cell["\<\
+At its essence, DC treats computations as abstract structures: boxes \
+representing operations, with ports for inputs and outputs. These can be \
+wired together to form larger diagrams, revealing patterns and relationships \
+that might be less apparent in linear code. The focus is on composition, \
+modularity, and visualization, rather than specific applications.\
+\>", "Text",
+ CellChangeTimes->{{3.96186865304944*^9, 3.96186867836199*^9}, {
+  3.961869010364801*^9, 3.961869039966193*^9}, {3.961919960626688*^9, 
+  3.9619199746783543`*^9}},ExpressionUUID->"5d435417-e0b0-4445-9d69-\
+e43f9239c8e0"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Constructing a Diagram", "Subsection",
+ CellChangeTimes->{{3.96186865304944*^9, 3.9618686793307123`*^9}, 
+   3.96187417262913*^9},ExpressionUUID->"6d1ca8c6-d0b3-4949-9bfa-\
+4326f3f015ac"],
+
+Cell["\<\
+Consider representing addition with two inputs (x and y) and one output (z):\
+\>", "Text",
+ CellChangeTimes->{{3.96186865304944*^9, 3.961868679138954*^9}, {
+  3.961874228421867*^9, 3.9618742564893923`*^9}, {3.9619199895976343`*^9, 
+  3.961919990256987*^9}},ExpressionUUID->"0b6617dc-6725-4080-bc1d-\
+61d8b7e95047"],
+
+Cell[BoxData[
+ RowBox[{"Diagram", "[", 
+  RowBox[{"Plus", ",", " ", 
+   RowBox[{"{", 
+    RowBox[{"x", ",", " ", "y"}], "}"}], ",", " ", "z"}], "]"}]], "Input",
+ CellChangeTimes->{{3.9618686730459213`*^9, 3.961868673047868*^9}, 
+   3.961869676785305*^9},
+ CellLabel->"In[48]:=",ExpressionUUID->"b0c37aa2-19cc-44ad-8102-5c66b6b3d62f"],
+
+Cell["\<\
+This creates a symbolic diagram: a box labeled \[OpenCurlyDoubleQuote]Plus\
+\[CloseCurlyDoubleQuote] with input ports (x) and (y), and a single output \
+port (z). It remains unevaluated, serving as a blueprint. By default, such \
+diagrams format visually, showing wires connecting the ports to the operation.
+
+This foundation allows for exploring compositions, such as chaining or \
+paralleling operations.\
+\>", "Text",
+ CellChangeTimes->{{3.96186865304944*^9, 3.961868671008232*^9}, {
+  3.9618690659375563`*^9, 3.961869087189684*^9}, {3.961874265432007*^9, 
+  3.961874280229641*^9}, {3.9619200003860617`*^9, 
+  3.961920044561721*^9}},ExpressionUUID->"d0ff7d82-3cf0-49a8-af4d-\
+c8f08a0cee1e"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Vertical and Horizontal Composition", "Section",
+ CellChangeTimes->{{3.961870792792664*^9, 
+  3.96187080223717*^9}},ExpressionUUID->"95f31c28-d7fd-4969-a40c-\
+4b25d37f398b"],
+
+Cell["\<\
+Vertical composition connects diagrams end-to-end, with outputs from one \
+feeding inputs to the next, mirroring function composition. Matching port \
+labels enable automatic wiring.
+
+Consider numerical operations: one doubles a number, another increments it by \
+1:\
+\>", "Text",
+ CellChangeTimes->{{3.961870792792664*^9, 3.961870828311101*^9}, {
+  3.961874347915345*^9, 
+  3.961874369721208*^9}},ExpressionUUID->"51b5aae5-ab34-4416-8366-\
+294936a34afe"],
+
+Cell[BoxData[
+ RowBox[{"double", " ", "=", " ", 
+  RowBox[{"Diagram", "[", 
+   RowBox[{"\"\<[2\[Times]]\>\"", ",", " ", "x", ",", " ", "y"}], 
+   "]"}]}]], "Input",
+ CellChangeTimes->{{3.961870828994391*^9, 3.961870857468646*^9}, {
+  3.9618709913753242`*^9, 3.961870991841271*^9}},
+ CellLabel->"In[79]:=",ExpressionUUID->"d21c2540-edcd-4cfa-985f-eed395c342fd"],
+
+Cell[BoxData[
+ RowBox[{"increment", " ", "=", " ", 
+  RowBox[{"Diagram", "[", 
+   RowBox[{"\"\<[+1]\>\"", ",", " ", "y", ",", " ", "z"}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.961870828994391*^9, 3.961870886510154*^9}, {
+  3.961870993707939*^9, 3.961870994452433*^9}},
+ CellLabel->"In[80]:=",ExpressionUUID->"987423b1-93f0-4705-8b10-927a3ddaf29d"],
+
+Cell["Vertical composition (increment after double):", "Text",
+ CellChangeTimes->{{3.961870792792664*^9, 3.961870827900785*^9}, 
+   3.961870869438335*^9, {3.9618743823601437`*^9, 
+   3.961874386429452*^9}},ExpressionUUID->"6c8deb9f-84fc-44c2-8b19-\
+1dff1979cf01"],
+
+Cell[BoxData[
+ RowBox[{"DiagramComposition", "[", 
+  RowBox[{"increment", ",", " ", "double"}], "]"}]], "Input",
+ CellChangeTimes->{{3.961870792792664*^9, 3.961870827900785*^9}, {
+  3.961870871426032*^9, 3.961870877969735*^9}},
+ CellLabel->"In[81]:=",ExpressionUUID->"39aa4444-269c-4196-8654-53501c33f100"],
+
+Cell[TextData[{
+ "This connects (y) from double to (y) in increment. The rendering shows \
+stacked boxes connected by a wire. Using standard sequential Composition (",
+ Cell[BoxData[
+  FormBox["@*", TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "46f0dc93-b291-4f50-a63d-0ddee185fdd3"],
+ ") this can be represented like this:"
+}], "Text",
+ CellChangeTimes->{{3.961870792792664*^9, 3.961870827900785*^9}, {
+   3.961870871426032*^9, 3.961870916106433*^9}, 3.961870947297057*^9, {
+   3.9618710691783857`*^9, 3.961871143375557*^9}, {3.9618721134296837`*^9, 
+   3.961872115613256*^9}, {3.961874405405444*^9, 
+   3.961874424511704*^9}},ExpressionUUID->"34cab0ea-e13d-471b-b2c5-\
+bb5b3b432c0d"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(", 
+   RowBox[{"\"\<[+1]\>\"", "@*", "\"\<[2\[Times]]\>\""}], ")"}], "@", 
+  "3"}]], "Input",
+ CellChangeTimes->{{3.961870953044882*^9, 3.961870971414362*^9}, {
+  3.961871028074027*^9, 3.9618710525203753`*^9}},
+ FormatType->"InputForm",
+ CellLabel->"In[88]:=",ExpressionUUID->"2d1031ed-1f0a-4abc-8571-39a956d92311"],
+
+Cell[TextData[{
+ "Or using RightComposition (",
+ Cell[BoxData[
+  FormBox["/*", TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "73788c43-f337-4572-8c33-a543b318eefb"],
+ ") producing the same expression:"
+}], "Text",
+ InitializationCell->True,
+ CellChangeTimes->{{3.961871122943367*^9, 
+  3.96187116975163*^9}},ExpressionUUID->"4b5846ec-8ca7-4e81-a958-\
+8cb6a3cec08f"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(", 
+   RowBox[{"\"\<[2\[Times]]\>\"", "/*", "\"\<[+1]\>\""}], ")"}], "@", 
+  "3"}]], "Input",
+ CellChangeTimes->{{3.961871117511344*^9, 3.961871119852707*^9}},
+ CellLabel->"In[89]:=",ExpressionUUID->"cba4fdcc-b7ab-44e7-b2e5-b35bfe8d2c1b"],
+
+Cell["\<\
+If abstract nodes are replaced by actual functions this would produce an \
+expected result. For input 3, double produces 6, increment yields 7:\
+\>", "Text",
+ CellChangeTimes->{{3.961871277023526*^9, 3.961871358024329*^9}, {
+  3.961872124379346*^9, 3.961872126863058*^9}, {3.9618724314200172`*^9, 
+  3.9618724750305*^9}, {3.9618744267630787`*^9, 
+  3.961874436770895*^9}},ExpressionUUID->"cbfbf601-11e5-4df4-a293-\
+0a3b7aa2fa30"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(", 
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{"y", "|->", 
+      RowBox[{"2", "y"}]}], ")"}], "/*", 
+    RowBox[{"(", 
+     RowBox[{"x", "|->", 
+      RowBox[{"x", "+", "1"}]}], ")"}]}], ")"}], "@", "3"}]], "Input",
+ CellChangeTimes->{{3.9618711974963284`*^9, 3.961871210343648*^9}, {
+  3.9618712553738194`*^9, 3.9618712727751627`*^9}, {3.961874525193871*^9, 
+  3.961874533445786*^9}},
+ CellLabel->
+  "In[126]:=",ExpressionUUID->"2e8562bd-04ab-4a4b-804c-1c0afe9767ec"],
+
+Cell["\<\
+We\[CloseCurlyQuote]ll make function representation of diagrams like this and \
+more complex ones automatically later.
+But for now let\[CloseCurlyQuote]s try to compose these functions in the \
+opposite order:\
+\>", "Text",
+ CellChangeTimes->{{3.9618724764596252`*^9, 3.9618724863605413`*^9}, {
+  3.9618725244107122`*^9, 3.9618725259579372`*^9}, {3.961873115525248*^9, 
+  3.9618731184471283`*^9}, {3.961874447856915*^9, 
+  3.961874471410074*^9}},ExpressionUUID->"c4baddf5-cfcd-42eb-bc5e-\
+e5e0cb125aa4"],
+
+Cell[BoxData[
+ RowBox[{"DiagramComposition", "[", 
+  RowBox[{"double", ",", "increment"}], "]"}]], "Input",
+ CellChangeTimes->{{3.9618714295026493`*^9, 3.9618714394593782`*^9}},
+ CellLabel->"In[94]:=",ExpressionUUID->"fa04e607-0063-4701-8fa9-04de29412454"],
+
+Cell["\<\
+The result may be unexpected, but because port (z) is followed by port (x), \
+which do not match, diagrams compose horizontally in parallel. To fix this, \
+it is possible to reassign ports for a diagram, for example the new double \
+diagram with opposite port names can be constructed like this:\
+\>", "Text",
+ CellChangeTimes->{{3.961871512528853*^9, 3.9618716672402143`*^9}, {
+  3.9618717133384113`*^9, 3.961871713663591*^9}, {3.961873134504229*^9, 
+  3.9618731702688*^9}},ExpressionUUID->"d52a5092-8247-46f2-af82-8e966fb49b1f"],
+
+Cell[BoxData[
+ RowBox[{"double2", "=", 
+  RowBox[{"Diagram", "[", 
+   RowBox[{"double", ",", "z", ",", "x"}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.961871634041757*^9, 3.961871649141695*^9}, {
+  3.9618716866058893`*^9, 3.96187170340646*^9}, {3.9618745099589252`*^9, 
+  3.961874510068383*^9}},
+ CellLabel->
+  "In[124]:=",ExpressionUUID->"b6384e11-c01e-4f93-9fc3-3635b690b692"],
+
+Cell["\<\
+With new input port name matching output of the incrementing diagram \
+composition works correctly:\
+\>", "Text",
+ CellChangeTimes->{{3.9618717232360983`*^9, 3.9618717369156837`*^9}, {
+  3.961873198692477*^9, 
+  3.961873236308597*^9}},ExpressionUUID->"3c44e8c3-96a4-4a5b-90b1-\
+060ba54634d2"],
+
+Cell[BoxData[
+ RowBox[{"DiagramComposition", "[", 
+  RowBox[{"double2", ",", "increment"}], "]"}]], "Input",
+ CellChangeTimes->{3.9618717194227877`*^9},
+ CellLabel->
+  "In[125]:=",ExpressionUUID->"195f2269-f37f-41fa-8b52-0e01a5de4f7d"],
+
+Cell["\<\
+Which after turning into a function would produce a different result:\
+\>", "Text",
+ CellChangeTimes->{{3.961872036450417*^9, 3.961872041984107*^9}, {
+  3.96187208175729*^9, 3.961872089065448*^9}, {3.9618725574404182`*^9, 
+  3.96187256412667*^9}, {3.961873058420967*^9, 
+  3.961873059578511*^9}},ExpressionUUID->"babf71d8-0710-457a-9e7d-\
+f688e5f15ae4"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(", 
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{"z", "|->", 
+      RowBox[{"z", "+", "1"}]}], ")"}], "/*", 
+    RowBox[{"(", 
+     RowBox[{"y", "|->", 
+      RowBox[{"2", "\[Times]", "y"}]}], ")"}]}], ")"}], "@", "3"}]], "Input",
+ CellChangeTimes->{{3.961872031613302*^9, 3.961872033641924*^9}, {
+  3.961874542227618*^9, 3.961874555888013*^9}},
+ CellLabel->
+  "In[128]:=",ExpressionUUID->"c2f91895-9554-4417-9535-87c1cdece6db"],
+
+Cell["\<\
+The parallel composition above can also be done directly using DiagramProduct \
+in any order, this ensures that ports of horizontally composed diagrams would \
+never wire together:\
+\>", "Text",
+ CellChangeTimes->{{3.9618725726830873`*^9, 3.9618726534724607`*^9}, {
+   3.961873015134163*^9, 3.961873032868938*^9}, {3.961873070951132*^9, 
+   3.96187310266496*^9}, 
+   3.961874569675459*^9},ExpressionUUID->"23d9ed11-dc06-41ff-98c5-\
+7c8c74374dca"],
+
+Cell[BoxData[
+ RowBox[{"DiagramProduct", "[", 
+  RowBox[{"increment", ",", "double"}], "]"}]], "Input",
+ CellChangeTimes->{{3.9618726574974546`*^9, 3.96187266297088*^9}},
+ CellLabel->
+  "In[101]:=",ExpressionUUID->"1b0c6256-a94c-46a7-832b-792a114fd76c"],
+
+Cell[BoxData[
+ RowBox[{"DiagramProduct", "[", 
+  RowBox[{"double", ",", "increment"}], "]"}]], "Input",
+ CellChangeTimes->{3.961872665160759*^9},
+ CellLabel->
+  "In[102]:=",ExpressionUUID->"bc760b4d-fce6-4afc-8f64-4a86bd3c7c60"],
+
+Cell["\<\
+These diagrams also show that in principle diagrams can have multiple inputs \
+and multiple outputs: \
+\>", "Text",
+ CellChangeTimes->{{3.9618734720189037`*^9, 
+  3.961873553278816*^9}},ExpressionUUID->"d54fc509-6312-484d-b230-\
+2b0475aee85f"],
+
+Cell[BoxData[
+ RowBox[{"Diagram", "[", 
+  RowBox[{"f", ",", 
+   RowBox[{"{", 
+    RowBox[{"x", ",", "y"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"a", ",", "b", ",", "c"}], "}"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.9618735542627287`*^9, 3.9618735662292423`*^9}},
+ CellLabel->
+  "In[103]:=",ExpressionUUID->"a5cbd5d3-aaab-4bb8-9ec6-71accf7bea71"],
+
+Cell["Which also includes zero inputs or/and zero outputs:", "Text",
+ CellChangeTimes->{{3.961873581152219*^9, 
+  3.961873611433428*^9}},ExpressionUUID->"750885f6-3395-4ad3-aabb-\
+7e401114b67a"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"Diagram", "[", 
+    RowBox[{"x", ",", "a"}], "]"}], ",", 
+   RowBox[{"Diagram", "[", 
+    RowBox[{"x", ",", "a", ",", 
+     RowBox[{"{", "}"}]}], "]"}], ",", 
+   RowBox[{"Diagram", "[", "x", "]"}]}], "}"}]], "Input",
+ CellChangeTimes->{{3.96187360771877*^9, 3.961873618254814*^9}, {
+  3.961875578345228*^9, 3.96187558525635*^9}},
+ CellLabel->
+  "In[129]:=",ExpressionUUID->"d57906e6-bd7d-4d07-bc1c-80cedca4194f"],
+
+Cell["\<\
+For example the input to a computation can be represented as a diagram with \
+no inputs:\
+\>", "Text",
+ CellChangeTimes->{{3.9618736590171337`*^9, 
+  3.961873697923149*^9}},ExpressionUUID->"baa5865a-6c2d-4b36-b3d9-\
+19c6b3c22f75"],
+
+Cell[BoxData[
+ RowBox[{"three", "=", 
+  RowBox[{"Diagram", "[", 
+   RowBox[{"3", ",", "x"}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.9618736984671183`*^9, 3.961873702282166*^9}, {
+  3.961873771676207*^9, 3.9618737724374647`*^9}},
+ CellLabel->
+  "In[109]:=",ExpressionUUID->"5d2530db-3e2c-4279-83f4-d61b60d3d0d6"],
+
+Cell["\<\
+And it can also be used in a composition to diagrammatically represent the \
+whole computation:\
+\>", "Text",
+ CellChangeTimes->{{3.961873709098939*^9, 3.961873765655663*^9}, {
+  3.961873811512766*^9, 
+  3.961873823431975*^9}},ExpressionUUID->"f07bfd03-454f-4ffb-a712-\
+c89ac988e819"],
+
+Cell[BoxData[
+ RowBox[{"DiagramComposition", "[", 
+  RowBox[{"increment", ",", "double", ",", "three"}], "]"}]], "Input",
+ CellChangeTimes->{{3.961873743933578*^9, 3.961873796558282*^9}},
+ CellLabel->
+  "In[113]:=",ExpressionUUID->"0f904048-545f-4d9c-9519-84c087f1b8db"]
+}, Open  ]]
+},
+WindowSize->{808, 911},
+WindowMargins->{{Automatic, 336}, {Automatic, 61}},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (June 6, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"f44297e9-03ec-4944-8802-d12135c282ff"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 184, 3, 66, "Section",ExpressionUUID->"6a89f44c-040d-4787-acbe-baebab5b17e6"],
+Cell[763, 27, 631, 11, 99, "Text",ExpressionUUID->"fa3bbc6f-2be9-4100-b8e8-e68d984d4b59"],
+Cell[1397, 40, 254, 4, 29, "Input",ExpressionUUID->"de4987e3-c642-4fec-b6b6-67438babc3bb"],
+Cell[1654, 46, 221, 3, 29, "Input",ExpressionUUID->"0a242705-8bab-46af-9fb3-c353e3363bc9"],
+Cell[CellGroupData[{
+Cell[1900, 53, 182, 3, 53, "Subsection",ExpressionUUID->"f3b33049-3027-45f8-82fd-cac49ebc6828"],
+Cell[2085, 58, 610, 10, 99, "Text",ExpressionUUID->"5d435417-e0b0-4445-9d69-e43f9239c8e0"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2732, 73, 193, 3, 53, "Subsection",ExpressionUUID->"6d1ca8c6-d0b3-4949-9bfa-4326f3f015ac"],
+Cell[2928, 78, 324, 6, 33, "Text",ExpressionUUID->"0b6617dc-6725-4080-bc1d-61d8b7e95047"],
+Cell[3255, 86, 333, 7, 29, "Input",ExpressionUUID->"b0c37aa2-19cc-44ad-8102-5c66b6b3d62f"],
+Cell[3591, 95, 703, 13, 121, "Text",ExpressionUUID->"d0ff7d82-3cf0-49a8-af4d-c8f08a0cee1e"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4343, 114, 179, 3, 66, "Section",ExpressionUUID->"95f31c28-d7fd-4969-a40c-4b25d37f398b"],
+Cell[4525, 119, 465, 11, 99, "Text",ExpressionUUID->"51b5aae5-ab34-4416-8366-294936a34afe"],
+Cell[4993, 132, 360, 7, 29, "Input",ExpressionUUID->"d21c2540-edcd-4cfa-985f-eed395c342fd"],
+Cell[5356, 141, 350, 6, 29, "Input",ExpressionUUID->"987423b1-93f0-4705-8b10-927a3ddaf29d"],
+Cell[5709, 149, 263, 4, 33, "Text",ExpressionUUID->"6c8deb9f-84fc-44c2-8b19-1dff1979cf01"],
+Cell[5975, 155, 306, 5, 29, "Input",ExpressionUUID->"39aa4444-269c-4196-8654-53501c33f100"],
+Cell[6284, 162, 708, 14, 55, "Text",ExpressionUUID->"34cab0ea-e13d-471b-b2c5-bb5b3b432c0d"],
+Cell[6995, 178, 351, 8, 29, "Input",ExpressionUUID->"2d1031ed-1f0a-4abc-8571-39a956d92311"],
+Cell[7349, 188, 387, 11, 33, "Text",ExpressionUUID->"4b5846ec-8ca7-4e81-a958-8cb6a3cec08f",
+ InitializationCell->True],
+Cell[7739, 201, 274, 6, 29, "Input",ExpressionUUID->"cba4fdcc-b7ab-44e7-b2e5-b35bfe8d2c1b"],
+Cell[8016, 209, 439, 8, 55, "Text",ExpressionUUID->"cbfbf601-11e5-4df4-a293-0a3b7aa2fa30"],
+Cell[8458, 219, 505, 14, 29, "Input",ExpressionUUID->"2e8562bd-04ab-4a4b-804c-1c0afe9767ec"],
+Cell[8966, 235, 513, 10, 55, "Text",ExpressionUUID->"c4baddf5-cfcd-42eb-bc5e-e5e0cb125aa4"],
+Cell[9482, 247, 256, 4, 29, "Input",ExpressionUUID->"fa04e607-0063-4701-8fa9-04de29412454"],
+Cell[9741, 253, 540, 8, 77, "Text",ExpressionUUID->"d52a5092-8247-46f2-af82-8e966fb49b1f"],
+Cell[10284, 263, 378, 8, 29, "Input",ExpressionUUID->"b6384e11-c01e-4f93-9fc3-3635b690b692"],
+Cell[10665, 273, 302, 7, 33, "Text",ExpressionUUID->"3c44e8c3-96a4-4a5b-90b1-060ba54634d2"],
+Cell[10970, 282, 235, 5, 29, "Input",ExpressionUUID->"195f2269-f37f-41fa-8b52-0e01a5de4f7d"],
+Cell[11208, 289, 363, 7, 33, "Text",ExpressionUUID->"babf71d8-0710-457a-9e7d-f688e5f15ae4"],
+Cell[11574, 298, 462, 13, 29, "Input",ExpressionUUID->"c2f91895-9554-4417-9535-87c1cdece6db"],
+Cell[12039, 313, 456, 9, 55, "Text",ExpressionUUID->"23d9ed11-dc06-41ff-98c5-7c8c74374dca"],
+Cell[12498, 324, 253, 5, 29, "Input",ExpressionUUID->"1b0c6256-a94c-46a7-832b-792a114fd76c"],
+Cell[12754, 331, 228, 5, 29, "Input",ExpressionUUID->"bc760b4d-fce6-4afc-8f64-4a86bd3c7c60"],
+Cell[12985, 338, 253, 6, 33, "Text",ExpressionUUID->"d54fc509-6312-484d-b230-2b0475aee85f"],
+Cell[13241, 346, 354, 9, 29, "Input",ExpressionUUID->"a5cbd5d3-aaab-4bb8-9ec6-71accf7bea71"],
+Cell[13598, 357, 194, 3, 33, "Text",ExpressionUUID->"750885f6-3395-4ad3-aabb-7e401114b67a"],
+Cell[13795, 362, 464, 12, 29, "Input",ExpressionUUID->"d57906e6-bd7d-4d07-bc1c-80cedca4194f"],
+Cell[14262, 376, 240, 6, 33, "Text",ExpressionUUID->"baa5865a-6c2d-4b36-b3d9-19c6b3c22f75"],
+Cell[14505, 384, 313, 7, 29, "Input",ExpressionUUID->"5d2530db-3e2c-4279-83f4-d61b60d3d0d6"],
+Cell[14821, 393, 294, 7, 33, "Text",ExpressionUUID->"f07bfd03-454f-4ffb-a712-c89ac988e819"],
+Cell[15118, 402, 270, 5, 29, "Input",ExpressionUUID->"0f904048-545f-4d9c-9519-84c087f1b8db"]
+}, Open  ]]
+}
+]
+*)
+
