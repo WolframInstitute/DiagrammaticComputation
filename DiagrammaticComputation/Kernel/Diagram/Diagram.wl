@@ -74,7 +74,7 @@ $DefaultPortFunction = Function[#["TaggedFullName"]]
 $DefaultNetworkPortFunction = Function[#["TaggedName"]]
 
 $DiagramDefaultGraphics = Function @ Show[
-    Which[#["NodeQ"], #["Graphics"], #["NetworkQ"], #["NetGraph"], True, #["Grid"]],
+    Which[#["SingletonNodeQ"], #["Graphics"], #["NetworkQ"], #["NetGraph"], True, #["Grid"]],
     BaseStyle -> {GraphicsBoxOptions -> {ImageSize -> If[#["SingletonNodeQ"], Tiny, Medium]}, GraphicsHighlightColor -> Magenta}
 ]
 
@@ -471,7 +471,7 @@ PermutationDiagram[inputs_List, outputs_List, perm_Cycles, opts : OptionsPattern
 ]
 
 
-SpiderDiagram[in_List, out_List, opts : OptionsPattern[]] := Diagram["",
+SpiderDiagram[in_List, out : Except[OptionsPattern[], _List], opts : OptionsPattern[]] := Diagram["Spider",
     in, out,
     opts,
   	"ShowLabel" -> False,
@@ -480,13 +480,13 @@ SpiderDiagram[in_List, out_List, opts : OptionsPattern[]] := Diagram["",
     "FloatingPorts" -> True
 ]
 
-SpiderDiagram[x : Except[_List], out_, OptionsPattern[]] := SpiderDiagram[{x}, out, opts]
+SpiderDiagram[x : Except[_List], out_, opts : OptionsPattern[]] := SpiderDiagram[{x}, out, opts]
 
-SpiderDiagram[in_, y : Except[_List], OptionsPattern[]] := SpiderDiagram[in, {y}]
+SpiderDiagram[in_, y : Except[_List], opts : OptionsPattern[]] := SpiderDiagram[in, {y}, opts]
 
-SpiderDiagram[x_List] := SpiderDiagram[{}, x]
+SpiderDiagram[x_List, opts : OptionsPattern[]] := SpiderDiagram[{}, x, opts]
 
-SpiderDiagram[x_] := SpiderDiagram[{}, {x}]
+SpiderDiagram[x_, opts : OptionsPattern[]] := SpiderDiagram[{}, {x}, opts]
 
 
 CopyDiagram[x_, xs : {___}, opts : OptionsPattern[]] := Diagram["Copy", x, xs, opts, "Shape" -> "Wires"[Thread[{1, Range[2, Length[xs] + 1]}]], "ShowLabel" -> False, "FloatingPorts" -> {False, True}]
@@ -889,8 +889,25 @@ DiagramProp[d_, "Shape", opts : OptionsPattern[]] := Enclose @ Block[{
             },
                 {
                     Haloing[],
-                    With[{p = ps[[First[#]]], style = Replace[SelectFirst[styles[[#]], ! MatchQ[#, Automatic | True | _Function] &, Nothing], None | False | Style[False, s___] :> s], dual = ports[[First[#]]]["DualQ"]},
-                        {style, BSplineCurve[If[dual, Identity, Reverse] @ {p[[1]], 2 * p[[1]] - p[[2]], 2 * #[[1]] - #[[2]], #[[1]]}] & /@ DeleteCases[None] @ ps[[Rest[#]]]}
+                    With[{points = ps[[#]], style = Replace[SelectFirst[styles[[#]], ! MatchQ[#, Automatic | True | _Function] &, Nothing], None | False | Style[False, s___] :> s], dual = ports[[First[#]]]["DualQ"]},
+                        {
+                            style,
+                            Switch[Length[#],
+                                1,
+                                    Circle[points[[1, 1]], Min[{w, h}] / 8],
+                                2,
+                                    If[points[[2]] === None, Nothing, BSplineCurve[If[dual, Identity, Reverse] @ {points[[1, 1]], 2 * points[[1, 1]] - points[[1, 2]], 2 * points[[2, 1]] - points[[2, 2]], points[[2, 1]]}]],
+                                _,
+                                    With[{c0 = c + {#1, Clip[#2, h * ({-1 , 1} / 4), {0, 0}]} & @@ (Mean[points[[All, 1]]] - c), r = Min[{w, h}] / 8},
+                                        {
+                                            Splice[With[{p = #[[1]]}, {q = c0 + r * Normalize[p - c0]},
+                                                BSplineCurve[If[dual, Identity, Reverse] @ {#[[1]], #[[1]] + r * Normalize[#[[1]] - #[[2]]], q}]
+                                            ] & /@ DeleteCases[None] @ points],
+                                            Circle[c0, r]
+                                        }
+                                    ]
+                            ]
+                        }
                     ] & /@ wires // If[d["FlipQ"], GeometricTransformation[#, RotationTransform[2 a, c] @* ReflectionTransform[{0, 1}, c]] &, Identity] //
                         If[d["ReverseQ"], GeometricTransformation[#, ReflectionTransform[{1, 0}, c]] &, Identity]
                 }
@@ -1069,7 +1086,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
                             Replace[#["Label"], HoldForm[None] -> "\t\t\t"],
                             #["View"]
                         ],
-                        FirstCase[#["Shape"], r_GeometricTransformation :> RegionCentroid[r], {0, 0}, All]
+                        FirstCase[#["Shape"], r_GeometricTransformation :> Mean[RegionCentroid /@ ResourceFunction["ExtractGraphicsPrimitives"][r]], {0, 0}, All]
                     ]
                 ]] @ diagram
             ],
