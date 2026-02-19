@@ -2110,7 +2110,11 @@ TensorDiagram[HoldPattern[ArraySymbol[a_, ns_List : {}, dom_ : None, sym_ : Sequ
         opts
     ]
 
-TensorDiagram[SymbolicIdentityArray[ns_List], opts : OptionsPattern[]] := Diagram["\[DoubleStruckCapitalI]", Join[#, #] & @ (Interpretation[#, Evaluate[Unique["i"]]] & /@ ns), "Shape" -> "Wires"[Thread[{Range[#], # + Range[#]}] & @ Length[ns]], "ShowLabel" -> False]
+TensorDiagram[t : SymbolicIdentityArray[ns_List], opts : OptionsPattern[]] :=
+    Diagram[Annotation["\[DoubleStruckCapitalI]", "Tensor" -> t], Join[#, #] & @ (Interpretation[#, Evaluate[Unique["i"]]] & /@ ns), opts, "Shape" -> "Wires"[Thread[{Range[#], # + Range[#]}] & @ Length[ns]], "ShowLabel" -> False]
+
+TensorDiagram[t : SymbolicDeltaProductArray[ns_List, is : {{___Integer} ...}], opts : OptionsPattern[]] /; TensorRank[t] === Length[ns] :=
+    Diagram[Annotation["Spider", "Tensor" -> t], Interpretation[#, Evaluate[Unique["i"]]] & /@ ns, opts, "Shape" -> "Wires"[is], "ShowLabel" -> False]
 
 
 TensorDiagram[IgnoringInactive[HoldPattern[KroneckerProduct[ts___]]], opts : OptionsPattern[]] := DiagramProduct @@ (TensorDiagram[#, opts] & /@ {ts})
@@ -2118,7 +2122,12 @@ TensorDiagram[IgnoringInactive[HoldPattern[KroneckerProduct[ts___]]], opts : Opt
 TensorDiagram[IgnoringInactive[HoldPattern[TensorProduct[ts___]]], opts : OptionsPattern[]] := DiagramProduct @@ (DiagramSplit[TensorDiagram[#, opts], Infinity] & /@ {ts})
 
 TensorDiagramDot[a_, b_, k_] := With[{x = DiagramSplit[a, -k, True, True], y = DiagramSplit[b, k, True, True]},
-    DiagramComposition[x, DiagramAssignPorts[y, {Inherited, PortDual /@ x["InputPorts"]}]["Flatten"]]
+    (* DiagramSplit with flipQ=True may reorder the first k output ports of y *)
+    (* relative to the tensor index order (b["Ports", True]). Permute x's input ports to match. *)
+    {expectedPorts = Take[b["Ports", True], Min[k, b["Arity"]]]},
+    {corrective = FindPermutation[y["OutputPorts"], expectedPorts]},
+    {xInputs = If[corrective === Cycles[{}], x["InputPorts"], Permute[x["InputPorts"], corrective]]},
+    DiagramComposition[x, DiagramAssignPorts[DiagramArrange[y], {Inherited, PortDual /@ xInputs}]["Flatten"]]
 ]
 
 TensorDiagram[IgnoringInactive[HoldPattern[Dot[ts__]]], opts : OptionsPattern[]] := Fold[TensorDiagramDot[##, 1] &, TensorDiagram[#, opts] & /@ {ts}]
@@ -2131,10 +2140,10 @@ TensorDiagram[IgnoringInactive[HoldPattern[ArrayDot[a_, b_, pairs : {{_Integer, 
 TensorDiagram[IgnoringInactive[HoldPattern[Transpose[a_, perm_ : {1, 2}]]], opts : OptionsPattern[]] := DiagramPermute[TensorDiagram[a, opts], perm]
 
 TensorDiagram[IgnoringInactive[TensorContract[x_, indices : {{_Integer, _Integer} ...}]], opts : OptionsPattern[]] := With[{d = DiagramSplit[TensorDiagram[x, opts], Infinity]}, {perm = FindPermutation[Join[Catenate[indices], Complement[Range[d["OutputArity"]], Catenate[indices]]]]},
-    DiagramComposition[RowDiagram[Diagram["\[DoubleStruckCapitalI]", d["OutputPorts"][[#]], {}, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False] & /@ indices], PermutationDiagram[d["OutputPorts"] -> Permute[d["OutputPorts"], perm], perm], d]["Network"]
+    DiagramComposition[RowDiagram[Diagram["\[DoubleStruckCapitalI]", d["OutputPorts"][[#]], {}, "Shape" -> "Wires"[{{1, 2}}], "ShowLabel" -> False] & /@ indices], PermutationDiagram[d["OutputPorts"] -> Permute[d["OutputPorts"], perm], perm], d]
 ]
 
-TensorDiagram[tensor_, opts : OptionsPattern[]] := Diagram[Annotation[\[FormalCapitalT], "Tensor" -> tensor], {}, If[TensorQ[tensor], Tooltip[#, Unique[\[FormalP]]] & /@ TensorDimensions[tensor], {}], FilterRules[{opts}, Options[Diagram]]]
+TensorDiagram[tensor_, opts : OptionsPattern[]] := Diagram[Annotation[\[FormalCapitalT], "Tensor" -> tensor], {}, If[TensorQ[tensor], Interpretation[#, Evaluate[Unique[\[FormalP]]]] & /@ TensorDimensions[tensor], {}], FilterRules[{opts}, Options[Diagram]]]
 
 
 
