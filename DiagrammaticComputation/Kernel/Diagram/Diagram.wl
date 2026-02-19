@@ -2060,10 +2060,32 @@ DiagramPermute[diagram_ /; diagram["SingletonNodeQ"] || diagram["NetworkQ"], per
 
 DiagramPermute[diagram_Diagram, perm_, dualQ : _ ? BooleanQ : True] := Enclose @ With[
     {d = diagram["Flatten"]},
-    {ports = d["Ports", dualQ], newDiagram = DiagramSplit[d, Infinity, dualQ]},
-    {newPorts = ConfirmBy[Permute[ports, perm], ListQ]}
+    {ports = d["Ports", dualQ], outs = d["OutputArity"], ins = d["InputArity"]},
+    {newPorts = ConfirmBy[Permute[ports, perm], ListQ], support = PermutationSupport[perm]},
+    (* Check if permutation affects outputs (positions 1..outs) and/or inputs (positions outs+1..outs+ins) *)
+    {affectsOutputs = Length[Intersection[support, Range[outs]]] > 0,
+     affectsInputs = Length[Intersection[support, Range[outs + 1, outs + ins]]] > 0}
     ,
-	DiagramComposition[PermutationDiagram[ports -> newPorts, perm], newDiagram]
+    Which[
+        (* Input-only permutation: append π at END *)
+        affectsInputs && !affectsOutputs,
+        DiagramComposition[d, PermutationDiagram[ports -> newPorts, perm]]
+        ,
+        (* Output-only permutation: prepend π at START *)
+        affectsOutputs && !affectsInputs,
+        DiagramComposition[PermutationDiagram[ports -> newPorts, perm], d]
+        ,
+        (* Mixed permutation: split to all-outputs, then apply corrective output permutation *)
+        True,
+        With[{splitD = DiagramSplit[d, Infinity, dualQ]},
+            {splitPorts = splitD["Ports", dualQ], desiredPorts = Permute[d["Ports", dualQ], perm]},
+            {corrective = FindPermutation[splitPorts, desiredPorts]},
+            If[corrective === Cycles[{}],
+                splitD,
+                DiagramComposition[PermutationDiagram[splitPorts -> Permute[splitPorts, corrective], corrective], splitD]
+            ]
+        ]
+    ]
 ]
 
 
