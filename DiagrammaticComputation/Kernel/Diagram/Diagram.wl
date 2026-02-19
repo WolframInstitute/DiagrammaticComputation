@@ -1877,7 +1877,8 @@ toDiagramNetwork[(Transpose | SuperStar)[diag_, ___] -> d_, pos_, ports_, opts :
 
 
 portDimension[p_Port] := Replace[p["HoldName"], {
-    _[Tooltip[n_, _]] :> n
+    _[n_Integer] :> n,
+    _[Interpretation[n_, _]] :> n
 }]
 
 
@@ -1966,16 +1967,20 @@ diagramTensor[diagram_Diagram, opts : OptionsPattern[]] := Replace[diagram["Hold
                     allPorts = Join[diagram["InputPorts"], diagram["OutputPorts"]]
                 },
                 {
-                    symIdxOrder = Join[wires[[All, 1]], wires[[All, 2]]],
-                    outputPorts = allPorts[[wires[[All, 2]]]],
-                    networkOrder = Join[Range[nInputs + 1, nPorts], Range[nInputs]]
+                    dimensions = portDimension /@ allPorts
                 },
-                {
-                    tensor = SymbolicIdentityArray[portDimension /@ outputPorts],
-                    perm = FindPermutation[symIdxOrder, networkOrder]
-                }
-                ,
-                If[perm === Cycles[{}], tensor, Inactive[Transpose][tensor, perm]]
+                If[ nInputs == nOutputs == Length[wires] && AllTrue[wires, Length[#] == 2 &],
+                    With[
+                        {
+                            tensor = SymbolicIdentityArray[Take[dimensions, nInputs]],
+                            perm = PermutationProduct[FindPermutation[Ordering[wires[[All, 1]]]], FindPermutation[Ordering[wires[[All, 2]]]]]
+                        }
+                        ,
+                        If[perm === Cycles[{}], tensor, Inactive[Transpose][tensor, perm]]
+                    ]
+                    ,
+                    SymbolicDeltaProductArray[dimensions, Map[If[# > nInputs, # - nInputs, # + nOutputs] &, wires, {2}]]
+                ]
             ]
             ,
             Replace[diagram["Expression"], {
