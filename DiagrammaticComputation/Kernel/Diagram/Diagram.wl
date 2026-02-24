@@ -1859,14 +1859,20 @@ toDiagramNetwork[CircleTimes[ds___] -> d_, pos_, ports_, opts : OptionsPattern[]
 
 toDiagramNetwork[CircleDot[ds__] -> d_, pos_, ports_, opts : OptionsPattern[]] := With[{f = d["PortFunction"]},
 	Fold[
-        With[{net = toDiagramNetwork[#2, Append[pos, #1[[3]]], Join[f[UntagPort[#]] -> # & /@ #1[[1]]["OutputPorts"], ports], "PortFunction" -> f, opts]},
+        With[{net = Reap[toDiagramNetwork[#2, Append[pos, #1[[3]]],
+            Join[#1[[1]], ports], "PortFunction" -> f, opts], "Port"]},
+            {consumed = Catenate[net[[2]]]},
             {
-                ColumnDiagram[Prepend[net, #1[[1]]], "PortFunction" -> f],
-                Join[#1[[2]], net],
+                (* Track available output ports directly instead of building ColumnDiagram *)
+                Join[
+                    DeleteElements[#1[[1]], 1 -> consumed],
+                    Catenate[f[UntagPort[#]] -> # & /@ #["OutputPorts"] & /@ net[[1]]]
+                ],
+                Join[#1[[2]], net[[1]]],
                 #1[[3]] - 1
             }
         ] &,
-		{EmptyDiagram[], {}, Length[{ds}]},
+		{{}, {}, Length[{ds}]},
 		Reverse[{ds}]
 	][[2]]
 ]
