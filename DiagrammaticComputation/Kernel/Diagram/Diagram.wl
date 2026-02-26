@@ -1838,6 +1838,7 @@ toDiagramNetwork[d_Diagram -> _, pos_, ports_, opts : OptionsPattern[]] := Block
 		"InputPorts" -> MapIndexed[If[#1["NeutralQ"], #1, With[{p = portFunction[PortDual[#1]]},
             If[ KeyExistsQ[mports, p],
                 Sow[port = p -> Lookup[mports, p], "Port"];
+                Scan[Sow[port, #] &, $cdSowTags];
                 mports = DeleteElements[mports, 1 -> {port}];
                 port[[2]]["Dual"]
                 ,
@@ -1857,19 +1858,29 @@ toDiagramNetwork[CirclePlus[ds___] -> d_, pos_, ports_, opts : OptionsPattern[]]
 toDiagramNetwork[CircleTimes[ds___] -> d_, pos_, ports_, opts : OptionsPattern[]] :=
     Catenate @ FoldPairList[With[{net = Reap[toDiagramNetwork[#2, Append[pos, #1[[1]]], #1[[2]], "PortFunction" -> d["PortFunction"], opts], "Port"]}, {net[[1]], {#1[[1]] + 1, DeleteElements[#1[[2]], 1 -> Catenate[net[[2]]]]}}] &, {1, ports}, {ds}]
 
-toDiagramNetwork[CircleDot[ds__] -> d_, pos_, ports_, opts : OptionsPattern[]] := With[{f = d["PortFunction"]},
-    Fold[
-    With[{net = toDiagramNetwork[#2, Append[pos, #1[[3]]], Join[f[UntagPort[#]] -> # & /@ #1[[1]]["OutputPorts"], ports], "PortFunction" -> f, opts]},
-        {
-            ColumnDiagram[Prepend[net, #1[[1]]], "PortFunction" -> f],
-            Join[#1[[2]], net],
-            #1[[3]] - 1
-        }
-    ] &,
-    {EmptyDiagram[], {}, Length[{ds}]},
-    Reverse[{ds}]
-    ][[2]]
-]
+toDiagramNetwork[CircleDot[ds__] -> d_, pos_, ports_, opts : OptionsPattern[]] := Block[{$cdSowTags = Append[If[ListQ[$cdSowTags], $cdSowTags, {}], Unique["cdPort"]]},
+With[{$cdTag = Last[$cdSowTags]},
+With[{f = d["PortFunction"]},
+	Fold[
+        With[{netR = Reap[toDiagramNetwork[#2, Append[pos, #1[[3]]],
+            Join[#1[[1]], #1[[4]]], "PortFunction" -> f, opts], $cdTag]},
+            {net = netR[[1]]},
+            {consumed = Catenate[netR[[2]]]},
+            {remaining = DeleteElements[#1[[1]], 1 -> consumed]},
+            {portsRemaining = DeleteElements[#1[[4]], 1 -> consumed]},
+            {allOutputs = f[UntagPort[#]] -> # & /@ Catenate[Through[net["OutputPorts"]]]},
+            {newOutputs = DeleteElements[allOutputs, Infinity -> consumed]},
+            {
+                Join[newOutputs, remaining],
+                Join[#1[[2]], net],
+                #1[[3]] - 1,
+                portsRemaining
+            }
+        ] &,
+		{{}, {}, Length[{ds}], ports},
+		Reverse[{ds}]
+	][[2]]
+]]]
 
 toDiagramNetwork[{ds___} -> d_, pos_, ports_, opts : OptionsPattern[]] := Catenate[toDiagramNetwork[#, pos, ports, "Unique" -> False, "PortFunction" -> d["PortFunction"], opts] & /@ {ds}]
 
