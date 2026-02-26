@@ -2146,7 +2146,8 @@ TensorDiagram[IgnoringInactive[HoldPattern[Dot[ts__]]], opts : OptionsPattern[]]
 TensorDiagram[IgnoringInactive[HoldPattern[ArrayDot[a_, b_, k_Integer]]], opts : OptionsPattern[]] := TensorDiagramDot[TensorDiagram[a, opts], TensorDiagram[b, opts], k]
 
 TensorDiagram[IgnoringInactive[HoldPattern[ArrayDot[a_, b_, pairs : {{_Integer, _Integer} ...}]]], opts : OptionsPattern[]] :=
-    TensorDiagram[Inactive[TensorContract][Inactive[TensorProduct][a, b], pairs + Threaded[{0, TensorRank[a]}]], opts]
+    With[{da = TensorDiagram[a, opts]},
+    TensorDiagram[Inactive[TensorContract][Inactive[TensorProduct][a, b], pairs + Threaded[{0, da["OutputArity"]}]], opts]]
 
 TensorDiagram[IgnoringInactive[HoldPattern[Transpose[a_, perm_ : {1, 2}]]], opts : OptionsPattern[]] := DiagramPermute[TensorDiagram[a, opts], perm]
 
