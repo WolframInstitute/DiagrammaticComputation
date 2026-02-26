@@ -306,3 +306,71 @@ tensor32 = Inactive[ArrayDot][
     Cycles[{{1, 2, 3}}]],
 2]
 roundtripTest[tensor32, "net4x6_dim2_4cycle"]
+
+(* Network roundtrip: tensor -> TensorDiagram -> ToDiagramNetwork -> DiagramTensor -> ActivateTensors *)
+networkRoundtripTest[tensor_, testID_] := With[{
+    res1 = TN`ActivateTensors @ tensor,
+    res2 = TN`ActivateTensors @ DiagramTensor @ ToDiagramNetwork @ TensorDiagram @ tensor,
+    res3 = TN`ActivateTensors @ DiagramTensor @ SimplifyDiagram @ ToDiagramNetwork @ TensorDiagram @ tensor
+},
+    VerificationTest[res1, res2, "TestID" -> testID <> "_net", SameTest -> (Max[Abs[#1 - #2]] < 10^-10 &)];
+    VerificationTest[res1, res3, "TestID" -> testID <> "_snet", SameTest -> (Max[Abs[#1 - #2]] < 10^-10 &)];
+]
+
+(* Test 33-34: Simple ArrayDot through network *)
+tensor33 = Inactive[ArrayDot][RandomReal[1, {2, 2}], RandomReal[1, {2, 2}], 1]
+networkRoundtripTest[tensor33, "net_simple_dot"]
+
+(* Test 35-36: Dot chain of 3 matrices *)
+tensor35 = Inactive[ArrayDot][RandomReal[1, {2, 2}],
+    Inactive[ArrayDot][RandomReal[1, {2, 2}], RandomReal[1, {2, 2}], 1], 1]
+networkRoundtripTest[tensor35, "net_dot_chain3"]
+
+(* Test 37-38: Transpose + Dot *)
+tensor37 = Inactive[ArrayDot][
+    Inactive[Transpose][RandomReal[1, {2, 2}], Cycles[{{1, 2}}]],
+    RandomReal[1, {2, 2}], 1]
+networkRoundtripTest[tensor37, "net_tr_dot"]
+
+(* Test 39-40: Dot(Dot, Dot) - nested compositions creating 4-deep CircleDot *)
+tensor39 = Inactive[ArrayDot][
+    Inactive[ArrayDot][RandomReal[1, {2, 2}], RandomReal[1, {2, 2}], 1],
+    Inactive[ArrayDot][RandomReal[1, {2, 2}], RandomReal[1, {2, 2}], 1], 1]
+networkRoundtripTest[tensor39, "net_dot_dot_dot"]
+
+(* Test 41-42: test30-like: mixed k>1 with Transpose+CircleTimes inside CircleDot *)
+tensor41 = Inactive[ArrayDot][
+    RandomReal[1, {2, 2, 2}],
+    Inactive[ArrayDot][
+        Inactive[Transpose][RandomReal[1, {2, 2}], Cycles[{{1, 2}}]],
+        Inactive[Transpose][RandomReal[1, {2, 2, 2}], Cycles[{{1, 2, 3}}]],
+    1], 2]
+networkRoundtripTest[tensor41, "net_mixed_k2_transpose"]
+
+(* Test 43-44: Dot(TensorProduct, Matrix) *)
+tensor43 = Inactive[ArrayDot][
+    Inactive[TensorProduct][RandomReal[1, {2}], RandomReal[1, {2}]],
+    RandomReal[1, {2, 2}], 1]
+networkRoundtripTest[tensor43, "net_dot_tp_matrix"]
+
+(* Test 45-46: 4-chain of matrix dots *)
+tensor45 = Inactive[ArrayDot][RandomReal[1, {2, 2}],
+    Inactive[ArrayDot][RandomReal[1, {2, 2}],
+        Inactive[ArrayDot][RandomReal[1, {2, 2}], RandomReal[1, {2, 2}], 1], 1], 1]
+networkRoundtripTest[tensor45, "net_4chain"]
+
+(* Test 47-48: TensorProduct of two matrices *)
+tensor47 = Inactive[TensorProduct][RandomReal[1, {2, 2}], RandomReal[1, {2, 2}]]
+networkRoundtripTest[tensor47, "net_tensor_product"]
+
+(* Test 49-50: ArrayDot k=2 with rank-3 tensor *)
+tensor49 = Inactive[ArrayDot][RandomReal[1, {2, 2, 2}], RandomReal[1, {2, 2}], 2]
+networkRoundtripTest[tensor49, "net_dot_k2_rank3"]
+
+(* Test 51-52: Deep nesting: Tr(Dot(Tr.Dot(Matrix, Tr(Matrix)))) *)
+tensor51 = Inactive[ArrayDot][
+    Inactive[Transpose][RandomReal[1, {2, 2}], Cycles[{{1, 2}}]],
+    Inactive[ArrayDot][
+        RandomReal[1, {2, 2}],
+        Inactive[Transpose][RandomReal[1, {2, 2}], Cycles[{{1, 2}}]], 1], 1]
+networkRoundtripTest[tensor51, "net_deep_tr_chain"]
