@@ -33,6 +33,7 @@ PropagationRule
 DiagramCopySplit
 
 
+Begin["`Rules`"]
 
 $LambdaInteractionRules = <|
 	"BetaReduce" :> AnnihilationRule[Subscript["\[Lambda]", _], "\[Application]", {SuperStar[var], body}, {SuperStar[arg], app}],
@@ -67,6 +68,8 @@ $LambdaCroissantBracketPolarizedRules = <|
 	"BracketPropagation" :> PropagationRule[a, {b, c}, # + 1 &, "Shape" -> "Bracket"],
 	"DualBracketPropagation" :> PropagationRule[a, {SuperStar[b], c}, # + 1 &, "Shape" -> "Bracket"]
 |>
+
+End[]
 
 Begin["`Private`"]
 

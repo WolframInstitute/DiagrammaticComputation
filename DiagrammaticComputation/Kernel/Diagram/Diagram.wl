@@ -102,30 +102,32 @@ DiagramQ[___] := False
 (* Constructors *)
 
 $DiagramGrid = _SuperStar | _OverBar | _OverTilde | _CircleTimes | _CirclePlus | _CircleDot | _List
+$NonEmptyOptions = opts : OptionsPattern[] /; ! MatchQ[{opts}, {{} ..}]
 
-Diagram[SuperStar[d_], opts : OptionsPattern[]] := DiagramDual[Diagram[d], opts]
+Diagram[SuperStar[d_], args___, opts : $NonEmptyOptions] := DiagramDual[Diagram[d], opts]
 
-Diagram[OverBar[d_], opts : OptionsPattern[]] := DiagramFlip[Diagram[d], opts]
+Diagram[OverBar[d_], args___, opts : $NonEmptyOptions] := DiagramFlip[Diagram[d], opts]
 
-Diagram[OverTilde[d_], opts : OptionsPattern[]] := DiagramReverse[Diagram[d], opts]
+Diagram[OverTilde[d_], args___, opts : $NonEmptyOptions] := DiagramReverse[Diagram[d], opts]
 
-Diagram[CircleTimes[ds___], opts : OptionsPattern[]] := DiagramProduct[##, opts] & @@ (Diagram /@ {ds})
+Diagram[CircleTimes[ds___], args___, opts : $NonEmptyOptions] := DiagramProduct[##, args] & @@ (Diagram /@ {ds})
 
-Diagram[CirclePlus[ds___], opts : OptionsPattern[]] := DiagramSum[##, opts] & @@ (Diagram /@ {ds})
+Diagram[CirclePlus[ds___], args___, opts : $NonEmptyOptions] := DiagramSum[##, args] & @@ (Diagram /@ {ds})
 
-Diagram[(CircleDot | Composition)[ds___], opts : OptionsPattern[]] := DiagramComposition[##, opts] & @@ (Diagram /@ {ds})
+Diagram[(CircleDot | Composition)[ds___], args___, opts : $NonEmptyOptions] := DiagramComposition[##, args] & @@ (Diagram /@ {ds})
 
-Diagram[HoldPattern[RightComposition[ds___]], opts : OptionsPattern[]] := DiagramComposition[##, opts] & @@ Reverse[Diagram /@ {ds}]
+Diagram[HoldPattern[RightComposition[ds___]], args___, opts : $NonEmptyOptions] := Diagram[DiagramComposition[##, opts] & @@ Reverse[Diagram /@ {ds}], args]
 
-Diagram[Identity, opts : OptionsPattern[]] := EmptyDiagram[opts]
+Diagram[ds : Except[OptionsPattern[], _List], args___, opts : $NonEmptyOptions] := DiagramNetwork[##, args] & @@ (Diagram /@ ds)
 
-Diagram[("Identity" | Identity)[args___], opts : OptionsPattern[]] := IdentityDiagram[args, opts]
+Diagram[Identity, opts : $NonEmptyOptions] := EmptyDiagram[opts]
 
-Diagram["Permutation"[args___], opts : OptionsPattern[]] := PermutationDiagram[args, opts]
+Diagram[("Identity" | Identity)[args___], opts : $NonEmptyOptions] := IdentityDiagram[args, opts]
 
-Diagram[ds : Except[OptionsPattern[], _List], opts : OptionsPattern[]] := DiagramNetwork[##, opts] & @@ (Diagram /@ ds)
+Diagram["Permutation"[args___], opts : $NonEmptyOptions] := PermutationDiagram[args, opts]
 
-Diagram[grid : $DiagramGrid -> _, opts : OptionsPattern[]] := Diagram[grid, opts]
+
+Diagram[grid : $DiagramGrid -> _, args___] := Diagram[grid, args]
 
 
 (* overwrite ports *)
