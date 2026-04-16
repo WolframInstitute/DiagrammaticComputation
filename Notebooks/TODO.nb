@@ -1,0 +1,734 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     31757,        726]
+NotebookOptionsPosition[     28137,        659]
+NotebookOutlinePosition[     28534,        675]
+CellTagsIndexPosition[     28491,        672]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Fixed", "Section",ExpressionUUID->"410ebf73-b888-4328-bec2-9661a35a44ab"],
+
+Cell["\<\
+++ Nik will investigate and fix the port tagging issue when converting \
+between networks and grids to ensure ports match correctly.
+https://amoeba.wolfram.com/index.php/s/a7zip97wrLLZp29
+\
+\>", "Text",ExpressionUUID->"7a0c0750-0ab5-41e8-96c3-9e27e6ea3e30"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell["Bugs", "Section",ExpressionUUID->"3ad0b93f-6f91-43b4-bf6e-623af2e53890"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  FormBox["DiagramHypergraph", TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "399dc143-e9d5-4f0c-b4b5-0270ad4e6bb9"],
+ " doesn\[CloseCurlyQuote]t seem to autoload Hypergraph paclet:"
+}], "Item",ExpressionUUID->"2543a570-dbac-4bcc-a441-4182a9c74042"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"DiagramHypergraph", "[", "%", "]"}]], "Input",
+ CellLabel->"In[16]:=",ExpressionUUID->"c8259b49-5d36-4b7c-aef7-1b02811bdcbf"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "EdgeDelete", "graph", 
+   "\"A graph object is expected at position \\!\\(\\*RowBox[{\\\"1\\\"}]\\) \
+in \\!\\(\\*RowBox[{\\\"EdgeDelete\\\", \\\"[\\\", \
+RowBox[{GraphicsBox[NamespaceBox[\\\"Hypergraph\\\", \
+DynamicModuleBox[List[Set[Typeset`hg, \
+HoldComplete[Hypergraph[List[HoldForm[Labeled[List[], List[List[Skeleton[3]], \
+List[Skeleton[3]]]]], HoldForm[Labeled[List[1], List[List[Skeleton[3]], \
+List[Skeleton[3]]]]], HoldForm[Labeled[List[1, 1], List[List[Skeleton[3]], \
+List[Skeleton[3]]]]], HoldForm[Labeled[List[1, 2], List[List[Skeleton[3]], \
+List[Skeleton[3]]]]], HoldForm[Labeled[List[1, 1, 1], List[List[Skeleton[5]], \
+List[Skeleton[3]]]]], HoldForm[List[]], HoldForm[List[1]], HoldForm[List[1, \
+1]], HoldForm[List[1, 2]], HoldForm[List[1, 1, 1]]], \
+Hyperedges[List[HoldForm[List[]], HoldForm[List[1]]], List[HoldForm[List[1]], \
+HoldForm[List[1, 1]], HoldForm[List[1, 2]]], List[HoldForm[List[1, 1]], \
+HoldForm[List[1, 1, 1]]], List[HoldForm[List[1, 1, 1]]], \
+List[HoldForm[List[1, 2]]]], Rule[EdgeLabels, \
+List[Rule[List[HoldForm[Skeleton[1]], HoldForm[Skeleton[1]]], \
+Underoverscript[HoldForm[Skeleton[1]], 1, 1]], \
+Rule[List[HoldForm[Skeleton[1]], HoldForm[Skeleton[1]]], \
+Underoverscript[HoldForm[Skeleton[1]], 1, 1]], \
+Rule[List[HoldForm[Skeleton[1]], HoldForm[Skeleton[1]], \
+HoldForm[Skeleton[1]]], Underoverscript[HoldForm[Skeleton[1]], 2, 1]], \
+Rule[List[HoldForm[Skeleton[1]]], Underoverscript[HoldForm[Skeleton[1]], 0, \
+1]], Rule[List[HoldForm[Skeleton[1]]], Underoverscript[HoldForm[Skeleton[1]], \
+0, 1]]]], Rule[\\\"EdgeSymmetry\\\", List[Rule[All, \\\"Ordered\\\"]]]]]]], \
+List[Opacity[0.5`], Arrowheads[List[List[Medium, 0.5`]]], \
+AbsoluteThickness[Medium], List[List[Opacity[1], Arrowheads[List[List[Small, \
+0.5`]]], List[Directive[Arrowheads[List[List[0.03`, 0.5`]]], \
+LightDarkSwitched[Opacity[0.7`, Hue[0.63`, 0.7`, 0.5`]], GrayLevel[1]]], \
+List[List[ArrowBox[LineBox[List[List[0.09316100150527973`, \
+-0.0931610015052795`], List[1.1681399518079794`, -0.6095466022432295`]]]], \
+List[]], Opacity[1], List[]]]], List[LightDarkSwitched[Opacity[0.1`, \
+Hue[0.63`, 0.66`, 0.81`]], GrayLevel[1]], \
+List[List[FilledCurveBox[List[BSplineCurve[List[List[1.9978907817752791`, \
+-1.346548185418562`], List[1.958248743150993`, -0.9170028449950229`], \
+List[2.2346502210639123`, -0.6104400016722011`]]], \
+BSplineCurve[List[List[2.2346502210639123`, -0.6104400016722011`], \
+List[1.750811035659168`, -0.7327524492011898`], List[1.1681399518079794`, \
+-0.6095466022432295`]]], BSplineCurve[List[List[1.1681399518079794`, \
+-0.6095466022432295`], List[1.6916211758370097`, -0.91677949513778`], \
+List[1.9978907817752791`, -1.346548185418562`]]]]], \
+List[List[Arrowheads[List[List[0.02`, 0.5`]]], \
+LightDarkSwitched[Opacity[0.7`, Hue[0.63`, 0.7`, 0.5`]], GrayLevel[1]], \
+ArrowBox[BSplineCurveBox[List[List[1.1681399518079794`, \
+-0.6095466022432295`], List[1.750811035659168`, -0.7327524492011898`], \
+List[2.2346502210639123`, -0.6104400016722011`], List[2.2346502210639123`, \
+-0.6104400016722011`]]]]], List[Arrowheads[List[List[0.03386294361119891`, \
+0.5`]]], LightDarkSwitched[Opacity[0.7`, Hue[0.63`, 0.7`, 0.5`]], \
+GrayLevel[1]], ArrowBox[BSplineCurveBox[List[List[2.2346502210639123`, \
+-0.6104400016722011`], List[1.958248743150993`, -0.9170028449950229`], \
+List[1.9978907817752791`, -1.346548185418562`]]]]]]], Opacity[1], List[]]], \
+List[Opacity[1], Arrowheads[List[List[Small, 0.5`]]], \
+List[Directive[Arrowheads[List[List[0.03`, 0.5`]]], \
+LightDarkSwitched[Opacity[0.7`, Hue[0.63`, 0.7`, 0.5`]], GrayLevel[1]]], \
+List[List[ArrowBox[LineBox[List[List[2.2346502210639123`, \
+-0.6104400016722011`], List[3.3110218898454153`, -0.09417408435791441`]]]], \
+List[]], Opacity[1], List[]]]], List[LightDarkSwitched[Opacity[0.1`, \
+Hue[0.63`, 0.66`, 0.81`]], GrayLevel[1]], \
+List[List[DiskBox[List[3.3110218898454153`, -0.09417408435791441`], \
+Offset[12.`]], List[]], Opacity[1], List[]]], \
+List[LightDarkSwitched[Opacity[0.1`, Hue[0.63`, 0.66`, 0.81`]], \
+GrayLevel[1]], List[List[DiskBox[List[1.9978907817752791`, \
+-1.346548185418562`], Offset[12.`]], List[]], Opacity[1], List[]]]], \
+Opacity[1], List[List[Directive[LightDarkSwitched[Hue[0.63`, 0.26`, 0.89`], \
+GrayLevel[1]], EdgeForm[LightDarkSwitched[Opacity[0.95`, Hue[0.63`, 0.7`, \
+0.33`]], GrayLevel[1]]]], DiskBox[List[0.09316100150527955`, \
+-1.532870188429121`], Offset[List[2.`, 2.`]]]], \
+List[Directive[LightDarkSwitched[Hue[0.63`, 0.26`, 0.89`], GrayLevel[1]], \
+EdgeForm[LightDarkSwitched[Opacity[0.95`, Hue[0.63`, 0.7`, 0.33`]], \
+GrayLevel[1]]]], DiskBox[List[0.7739975797754185`, -1.532870188429121`], \
+Offset[List[2.`, 2.`]]]], List[Directive[LightDarkSwitched[Hue[0.63`, 0.26`, \
+0.89`], GrayLevel[1]], EdgeForm[LightDarkSwitched[Opacity[0.95`, Hue[0.63`, \
+0.7`, 0.33`]], GrayLevel[1]]]], DiskBox[List[1.4548341580455575`, \
+-1.532870188429121`], Offset[List[2.`, 2.`]]]], \
+List[Directive[LightDarkSwitched[Hue[0.63`, 0.26`, 0.89`], GrayLevel[1]], \
+EdgeForm[LightDarkSwitched[Opacity[0.95`, Hue[0.63`, 0.7`, 0.33`]], \
+GrayLevel[1]]]], DiskBox[List[2.1356707363156966`, -1.532870188429121`], \
+Offset[List[2.`, 2.`]]]], List[Directive[LightDarkSwitched[Hue[0.63`, 0.26`, \
+0.89`], GrayLevel[1]], EdgeForm[LightDarkSwitched[Opacity[0.95`, Hue[0.63`, \
+0.7`, 0.33`]], GrayLevel[1]]]], DiskBox[List[2.8165073145858357`, \
+-1.532870188429121`], Offset[List[2.`, 2.`]]]], \
+List[Directive[LightDarkSwitched[Hue[0.63`, 0.26`, 0.89`], GrayLevel[1]], \
+EdgeForm[LightDarkSwitched[Opacity[0.95`, Hue[0.63`, 0.7`, 0.33`]], \
+GrayLevel[1]]]], DiskBox[List[0.09316100150527973`, -0.0931610015052795`], \
+Offset[List[2.`, 2.`]]]], List[Directive[LightDarkSwitched[Hue[0.63`, 0.26`, \
+0.89`], GrayLevel[1]], EdgeForm[LightDarkSwitched[Opacity[0.95`, Hue[0.63`, \
+0.7`, 0.33`]], GrayLevel[1]]]], DiskBox[List[1.1681399518079794`, \
+-0.6095466022432295`], Offset[List[2.`, 2.`]]]], \
+List[Directive[LightDarkSwitched[Hue[0.63`, 0.26`, 0.89`], GrayLevel[1]], \
+EdgeForm[LightDarkSwitched[Opacity[0.95`, Hue[0.63`, 0.7`, 0.33`]], \
+GrayLevel[1]]]], DiskBox[List[2.2346502210639123`, -0.6104400016722011`], \
+Offset[List[2.`, 2.`]]]], List[Directive[LightDarkSwitched[Hue[0.63`, 0.26`, \
+0.89`], GrayLevel[1]], EdgeForm[LightDarkSwitched[Opacity[0.95`, Hue[0.63`, \
+0.7`, 0.33`]], GrayLevel[1]]]], DiskBox[List[1.9978907817752791`, \
+-1.346548185418562`], Offset[List[2.`, 2.`]]]], \
+List[Directive[LightDarkSwitched[Hue[0.63`, 0.26`, 0.89`], GrayLevel[1]], \
+EdgeForm[LightDarkSwitched[Opacity[0.95`, Hue[0.63`, 0.7`, 0.33`]], \
+GrayLevel[1]]]], DiskBox[List[3.3110218898454153`, -0.09417408435791441`], \
+Offset[List[2.`, 2.`]]]]], List[]]]], List[Rule[Background, \
+LightDarkSwitched[GrayLevel[1], None]], Rule[BaseStyle, \
+List[Rule[GraphicsHighlightColor, RGBColor[1, 0, 0]], \
+Rule[ComponentwiseContextMenu, List[Rule[\\\"GraphicsBox\\\", \
+List[MenuItem[\\\"Draw\\\", \
+KernelExecute[MathLink`CallFrontEnd[FrontEnd`BoxReferenceReplace[FE`\
+BoxReference[EvaluationNotebook[], \\\"Hypergraph18\\\"], \
+ToBoxes[HypergraphDraw[Hypergraph[List[HoldForm[Labeled[List[], \
+List[List[Skeleton[3]], List[Skeleton[3]]]]], HoldForm[Labeled[List[1], \
+List[List[Skeleton[3]], List[Skeleton[3]]]]], HoldForm[Labeled[List[1, 1], \
+List[List[Skeleton[3]], List[Skeleton[3]]]]], HoldForm[Labeled[List[1, 2], \
+List[List[Skeleton[3]], List[Skeleton[3]]]]], HoldForm[Labeled[List[1, 1, 1], \
+List[List[Skeleton[5]], List[Skeleton[3]]]]], HoldForm[List[]], \
+HoldForm[List[1]], HoldForm[List[1, 1]], HoldForm[List[1, 2]], \
+HoldForm[List[1, 1, 1]]], Hyperedges[List[HoldForm[List[]], \
+HoldForm[List[1]]], List[HoldForm[List[1]], HoldForm[List[1, 1]], \
+HoldForm[List[1, 2]]], List[HoldForm[List[1, 1]], HoldForm[List[1, 1, 1]]], \
+List[HoldForm[List[1, 1, 1]]], List[HoldForm[List[1, 2]]]], Rule[EdgeLabels, \
+List[Rule[List[HoldForm[Skeleton[1]], HoldForm[Skeleton[1]]], \
+Underoverscript[HoldForm[Skeleton[1]], 1, 1]], \
+Rule[List[HoldForm[Skeleton[1]], HoldForm[Skeleton[1]], \
+HoldForm[Skeleton[1]]], Underoverscript[HoldForm[Skeleton[1]], 2, 1]], \
+Rule[List[HoldForm[Skeleton[1]], HoldForm[Skeleton[1]]], \
+Underoverscript[HoldForm[Skeleton[1]], 1, 1]], \
+Rule[List[HoldForm[Skeleton[1]]], Underoverscript[HoldForm[Skeleton[1]], 0, \
+1]], Rule[List[HoldForm[Skeleton[1]]], Underoverscript[HoldForm[Skeleton[1]], \
+0, 1]]]], Rule[\\\"EdgeSymmetry\\\", List[Rule[All, \\\"Ordered\\\"]]]]]]]]], \
+Rule[MenuEvaluator, Automatic]]]]]]]], Rule[FormatType, TraditionalForm], \
+Rule[FrameTicks, None]], Rule[BoxID, \\\"Hypergraph18\\\"]], \\\",\\\", \
+RowBox[{\\\"{\\\", \\\"}\\\"}]}], \\\"]\\\"}]\\).\"", 2, 16, 5, 
+   22965735600874475579, "Local"},
+  "MessageTemplate",
+  BaseStyle->"MSG"]], "Message",
+ CellLabel->
+  "During evaluation of \
+In[16]:=",ExpressionUUID->"39a9d559-5e6c-4411-a954-5278cbae7f43"],
+
+Cell[BoxData[
+ RowBox[{"EdgeDelete", "[", 
+  RowBox[{
+   GraphicsBox[
+    NamespaceBox["Hypergraph",
+     DynamicModuleBox[{Typeset`hg = HoldComplete[
+       WolframInstitute`Hypergraph`Hypergraph[{
+         HoldForm[
+          Labeled[{}, {{3, 1, 1}, {1, 1, 1}}]], 
+         HoldForm[
+          Labeled[{1}, {{3, 2, 1}, {2, 1, 1}}]], 
+         HoldForm[
+          Labeled[{1, 1}, {{2, 2, 1}, {3, 1, 1}}]], 
+         HoldForm[
+          Labeled[{1, 2}, {{2, 2, 2}, {5, 1, 1}}]], 
+         HoldForm[
+          Labeled[{1, 1, 1}, {{1, 1, 2, 2, 1}, {4, 1, 1}}]], 
+         HoldForm[{}], 
+         HoldForm[{1}], 
+         HoldForm[{1, 1}], 
+         HoldForm[{1, 2}], 
+         HoldForm[{1, 1, 1}]}, 
+        WolframInstitute`Hypergraph`Hyperedges[{
+          HoldForm[{}], 
+          HoldForm[{1}]}, {
+          HoldForm[{1}], 
+          HoldForm[{1, 1}], 
+          HoldForm[{1, 2}]}, {
+          HoldForm[{1, 1}], 
+          HoldForm[{1, 1, 1}]}, {
+          HoldForm[{1, 1, 1}]}, {
+          HoldForm[{1, 2}]}], EdgeLabels -> {{
+            HoldForm[
+             Labeled[{}, {{3, 1, 1}, {1, 1, 1}}]], 
+            HoldForm[
+             Labeled[{1}, {{3, 2, 1}, {2, 1, 1}}]]} -> Underoverscript[
+            HoldForm[5], 1, 1], {
+            HoldForm[
+             Labeled[{1}, {{3, 2, 1}, {2, 1, 1}}]], 
+            HoldForm[
+             Labeled[{1, 1}, {{2, 2, 1}, {3, 1, 1}}]], 
+            HoldForm[
+             Labeled[{1, 2}, {{2, 2, 2}, {5, 1, 1}}]]} -> Underoverscript[
+            HoldForm[3], 2, 1], {
+            HoldForm[
+             Labeled[{1, 1}, {{2, 2, 1}, {3, 1, 1}}]], 
+            HoldForm[
+             Labeled[{1, 1, 1}, {{1, 1, 2, 2, 1}, {4, 1, 1}}]]} -> 
+          Underoverscript[
+            HoldForm[1], 1, 1], {
+            HoldForm[
+             Labeled[{1, 1, 1}, {{1, 1, 2, 2, 1}, {4, 1, 1}}]]} -> 
+          Underoverscript[
+            HoldForm[2], 0, 1], {
+            HoldForm[
+             Labeled[{1, 2}, {{2, 2, 2}, {5, 1, 1}}]]} -> Underoverscript[
+            HoldForm[4], 0, 1]}, "EdgeSymmetry" -> {All -> "Ordered"}]]}, 
+      {AbsoluteThickness[Medium], Opacity[0.5], 
+       Arrowheads[{{Medium, 0.5}}], {
+        {Opacity[1], Arrowheads[{{Small, 0.5}}], 
+         {LightDarkSwitched[
+           Opacity[0.7, 
+            Hue[0.63, 0.7, 0.5]], 
+           GrayLevel[1]], 
+          Arrowheads[{{0.03, 0.5}}], {
+           ArrowBox[
+            LineBox[{{0.09316100150527973, -0.0931610015052795}, {
+             1.1681399518079794`, -0.6095466022432295}}]], {}}, 
+          {Opacity[1]}}}, 
+        {LightDarkSwitched[
+          Opacity[0.1, 
+           Hue[0.63, 0.66, 0.81]], 
+          GrayLevel[1]], {
+          FilledCurveBox[{
+           BSplineCurve[{{1.9978907817752791`, -1.346548185418562}, {
+             1.958248743150993, -0.9170028449950229}, {
+             2.2346502210639123`, -0.6104400016722011}}], 
+            BSplineCurve[{{2.2346502210639123`, -0.6104400016722011}, {
+             1.750811035659168, -0.7327524492011898}, {
+             1.1681399518079794`, -0.6095466022432295}}], 
+            BSplineCurve[{{1.1681399518079794`, -0.6095466022432295}, {
+             1.6916211758370097`, -0.91677949513778}, {
+             1.9978907817752791`, -1.346548185418562}}]}], {
+           {LightDarkSwitched[
+             Opacity[0.7, 
+              Hue[0.63, 0.7, 0.5]], 
+             GrayLevel[1]], Arrowheads[{{0.02, 0.5}}], 
+            ArrowBox[
+             BSplineCurveBox[{{1.1681399518079794`, -0.6095466022432295}, {
+              1.750811035659168, -0.7327524492011898}, {
+              2.2346502210639123`, -0.6104400016722011}, {
+              2.2346502210639123`, -0.6104400016722011}}]]}, 
+           {LightDarkSwitched[
+             Opacity[0.7, 
+              Hue[0.63, 0.7, 0.5]], 
+             GrayLevel[1]], Arrowheads[{{0.03386294361119891, 0.5}}], 
+            ArrowBox[
+             BSplineCurveBox[{{2.2346502210639123`, -0.6104400016722011}, {
+              1.958248743150993, -0.9170028449950229}, {
+              1.9978907817752791`, -1.346548185418562}}]]}}}, 
+         {Opacity[1]}}, 
+        {Opacity[1], Arrowheads[{{Small, 0.5}}], 
+         {LightDarkSwitched[
+           Opacity[0.7, 
+            Hue[0.63, 0.7, 0.5]], 
+           GrayLevel[1]], 
+          Arrowheads[{{0.03, 0.5}}], {
+           ArrowBox[
+            LineBox[{{2.2346502210639123`, -0.6104400016722011}, {
+             3.3110218898454153`, -0.09417408435791441}}]], {}}, 
+          {Opacity[1]}}}, 
+        {LightDarkSwitched[
+          Opacity[0.1, 
+           Hue[0.63, 0.66, 0.81]], 
+          GrayLevel[1]], {
+          DiskBox[{3.3110218898454153`, -0.09417408435791441}, Offset[
+           11.999999999999998]], {}}, 
+         {Opacity[1]}}, 
+        {LightDarkSwitched[
+          Opacity[0.1, 
+           Hue[0.63, 0.66, 0.81]], 
+          GrayLevel[1]], {
+          DiskBox[{1.9978907817752791`, -1.346548185418562}, Offset[
+           11.999999999999998]], {}}, 
+         {Opacity[1]}}}, 
+       {Opacity[1], {
+         {LightDarkSwitched[
+           Hue[0.63, 0.26, 0.89], 
+           GrayLevel[1]], EdgeForm[LightDarkSwitched[
+           Opacity[0.95, 
+            Hue[0.63, 0.7, 0.33]], 
+           GrayLevel[1]]], 
+          DiskBox[{0.09316100150527955, -1.532870188429121}, 
+           Offset[{2., 2.}, {0., 0.}]]}, 
+         {LightDarkSwitched[
+           Hue[0.63, 0.26, 0.89], 
+           GrayLevel[1]], EdgeForm[LightDarkSwitched[
+           Opacity[0.95, 
+            Hue[0.63, 0.7, 0.33]], 
+           GrayLevel[1]]], 
+          DiskBox[{0.7739975797754185, -1.532870188429121}, 
+           Offset[{2., 2.}, {0., 0.}]]}, 
+         {LightDarkSwitched[
+           Hue[0.63, 0.26, 0.89], 
+           GrayLevel[1]], EdgeForm[LightDarkSwitched[
+           Opacity[0.95, 
+            Hue[0.63, 0.7, 0.33]], 
+           GrayLevel[1]]], 
+          DiskBox[{1.4548341580455575`, -1.532870188429121}, 
+           Offset[{2., 2.}, {0., 0.}]]}, 
+         {LightDarkSwitched[
+           Hue[0.63, 0.26, 0.89], 
+           GrayLevel[1]], EdgeForm[LightDarkSwitched[
+           Opacity[0.95, 
+            Hue[0.63, 0.7, 0.33]], 
+           GrayLevel[1]]], 
+          DiskBox[{2.1356707363156966`, -1.532870188429121}, 
+           Offset[{2., 2.}, {0., 0.}]]}, 
+         {LightDarkSwitched[
+           Hue[0.63, 0.26, 0.89], 
+           GrayLevel[1]], EdgeForm[LightDarkSwitched[
+           Opacity[0.95, 
+            Hue[0.63, 0.7, 0.33]], 
+           GrayLevel[1]]], 
+          DiskBox[{2.8165073145858357`, -1.532870188429121}, 
+           Offset[{2., 2.}, {0., 0.}]]}, 
+         {LightDarkSwitched[
+           Hue[0.63, 0.26, 0.89], 
+           GrayLevel[1]], EdgeForm[LightDarkSwitched[
+           Opacity[0.95, 
+            Hue[0.63, 0.7, 0.33]], 
+           GrayLevel[1]]], 
+          DiskBox[{0.09316100150527973, -0.0931610015052795}, 
+           Offset[{2., 2.}, {0., 0.}]]}, 
+         {LightDarkSwitched[
+           Hue[0.63, 0.26, 0.89], 
+           GrayLevel[1]], EdgeForm[LightDarkSwitched[
+           Opacity[0.95, 
+            Hue[0.63, 0.7, 0.33]], 
+           GrayLevel[1]]], 
+          DiskBox[{1.1681399518079794`, -0.6095466022432295}, 
+           Offset[{2., 2.}, {0., 0.}]]}, 
+         {LightDarkSwitched[
+           Hue[0.63, 0.26, 0.89], 
+           GrayLevel[1]], EdgeForm[LightDarkSwitched[
+           Opacity[0.95, 
+            Hue[0.63, 0.7, 0.33]], 
+           GrayLevel[1]]], 
+          DiskBox[{2.2346502210639123`, -0.6104400016722011}, 
+           Offset[{2., 2.}, {0., 0.}]]}, 
+         {LightDarkSwitched[
+           Hue[0.63, 0.26, 0.89], 
+           GrayLevel[1]], EdgeForm[LightDarkSwitched[
+           Opacity[0.95, 
+            Hue[0.63, 0.7, 0.33]], 
+           GrayLevel[1]]], 
+          DiskBox[{1.9978907817752791`, -1.346548185418562}, 
+           Offset[{2., 2.}, {0., 0.}]]}, 
+         {LightDarkSwitched[
+           Hue[0.63, 0.26, 0.89], 
+           GrayLevel[1]], EdgeForm[LightDarkSwitched[
+           Opacity[0.95, 
+            Hue[0.63, 0.7, 0.33]], 
+           GrayLevel[1]]], 
+          DiskBox[{3.3110218898454153`, -0.09417408435791441}, 
+           Offset[{2., 2.}, {0., 0.}]]}}, {}}}]],
+    BoxID -> "Hypergraph19",
+    Background->LightDarkSwitched[
+      GrayLevel[1], None],
+    BaseStyle->{
+     GraphicsHighlightColor -> RGBColor[1, 0, 0], 
+      ComponentwiseContextMenu -> {"GraphicsBox" -> {
+          MenuItem["Draw", 
+           KernelExecute[
+            MathLink`CallFrontEnd[
+             FrontEnd`BoxReferenceReplace[
+              FE`BoxReference[
+               EvaluationNotebook[], "Hypergraph19"], 
+              ToBoxes[
+               WolframInstitute`Hypergraph`HypergraphDraw[
+                WolframInstitute`Hypergraph`Hypergraph[{
+                  HoldForm[
+                   Labeled[{}, {{3, 1, 1}, {1, 1, 1}}]], 
+                  HoldForm[
+                   Labeled[{1}, {{3, 2, 1}, {2, 1, 1}}]], 
+                  HoldForm[
+                   Labeled[{1, 1}, {{2, 2, 1}, {3, 1, 1}}]], 
+                  HoldForm[
+                   Labeled[{1, 2}, {{2, 2, 2}, {5, 1, 1}}]], 
+                  HoldForm[
+                   Labeled[{1, 1, 1}, {{1, 1, 2, 2, 1}, {4, 1, 1}}]], 
+                  HoldForm[{}], 
+                  HoldForm[{1}], 
+                  HoldForm[{1, 1}], 
+                  HoldForm[{1, 2}], 
+                  HoldForm[{1, 1, 1}]}, 
+                 WolframInstitute`Hypergraph`Hyperedges[{
+                   HoldForm[{}], 
+                   HoldForm[{1}]}, {
+                   HoldForm[{1}], 
+                   HoldForm[{1, 1}], 
+                   HoldForm[{1, 2}]}, {
+                   HoldForm[{1, 1}], 
+                   HoldForm[{1, 1, 1}]}, {
+                   HoldForm[{1, 1, 1}]}, {
+                   HoldForm[{1, 2}]}], EdgeLabels -> {{
+                    HoldForm[
+                    Labeled[{}, {{3, 1, 1}, {1, 1, 1}}]], 
+                    HoldForm[
+                    Labeled[{1}, {{3, 2, 1}, {2, 1, 1}}]]} -> 
+                   Underoverscript[
+                    HoldForm[5], 1, 1], {
+                    HoldForm[
+                    Labeled[{1}, {{3, 2, 1}, {2, 1, 1}}]], 
+                    HoldForm[
+                    Labeled[{1, 1}, {{2, 2, 1}, {3, 1, 1}}]], 
+                    HoldForm[
+                    Labeled[{1, 2}, {{2, 2, 2}, {5, 1, 1}}]]} -> 
+                   Underoverscript[
+                    HoldForm[3], 2, 1], {
+                    HoldForm[
+                    Labeled[{1, 1}, {{2, 2, 1}, {3, 1, 1}}]], 
+                    HoldForm[
+                    Labeled[{1, 1, 1}, {{1, 1, 2, 2, 1}, {4, 1, 1}}]]} -> 
+                   Underoverscript[
+                    HoldForm[1], 1, 1], {
+                    HoldForm[
+                    Labeled[{1, 1, 1}, {{1, 1, 2, 2, 1}, {4, 1, 1}}]]} -> 
+                   Underoverscript[
+                    HoldForm[2], 0, 1], {
+                    HoldForm[
+                    Labeled[{1, 2}, {{2, 2, 2}, {5, 1, 1}}]]} -> 
+                   Underoverscript[
+                    HoldForm[4], 0, 1]}, 
+                 "EdgeSymmetry" -> {All -> "Ordered"}]]]]]], MenuEvaluator -> 
+           Automatic]}}},
+    FormatType->TraditionalForm,
+    FrameTicks->None], ",", 
+   RowBox[{"{", "}"}]}], "]"}]], "Output",
+ CellLabel->"Out[16]=",ExpressionUUID->"d6ef496d-747d-47d1-9ebd-78bd01a70686"]
+}, Open  ]]
+}, Closed]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Tasks", "Section",ExpressionUUID->"843c2119-1219-41d9-871f-88d0ea336788"],
+
+Cell[CellGroupData[{
+
+Cell["Move internal symbols to internal contexts", "Item",
+ Background->GrayLevel[
+  0.85],ExpressionUUID->"92cfb38b-b060-47a3-a32c-1ac3459e7237"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "In particular, ",
+ Cell[BoxData[
+  FormBox["TensorDiagram", TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "b14a5494-d55e-47e5-8c7c-5a855bc78755"],
+ ", ",
+ Cell[BoxData[
+  FormBox["DiagramTensor", TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "82386b90-9ca8-4747-89ec-d588e40de604"],
+ ", ",
+ Cell[BoxData[
+  FormBox["DiagramHypergraph", TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "e9fd3350-c017-4d32-a028-e2ea53b46a10"]
+}], "Subitem",ExpressionUUID->"9ad80a2b-a3e5-4b80-9b0e-6cd009b6d692"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Names", 
+  "@", "\"\<Wolfram`DiagrammaticComputation`Diagram`*\>\""}]], "Input",
+ CellLabel->"In[22]:=",ExpressionUUID->"1f097577-bc2b-405e-9e07-2cae7348b014"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"\<\"CapDiagram\"\>", ",", "\<\"CopyDiagram\"\>", 
+   ",", "\<\"CupDiagram\"\>", ",", "\<\"Diagram\"\>", 
+   ",", "\<\"DiagramComposition\"\>", ",", "\<\"DiagramDual\"\>", 
+   ",", "\<\"DiagramFlip\"\>", ",", "\<\"DiagramFunction\"\>", 
+   ",", "\<\"DiagramGraphics\"\>", ",", "\<\"DiagramGraphSimplify\"\>", 
+   ",", "\<\"DiagramNetwork\"\>", ",", "\<\"DiagramPermute\"\>", 
+   ",", "\<\"DiagramProduct\"\>", ",", "\<\"DiagramQ\"\>", 
+   ",", "\<\"DiagramReverse\"\>", ",", "\<\"DiagramRightComposition\"\>", 
+   ",", "\<\"DiagramsFreePorts\"\>", ",", "\<\"DiagramsGraph\"\>", 
+   ",", "\<\"DiagramsNetGraph\"\>", ",", "\<\"DiagramSplit\"\>", 
+   ",", "\<\"DiagramsPortGraph\"\>", ",", "\<\"DiagramSum\"\>", 
+   ",", "\<\"DiagramTensor\"\>", ",", "\<\"EmptyDiagram\"\>", 
+   ",", "\<\"IdentityDiagram\"\>", ",", "\<\"MergeDiagram\"\>", 
+   ",", "\<\"PermutationDiagram\"\>", ",", "\<\"SimplifyDiagram\"\>", 
+   ",", "\<\"SingletonDiagram\"\>", ",", "\<\"SpiderDiagram\"\>", 
+   ",", "\<\"TensorDiagram\"\>", ",", "\<\"ToDiagramNetwork\"\>", 
+   ",", "\<\"ZeroDiagram\"\>", ",", "\<\"$DiagramDefaultGraphics\"\>", 
+   ",", "\<\"$DiagramHeadPattern\"\>"}], "}"}]], "Output",
+ CellLabel->"Out[22]=",ExpressionUUID->"4bb99556-1c19-419e-8351-4d2915f2e259"]
+}, Open  ]]
+}, Open  ]]
+}, Closed]],
+
+Cell["\<\
+Collect list of object types that can be converted to/from diagrams\
+\>", "Item",
+ Background->GrayLevel[
+  0.85],ExpressionUUID->"7ebeda51-3992-417d-9eba-60174a78905b"],
+
+Cell[TextData[{
+ "Categorize options of ",
+ Cell[BoxData[
+  FormBox["Diagram", TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "4dd0feb7-d14b-4a36-bcc2-c3ae99251394"],
+ " (visualization, etc.)"
+}], "Item",
+ Background->GrayLevel[
+  0.85],ExpressionUUID->"efeec105-c584-4837-9908-b8768c0a2e3c"],
+
+Cell["Collect examples where wire drawing could be improved", "Item",ExpressionUUID->"932020e4-269b-4735-8e08-b0de5ad51e37"],
+
+Cell["Collect examples where wire smoothing could be improved", "Item",ExpressionUUID->"2016f439-241d-4e3e-88fa-0ffee46721b3"],
+
+Cell["\<\
+Decide which values for VertexShapeFunction should be supported\
+\>", "Item",ExpressionUUID->"62ebab0d-7d61-46be-bbce-f6c6134500aa"],
+
+Cell[TextData[{
+ "Review ",
+ Cell[BoxData[
+  FormBox["SimplifyDiagram", TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "f0d5d515-9da0-42dd-808d-9aa7abbe375b"],
+ ", consider option to ",
+ Cell[BoxData[
+  FormBox["TensorDiagram", TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "2d92826f-8c9c-454d-9130-adc0e80f0e37"],
+ " to avoid introducing identities"
+}], "Item",ExpressionUUID->"2f209212-3b62-40d0-8d4f-00eebd11e4b1"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Features", "Section",ExpressionUUID->"7593f532-58bc-4ec2-920b-0d0bcaa17250"],
+
+Cell[TextData[{
+ "Add ",
+ Cell[BoxData[
+  FormBox["DiagramShape", TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "7eba3dab-e1d9-4140-9115-0d1a64119fe9"],
+ " option (",
+ Cell[BoxData[
+  FormBox["DiagramShapeFunction", TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "11942c42-ef50-4e42-8917-dfde941df7b9"],
+ "?)"
+}], "Item",ExpressionUUID->"8cf574d3-cb05-4643-b62f-8b69d33d85bf"],
+
+Cell[TextData[{
+ "Add ",
+ Cell[BoxData[
+  FormBox["DiagramExtract", TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "f1571acb-74cf-4eb2-8e52-ceb8b0666333"],
+ " function"
+}], "Item",ExpressionUUID->"b27580a1-624d-4d7b-9ad3-d71c2a8ade60"],
+
+Cell[TextData[{
+ "Add ",
+ Cell[BoxData[
+  FormBox["DiagramInsert", TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "c701a4df-a4ee-4104-9ef9-606d1cfd91d7"],
+ " function"
+}], "Item",ExpressionUUID->"b424fe5a-3bb5-4e20-8eed-494d6d1ec855"],
+
+Cell[TextData[{
+ "Add ",
+ Cell[BoxData[
+  FormBox["DiagramDelete", TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "94f355d3-9d98-4973-8519-79a262d5c2d2"],
+ " function"
+}], "Item",ExpressionUUID->"fd5c8b5a-8075-4fe7-969f-84694e88e047"],
+
+Cell[TextData[{
+ "Add ",
+ Cell[BoxData[
+  FormBox["FromDiagram", TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "15cb69f3-c99e-4dff-a6de-555963bda874"],
+ " function"
+}], "Item",ExpressionUUID->"6c6cd15d-4994-4dfa-87c8-7ca612130a55"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Documentation", "Section",ExpressionUUID->"673330f9-de5d-487e-9ce1-d749d52e0a19"],
+
+Cell["Document the list of supported shapes", "Item",ExpressionUUID->"76086c75-ae54-4e4f-ad62-2ffa61b5de9a"],
+
+Cell[TextData[{
+ "Document ",
+ Cell[BoxData[
+  FormBox["DiagramReplaceList", TraditionalForm]],
+  FormatType->TraditionalForm,ExpressionUUID->
+  "bd6cbcc5-74c6-46c8-9e6d-52cb944005cf"],
+ " function"
+}], "Item",ExpressionUUID->"2eeaa0be-6762-491c-9377-2e45339a0c32"],
+
+Cell["Finish introduction tech note", "Item",ExpressionUUID->"391950b2-0cff-466a-a0b0-8e15392cfafa"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Suggestions", "Section",ExpressionUUID->"f79a17cf-a57d-432a-89c8-45dc670b804d"],
+
+Cell["Improve wire smoothing efficiency", "Item",ExpressionUUID->"7b4d2f52-a637-4ebd-9eba-f379376e9ba3"],
+
+Cell["Consider smoothing wires by default", "Item",ExpressionUUID->"f4a949e7-ed85-4571-b205-fdfa5f74074c"],
+
+Cell["Add support for standard quantum gate shapes", "Item",ExpressionUUID->"3409183c-4f8b-417a-92ae-60015d1f67c9"]
+}, Open  ]]
+},
+WindowSize->{1440, 767.25},
+WindowMargins->{{0, Automatic}, {Automatic, 12.75}},
+FrontEndVersion->"15.0 for Linux x86 (64-bit) (March 29, 2026)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"ac84b629-8675-483d-b673-6f8836337b08"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 79, 0, 65, "Section",ExpressionUUID->"410ebf73-b888-4328-bec2-9661a35a44ab"],
+Cell[658, 24, 267, 5, 99, "Text",ExpressionUUID->"7a0c0750-0ab5-41e8-96c3-9e27e6ea3e30"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[962, 34, 78, 0, 51, "Section",ExpressionUUID->"3ad0b93f-6f91-43b4-bf6e-623af2e53890"],
+Cell[CellGroupData[{
+Cell[1065, 38, 302, 6, 30, "Item",ExpressionUUID->"2543a570-dbac-4bcc-a441-4182a9c74042"],
+Cell[CellGroupData[{
+Cell[1392, 48, 149, 2, 29, "Input",ExpressionUUID->"c8259b49-5d36-4b7c-aef7-1b02811bdcbf"],
+Cell[1544, 52, 8847, 135, 61, "Message",ExpressionUUID->"39a9d559-5e6c-4411-a954-5278cbae7f43"],
+Cell[10394, 189, 11282, 279, 70, "Output",ExpressionUUID->"d6ef496d-747d-47d1-9ebd-78bd01a70686"]
+}, Open  ]]
+}, Closed]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[21737, 475, 79, 0, 65, "Section",ExpressionUUID->"843c2119-1219-41d9-871f-88d0ea336788"],
+Cell[CellGroupData[{
+Cell[21841, 479, 146, 2, 46, "Item",ExpressionUUID->"92cfb38b-b060-47a3-a32c-1ac3459e7237"],
+Cell[CellGroupData[{
+Cell[22012, 485, 575, 16, 25, "Subitem",ExpressionUUID->"9ad80a2b-a3e5-4b80-9b0e-6cd009b6d692"],
+Cell[CellGroupData[{
+Cell[22612, 505, 183, 3, 29, "Input",ExpressionUUID->"1f097577-bc2b-405e-9e07-2cae7348b014"],
+Cell[22798, 510, 1291, 20, 93, "Output",ExpressionUUID->"4bb99556-1c19-419e-8351-4d2915f2e259"]
+}, Open  ]]
+}, Open  ]]
+}, Closed]],
+Cell[24128, 535, 179, 4, 42, "Item",ExpressionUUID->"7ebeda51-3992-417d-9eba-60174a78905b"],
+Cell[24310, 541, 313, 9, 46, "Item",ExpressionUUID->"efeec105-c584-4837-9908-b8768c0a2e3c"],
+Cell[24626, 552, 124, 0, 30, "Item",ExpressionUUID->"932020e4-269b-4735-8e08-b0de5ad51e37"],
+Cell[24753, 554, 126, 0, 30, "Item",ExpressionUUID->"2016f439-241d-4e3e-88fa-0ffee46721b3"],
+Cell[24882, 556, 142, 2, 30, "Item",ExpressionUUID->"62ebab0d-7d61-46be-bbce-f6c6134500aa"],
+Cell[25027, 560, 460, 12, 30, "Item",ExpressionUUID->"2f209212-3b62-40d0-8d4f-00eebd11e4b1"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[25524, 577, 82, 0, 65, "Section",ExpressionUUID->"7593f532-58bc-4ec2-920b-0d0bcaa17250"],
+Cell[25609, 579, 419, 12, 30, "Item",ExpressionUUID->"8cf574d3-cb05-4643-b62f-8b69d33d85bf"],
+Cell[26031, 593, 256, 7, 30, "Item",ExpressionUUID->"b27580a1-624d-4d7b-9ad3-d71c2a8ade60"],
+Cell[26290, 602, 255, 7, 30, "Item",ExpressionUUID->"b424fe5a-3bb5-4e20-8eed-494d6d1ec855"],
+Cell[26548, 611, 255, 7, 30, "Item",ExpressionUUID->"fd5c8b5a-8075-4fe7-969f-84694e88e047"],
+Cell[26806, 620, 253, 7, 30, "Item",ExpressionUUID->"6c6cd15d-4994-4dfa-87c8-7ca612130a55"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[27096, 632, 87, 0, 65, "Section",ExpressionUUID->"673330f9-de5d-487e-9ce1-d749d52e0a19"],
+Cell[27186, 634, 108, 0, 30, "Item",ExpressionUUID->"76086c75-ae54-4e4f-ad62-2ffa61b5de9a"],
+Cell[27297, 636, 265, 7, 30, "Item",ExpressionUUID->"2eeaa0be-6762-491c-9377-2e45339a0c32"],
+Cell[27565, 645, 100, 0, 30, "Item",ExpressionUUID->"391950b2-0cff-466a-a0b0-8e15392cfafa"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[27702, 650, 85, 0, 65, "Section",ExpressionUUID->"f79a17cf-a57d-432a-89c8-45dc670b804d"],
+Cell[27790, 652, 104, 0, 30, "Item",ExpressionUUID->"7b4d2f52-a637-4ebd-9eba-f379376e9ba3"],
+Cell[27897, 654, 106, 0, 30, "Item",ExpressionUUID->"f4a949e7-ed85-4571-b205-fdfa5f74074c"],
+Cell[28006, 656, 115, 0, 30, "Item",ExpressionUUID->"3409183c-4f8b-417a-92ae-60015d1f67c9"]
+}, Open  ]]
+}
+]
+*)
+
