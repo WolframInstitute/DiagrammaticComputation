@@ -1,0 +1,1713 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     78192,       1704]
+NotebookOptionsPosition[     73262,       1608]
+NotebookOutlinePosition[     74172,       1635]
+CellTagsIndexPosition[     74129,       1632]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["CommutationRule", "ObjectName",
+ CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
+
+Cell[TextData[{
+ Cell["   ", "ModInfo",ExpressionUUID->"ac844e19-0d71-4def-8168-3b6f28e08538"],
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["CommutationRule"]], 
+     "paclet:WolframDiagrammaticComputation/ref/CommutationRule", 
+     "WolframDiagrammaticComputation Package Symbol"},
+    "PackageLink",
+    BaseStyle->"InlineFormula"], "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      SubscriptBox[
+       StyleBox["x", "TI"], 
+       StyleBox["1", "TR"]], ",", " ", "\[Ellipsis]"}], "}"}], ",", " ", 
+    RowBox[{"{", 
+     RowBox[{
+      SubscriptBox[
+       StyleBox["y", "TI"], 
+       StyleBox["1", "TR"]], ",", " ", "\[Ellipsis]"}], "}"}]}], "]"}]], 
+  "InlineFormula",ExpressionUUID->"f6fc6df2-830d-42cc-91b0-2d4a1608ff44"],
+ " ",
+ "returns a rewrite rule commuting a generic process past a copy node, with \
+input ports ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox[
+    StyleBox["x", "TI"], 
+    StyleBox["i", "TI"]], TraditionalForm]], "InlineFormula",ExpressionUUID->
+  "eb648ad8-eedb-4187-a236-1e0a5b375379"],
+ " and output ports ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox[
+    StyleBox["y", "TI"], 
+    StyleBox["i", "TI"]], TraditionalForm]], "InlineFormula",ExpressionUUID->
+  "f5197f9b-54a1-4a9f-8bb8-100c37f07793"],
+ ".",
+ "\n",
+ Cell["   ", "ModInfo",ExpressionUUID->"ee1d705f-784e-405f-89c8-1933c09ec518"],
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["CommutationRule"]], 
+     "paclet:WolframDiagrammaticComputation/ref/CommutationRule", 
+     "WolframDiagrammaticComputation Package Symbol"},
+    "PackageLink",
+    BaseStyle->"InlineFormula"], "[", 
+   RowBox[{
+    SubscriptBox[
+     StyleBox["expr", "TI"], 
+     StyleBox["1", "TR"]], ",", " ", 
+    SubscriptBox[
+     StyleBox["expr", "TI"], 
+     StyleBox["2", "TR"]], ",", " ", 
+    RowBox[{"{", 
+     RowBox[{
+      SubscriptBox[
+       StyleBox["x", "TI"], 
+       StyleBox["1", "TR"]], ",", " ", "\[Ellipsis]"}], "}"}], ",", " ", 
+    RowBox[{"{", 
+     RowBox[{
+      SubscriptBox[
+       StyleBox["y", "TI"], 
+       StyleBox["1", "TR"]], ",", " ", "\[Ellipsis]"}], "}"}]}], "]"}]], 
+  "InlineFormula",ExpressionUUID->"ca23db51-6b36-467a-86fe-c2da077d54bf"],
+ " ",
+ "commutes processes labelled ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["e", "TI"], 
+    StyleBox["x", "TI"], 
+    StyleBox["p", "TI"], 
+    SubscriptBox[
+     StyleBox["r", "TI"], "1"]}], TraditionalForm]], "InlineFormula",
+  ExpressionUUID->"db6713bd-4c25-4a8a-8541-8f7663a47433"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["e", "TI"], 
+    StyleBox["x", "TI"], 
+    StyleBox["p", "TI"], 
+    SubscriptBox[
+     StyleBox["r", "TI"], "2"]}], TraditionalForm]], "InlineFormula",
+  ExpressionUUID->"3a452c04-d69d-4b72-84bf-fb4dfecb526e"],
+ ".",
+ "\n",
+ Cell["   ", "ModInfo",ExpressionUUID->"15ce30a3-eb65-410b-b2f0-3a262a64561c"],
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["CommutationRule"]], 
+     "paclet:WolframDiagrammaticComputation/ref/CommutationRule", 
+     "WolframDiagrammaticComputation Package Symbol"},
+    "PackageLink",
+    BaseStyle->"InlineFormula"], "[", 
+   RowBox[{
+    StyleBox["d", "TI"], ",", " ", 
+    StyleBox["c", "TI"]}], "]"}]], "InlineFormula",ExpressionUUID->
+  "b354d768-134c-4c7e-a258-db84c8311a46"],
+ " ",
+ "commutes the unary-input diagrams ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox["d", "TI"], TraditionalForm]], "InlineFormula",ExpressionUUID->
+  "ee2a21fa-cb86-40d1-a698-f2b524499ecb"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox["c", "TI"], TraditionalForm]], "InlineFormula",ExpressionUUID->
+  "53cda790-cce0-4b29-b169-f4160ac38a10"],
+ " past each other."
+}], "Usage",ExpressionUUID->"4f7bee26-2059-4fbc-a60a-baf52b6707f6"],
+
+Cell["\<\
+Encodes the interaction-net commutation law: two distinct nodes meeting \
+head-on exchange places, each getting duplicated across the other's legs.\
+\>", "Notes",ExpressionUUID->"3865d01e-ab28-44f3-9784-44c4bb730b7a"],
+
+Cell[TextData[{
+ "A dual port (",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["SuperStar"]], "paclet:ref/SuperStar"},
+   "RefLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "a92dc13d-7f36-4d5b-8a41-4659259bb9c5"],
+ ") marks legs entering from the opposite side."
+}], "Notes",ExpressionUUID->"86b150e3-d666-4d9f-a826-b4163d0f9c17"],
+
+Cell["The following options can be given:", "Notes",ExpressionUUID->"d7ef615e-59ec-4dc3-9887-f44ae25dc060"],
+
+Cell[BoxData[GridBox[{
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "a1c3e15e-e977-4e08-b487-7e489f60146f"], Cell["Option", "TableText",
+     FontWeight->Bold,ExpressionUUID->"9276b966-7c38-4d04-8a18-d608d72795a3"],
+     Cell["Default", "TableText",
+     FontWeight->Bold,ExpressionUUID->"3443606b-62b6-433e-a413-1495d9902432"],
+     Cell["Description", "TableText",
+     FontWeight->Bold,ExpressionUUID->"d7cd7205-aad3-4e37-85cd-15a8f5bc818a"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "ff3b21d7-ca76-4c5c-a841-c05751d3979e"], Cell[TextData[Cell[
+    BoxData["\"\<Bend\>\""], "InlineFormula",ExpressionUUID->
+     "aa279bdd-9dba-4901-af8b-11b4a8670cb9"]], "TableText",ExpressionUUID->
+     "2a147b87-dd39-42d1-bec7-20467aef1bdd"], Cell[TextData[Cell[BoxData[
+     TemplateBox[{
+       Cell[
+        TextData["False"]], "paclet:ref/False"},
+      "RefLink",
+      BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+     "45fc4141-6be4-40b4-b81f-536c9424d309"]], "TableText",ExpressionUUID->
+     "6cd9878c-a374-450c-b014-40d15a891991"], Cell[
+    "bend the second node up with a cup", "TableText",ExpressionUUID->
+     "b5be0852-1fac-4759-af0d-1c6448739753"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "3b616758-21fd-45b9-9f11-fbaa531b8ab8"], Cell[TextData[Cell[
+    BoxData["\"\<Dual\>\""], "InlineFormula",ExpressionUUID->
+     "ae000106-aa00-4cca-b5dc-44d80878197e"]], "TableText",ExpressionUUID->
+     "138933de-9253-4202-beb0-075c6c53932a"], Cell[TextData[Cell[BoxData[
+     TemplateBox[{
+       Cell[
+        TextData["False"]], "paclet:ref/False"},
+      "RefLink",
+      BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+     "5fd976d3-5730-4313-aa50-bc1988c3c9da"]], "TableText",ExpressionUUID->
+     "54096057-b873-4a2d-abf3-d5f0d90ece2e"], Cell[
+    "dualise the second node", "TableText",ExpressionUUID->
+     "0a221e4b-6c36-4a3c-9594-3615f684c106"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "9ff99a9d-5a5e-4ee9-b2b8-c99ff2c8d3a2"], Cell[TextData[Cell[
+    BoxData["\"\<Polarized\>\""], "InlineFormula",ExpressionUUID->
+     "6c76f95a-c56a-4eba-a0b5-0263d50663a0"]], "TableText",ExpressionUUID->
+     "99a5d3dc-bc2d-443a-8953-921637ea2403"], Cell[TextData[Cell[BoxData[
+     TemplateBox[{
+       Cell[
+        TextData["True"]], "paclet:ref/True"},
+      "RefLink",
+      BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+     "4e2e3ef9-ddb2-49b4-9cee-7d7bef58ff7d"]], "TableText",ExpressionUUID->
+     "587f6840-786b-4ee2-ab90-94f3376d65f8"], Cell[
+    "show port direction arrows", "TableText",ExpressionUUID->
+     "b9d81a28-6c83-4139-a65c-0aa6378eebb0"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "5719c885-44ed-4c25-a160-ebdeaafbbcdc"], Cell[TextData[Cell[
+    BoxData["\"\<Floating\>\""], "InlineFormula",ExpressionUUID->
+     "9cc947ea-9655-43d6-aff9-b07f12232ce6"]], "TableText",ExpressionUUID->
+     "548e25b9-786d-418b-9840-cd4381ed7275"], Cell[TextData[Cell[BoxData[
+     TemplateBox[{
+       Cell[
+        TextData["True"]], "paclet:ref/True"},
+      "RefLink",
+      BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+     "69ef661f-85fb-4120-b47b-aab417862a5d"]], "TableText",ExpressionUUID->
+     "aab4a786-f1a8-4bdf-ad34-150bc11d81a0"], Cell[
+    "allow node ports to match in any order", "TableText",ExpressionUUID->
+     "f87a935e-a005-44d2-9132-c5757205e726"]}
+  }]], "3ColumnTableMod",ExpressionUUID->"e9687e46-795c-4077-b6b2-\
+59b1fa30b7da"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "See Also",
+ Cell[BoxData[
+  TemplateBox[{"SeeAlso", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Insert links to any related reference (function) pages.", 
+        "MoreInfoText"], BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "b7caa910-e086-4d39-871e-e78bfb02a4b9"]
+}], "SeeAlsoSection",
+ CellID->1559318232,ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["DiagramRule"]], 
+    "paclet:WolframDiagrammaticComputation/ref/DiagramRule", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "2402b9c9-2b23-414b-a793-5098f9804f87"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["EraserRule"]], 
+    "paclet:WolframDiagrammaticComputation/ref/EraserRule", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "c26613d4-369b-4c3b-a4fc-1165095bd8ac"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["AnnihilationRule"]], 
+    "paclet:WolframDiagrammaticComputation/ref/AnnihilationRule", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "ea5818a0-124d-43b6-b7aa-c2bffe7dddb5"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["PropagationRule"]], 
+    "paclet:WolframDiagrammaticComputation/ref/PropagationRule", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "947b35d9-cc82-41bb-b18f-3f49eeb5f2f1"]
+}], "SeeAlso",ExpressionUUID->"52639924-778b-473d-841b-de695295b791"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Tech Notes",
+ Cell[BoxData[
+  TemplateBox[{"TechNotes", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell["Insert links to related tech notes.", "MoreInfoText"], BaseStyle -> 
+       "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "a0027a76-2f69-4270-bf06-cff364aa09d7"]
+}], "TechNotesSection",
+ CellID->792424486,ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74"],
+
+Cell[CellGroupData[{
+
+Cell["Related Guides", "MoreAboutSection",
+ CellID->38303248,ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5"],
+
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["DiagramRewriting"]], 
+   "paclet:WolframDiagrammaticComputation/guide/DiagramRewriting"},
+  "RefLinkPlain",
+  BaseStyle->{
+   "InlineFormula"}]], \
+"InlineFormula",ExpressionUUID->"6df9cae1-839d-4b2a-99fa-fd7d34a71a92"]], \
+"MoreAbout",ExpressionUUID->"d74a962d-39e5-4742-9398-69ae5b564378"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Related Links",
+ Cell[BoxData[
+  TemplateBox[{"RelatedLinks", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Insert links to any related page, including web pages.", 
+        "MoreInfoText"], BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "88f916ad-99d1-4784-a15f-dfa2faf44f02"]
+}], "RelatedLinksSection",
+ CellID->47113304,ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Examples Initialization",
+ Cell[BoxData[
+  TemplateBox[{"ExamplesInitialization", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Input that is to be evaluated before any examples are run, e.g. \
+Needs[\[Ellipsis]].", "MoreInfoText"], BaseStyle -> "IFrameBox"]], 
+     "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "1ca4d14a-308f-4a68-bbf6-e6901ce2ab4c"]
+}], "ExamplesInitializationSection",
+ CellID->1718580883,ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<Wolfram`DiagrammaticComputation`\>\"", 
+  "]"}]], "ExampleInitialization",
+ CellID->1969679695,ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502"]
+}, Open  ]],
+
+Cell[BoxData[
+ InterpretationBox[GridBox[{
+    {
+     StyleBox[
+      RowBox[{"Basic", " ", "Examples"}], "PrimaryExamplesSection"], 
+     ButtonBox[
+      RowBox[{
+       RowBox[{"More", " ", "Examples"}], " ", "\[RightTriangle]"}],
+      BaseStyle->"ExtendedExamplesLink",
+      ButtonData:>"ExtendedExamples"]}
+   }],
+  $Line = 0; Null]], "PrimaryExamplesSection",
+ CellID->880084151,ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42"],
+
+Cell["Commute two unary processes:", "ExampleText",ExpressionUUID->"c66d6d35-6c92-4f9c-8b19-5bed8c321c68"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"CommutationRule", "[", 
+  RowBox[{
+   RowBox[{"Diagram", "[", 
+    RowBox[{"\"\<A\>\"", ",", " ", "a", ",", " ", "a"}], "]"}], ",", " ", 
+   RowBox[{"Diagram", "[", 
+    RowBox[{"\"\<B\>\"", ",", " ", "a", ",", " ", "a"}], "]"}]}], 
+  "]"}]], "Input",
+ CellLabel->"In[1]:= ",ExpressionUUID->"e41d665d-9c75-4f6b-a5ba-de93d94a4e51"],
+
+Cell[BoxData[
+ RowBox[{
+  GraphicsBox[
+   NamespaceBox["Diagram",
+    DynamicModuleBox[{Typeset`d = HoldComplete[
+      Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+       "DiagramOptions" -> {
+         "PortArrows" -> {{Automatic}, {Automatic}}, 
+          "PortLabels" -> {{Automatic}, {Automatic}}, "ColumnPorts" -> False, 
+          Alignment -> Center, ImageSize -> {Automatic, 192}}, "Expression" :> 
+        Wolfram`DiagrammaticComputation`Diagram`DiagramComposition[
+          
+          Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+           "DiagramOptions" -> {
+             "PortArrows" -> {{Automatic}, {Automatic}}, 
+              "PortLabels" -> {{None}, {Automatic}}}, "Expression" :> "B", 
+            "InputPorts" -> {
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> 
+                Wolfram`DiagrammaticComputation`Port`PortDual[
+                 MTNB$panftjnlqs4l`a], "NeutralQ" -> False, "Tags" -> {}, 
+                "Type" -> SuperStar[\[FormalCapitalT]]|>]}, 
+            "OutputPorts" -> {
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> Pattern[MTNB$panftjnlqs4l`a, 
+                  Blank[]], "NeutralQ" -> False, "Tags" -> {}, 
+                "Type" -> \[FormalCapitalT]|>]}|>], 
+          
+          Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+           "DiagramOptions" -> {"Shape" -> Automatic, "PortArrows" -> {{
+                 Placed[Automatic, {{0., 0.5}, {0., 0.75}}]}, {
+                 Placed[Automatic, {{0., -0.5}, {0., -0.75}}]}}, 
+              "PortLabels" -> {{Automatic}, {Automatic}}, "FloatingPorts" -> 
+              False}, "Expression" :> "A", "InputPorts" -> {
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> Wolfram`DiagrammaticComputation`Port`PortDual[
+                  Pattern[MTNB$panftjnlqs4l`a, 
+                   Blank[]]], "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+                SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> MTNB$panftjnlqs4l`a, "NeutralQ" -> False, 
+                "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}|>]], 
+        "InputPorts" -> {
+          
+          Wolfram`DiagrammaticComputation`Port`Port[<|
+           "Expression" :> Wolfram`DiagrammaticComputation`Port`PortDual[
+              Pattern[MTNB$panftjnlqs4l`a, 
+               Blank[]]], "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+            SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
+          
+          Wolfram`DiagrammaticComputation`Port`Port[<|
+           "Expression" :> Pattern[MTNB$panftjnlqs4l`a, 
+              Blank[]], "NeutralQ" -> False, "Tags" -> {}, 
+            "Type" -> \[FormalCapitalT]|>]}|>]]}, {{
+       {Arrowheads[Small], 
+        {EdgeForm[{LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+          RGBColor[0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+          GrayLevel[0.62]]], 
+         GeometricTransformationBox[
+          RectangleBox[{0.5, 0.5}], {{{1., 0.}, {0., 1.}}, {0., 0.}}]}, {{}, {
+          ArrowBox[{{1., 0.5}, {1., 0.25}}], InsetBox[
+           InterpretationBox[
+            TagBox["a_",
+             HoldForm],
+            
+            Wolfram`DiagrammaticComputation`Port`Port[<|
+             "Expression" :> Pattern[MTNB$panftjnlqs4l`a, 
+                Blank[]], "NeutralQ" -> False, "Tags" -> {}, 
+              "Type" -> \[FormalCapitalT]|>],
+            Tooltip->"\[FormalCapitalT]"], {1., 0.125}]}}, 
+        {LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], InsetBox[
+          TagBox["\<\"B\"\>",
+           HoldForm], {1., 1.}]}}, 
+       {Arrowheads[Small], 
+        {EdgeForm[{LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+          RGBColor[0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+          GrayLevel[0.62]]], 
+         GeometricTransformationBox[
+          RectangleBox[{0.5, 2.5}], {{{1., 0.}, {0., 1.}}, {0., 0.}}]}, {{
+          ArrowBox[{{1., 3.75}, {1., 3.5}}], InsetBox[
+           InterpretationBox[
+            TagBox["a_",
+             HoldForm],
+            
+            Wolfram`DiagrammaticComputation`Port`Port[<|
+             "Expression" :> Pattern[MTNB$panftjnlqs4l`a, 
+                Blank[]], "NeutralQ" -> False, "Tags" -> {}, 
+              "Type" -> \[FormalCapitalT]|>],
+            Tooltip->"\[FormalCapitalT]"], {1., 3.875}]}, {}}, 
+        {LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], InsetBox[
+          TagBox["\<\"A\"\>",
+           HoldForm], {1., 3.}]}}}, 
+      {Arrowheads[{{Small, 0.5}}], {}, 
+       ArrowBox[
+        BSplineCurveBox[{{1., 2.5}, {1., 2.25}, {1., 1.75}, {1., 
+         1.5}}]]}, {}, {}, 
+      {EdgeForm[{LightDarkSwitched[
+        GrayLevel[0], 
+        GrayLevel[1]], Thickness[Tiny]}], FaceForm[None]}}]],
+   BaseStyle->{
+    GraphicsBoxOptions -> {ImageSize -> Medium}, 
+     Wolfram`DiagrammaticComputation`Diagram`Private`GraphicsHighlightColor -> 
+     RGBColor[1, 0, 1]},
+   FormatType->StandardForm,
+   ImageSize->{Automatic, 192}], "\[Rule]", 
+  GraphicsBox[
+   NamespaceBox["Diagram",
+    DynamicModuleBox[{Typeset`d = HoldComplete[
+      Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+       "DiagramOptions" -> {
+         "PortArrows" -> {{Automatic}, {Automatic}}, 
+          "PortLabels" -> {{Automatic}, {Automatic}}, "ColumnPorts" -> False, 
+          Alignment -> Center, ImageSize -> {Automatic, 192}}, "Expression" :> 
+        Wolfram`DiagrammaticComputation`Diagram`DiagramComposition[
+          
+          Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+           "DiagramOptions" -> {"PortArrows" -> {{
+                 Placed[Automatic, {{0., 0.5}, {0., 0.75}}]}, {
+                 Placed[Automatic, {{0., -0.5}, {0., -0.75}}]}}, 
+              "PortLabels" -> {{None}, {Automatic}}, "FloatingPorts" -> 
+              False}, "Expression" :> 
+            Wolfram`DiagrammaticComputation`Diagram`DiagramFlip[
+              
+              Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+               "DiagramOptions" -> {
+                 "PortArrows" -> {{Automatic}, {Automatic}}, 
+                  "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
+                "A", "InputPorts" -> {
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> 
+                    Wolfram`DiagrammaticComputation`Port`PortDual[
+                    MTNB$panftjnlqs4l`a], "NeutralQ" -> False, "Tags" -> {}, 
+                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> MTNB$panftjnlqs4l`a, "NeutralQ" -> False, 
+                    "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}|>]], 
+            "InputPorts" -> {
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> Wolfram`DiagrammaticComputation`Port`PortDual[
+                  1[
+                   
+                   Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`a, "NeutralQ" -> False, 
+                    "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]]], 
+                "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+                SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> MTNB$panftjnlqs4l`a, "NeutralQ" -> False, 
+                "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}|>], 
+          
+          Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+           "DiagramOptions" -> {
+             "PortArrows" -> {{Automatic}, {Automatic}}, 
+              "PortLabels" -> {{Automatic}, {None}}}, "Expression" :> "B", 
+            "InputPorts" -> {
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> 
+                Wolfram`DiagrammaticComputation`Port`PortDual[
+                 MTNB$panftjnlqs4l`a], "NeutralQ" -> False, "Tags" -> {}, 
+                "Type" -> SuperStar[\[FormalCapitalT]]|>]}, 
+            "OutputPorts" -> {
+              Wolfram`DiagrammaticComputation`Port`Port[<|"Expression" :> 1[
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> MTNB$panftjnlqs4l`a, "NeutralQ" -> False, 
+                    "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]], "NeutralQ" -> 
+                False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}|>]], 
+        "InputPorts" -> {
+          
+          Wolfram`DiagrammaticComputation`Port`Port[<|
+           "Expression" :> 
+            Wolfram`DiagrammaticComputation`Port`PortDual[
+             MTNB$panftjnlqs4l`a], "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+            SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
+          Wolfram`DiagrammaticComputation`Port`Port[<|
+           "Expression" :> MTNB$panftjnlqs4l`a, "NeutralQ" -> False, 
+            "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}|>]]}, {{
+       {Arrowheads[Small], 
+        {EdgeForm[{LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+          RGBColor[0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+          GrayLevel[0.62]]], 
+         GeometricTransformationBox[
+          RectangleBox[{0.5, 0.5}], {{{1., 0.}, {0., -1.}}, {0., 
+           2.}}]}, {{}, {ArrowBox[{{1., 0.5}, {1., 0.25}}], InsetBox[
+           InterpretationBox[
+            TagBox["a",
+             HoldForm],
+            
+            Wolfram`DiagrammaticComputation`Port`Port[<|
+             "Expression" :> MTNB$panftjnlqs4l`a, "NeutralQ" -> False, 
+              "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
+            Tooltip->"\[FormalCapitalT]"], {1., 0.125}]}}, 
+        {LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], InsetBox[
+          TagBox["\<\"A\"\>",
+           HoldForm], {1., 1.}]}}, 
+       {Arrowheads[Small], 
+        {EdgeForm[{LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+          RGBColor[0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+          GrayLevel[0.62]]], 
+         GeometricTransformationBox[
+          RectangleBox[{0.5, 2.5}], {{{1., 0.}, {0., 1.}}, {0., 0.}}]}, {{
+          ArrowBox[{{1., 3.75}, {1., 3.5}}], InsetBox[
+           InterpretationBox[
+            TagBox["a",
+             HoldForm],
+            
+            Wolfram`DiagrammaticComputation`Port`Port[<|
+             "Expression" :> MTNB$panftjnlqs4l`a, "NeutralQ" -> False, 
+              "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
+            Tooltip->"\[FormalCapitalT]"], {1., 3.875}]}, {}}, 
+        {LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], InsetBox[
+          TagBox["\<\"B\"\>",
+           HoldForm], {1., 3.}]}}}, 
+      {Arrowheads[{{Small, 0.5}}], {}, 
+       ArrowBox[
+        BSplineCurveBox[{{1., 2.5}, {1., 2.25}, {1., 1.75}, {1., 
+         1.5}}]]}, {}, {}, 
+      {EdgeForm[{LightDarkSwitched[
+        GrayLevel[0], 
+        GrayLevel[1]], Thickness[Tiny]}], FaceForm[None]}}]],
+   BaseStyle->{
+    GraphicsBoxOptions -> {ImageSize -> Medium}, 
+     Wolfram`DiagrammaticComputation`Diagram`Private`GraphicsHighlightColor -> 
+     RGBColor[1, 0, 1]},
+   FormatType->StandardForm,
+   ImageSize->{Automatic, 192}]}]], "Output",
+ CellLabel->"Out[1]= ",ExpressionUUID->"91000863-a3dd-4a3b-b97e-4efc5a91b1f6"]
+}, Open  ]],
+
+Cell["The generic copy-commutation law with mixed-direction legs:", \
+"ExampleText",ExpressionUUID->"11883ea1-0a86-4d0d-b292-605a4ff10e4f"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"CommutationRule", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"x1", ",", " ", 
+     RowBox[{"SuperStar", "[", "x2", "]"}]}], "}"}], ",", " ", 
+   RowBox[{"{", 
+    RowBox[{"y1", ",", " ", "y2"}], "}"}]}], "]"}]], "Input",
+ CellLabel->"In[2]:= ",ExpressionUUID->"8e41788a-083e-4506-aff6-f7834357af96"],
+
+Cell[BoxData[
+ RowBox[{
+  GraphicsBox[
+   NamespaceBox["Diagram",
+    DynamicModuleBox[{Typeset`d = HoldComplete[
+      Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+       "DiagramOptions" -> {
+         "PortArrows" -> {{Automatic, Automatic}, {Automatic, Automatic}}, 
+          "PortLabels" -> {{Automatic, Automatic}, {Automatic, Automatic}}, 
+          "ColumnPorts" -> False, Alignment -> Center, 
+          ImageSize -> {Automatic, 192}}, "Expression" :> 
+        Wolfram`DiagrammaticComputation`Diagram`DiagramComposition[
+          
+          Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+           "DiagramOptions" -> {
+             "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
+              "PortLabels" -> {{None}, {Automatic, Automatic}}, 
+              "FloatingPorts" -> {False, True}, "Shape" -> "RoundedTriangle", 
+              "Width" -> 1, "Height" -> 1, "Style" -> Hue[0.709, 0.445, 1], 
+              "ShowLabel" -> False}, "Expression" :> "Copy", 
+            "InputPorts" -> {
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> Wolfram`DiagrammaticComputation`Port`PortDual[
+                  Blank[]], "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+                SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> Pattern[MTNB$panftjnlqs4l`y1, 
+                  Blank[]], "NeutralQ" -> False, "Tags" -> {}, 
+                "Type" -> \[FormalCapitalT]|>], 
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> Pattern[MTNB$panftjnlqs4l`y2, 
+                  Blank[]], "NeutralQ" -> False, "Tags" -> {}, 
+                "Type" -> \[FormalCapitalT]|>]}|>], 
+          
+          Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+           "DiagramOptions" -> {
+             "Shape" -> "RoundedUpsideDownTriangle", "PortArrows" -> {{
+                 Placed[
+                 Automatic, {{-0.2666666666666667, 0.5}, {-0.2666666666666667,
+                   0.75}}], 
+                 Placed[
+                 Automatic, {{0.2666666666666666, 0.5}, {0.2666666666666666, 
+                  0.75}}]}, {
+                 Placed[Automatic, {{0., -0.5}, {0., -0.75}}]}}, 
+              "PortLabels" -> {{Automatic, Automatic}, {None}}, 
+              "FloatingPorts" -> {True, False}, "Width" -> 1, "Height" -> 1}, 
+            "Expression" :> Pattern[\[FormalF], 
+              Blank[]], "InputPorts" -> {
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> Wolfram`DiagrammaticComputation`Port`PortDual[
+                  Pattern[MTNB$panftjnlqs4l`x1, 
+                   Blank[]]], "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+                SuperStar[\[FormalCapitalT]]|>], 
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> Pattern[MTNB$panftjnlqs4l`x2, 
+                  Blank[]], "NeutralQ" -> False, "Tags" -> {}, 
+                "Type" -> \[FormalCapitalT]|>]}, "OutputPorts" -> {
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> Blank[], "NeutralQ" -> False, "Tags" -> {}, 
+                "Type" -> \[FormalCapitalT]|>]}|>]], "InputPorts" -> {
+          
+          Wolfram`DiagrammaticComputation`Port`Port[<|
+           "Expression" :> Wolfram`DiagrammaticComputation`Port`PortDual[
+              Pattern[MTNB$panftjnlqs4l`x1, 
+               Blank[]]], "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+            SuperStar[\[FormalCapitalT]]|>], 
+          
+          Wolfram`DiagrammaticComputation`Port`Port[<|
+           "Expression" :> Pattern[MTNB$panftjnlqs4l`x2, 
+              Blank[]], "NeutralQ" -> False, "Tags" -> {}, 
+            "Type" -> \[FormalCapitalT]|>]}, "OutputPorts" -> {
+          
+          Wolfram`DiagrammaticComputation`Port`Port[<|
+           "Expression" :> Pattern[MTNB$panftjnlqs4l`y1, 
+              Blank[]], "NeutralQ" -> False, "Tags" -> {}, 
+            "Type" -> \[FormalCapitalT]|>], 
+          
+          Wolfram`DiagrammaticComputation`Port`Port[<|
+           "Expression" :> Pattern[MTNB$panftjnlqs4l`y2, 
+              Blank[]], "NeutralQ" -> False, "Tags" -> {}, 
+            "Type" -> \[FormalCapitalT]|>]}|>]]}, {{
+       {Arrowheads[Small], 
+        {Hue[0.709, 0.445, 1], 
+         GeometricTransformationBox[PolygonBox[CompressedData["
+1:eJxTTMoPSmViYGCQBGIQveq0hub+ab/sGcDggf3B5Mu6Od6/7Bn/vZz8g/eB
+vfk6zdermH7ZP+DKDMwwf2DfPW3Tqm/7ftqnyPxOe1r1wL7xVf/seU0/7f3P
+mbYrXXtgb5cYsWKj/097NsE6Jma3h/asTvJ1b9R/2v/6NePz1mMP7V1OzEhc
+xfPTPvDG2YnXgx/ZJ706HXbz3w978cSlrdNfPLIPsN3P9AnIZ46d9PFR/WP7
+N4tY+j4D1S95V7V/gsgTe+00oTXJGj/tN8/w3NC38AnU3QwOEOqH/asz3zTP
+ZTM7bILKd637a9FWyewA0x+ZuOBfWwOzAwvU/Atcs0ImA/kSUPvvzzY+vwqo
+Pgjqvn9xHw5w5jA7wNyfdP6ytnoEswPMfwe5LDZtsGN28IP6f8+WZataFJgd
+kqDh80wju2vVPyaHu9DwU/QTe+l5i8nh719I+OrOys5esIXJ4ft/ELhvDwD6
+aMdA
+           "]], {{{1., 0.}, {0., 1.}}, {0., 0.}}]}, {{}, {{
+           ArrowBox[{{1.7333333333333334`, 0.5}, {1.7333333333333334`, 
+            0.25}}], InsetBox[
+            InterpretationBox[
+             TagBox["y1_",
+              HoldForm],
+             
+             Wolfram`DiagrammaticComputation`Port`Port[<|
+              "Expression" :> Pattern[MTNB$panftjnlqs4l`y1, 
+                 Blank[]], "NeutralQ" -> False, "Tags" -> {}, 
+               "Type" -> \[FormalCapitalT]|>],
+             Tooltip->"\[FormalCapitalT]"], {1.7333333333333334, 0.125}]}, {
+           ArrowBox[{{2.2666666666666666`, 0.5}, {2.2666666666666666`, 
+            0.25}}], InsetBox[
+            InterpretationBox[
+             TagBox["y2_",
+              HoldForm],
+             
+             Wolfram`DiagrammaticComputation`Port`Port[<|
+              "Expression" :> Pattern[MTNB$panftjnlqs4l`y2, 
+                 Blank[]], "NeutralQ" -> False, "Tags" -> {}, 
+               "Type" -> \[FormalCapitalT]|>],
+             Tooltip->"\[FormalCapitalT]"], {2.2666666666666666, 0.125}]}}}, 
+        {LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], InsetBox["\<\"\\t\\t\\t\"\>", {2., 1.}]}}, 
+       {Arrowheads[Small], 
+        {EdgeForm[{LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+          RGBColor[0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+          GrayLevel[0.62]]], 
+         GeometricTransformationBox[PolygonBox[CompressedData["
+1:eJxTTMoPSmViYGCQBGIQveq0hub+ab/sGcCAx+Fg8mXdHO9f9g0NrLcb/3A7
+WKzTfL2K6Ze9x96lr1U/cTv0TNu06tu+n/bPLRyXuT3kdmh61T97XtNP+5we
+o7jyU9wODokRKzb6/7TfV51gX7+O24HDSb7ujfpPe8eDks1BfdwOHidmJK7i
++Wn/urNHmiub2yH91emwm/9+2O9aPk3uliu3Q5jtfqZPQP7+jNnO7ArcDp8W
+sfR9BqoPd1G8cPsXl4NRmtCaZI2f9ldmvg2ec53LAeJuBijN4vDqzDfNc9nM
+DjD5rnV/LdoqmR0ioPojEhf8a2tgdjgINf8C16yQyUD+Hqj992cbn18FVP8O
+6r5/cR8OcOYwO7hA3Z90/rK2egSzwyGo/w5wWWzaYMfsUAD1/+4ty1a1KDA7
+vIaGz1ON7K5V/5gcfKHhp+An9tLzFpNDKzR8dWZlZy/YwuTABg1/APwCqkA=
+
+           "]], {{{1., 0.}, {0., 1.}}, {0., 0.}}]}, {{{
+           ArrowBox[{{1.7333333333333334`, 3.75}, {1.7333333333333334`, 
+            3.5}}], InsetBox[
+            InterpretationBox[
+             TagBox["x1_",
+              HoldForm],
+             
+             Wolfram`DiagrammaticComputation`Port`Port[<|
+              "Expression" :> Pattern[MTNB$panftjnlqs4l`x1, 
+                 Blank[]], "NeutralQ" -> False, "Tags" -> {}, 
+               "Type" -> \[FormalCapitalT]|>],
+             Tooltip->"\[FormalCapitalT]"], {1.7333333333333334, 3.875}]}, {
+           ArrowBox[{{2.2666666666666666`, 3.5}, {2.2666666666666666`, 
+            3.75}}], InsetBox[
+            InterpretationBox[
+             TagBox["x2_",
+              HoldForm],
+             
+             Wolfram`DiagrammaticComputation`Port`Port[<|
+              "Expression" :> Pattern[MTNB$panftjnlqs4l`x2, 
+                 Blank[]], "NeutralQ" -> False, "Tags" -> {}, 
+               "Type" -> \[FormalCapitalT]|>],
+             
+             Tooltip->
+              "\[FormalCapitalT]"], {2.2666666666666666, 3.875}]}}, {}}, 
+        {LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], InsetBox[
+          TagBox["\[FormalF]_",
+           HoldForm], {2.000000000000001, 3.1592539278670264}]}}}, 
+      {Arrowheads[{{Small, 0.5}}], {}, 
+       ArrowBox[
+        BSplineCurveBox[{{2., 2.5}, {2., 2.25}, {2., 1.75}, {2., 
+         1.5}}]]}, {}, {}, 
+      {EdgeForm[{LightDarkSwitched[
+        GrayLevel[0], 
+        GrayLevel[1]], Thickness[Tiny]}], FaceForm[None]}}]],
+   BaseStyle->{
+    GraphicsBoxOptions -> {ImageSize -> Medium}, 
+     Wolfram`DiagrammaticComputation`Diagram`Private`GraphicsHighlightColor -> 
+     RGBColor[1, 0, 1]},
+   FormatType->StandardForm,
+   ImageSize->{Automatic, 192}], "\[Rule]", 
+  GraphicsBox[
+   NamespaceBox["Diagram",
+    DynamicModuleBox[{Typeset`d = HoldComplete[
+      Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+       "DiagramOptions" -> {
+         "PortArrows" -> {{Automatic, Automatic}, {Automatic, Automatic}}, 
+          "PortLabels" -> {{Automatic, Automatic}, {Automatic, Automatic}}, 
+          "ColumnPorts" -> False, Alignment -> Center, 
+          ImageSize -> {Automatic, 192}}, "Expression" :> 
+        Wolfram`DiagrammaticComputation`Diagram`DiagramComposition[
+          
+          Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+           "DiagramOptions" -> {
+             "PortArrows" -> {{Automatic, Automatic, Automatic, Automatic}, {
+                Automatic, Automatic}}}, "Expression" :> 
+            Wolfram`DiagrammaticComputation`Diagram`DiagramProduct[
+              
+              Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+               "DiagramOptions" -> {"PortArrows" -> {{
+                    Placed[
+                    Automatic, {{-0.2666666666666667, 
+                    0.5}, {-0.2666666666666667, 0.75}}], 
+                    Placed[
+                    Automatic, {{0.2666666666666666, 0.5}, {
+                    0.2666666666666666, 0.75}}]}, {
+                    Placed[Automatic, {{0., -0.5}, {0., -0.75}}]}}, 
+                  "PortLabels" -> {{None, None}, {Automatic}}, 
+                  "FloatingPorts" -> {True, False}, "Width" -> 1, "Height" -> 
+                  1}, "Expression" :> 
+                Wolfram`DiagrammaticComputation`Diagram`DiagramFlip[
+                  
+                  Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+                   "DiagramOptions" -> {
+                    "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
+                    "PortLabels" -> {{None}, {Automatic, Automatic}}, "Shape" -> 
+                    "RoundedTriangle", "Width" -> 1, "Height" -> 1, 
+                    "FloatingPorts" -> {False, True}}, 
+                    "Expression" :> \[FormalF], "InputPorts" -> {
+                    
+                    Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> 
+                    Wolfram`DiagrammaticComputation`Port`PortDual[
+                    Blank[]], "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
+                    
+                    Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`x1, "NeutralQ" -> False,
+                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>], 
+                    
+                    Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> 
+                    Wolfram`DiagrammaticComputation`Port`PortDual[
+                    MTNB$panftjnlqs4l`x2], "NeutralQ" -> False, "Tags" -> {}, 
+                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}|>]], 
+                "InputPorts" -> {
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> 
+                    Wolfram`DiagrammaticComputation`Port`PortDual[
+                    1[
+                    
+                    Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`x1, "NeutralQ" -> False,
+                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]]], 
+                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+                    SuperStar[\[FormalCapitalT]]|>], 
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> 1[
+                    
+                    Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`x2, "NeutralQ" -> False,
+                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]], 
+                    "NeutralQ" -> False, "Tags" -> {}, 
+                    "Type" -> \[FormalCapitalT]|>]}, "OutputPorts" -> {
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> MTNB$panftjnlqs4l`y1, "NeutralQ" -> False, 
+                    "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}|>], 
+              
+              Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+               "DiagramOptions" -> {"PortArrows" -> {{
+                    Placed[
+                    Automatic, {{-0.2666666666666667, 
+                    0.5}, {-0.2666666666666667, 0.75}}], 
+                    Placed[
+                    Automatic, {{0.2666666666666666, 0.5}, {
+                    0.2666666666666666, 0.75}}]}, {
+                    Placed[Automatic, {{0., -0.5}, {0., -0.75}}]}}, 
+                  "PortLabels" -> {{None, None}, {Automatic}}, 
+                  "FloatingPorts" -> {True, False}, "Width" -> 1, "Height" -> 
+                  1}, "Expression" :> 
+                Wolfram`DiagrammaticComputation`Diagram`DiagramFlip[
+                  
+                  Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+                   "DiagramOptions" -> {
+                    "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
+                    "PortLabels" -> {{None}, {Automatic, Automatic}}, 
+                    "Shape" -> "RoundedTriangle", "Width" -> 1, "Height" -> 1,
+                     "FloatingPorts" -> {False, True}}, 
+                    "Expression" :> \[FormalF], "InputPorts" -> {
+                    
+                    Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> 
+                    Wolfram`DiagrammaticComputation`Port`PortDual[
+                    Blank[]], "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
+                    
+                    Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`x1, "NeutralQ" -> False,
+                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>], 
+                    
+                    Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> 
+                    Wolfram`DiagrammaticComputation`Port`PortDual[
+                    MTNB$panftjnlqs4l`x2], "NeutralQ" -> False, "Tags" -> {}, 
+                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}|>]], 
+                "InputPorts" -> {
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> 
+                    Wolfram`DiagrammaticComputation`Port`PortDual[
+                    2[
+                    
+                    Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`x1, "NeutralQ" -> False,
+                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]]], 
+                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+                    SuperStar[\[FormalCapitalT]]|>], 
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> 2[
+                    
+                    Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`x2, "NeutralQ" -> False,
+                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]], 
+                    "NeutralQ" -> False, "Tags" -> {}, 
+                    "Type" -> \[FormalCapitalT]|>]}, "OutputPorts" -> {
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> MTNB$panftjnlqs4l`y2, "NeutralQ" -> False, 
+                    "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}|>]], 
+            "InputPorts" -> {
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> Wolfram`DiagrammaticComputation`Port`PortDual[
+                  1[
+                   
+                   Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`x1, "NeutralQ" -> False,
+                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]]], 
+                "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+                SuperStar[\[FormalCapitalT]]|>], 
+              Wolfram`DiagrammaticComputation`Port`Port[<|"Expression" :> 1[
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> MTNB$panftjnlqs4l`x2, "NeutralQ" -> False, 
+                    "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]], "NeutralQ" -> 
+                False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>], 
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> Wolfram`DiagrammaticComputation`Port`PortDual[
+                  2[
+                   
+                   Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`x1, "NeutralQ" -> False,
+                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]]], 
+                "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+                SuperStar[\[FormalCapitalT]]|>], 
+              Wolfram`DiagrammaticComputation`Port`Port[<|"Expression" :> 2[
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> MTNB$panftjnlqs4l`x2, "NeutralQ" -> False, 
+                    "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]], "NeutralQ" -> 
+                False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}, 
+            "OutputPorts" -> {
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> MTNB$panftjnlqs4l`y1, "NeutralQ" -> False, 
+                "Tags" -> {}, "Type" -> \[FormalCapitalT]|>], 
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> MTNB$panftjnlqs4l`y2, "NeutralQ" -> False, 
+                "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}|>], 
+          
+          Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+           "DiagramOptions" -> {
+             "PortArrows" -> {{Automatic, Automatic, Automatic, Automatic}, {
+                Automatic, Automatic, Automatic, Automatic}}}, "Expression" :> 
+            Wolfram`DiagrammaticComputation`Diagram`DiagramProduct[
+              
+              Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+               "DiagramOptions" -> {
+                 "PortArrows" -> {{Automatic}, {Automatic}}, 
+                  "PortLabels" -> {{Automatic}, {Automatic}}, "Shape" -> 
+                  "Wires"[{{1, 2}}], "ShowLabel" -> False}, "Expression" :> 
+                Interpretation["\[Pi]", 
+                  Cycles[{}]], "InputPorts" -> {
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> 
+                    Wolfram`DiagrammaticComputation`Port`PortDual[
+                    1[
+                    
+                    Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`x1, "NeutralQ" -> False,
+                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]]], 
+                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> 1[
+                    
+                    Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`x1, "NeutralQ" -> False,
+                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]], 
+                    "NeutralQ" -> False, "Tags" -> {}, 
+                    "Type" -> \[FormalCapitalT]|>]}|>], 
+              
+              Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+               "DiagramOptions" -> {
+                 "PortArrows" -> {{Automatic, Automatic}, {
+                    Automatic, Automatic}}, 
+                  "PortLabels" -> {{Automatic, Automatic}, {
+                    Automatic, Automatic}}, "Shape" -> 
+                  "Wires"[{{1, 4}, {2, 3}}], "ShowLabel" -> False}, 
+                "Expression" :> Interpretation["\[Pi]", 
+                  Cycles[{{1, 2}}]], "InputPorts" -> {
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> 
+                    Wolfram`DiagrammaticComputation`Port`PortDual[
+                    2[
+                    
+                    Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`x1, "NeutralQ" -> False,
+                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]]], 
+                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+                    SuperStar[\[FormalCapitalT]]|>], 
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> 1[
+                    
+                    Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`x2, "NeutralQ" -> False,
+                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]], 
+                    "NeutralQ" -> False, "Tags" -> {}, 
+                    "Type" -> \[FormalCapitalT]|>]}, "OutputPorts" -> {
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> 
+                    Wolfram`DiagrammaticComputation`Port`PortDual[
+                    1[
+                    
+                    Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`x2, "NeutralQ" -> False,
+                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]]], 
+                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+                    SuperStar[\[FormalCapitalT]]|>], 
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> 2[
+                    
+                    Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`x1, "NeutralQ" -> False,
+                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]], 
+                    "NeutralQ" -> False, "Tags" -> {}, 
+                    "Type" -> \[FormalCapitalT]|>]}|>], 
+              
+              Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+               "DiagramOptions" -> {
+                 "PortArrows" -> {{Automatic}, {Automatic}}, 
+                  "PortLabels" -> {{Automatic}, {Automatic}}, "Shape" -> 
+                  "Wires"[{{1, 2}}], "ShowLabel" -> False}, "Expression" :> 
+                Interpretation["\[Pi]", 
+                  Cycles[{}]], "InputPorts" -> {
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> 2[
+                    
+                    Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`x2, "NeutralQ" -> False,
+                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]], 
+                    "NeutralQ" -> False, "Tags" -> {}, 
+                    "Type" -> \[FormalCapitalT]|>]}, "OutputPorts" -> {
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> 
+                    Wolfram`DiagrammaticComputation`Port`PortDual[
+                    2[
+                    
+                    Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`x2, "NeutralQ" -> False,
+                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]]], 
+                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+                    SuperStar[\[FormalCapitalT]]|>]}|>]], "InputPorts" -> {
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> Wolfram`DiagrammaticComputation`Port`PortDual[
+                  1[
+                   
+                   Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`x1, "NeutralQ" -> False,
+                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]]], 
+                "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+                SuperStar[\[FormalCapitalT]]|>], 
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> Wolfram`DiagrammaticComputation`Port`PortDual[
+                  2[
+                   
+                   Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`x1, "NeutralQ" -> False,
+                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]]], 
+                "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+                SuperStar[\[FormalCapitalT]]|>], 
+              Wolfram`DiagrammaticComputation`Port`Port[<|"Expression" :> 1[
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> MTNB$panftjnlqs4l`x2, "NeutralQ" -> False, 
+                    "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]], "NeutralQ" -> 
+                False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>], 
+              Wolfram`DiagrammaticComputation`Port`Port[<|"Expression" :> 2[
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> MTNB$panftjnlqs4l`x2, "NeutralQ" -> False, 
+                    "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]], "NeutralQ" -> 
+                False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}, 
+            "OutputPorts" -> {
+              Wolfram`DiagrammaticComputation`Port`Port[<|"Expression" :> 1[
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> MTNB$panftjnlqs4l`x1, "NeutralQ" -> False, 
+                    "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]], "NeutralQ" -> 
+                False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>], 
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> Wolfram`DiagrammaticComputation`Port`PortDual[
+                  1[
+                   
+                   Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`x2, "NeutralQ" -> False,
+                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]]], 
+                "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+                SuperStar[\[FormalCapitalT]]|>], 
+              Wolfram`DiagrammaticComputation`Port`Port[<|"Expression" :> 2[
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> MTNB$panftjnlqs4l`x1, "NeutralQ" -> False, 
+                    "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]], "NeutralQ" -> 
+                False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>], 
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> Wolfram`DiagrammaticComputation`Port`PortDual[
+                  2[
+                   
+                   Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`x2, "NeutralQ" -> False,
+                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]]], 
+                "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+                SuperStar[\[FormalCapitalT]]|>]}|>], 
+          
+          Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+           "DiagramOptions" -> {
+             "PortArrows" -> {{Automatic, Automatic}, {
+                Automatic, Automatic, Automatic, Automatic}}}, "Expression" :> 
+            Wolfram`DiagrammaticComputation`Diagram`DiagramProduct[
+              
+              Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+               "DiagramOptions" -> {
+                 "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
+                  "PortLabels" -> {{Automatic}, {None, None}}, 
+                  "FloatingPorts" -> {False, True}, "Shape" -> 
+                  "RoundedTriangle", "Width" -> 1, "Height" -> 1, "Style" -> 
+                  Hue[0.709, 0.445, 1], "ShowLabel" -> False}, "Expression" :> 
+                "Copy", "InputPorts" -> {
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> 
+                    Wolfram`DiagrammaticComputation`Port`PortDual[
+                    MTNB$panftjnlqs4l`x1], "NeutralQ" -> False, "Tags" -> {}, 
+                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> 1[
+                    Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`x1, "NeutralQ" -> False,
+                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]], 
+                    "NeutralQ" -> False, "Tags" -> {}, 
+                    "Type" -> \[FormalCapitalT]|>], 
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> 2[
+                    
+                    Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`x1, "NeutralQ" -> False,
+                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]], 
+                    "NeutralQ" -> False, "Tags" -> {}, 
+                    "Type" -> \[FormalCapitalT]|>]}|>], 
+              
+              Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+               "DiagramOptions" -> {
+                 "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
+                  "PortLabels" -> {{Automatic}, {None, None}}, 
+                  "FloatingPorts" -> {False, True}, "Shape" -> 
+                  "RoundedTriangle", "Width" -> 1, "Height" -> 1, "Style" -> 
+                  Hue[0.709, 0.445, 1], "ShowLabel" -> False}, "Expression" :> 
+                "Copy", "InputPorts" -> {
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> MTNB$panftjnlqs4l`x2, "NeutralQ" -> False, 
+                    "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}, 
+                "OutputPorts" -> {
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> 
+                    Wolfram`DiagrammaticComputation`Port`PortDual[
+                    1[
+                    
+                    Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`x2, "NeutralQ" -> False,
+                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]]], 
+                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+                    SuperStar[\[FormalCapitalT]]|>], 
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> 
+                    Wolfram`DiagrammaticComputation`Port`PortDual[
+                    2[
+                    
+                    Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`x2, "NeutralQ" -> False,
+                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]]], 
+                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+                    SuperStar[\[FormalCapitalT]]|>]}|>]], "InputPorts" -> {
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> 
+                Wolfram`DiagrammaticComputation`Port`PortDual[
+                 MTNB$panftjnlqs4l`x1], "NeutralQ" -> False, "Tags" -> {}, 
+                "Type" -> SuperStar[\[FormalCapitalT]]|>], 
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> MTNB$panftjnlqs4l`x2, "NeutralQ" -> False, 
+                "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}, "OutputPorts" -> {
+              Wolfram`DiagrammaticComputation`Port`Port[<|"Expression" :> 1[
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> MTNB$panftjnlqs4l`x1, "NeutralQ" -> False, 
+                    "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]], "NeutralQ" -> 
+                False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>], 
+              Wolfram`DiagrammaticComputation`Port`Port[<|"Expression" :> 2[
+                  
+                  Wolfram`DiagrammaticComputation`Port`Port[<|
+                   "Expression" :> MTNB$panftjnlqs4l`x1, "NeutralQ" -> False, 
+                    "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]], "NeutralQ" -> 
+                False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>], 
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> Wolfram`DiagrammaticComputation`Port`PortDual[
+                  1[
+                   
+                   Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`x2, "NeutralQ" -> False,
+                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]]], 
+                "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+                SuperStar[\[FormalCapitalT]]|>], 
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> Wolfram`DiagrammaticComputation`Port`PortDual[
+                  2[
+                   
+                   Wolfram`DiagrammaticComputation`Port`Port[<|
+                    "Expression" :> MTNB$panftjnlqs4l`x2, "NeutralQ" -> False,
+                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]]], 
+                "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+                SuperStar[\[FormalCapitalT]]|>]}|>]], "InputPorts" -> {
+          
+          Wolfram`DiagrammaticComputation`Port`Port[<|
+           "Expression" :> 
+            Wolfram`DiagrammaticComputation`Port`PortDual[
+             MTNB$panftjnlqs4l`x1], "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+            SuperStar[\[FormalCapitalT]]|>], 
+          
+          Wolfram`DiagrammaticComputation`Port`Port[<|
+           "Expression" :> MTNB$panftjnlqs4l`x2, "NeutralQ" -> False, 
+            "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}, "OutputPorts" -> {
+          
+          Wolfram`DiagrammaticComputation`Port`Port[<|
+           "Expression" :> MTNB$panftjnlqs4l`y1, "NeutralQ" -> False, 
+            "Tags" -> {}, "Type" -> \[FormalCapitalT]|>], 
+          
+          Wolfram`DiagrammaticComputation`Port`Port[<|
+           "Expression" :> MTNB$panftjnlqs4l`y2, "NeutralQ" -> False, 
+            "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}|>]]}, {{
+       {Arrowheads[Small], 
+        {EdgeForm[{LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+          RGBColor[0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+          GrayLevel[0.62]]], 
+         GeometricTransformationBox[PolygonBox[CompressedData["
+1:eJxTTMoPSmViYGCQBGIQveq0hub+ab/sGcDggf3B5Mu6Od6/7Bn/vZz8g/eB
+vfk6zdermH7ZP+DKDMwwf2DfPW3Tqm/7ftqnyPxOe1r1wL7xVf/seU0/7f3P
+mbYrXXtgb5cYsWKj/097NsE6Jma3h/asTvJ1b9R/2v/6NePz1mMP7V1OzEhc
+xfPTPvDG2YnXgx/ZJ706HXbz3w978cSlrdNfPLIPsN3P9AnIZ46d9PFR/WP7
+N4tY+j4D1S95V7V/gsgTe+00oTXJGj/tN8/w3NC38AnU3QwOEOqH/asz3zTP
+ZTM7bILKd637a9FWyewA0x+ZuOBfWwOzAwvU/Atcs0ImA/kSUPvvzzY+vwqo
+Pgjqvn9xHw5w5jA7wNyfdP6ytnoEswPMfwe5LDZtsGN28IP6f8+WZataFJgd
+kqDh80wju2vVPyaHu9DwU/QTe+l5i8nh719I+OrOys5esIXJ4ft/ELhvDwD6
+aMdA
+           "]], {{{1., 0.}, {0., -1.}}, {0., 2.}}]}, {{{}, {}}, {
+          ArrowBox[{{2., 0.5}, {2., 0.25}}], InsetBox[
+           InterpretationBox[
+            TagBox["y1",
+             HoldForm],
+            
+            Wolfram`DiagrammaticComputation`Port`Port[<|
+             "Expression" :> MTNB$panftjnlqs4l`y1, "NeutralQ" -> False, 
+              "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
+            Tooltip->"\[FormalCapitalT]"], {2., 0.125}]}}, 
+        {LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], InsetBox[
+          TagBox["\[FormalF]",
+           HoldForm], {1.9999999999999998, 1.1592539278670253}]}}, 
+       {Arrowheads[Small], 
+        {EdgeForm[{LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+          RGBColor[0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+          GrayLevel[0.62]]], 
+         GeometricTransformationBox[PolygonBox[CompressedData["
+1:eJxTTMoPSmViYGCQBGIQ/drI69T6pWIODGDwwP7jjRLu25PEHJj+vZz8g/eB
+fX/2qV2rGsQcHnFlBmaYP7BfunTNqr35Yg5pMr/TnlY9sF/86/Gy5QliDgHn
+TNuVrj2wD5YQy3oTLObAKljHxOz20L7tQrv8b08xh2+/ZnzeeuyhvZhR2gwt
+ZzEHzxtnJ14PfmQ/79em0G32Yg5ciUtbp794ZB91fn3DHiD/Q8ykj4/qH9sf
+1Gh8bANU3/Wuav8EkSf2E2eyvJbwEnOYNMNzQ9/CJ/YQd0tA3f/DvjTtt8jz
+rZIOm6HyrtfrZA7vkXRYAtW/xiCg3vmApANTLMT8DFbfVZ5AvhjU/g9nZ6Zf
+Bar3g7qvQb/iAcs2SYevUPdvev5yqvAaSYd/AhD/JbLKREbMl3Rwgfo/Lio4
+1GmCpEMENHyKp5i6htZLOlyGhp+AevcXlVxJh89/IeErdnaraUCUpMOT/yBw
+3x4A5rm8DQ==
+           "]], {{{1., 0.}, {0., -1.}}, {0., 2.}}]}, {{{}, {}}, {
+          ArrowBox[{{6., 0.5}, {6., 0.25}}], InsetBox[
+           InterpretationBox[
+            TagBox["y2",
+             HoldForm],
+            
+            Wolfram`DiagrammaticComputation`Port`Port[<|
+             "Expression" :> MTNB$panftjnlqs4l`y2, "NeutralQ" -> False, 
+              "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
+            Tooltip->"\[FormalCapitalT]"], {6., 0.125}]}}, 
+        {LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], InsetBox[
+          TagBox["\[FormalF]",
+           HoldForm], {6.000000000000002, 1.1592539278670257}]}}, 
+       {Arrowheads[Small], 
+        {EdgeForm[{LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+          RGBColor[0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+          GrayLevel[0.62]]], 
+         {Haloing[], 
+          BSplineCurveBox[{{1., 3.5}, {1., 3.25}, {1., 2.75}, {1., 
+           2.5}}]}}, {{}, {}}, 
+        {LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], InsetBox["\<\"\\t\\t\\t\"\>", {1., 3.}]}}, 
+       {Arrowheads[Small], 
+        {EdgeForm[{LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+          RGBColor[0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+          GrayLevel[0.62]]], 
+         {Haloing[], 
+          BSplineCurveBox[{{3., 3.5}, {3., 3.25}, {5., 2.75}, {5., 2.5}}], 
+          BSplineCurveBox[{{3., 2.5}, {3., 2.75}, {5., 3.25}, {5., 
+           3.5}}]}}, {{{}, {}}, {{}, {}}}, 
+        {LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], InsetBox["\<\"\\t\\t\\t\"\>", {4., 3.}]}}, 
+       {Arrowheads[Small], 
+        {EdgeForm[{LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+          RGBColor[0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+          GrayLevel[0.62]]], 
+         {Haloing[], 
+          BSplineCurveBox[{{7., 2.5}, {7., 2.75}, {7., 3.25}, {7., 
+           3.5}}]}}, {{}, {}}, 
+        {LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], InsetBox["\<\"\\t\\t\\t\"\>", {7., 3.}]}}, 
+       {Arrowheads[Small], 
+        {Hue[0.709, 0.445, 1], 
+         GeometricTransformationBox[PolygonBox[CompressedData["
+1:eJxTTMoPSmViYGCQBGIQveq0hub+ab/sGcBAyOFQ8mXdHO9f9gfsa4X2Mwo5
+WKzTfL2K6Zd9jKIu11s2IYeeaZtWfdv30743+f6aGH4hh6ZX/bPnNf20P7Xz
+WcARKSEHh8SIFRv9f9orHvJPOKAh5MDhJF/3Rv2nfYJ88b5rFkIOHidmJK7i
++WnPvdvyU5WXkEPGq9NhN//9sFdZs+WDUKyQQ4TtfqZPQP5Cb6O4P/lCDl8W
+sfR9Bqq/GvtefFKTkINJmtCaZI2f9uLGnNcMpwg5QNzNAKXFHF6d+aZ5LpvZ
+QQwq373ur0VbJbPDFaj+qMQF/9oamB0WQM2/xDUrZDKQrwy1/9Fs4/OrgOq5
+oO5jiv9wgDOH2SEe6v7085e11SOYHRSg/jvGZbFpgx2zw0mo/w9tWbaqRYHZ
+oRsaPm80srtW/WNyiIKGn4af2EvPW0wO+6DhazwrO3vBFiaHf/9BQNABAD2i
+ptw=
+           "]], {{{1., 0.}, {0., 1.}}, {0., 0.}}]}, {{
+          ArrowBox[{{2., 5.75}, {2., 5.5}}], InsetBox[
+           InterpretationBox[
+            TagBox["x1",
+             HoldForm],
+            
+            Wolfram`DiagrammaticComputation`Port`Port[<|
+             "Expression" :> MTNB$panftjnlqs4l`x1, "NeutralQ" -> False, 
+              "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
+            Tooltip->"\[FormalCapitalT]"], {2., 5.875}]}, {{}, {}}}, 
+        {LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], InsetBox["\<\"\\t\\t\\t\"\>", {2., 5.}]}}, 
+       {Arrowheads[Small], 
+        {Hue[0.709, 0.445, 1], 
+         GeometricTransformationBox[PolygonBox[CompressedData["
+1:eJxTTMoPSmViYGCQBGIQ/drI69T6pWIODGAg5PDxRgn37UliDgfsa4X2Mwo5
+9GWf2rWqQcwhRlGX6y2bkMPipWtW7c0Xc+hJvr8mhl/IYcGvx8uWJ4g5nNr5
+LOCIlJCDv4RY1ptgMQfFQ/4JBzSEHBovtMv/9hRzSJAv3nfNQshB0Chthpaz
+mAPPbstPVV5CDjN/bQrdZi/moLpmywehWCGH0PPrG/YA+Yu8jeL+5As57NFo
+fGwDVH8t9r34pCYhh56ZLK8lvMQcJIw5rxlOEYK6WwJKizmUpv0Web5V0kEM
+Ku9yvU7m8B5JhytQ/asMAuqdD0g6LICan8rqu8oTyFeC2v/m7Mz0q0D1XFD3
+VetXPGDZJgl3/9rnL6cKrwGqh/ovhlUmMmK+pMMZqP8jo4JDnSZIOvRDwydv
+iqlraL2kQzw0/HjUu7+o5Eo6HIGGr9DZraYBUZIOLNDwBwAl1pTS
+           "]], {{{1., 0.}, {0., 1.}}, {0., 0.}}]}, {{
+          ArrowBox[{{6., 5.5}, {6., 5.75}}], InsetBox[
+           InterpretationBox[
+            TagBox["x2",
+             HoldForm],
+            
+            Wolfram`DiagrammaticComputation`Port`Port[<|
+             "Expression" :> MTNB$panftjnlqs4l`x2, "NeutralQ" -> False, 
+              "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
+            Tooltip->"\[FormalCapitalT]"], {6., 5.875}]}, {{}, {}}}, 
+        {LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], InsetBox["\<\"\\t\\t\\t\"\>", {6., 5.}]}}}, {
+       {Arrowheads[{{Small, 0.5}}], {}, 
+        ArrowBox[
+         BSplineCurveBox[{{1.7333333333333334`, 4.5}, {1.7333333333333334`, 
+          4.25}, {1., 3.75}, {1., 3.5}}]]}, 
+       {Arrowheads[{{Small, 0.5}}], {}, 
+        ArrowBox[
+         BSplineCurveBox[{{2.2666666666666666`, 4.5}, {2.2666666666666666`, 
+          4.25}, {3., 3.75}, {3., 3.5}}]]}, 
+       {Arrowheads[{{Small, 0.5}}], {}, 
+        ArrowBox[
+         BSplineCurveBox[{{5., 3.5}, {5., 3.75}, {5.733333333333333, 4.25}, {
+          5.733333333333333, 4.5}}]]}, 
+       {Arrowheads[{{Small, 0.5}}], {}, 
+        ArrowBox[
+         BSplineCurveBox[{{7., 3.5}, {7., 3.75}, {6.266666666666667, 4.25}, {
+          6.266666666666667, 4.5}}]]}, 
+       {Arrowheads[{{Small, 0.5}}], {}, 
+        ArrowBox[
+         BSplineCurveBox[{{1., 2.5}, {1., 2.25}, {1.7333333333333334`, 
+          1.75}, {1.7333333333333334`, 1.5}}]]}, 
+       {Arrowheads[{{Small, 0.5}}], {}, 
+        ArrowBox[
+         BSplineCurveBox[{{2.2666666666666666`, 1.5}, {2.2666666666666666`, 
+          1.75}, {3., 2.25}, {3., 2.5}}]]}, 
+       {Arrowheads[{{Small, 0.5}}], {}, 
+        ArrowBox[
+         BSplineCurveBox[{{5., 2.5}, {5., 2.25}, {5.733333333333333, 1.75}, {
+          5.733333333333333, 1.5}}]]}, 
+       {Arrowheads[{{Small, 0.5}}], {}, 
+        ArrowBox[
+         BSplineCurveBox[{{6.266666666666667, 1.5}, {6.266666666666667, 
+          1.75}, {7., 2.25}, {7., 2.5}}]]}}, {}, {}, 
+      {EdgeForm[{LightDarkSwitched[
+        GrayLevel[0], 
+        GrayLevel[1]], Thickness[Tiny]}], FaceForm[None]}}]],
+   BaseStyle->{
+    GraphicsBoxOptions -> {ImageSize -> Medium}, 
+     Wolfram`DiagrammaticComputation`Diagram`Private`GraphicsHighlightColor -> 
+     RGBColor[1, 0, 1]},
+   FormatType->StandardForm,
+   ImageSize->{Automatic, 192}]}]], "Output",
+ CellLabel->"Out[2]= ",ExpressionUUID->"2d01cb36-c3f7-401a-9395-79bb621c4209"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Metadata", "MetadataSection",
+ CellID->311882160,ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd"],
+
+Cell[TextData[{
+ "New in: ",
+ Cell["XX", "HistoryData",
+  CellTags->"New",ExpressionUUID->"c83e5b59-d200-4539-afdc-500ed06d3c87"],
+ " | Modified in: ",
+ Cell[" ", "HistoryData",
+  CellTags->"Modified",ExpressionUUID->"d4e38c0c-d937-44f2-85a5-7c0e8fc755ab"],
+ " | Obsolete in: ",
+ Cell[" ", "HistoryData",
+  CellTags->"Obsolete",ExpressionUUID->
+  "4c68d818-8923-4121-80f8-cf0eabb4c0de"]
+}], "History",
+ CellID->341476719,ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Categorization",
+ Cell[BoxData[
+  TemplateBox[{"Metadata", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Metadata such as page URI, context, and type of documentation page.", 
+        "MoreInfoText"], BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "4b3d4122-3cd4-481f-a8ff-5aefbb03e00d"]
+}], "CategorizationSection",
+ CellID->1755438392,ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329"],
+
+Cell["Symbol", "Categorization",
+ CellLabel->"Entity Type",
+ CellID->686433507,ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a"],
+
+Cell["Wolfram/DiagrammaticComputation", "Categorization",
+ CellLabel->"Paclet Name",
+ CellID->605800465,ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec"],
+
+Cell["Wolfram`DiagrammaticComputation`", "Categorization",
+ CellLabel->"Context",
+ CellID->468444828,ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191"],
+
+Cell["Wolfram/DiagrammaticComputation/ref/CommutationRule", "Categorization",
+ CellLabel->"URI",ExpressionUUID->"3d2dd7a3-f5d3-4da8-a539-2164edbb9943"]
+}, Closed]],
+
+Cell["Keywords", "KeywordsSection",
+ CellID->477174294,ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6"],
+
+Cell[CellGroupData[{
+
+Cell["Syntax Templates", "TemplatesSection",
+ CellID->1872225408,ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Additional Function Template",
+ CellID->1562036412,ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Arguments Pattern",
+ CellID->158391909,ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Local Variables",
+ CellID->1360575930,ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Color Equal Signs",
+ CellID->793782254,ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648"]
+}, Closed]]
+}, Open  ]]
+},
+WindowSize->{700, 770},
+WindowMargins->{{5, Automatic}, {Automatic, 0}},
+TaggingRules->{
+ "Metadata" -> {
+   "title" -> "CommutationRule", "context" -> 
+    "Wolfram`DiagrammaticComputation`", 
+    "keywords" -> {"commutation", "exchange", "rule", "interaction net"}, 
+    "summary" -> "", "paclet" -> "Wolfram/DiagrammaticComputation", "uri" -> 
+    "Wolfram/DiagrammaticComputation/ref/CommutationRule", "type" -> "Symbol",
+     "index" -> True, "language" -> "en"}},
+CreateCellID->True,
+CellContext->CellGroup,
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->FrontEnd`FileName[{"Wolfram"}, "FunctionPageStylesExt.nb", 
+  CharacterEncoding -> "UTF-8"],
+ExpressionUUID->"c207366e-060a-406b-a297-9e30e1628f43"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 113, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
+ CellID->1224892054],
+Cell[692, 25, 3730, 118, 70, "Usage",ExpressionUUID->"4f7bee26-2059-4fbc-a60a-baf52b6707f6"],
+Cell[4425, 145, 227, 3, 70, "Notes",ExpressionUUID->"3865d01e-ab28-44f3-9784-44c4bb730b7a"],
+Cell[4655, 150, 368, 10, 70, "Notes",ExpressionUUID->"86b150e3-d666-4d9f-a826-b4163d0f9c17"],
+Cell[5026, 162, 107, 0, 70, "Notes",ExpressionUUID->"d7ef615e-59ec-4dc3-9887-f44ae25dc060"],
+Cell[5136, 164, 3472, 65, 70, "3ColumnTableMod",ExpressionUUID->"e9687e46-795c-4077-b6b2-59b1fa30b7da"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8645, 234, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
+ CellID->1559318232],
+Cell[9107, 249, 1457, 40, 70, "SeeAlso",ExpressionUUID->"52639924-778b-473d-841b-de695295b791"]
+}, Open  ]],
+Cell[10579, 292, 435, 12, 70, "TechNotesSection",ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74",
+ CellID->792424486],
+Cell[CellGroupData[{
+Cell[11039, 308, 116, 1, 70, "MoreAboutSection",ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5",
+ CellID->38303248],
+Cell[11158, 311, 357, 9, 70, "MoreAbout",ExpressionUUID->"d74a962d-39e5-4742-9398-69ae5b564378"]
+}, Open  ]],
+Cell[11530, 323, 471, 13, 70, "RelatedLinksSection",ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea",
+ CellID->47113304],
+Cell[CellGroupData[{
+Cell[12026, 340, 531, 14, 70, "ExamplesInitializationSection",ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5",
+ CellID->1718580883],
+Cell[12560, 356, 192, 3, 70, "ExampleInitialization",ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502",
+ CellID->1969679695]
+}, Open  ]],
+Cell[12767, 362, 442, 12, 70, "PrimaryExamplesSection",ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42",
+ CellID->880084151],
+Cell[13212, 376, 106, 0, 70, "ExampleText",ExpressionUUID->"c66d6d35-6c92-4f9c-8b19-5bed8c321c68"],
+Cell[CellGroupData[{
+Cell[13343, 380, 354, 8, 70, "Input",ExpressionUUID->"e41d665d-9c75-4f6b-a5ba-de93d94a4e51"],
+Cell[13700, 390, 11885, 251, 70, "Output",ExpressionUUID->"91000863-a3dd-4a3b-b97e-4efc5a91b1f6"]
+}, Open  ]],
+Cell[25600, 644, 139, 1, 70, "ExampleText",ExpressionUUID->"11883ea1-0a86-4d0d-b292-605a4ff10e4f"],
+Cell[CellGroupData[{
+Cell[25764, 649, 326, 8, 70, "Input",ExpressionUUID->"8e41788a-083e-4506-aff6-f7834357af96"],
+Cell[26093, 659, 44552, 868, 70, "Output",ExpressionUUID->"2d01cb36-c3f7-401a-9395-79bb621c4209"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[70682, 1532, 110, 1, 70, "MetadataSection",ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd",
+ CellID->311882160],
+Cell[70795, 1535, 476, 12, 70, "History",ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046",
+ CellID->341476719],
+Cell[CellGroupData[{
+Cell[71296, 1551, 485, 13, 70, "CategorizationSection",ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329",
+ CellID->1755438392],
+Cell[71784, 1566, 134, 2, 70, "Categorization",ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a",
+ CellID->686433507],
+Cell[71921, 1570, 159, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec",
+ CellID->605800465],
+Cell[72083, 1574, 156, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
+ CellID->468444828],
+Cell[72242, 1578, 151, 1, 70, "Categorization",ExpressionUUID->"3d2dd7a3-f5d3-4da8-a539-2164edbb9943"]
+}, Closed]],
+Cell[72408, 1582, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
+ CellID->477174294],
+Cell[CellGroupData[{
+Cell[72543, 1587, 120, 1, 70, "TemplatesSection",ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c",
+ CellID->1872225408],
+Cell[72666, 1590, 149, 2, 70, "Template",ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72",
+ CellID->1562036412],
+Cell[72818, 1594, 137, 2, 70, "Template",ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec",
+ CellID->158391909],
+Cell[72958, 1598, 136, 2, 70, "Template",ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9",
+ CellID->1360575930],
+Cell[73097, 1602, 137, 2, 70, "Template",ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648",
+ CellID->793782254]
+}, Closed]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

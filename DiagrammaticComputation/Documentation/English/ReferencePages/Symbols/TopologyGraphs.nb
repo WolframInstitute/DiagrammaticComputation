@@ -1,0 +1,825 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     33120,        816]
+NotebookOptionsPosition[     27921,        717]
+NotebookOutlinePosition[     28834,        744]
+CellTagsIndexPosition[     28791,        741]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["TopologyGraphs", "ObjectName",
+ CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
+
+Cell[TextData[{
+ Cell["   ", "ModInfo",ExpressionUUID->"00ec4772-0a14-49b0-a7fa-2ec917acdbb4"],
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["TopologyGraphs"]], 
+     "paclet:WolframDiagrammaticComputation/ref/TopologyGraphs", 
+     "WolframDiagrammaticComputation Package Symbol"},
+    "PackageLink",
+    BaseStyle->"InlineFormula"], "[", 
+   StyleBox["topologies", "TI"], "]"}]], "InlineFormula",ExpressionUUID->
+  "064b7dc1-12c5-4575-a139-1edbc68dc753"],
+ " ",
+ "converts a FeynArts ",
+ Cell[BoxData[
+ "TopologyList"], "InlineFormula",ExpressionUUID->
+  "9290d139-2777-4421-9def-0f8f763684f3"],
+ " into a list of ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Graph"]], "paclet:ref/Graph"},
+   "RefLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "76344287-2771-4b4a-b13c-cea4715a9a40"],
+ "s.",
+ "\n",
+ Cell["   ", "ModInfo",ExpressionUUID->"2d16e803-f1f4-4779-a4c1-8527413b318f"],
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["TopologyGraphs"]], 
+     "paclet:WolframDiagrammaticComputation/ref/TopologyGraphs", 
+     "WolframDiagrammaticComputation Package Symbol"},
+    "PackageLink",
+    BaseStyle->"InlineFormula"], "[", 
+   RowBox[{
+    StyleBox["topology", "TI"], " ", "->", " ", 
+    StyleBox["insertions", "TI"]}], "]"}]], "InlineFormula",ExpressionUUID->
+  "ae3525a6-e887-44eb-8672-e0e42c0b510e"],
+ " ",
+ "produces one graph per field insertion, with edges labelled by the inserted \
+fields."
+}], "Usage",ExpressionUUID->"d6fc54d5-2203-453b-9f45-063555b9d6ee"],
+
+Cell[TextData[{
+ "The ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox[
+    RowBox[{"t", "o", "p", "o", "l", "o", "g", "i", "e", "s"}], "TI"], 
+   TraditionalForm]], "InlineFormula",ExpressionUUID->
+  "55fb7026-55ad-4d71-9792-cd8c221b386f"],
+ " argument is a ",
+ Cell[BoxData[
+ "FeynArts`TopologyList"], "InlineFormula",ExpressionUUID->
+  "6b3cb4d5-3fab-4bd7-88e6-356ff3248573"],
+ " from ",
+ Cell[BoxData[
+ "FeynArts`CreateTopologies"], "InlineFormula",ExpressionUUID->
+  "dd1ede00-c0da-4ac2-80b8-31d7acc10520"],
+ ", or the result of ",
+ Cell[BoxData[
+ "FeynArts`InsertFields"], "InlineFormula",ExpressionUUID->
+  "ff8c0859-023d-4bdf-a450-f914f0799da5"],
+ " (whose entries are ",
+ Cell[BoxData[
+  RowBox[{
+   StyleBox["topology", "TI"], " ", "->", " ", 
+   StyleBox["insertions", "TI"]}]], "InlineFormula",ExpressionUUID->
+  "1a5fe8ab-9b96-4cbc-887f-5afb2091d325"],
+ " rules)."
+}], "Notes",ExpressionUUID->"5895439e-9e64-4bad-b17b-c350aa79640d"],
+
+Cell[TextData[{
+ "For inserted topologies every combination of fields yields its own graph; \
+edges carry ",
+ Cell[BoxData[
+  RowBox[{"{", 
+   RowBox[{
+    StyleBox["index", "TI"], ",", " ", 
+    StyleBox["field", "TI"]}], "}"}]], "InlineFormula",ExpressionUUID->
+  "6404ac6a-e01b-4302-b98b-4aba3f322426"],
+ " tags that ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FeynmanDiagram"]], 
+    "paclet:WolframDiagrammaticComputation/ref/FeynmanDiagram", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "f88f0230-1111-4fc3-aa4e-d8c9090f2478"],
+ " uses to choose line styles and labels."
+}], "Notes",ExpressionUUID->"662a7587-d1b9-4628-b5bb-9117e9f35572"],
+
+Cell["The following options can be given:", "Notes",ExpressionUUID->"e71ae133-acbd-4f12-9905-969561834bc3"],
+
+Cell[BoxData[GridBox[{
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "d08d3756-86b7-46ea-9933-5ac8cf97f309"], Cell["Option", "TableText",
+     FontWeight->Bold,ExpressionUUID->"1af97332-22bc-4c77-ade8-674c078c7fa0"],
+     Cell["Default", "TableText",
+     FontWeight->Bold,ExpressionUUID->"d0f933a9-6532-4a86-9dab-3d5778f2f0e7"],
+     Cell["Description", "TableText",
+     FontWeight->Bold,ExpressionUUID->"539791bc-7288-4689-9ffe-e18e4fdb59f8"]},
+   {Cell["      ", "ModInfo",ExpressionUUID->
+     "99f8f2f9-783e-4a80-8ac0-724f6c0ee111"], Cell[TextData[Cell[BoxData[
+     TemplateBox[{
+       Cell[
+        TextData["DirectedEdges"]], "paclet:ref/DirectedEdges"},
+      "RefLink",
+      BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+     "93780741-6ffd-4b47-ab31-ec70f2f39d97"]], "TableText",ExpressionUUID->
+     "f7e95c7d-a691-4952-8e48-01889ebc191e"], Cell[TextData[Cell[BoxData[
+     TemplateBox[{
+       Cell[
+        TextData["False"]], "paclet:ref/False"},
+      "RefLink",
+      BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+     "8b5e312e-3eda-4aaa-88cc-dabe0d380700"]], "TableText",ExpressionUUID->
+     "f06c1975-2eb2-43ec-8e87-a9d0dec300d2"], Cell[
+    "use directed edges for internal propagators", "TableText",ExpressionUUID->
+     "f3bceca9-10e2-40bc-9558-347a70602ad2"]}
+  }]], "3ColumnTableMod",ExpressionUUID->"2d67779b-4d27-43bf-9a53-\
+3cfa9d896e1d"],
+
+Cell[TextData[{
+ "Options of ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Graph"]], "paclet:ref/Graph"},
+   "RefLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "3207090b-fde1-4e55-9964-6d1c599db116"],
+ " are also accepted and passed through."
+}], "Notes",ExpressionUUID->"02e42c15-4437-4a3c-81d4-8fa702db5790"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "See Also",
+ Cell[BoxData[
+  TemplateBox[{"SeeAlso", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Insert links to any related reference (function) pages.", 
+        "MoreInfoText"], BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "b7caa910-e086-4d39-871e-e78bfb02a4b9"]
+}], "SeeAlsoSection",
+ CellID->1559318232,ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["TopologyGraph"]], 
+    "paclet:WolframDiagrammaticComputation/ref/TopologyGraph", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "cc6e082b-bfe3-4278-825a-70e47abd0a2c"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FeynmanDiagram"]], 
+    "paclet:WolframDiagrammaticComputation/ref/FeynmanDiagram", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "56a60831-befe-4571-b3c6-4981f9bdfe00"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["TopologyGraphics"]], 
+    "paclet:WolframDiagrammaticComputation/ref/TopologyGraphics", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "080af69e-d624-48b6-8c9e-534d17b71113"]
+}], "SeeAlso",ExpressionUUID->"e5650154-2004-4dcb-893c-a2b87930b748"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Tech Notes",
+ Cell[BoxData[
+  TemplateBox[{"TechNotes", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell["Insert links to related tech notes.", "MoreInfoText"], BaseStyle -> 
+       "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "a0027a76-2f69-4270-bf06-cff364aa09d7"]
+}], "TechNotesSection",
+ CellID->792424486,ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74"],
+
+Cell[CellGroupData[{
+
+Cell["Related Guides", "MoreAboutSection",
+ CellID->38303248,ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5"],
+
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["FeynmanDiagrams"]], 
+   "paclet:WolframDiagrammaticComputation/guide/FeynmanDiagrams"},
+  "RefLinkPlain",
+  BaseStyle->{
+   "InlineFormula"}]], \
+"InlineFormula",ExpressionUUID->"e349f10e-133e-4c32-9731-19c5294ca4ee"]], \
+"MoreAbout",ExpressionUUID->"e5e88daf-0b19-4e87-b68c-7c6d2dbec6cc"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Related Links",
+ Cell[BoxData[
+  TemplateBox[{"RelatedLinks", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Insert links to any related page, including web pages.", 
+        "MoreInfoText"], BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "88f916ad-99d1-4784-a15f-dfa2faf44f02"]
+}], "RelatedLinksSection",
+ CellID->47113304,ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Examples Initialization",
+ Cell[BoxData[
+  TemplateBox[{"ExamplesInitialization", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Input that is to be evaluated before any examples are run, e.g. \
+Needs[\[Ellipsis]].", "MoreInfoText"], BaseStyle -> "IFrameBox"]], 
+     "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "1ca4d14a-308f-4a68-bbf6-e6901ce2ab4c"]
+}], "ExamplesInitializationSection",
+ CellID->1718580883,ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<Wolfram`DiagrammaticComputation`\>\"", 
+  "]"}]], "ExampleInitialization",
+ CellID->1969679695,ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502"]
+}, Open  ]],
+
+Cell[BoxData[
+ InterpretationBox[GridBox[{
+    {
+     StyleBox[
+      RowBox[{"Basic", " ", "Examples"}], "PrimaryExamplesSection"], 
+     ButtonBox[
+      RowBox[{
+       RowBox[{"More", " ", "Examples"}], " ", "\[RightTriangle]"}],
+      BaseStyle->"ExtendedExamplesLink",
+      ButtonData:>"ExtendedExamples"]}
+   }],
+  $Line = 0; Null]], "PrimaryExamplesSection",
+ CellID->880084151,ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42"],
+
+Cell["Load FeynArts:", "ExampleText",ExpressionUUID->"396ff9df-2be1-4130-98ee-80298601d8cf"],
+
+Cell[BoxData[{
+ RowBox[{"Needs", "[", "\"\<FeynArts`\>\"", "]"}], "\n", 
+ RowBox[{
+  RowBox[{"FeynArts`$FAVerbose", " ", "=", " ", "0"}], ";"}]}], "Input",
+ CellLabel->"In[1]:= ",ExpressionUUID->"566aeaae-ef60-4499-a9ef-7dca837ef404"],
+
+Cell["Convert all tree-level 2 \[RightArrow] 2 topologies:", "ExampleText",ExpressionUUID->"88a3bae5-fd0e-464f-ac6d-da7727ecce71"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"TopologyGraphs", "[", 
+  RowBox[{"CreateTopologies", "[", 
+   RowBox[{"0", ",", " ", 
+    RowBox[{"2", " ", "->", " ", "2"}]}], "]"}], "]"}]], "Input",
+ CellLabel->"In[2]:= ",ExpressionUUID->"c0f99778-d262-491c-a71a-547bdcd915b0"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   GraphicsBox[
+    NamespaceBox["NetworkGraphics",
+     DynamicModuleBox[{Typeset`graph = HoldComplete[
+       Graph[{1, 2, 3, 4, 5}, {
+        Null, {{1, 5}, {2, 5}, {5, 3}, {5, 
+         4}}, {{FeynArts`Incoming}, {FeynArts`Incoming}, {
+          FeynArts`Outgoing}, {FeynArts`Outgoing}}}, {
+        VertexCoordinates -> {{0., 15.}, {0., 5.}, {20, 15.}, {20, 5.}, {10., 
+           10.}}}]]}, 
+      TagBox[
+       GraphicsGroupBox[
+        GraphicsComplexBox[{{0., 15.}, {0., 5.}, {20., 15.}, {20., 5.}, {10., 
+         10.}}, {
+          {Hue[0.6, 0.7, 0.7], Opacity[0.7], CapForm["Round"], Arrowheads[0.],
+            ArrowBox[{{1, 5}, {2, 5}, {3, 5}, {4, 5}}, 
+            0.09065281899109792]}, 
+          {Hue[0.6, 0.5, 1.], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+           DiskBox[1, 0.09065281899109792], DiskBox[2, 0.09065281899109792], 
+           DiskBox[3, 0.09065281899109792], DiskBox[4, 0.09065281899109792], 
+           DiskBox[5, 0.09065281899109792]}}]],
+       MouseAppearanceTag["NetworkGraphics"]],
+      AllowKernelInitialization->False]],
+    DefaultBaseStyle->"NetworkGraphics",
+    FormatType->TraditionalForm,
+    FrameTicks->None], ",", 
+   GraphicsBox[
+    NamespaceBox["NetworkGraphics",
+     DynamicModuleBox[{Typeset`graph = HoldComplete[
+       Graph[{1, 2, 3, 4, 5, 6}, {
+        Null, {{1, 5}, {2, 5}, {6, 3}, {6, 4}, {5, 
+         6}}, {{FeynArts`Incoming}, {FeynArts`Incoming}, {
+          FeynArts`Outgoing}, {FeynArts`Outgoing}, {FeynArts`Internal}}}, {
+        VertexCoordinates -> {{0., 15.}, {0., 5.}, {20, 15.}, {20, 5.}, {6., 
+           10.}, {14., 10.}}}]]}, 
+      TagBox[
+       GraphicsGroupBox[
+        GraphicsComplexBox[{{0., 15.}, {0., 5.}, {20., 15.}, {20., 5.}, {6., 
+         10.}, {14., 10.}}, {
+          {Hue[0.6, 0.7, 0.7], Opacity[0.7], CapForm["Round"], Arrowheads[0.],
+            ArrowBox[{{1, 5}, {2, 5}, {3, 6}, {4, 6}, {5, 6}}, 
+            0.09065281899109792]}, 
+          {Hue[0.6, 0.5, 1.], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+           DiskBox[1, 0.09065281899109792], DiskBox[2, 0.09065281899109792], 
+           DiskBox[3, 0.09065281899109792], DiskBox[4, 0.09065281899109792], 
+           DiskBox[5, 0.09065281899109792], 
+           DiskBox[6, 0.09065281899109792]}}]],
+       MouseAppearanceTag["NetworkGraphics"]],
+      AllowKernelInitialization->False]],
+    DefaultBaseStyle->"NetworkGraphics",
+    FormatType->TraditionalForm,
+    FrameTicks->None], ",", 
+   GraphicsBox[
+    NamespaceBox["NetworkGraphics",
+     DynamicModuleBox[{Typeset`graph = HoldComplete[
+       Graph[{1, 2, 3, 4, 5, 6}, {
+        Null, {{1, 5}, {2, 6}, {5, 3}, {6, 4}, {5, 
+         6}}, {{FeynArts`Incoming}, {FeynArts`Incoming}, {
+          FeynArts`Outgoing}, {FeynArts`Outgoing}, {FeynArts`Internal}}}, {
+        VertexCoordinates -> {{0., 15.}, {0., 5.}, {20, 15.}, {20, 5.}, {10., 
+           14.}, {10., 6.}}}]]}, 
+      TagBox[
+       GraphicsGroupBox[
+        GraphicsComplexBox[{{0., 15.}, {0., 5.}, {20., 15.}, {20., 5.}, {10., 
+         14.}, {10., 6.}}, {
+          {Hue[0.6, 0.7, 0.7], Opacity[0.7], CapForm["Round"], Arrowheads[0.],
+            ArrowBox[{{1, 5}, {2, 6}, {3, 5}, {4, 6}, {5, 6}}, 
+            0.09065281899109792]}, 
+          {Hue[0.6, 0.5, 1.], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+           DiskBox[1, 0.09065281899109792], DiskBox[2, 0.09065281899109792], 
+           DiskBox[3, 0.09065281899109792], DiskBox[4, 0.09065281899109792], 
+           DiskBox[5, 0.09065281899109792], 
+           DiskBox[6, 0.09065281899109792]}}]],
+       MouseAppearanceTag["NetworkGraphics"]],
+      AllowKernelInitialization->False]],
+    DefaultBaseStyle->"NetworkGraphics",
+    FormatType->TraditionalForm,
+    FrameTicks->None], ",", 
+   GraphicsBox[
+    NamespaceBox["NetworkGraphics",
+     DynamicModuleBox[{Typeset`graph = HoldComplete[
+       Graph[{1, 2, 3, 4, 5, 6}, {
+        Null, {{1, 5}, {2, 6}, {6, 3}, {5, 4}, {5, 
+         6}}, {{FeynArts`Incoming}, {FeynArts`Incoming}, {
+          FeynArts`Outgoing}, {FeynArts`Outgoing}, {FeynArts`Internal}}}, {
+        VertexCoordinates -> {{0., 15.}, {0., 5.}, {20, 15.}, {20, 5.}, {10., 
+           14.}, {10., 6.}}}]]}, 
+      TagBox[
+       GraphicsGroupBox[
+        GraphicsComplexBox[{{0., 15.}, {0., 5.}, {20., 15.}, {20., 5.}, {10., 
+         14.}, {10., 6.}}, {
+          {Hue[0.6, 0.7, 0.7], Opacity[0.7], CapForm["Round"], Arrowheads[0.],
+            ArrowBox[{{1, 5}, {2, 6}, {3, 6}, {4, 5}, {5, 6}}, 
+            0.09065281899109792]}, 
+          {Hue[0.6, 0.5, 1.], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+           DiskBox[1, 0.09065281899109792], DiskBox[2, 0.09065281899109792], 
+           DiskBox[3, 0.09065281899109792], DiskBox[4, 0.09065281899109792], 
+           DiskBox[5, 0.09065281899109792], 
+           DiskBox[6, 0.09065281899109792]}}]],
+       MouseAppearanceTag["NetworkGraphics"]],
+      AllowKernelInitialization->False]],
+    DefaultBaseStyle->"NetworkGraphics",
+    FormatType->TraditionalForm,
+    FrameTicks->None]}], "}"}]], "Output",
+ CellLabel->"Out[2]= ",ExpressionUUID->"f1e113d3-969b-419a-9b9e-d2ecf1a739d3"]
+}, Open  ]],
+
+Cell["\<\
+Insert Standard Model fields and get one graph per insertion:\
+\>", "ExampleText",ExpressionUUID->"cb7b3851-a37a-4829-ba0f-2ae75755423b"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ins", " ", "=", " ", 
+   RowBox[{"InsertFields", "[", 
+    RowBox[{
+     RowBox[{"CreateTopologies", "[", 
+      RowBox[{"0", ",", " ", 
+       RowBox[{"2", " ", "->", " ", "2"}]}], "]"}], ",", "\n", "  ", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"F", "[", 
+         RowBox[{"2", ",", " ", 
+          RowBox[{"{", "1", "}"}]}], "]"}], ",", " ", 
+        RowBox[{"-", 
+         RowBox[{"F", "[", 
+          RowBox[{"2", ",", " ", 
+           RowBox[{"{", "1", "}"}]}], "]"}]}]}], "}"}], " ", "->", " ", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"F", "[", 
+         RowBox[{"2", ",", " ", 
+          RowBox[{"{", "2", "}"}]}], "]"}], ",", " ", 
+        RowBox[{"-", 
+         RowBox[{"F", "[", 
+          RowBox[{"2", ",", " ", 
+           RowBox[{"{", "2", "}"}]}], "]"}]}]}], "}"}]}], ",", "\n", "  ", 
+     RowBox[{"InsertionLevel", " ", "->", " ", 
+      RowBox[{"{", "Classes", "}"}]}]}], "]"}]}], ";"}], "\n", 
+ RowBox[{"TopologyGraphs", "[", "ins", "]"}]}], "Input",
+ CellLabel->"In[3]:= ",ExpressionUUID->"02fd3e35-7363-41d0-a507-387c0b95511e"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   GraphicsBox[
+    NamespaceBox["NetworkGraphics",
+     DynamicModuleBox[{Typeset`graph = HoldComplete[
+       Graph[{1, 2, 3, 4, 5, 6}, {
+        Null, {{1, 5}, {2, 5}, {6, 3}, {6, 4}, {5, 6}}, {{1, 
+           FeynArts`F[2, {1}]}, {2, -FeynArts`F[2, {1}]}, {
+          3, -FeynArts`F[2, {2}]}, {4, 
+           FeynArts`F[2, {2}]}, {5, FeynArts`S}}}, {
+        VertexCoordinates -> {{0., 15.}, {0., 5.}, {20, 15.}, {20, 5.}, {6., 
+           10.}, {14., 10.}}}]]}, 
+      TagBox[
+       GraphicsGroupBox[
+        GraphicsComplexBox[{{0., 15.}, {0., 5.}, {20., 15.}, {20., 5.}, {6., 
+         10.}, {14., 10.}}, {
+          {Hue[0.6, 0.7, 0.7], Opacity[0.7], CapForm["Round"], Arrowheads[0.],
+            ArrowBox[{{1, 5}, {2, 5}, {3, 6}, {4, 6}, {5, 6}}, 
+            0.09065281899109792]}, 
+          {Hue[0.6, 0.5, 1.], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+           DiskBox[1, 0.09065281899109792], DiskBox[2, 0.09065281899109792], 
+           DiskBox[3, 0.09065281899109792], DiskBox[4, 0.09065281899109792], 
+           DiskBox[5, 0.09065281899109792], 
+           DiskBox[6, 0.09065281899109792]}}]],
+       MouseAppearanceTag["NetworkGraphics"]],
+      AllowKernelInitialization->False]],
+    DefaultBaseStyle->"NetworkGraphics",
+    FormatType->TraditionalForm,
+    FrameTicks->None], ",", 
+   GraphicsBox[
+    NamespaceBox["NetworkGraphics",
+     DynamicModuleBox[{Typeset`graph = HoldComplete[
+       Graph[{1, 2, 3, 4, 5, 6}, {
+        Null, {{1, 5}, {2, 5}, {6, 3}, {6, 4}, {5, 6}}, {{1, 
+           FeynArts`F[2, {1}]}, {2, -FeynArts`F[2, {1}]}, {
+          3, -FeynArts`F[2, {2}]}, {4, 
+           FeynArts`F[2, {2}]}, {5, 
+           FeynArts`S[1]}}}, {
+        VertexCoordinates -> {{0., 15.}, {0., 5.}, {20, 15.}, {20, 5.}, {6., 
+           10.}, {14., 10.}}}]]}, 
+      TagBox[
+       GraphicsGroupBox[
+        GraphicsComplexBox[{{0., 15.}, {0., 5.}, {20., 15.}, {20., 5.}, {6., 
+         10.}, {14., 10.}}, {
+          {Hue[0.6, 0.7, 0.7], Opacity[0.7], CapForm["Round"], Arrowheads[0.],
+            ArrowBox[{{1, 5}, {2, 5}, {3, 6}, {4, 6}, {5, 6}}, 
+            0.09065281899109792]}, 
+          {Hue[0.6, 0.5, 1.], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+           DiskBox[1, 0.09065281899109792], DiskBox[2, 0.09065281899109792], 
+           DiskBox[3, 0.09065281899109792], DiskBox[4, 0.09065281899109792], 
+           DiskBox[5, 0.09065281899109792], 
+           DiskBox[6, 0.09065281899109792]}}]],
+       MouseAppearanceTag["NetworkGraphics"]],
+      AllowKernelInitialization->False]],
+    DefaultBaseStyle->"NetworkGraphics",
+    FormatType->TraditionalForm,
+    FrameTicks->None], ",", 
+   GraphicsBox[
+    NamespaceBox["NetworkGraphics",
+     DynamicModuleBox[{Typeset`graph = HoldComplete[
+       Graph[{1, 2, 3, 4, 5, 6}, {
+        Null, {{1, 5}, {2, 5}, {6, 3}, {6, 4}, {5, 6}}, {{1, 
+           FeynArts`F[2, {1}]}, {2, -FeynArts`F[2, {1}]}, {
+          3, -FeynArts`F[2, {2}]}, {4, 
+           FeynArts`F[2, {2}]}, {5, 
+           FeynArts`V[1]}}}, {
+        VertexCoordinates -> {{0., 15.}, {0., 5.}, {20, 15.}, {20, 5.}, {6., 
+           10.}, {14., 10.}}}]]}, 
+      TagBox[
+       GraphicsGroupBox[
+        GraphicsComplexBox[{{0., 15.}, {0., 5.}, {20., 15.}, {20., 5.}, {6., 
+         10.}, {14., 10.}}, {
+          {Hue[0.6, 0.7, 0.7], Opacity[0.7], CapForm["Round"], Arrowheads[0.],
+            ArrowBox[{{1, 5}, {2, 5}, {3, 6}, {4, 6}, {5, 6}}, 
+            0.09065281899109792]}, 
+          {Hue[0.6, 0.5, 1.], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+           DiskBox[1, 0.09065281899109792], DiskBox[2, 0.09065281899109792], 
+           DiskBox[3, 0.09065281899109792], DiskBox[4, 0.09065281899109792], 
+           DiskBox[5, 0.09065281899109792], 
+           DiskBox[6, 0.09065281899109792]}}]],
+       MouseAppearanceTag["NetworkGraphics"]],
+      AllowKernelInitialization->False]],
+    DefaultBaseStyle->"NetworkGraphics",
+    FormatType->TraditionalForm,
+    FrameTicks->None], ",", 
+   GraphicsBox[
+    NamespaceBox["NetworkGraphics",
+     DynamicModuleBox[{Typeset`graph = HoldComplete[
+       Graph[{1, 2, 3, 4, 5, 6}, {
+        Null, {{1, 5}, {2, 5}, {6, 3}, {6, 4}, {5, 6}}, {{1, 
+           FeynArts`F[2, {1}]}, {2, -FeynArts`F[2, {1}]}, {
+          3, -FeynArts`F[2, {2}]}, {4, 
+           FeynArts`F[2, {2}]}, {5, 
+           FeynArts`S[2]}}}, {
+        VertexCoordinates -> {{0., 15.}, {0., 5.}, {20, 15.}, {20, 5.}, {6., 
+           10.}, {14., 10.}}}]]}, 
+      TagBox[
+       GraphicsGroupBox[
+        GraphicsComplexBox[{{0., 15.}, {0., 5.}, {20., 15.}, {20., 5.}, {6., 
+         10.}, {14., 10.}}, {
+          {Hue[0.6, 0.7, 0.7], Opacity[0.7], CapForm["Round"], Arrowheads[0.],
+            ArrowBox[{{1, 5}, {2, 5}, {3, 6}, {4, 6}, {5, 6}}, 
+            0.09065281899109792]}, 
+          {Hue[0.6, 0.5, 1.], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+           DiskBox[1, 0.09065281899109792], DiskBox[2, 0.09065281899109792], 
+           DiskBox[3, 0.09065281899109792], DiskBox[4, 0.09065281899109792], 
+           DiskBox[5, 0.09065281899109792], 
+           DiskBox[6, 0.09065281899109792]}}]],
+       MouseAppearanceTag["NetworkGraphics"]],
+      AllowKernelInitialization->False]],
+    DefaultBaseStyle->"NetworkGraphics",
+    FormatType->TraditionalForm,
+    FrameTicks->None], ",", 
+   GraphicsBox[
+    NamespaceBox["NetworkGraphics",
+     DynamicModuleBox[{Typeset`graph = HoldComplete[
+       Graph[{1, 2, 3, 4, 5, 6}, {
+        Null, {{1, 5}, {2, 5}, {6, 3}, {6, 4}, {5, 6}}, {{1, 
+           FeynArts`F[2, {1}]}, {2, -FeynArts`F[2, {1}]}, {
+          3, -FeynArts`F[2, {2}]}, {4, 
+           FeynArts`F[2, {2}]}, {5, 
+           FeynArts`V[2]}}}, {
+        VertexCoordinates -> {{0., 15.}, {0., 5.}, {20, 15.}, {20, 5.}, {6., 
+           10.}, {14., 10.}}}]]}, 
+      TagBox[
+       GraphicsGroupBox[
+        GraphicsComplexBox[{{0., 15.}, {0., 5.}, {20., 15.}, {20., 5.}, {6., 
+         10.}, {14., 10.}}, {
+          {Hue[0.6, 0.7, 0.7], Opacity[0.7], CapForm["Round"], Arrowheads[0.],
+            ArrowBox[{{1, 5}, {2, 5}, {3, 6}, {4, 6}, {5, 6}}, 
+            0.09065281899109792]}, 
+          {Hue[0.6, 0.5, 1.], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+           DiskBox[1, 0.09065281899109792], DiskBox[2, 0.09065281899109792], 
+           DiskBox[3, 0.09065281899109792], DiskBox[4, 0.09065281899109792], 
+           DiskBox[5, 0.09065281899109792], 
+           DiskBox[6, 0.09065281899109792]}}]],
+       MouseAppearanceTag["NetworkGraphics"]],
+      AllowKernelInitialization->False]],
+    DefaultBaseStyle->"NetworkGraphics",
+    FormatType->TraditionalForm,
+    FrameTicks->None], ",", 
+   GraphicsBox[
+    NamespaceBox["NetworkGraphics",
+     DynamicModuleBox[{Typeset`graph = HoldComplete[
+       Graph[{1, 2, 3, 4, 5, 6}, {
+        Null, {{1, 5}, {2, 5}, {6, 3}, {6, 4}, {5, 6}}, {{1, 
+           FeynArts`F[2, {1}]}, {2, -FeynArts`F[2, {1}]}, {
+          3, -FeynArts`F[2, {2}]}, {4, 
+           FeynArts`F[2, {2}]}, {5, FeynArts`V}}}, {
+        VertexCoordinates -> {{0., 15.}, {0., 5.}, {20, 15.}, {20, 5.}, {6., 
+           10.}, {14., 10.}}}]]}, 
+      TagBox[
+       GraphicsGroupBox[
+        GraphicsComplexBox[{{0., 15.}, {0., 5.}, {20., 15.}, {20., 5.}, {6., 
+         10.}, {14., 10.}}, {
+          {Hue[0.6, 0.7, 0.7], Opacity[0.7], CapForm["Round"], Arrowheads[0.],
+            ArrowBox[{{1, 5}, {2, 5}, {3, 6}, {4, 6}, {5, 6}}, 
+            0.09065281899109792]}, 
+          {Hue[0.6, 0.5, 1.], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+           DiskBox[1, 0.09065281899109792], DiskBox[2, 0.09065281899109792], 
+           DiskBox[3, 0.09065281899109792], DiskBox[4, 0.09065281899109792], 
+           DiskBox[5, 0.09065281899109792], 
+           DiskBox[6, 0.09065281899109792]}}]],
+       MouseAppearanceTag["NetworkGraphics"]],
+      AllowKernelInitialization->False]],
+    DefaultBaseStyle->"NetworkGraphics",
+    FormatType->TraditionalForm,
+    FrameTicks->None]}], "}"}]], "Output",
+ CellLabel->"Out[3]= ",ExpressionUUID->"4beeccd0-512b-443a-8f6f-7cf15af75b4a"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Metadata", "MetadataSection",
+ CellID->311882160,ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd"],
+
+Cell[TextData[{
+ "New in: ",
+ Cell["XX", "HistoryData",
+  CellTags->"New",ExpressionUUID->"c83e5b59-d200-4539-afdc-500ed06d3c87"],
+ " | Modified in: ",
+ Cell[" ", "HistoryData",
+  CellTags->"Modified",ExpressionUUID->"d4e38c0c-d937-44f2-85a5-7c0e8fc755ab"],
+ " | Obsolete in: ",
+ Cell[" ", "HistoryData",
+  CellTags->"Obsolete",ExpressionUUID->
+  "4c68d818-8923-4121-80f8-cf0eabb4c0de"]
+}], "History",
+ CellID->341476719,ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Categorization",
+ Cell[BoxData[
+  TemplateBox[{"Metadata", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Metadata such as page URI, context, and type of documentation page.", 
+        "MoreInfoText"], BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "4b3d4122-3cd4-481f-a8ff-5aefbb03e00d"]
+}], "CategorizationSection",
+ CellID->1755438392,ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329"],
+
+Cell["Symbol", "Categorization",
+ CellLabel->"Entity Type",
+ CellID->686433507,ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a"],
+
+Cell["Wolfram/DiagrammaticComputation", "Categorization",
+ CellLabel->"Paclet Name",
+ CellID->605800465,ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec"],
+
+Cell["Wolfram`DiagrammaticComputation`", "Categorization",
+ CellLabel->"Context",
+ CellID->468444828,ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191"],
+
+Cell["Wolfram/DiagrammaticComputation/ref/TopologyGraphs", "Categorization",
+ CellLabel->"URI",ExpressionUUID->"1bb69a15-5e88-444d-b3c0-01aa7a267ff7"]
+}, Closed]],
+
+Cell["Keywords", "KeywordsSection",
+ CellID->477174294,ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6"],
+
+Cell[CellGroupData[{
+
+Cell["Syntax Templates", "TemplatesSection",
+ CellID->1872225408,ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Additional Function Template",
+ CellID->1562036412,ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Arguments Pattern",
+ CellID->158391909,ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Local Variables",
+ CellID->1360575930,ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Color Equal Signs",
+ CellID->793782254,ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648"]
+}, Closed]]
+}, Open  ]]
+},
+WindowSize->{700, 770},
+WindowMargins->{{5, Automatic}, {Automatic, 0}},
+TaggingRules->{
+ "Metadata" -> {
+   "title" -> "TopologyGraphs", "context" -> 
+    "Wolfram`DiagrammaticComputation`", 
+    "keywords" -> {"topology", "graphs", "Feynman", "FeynArts", "insertions"},
+     "summary" -> "", "paclet" -> "Wolfram/DiagrammaticComputation", "uri" -> 
+    "Wolfram/DiagrammaticComputation/ref/TopologyGraphs", "type" -> "Symbol", 
+    "index" -> True, "language" -> "en"}},
+CreateCellID->True,
+CellContext->CellGroup,
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->FrontEnd`FileName[{"Wolfram"}, "FunctionPageStylesExt.nb", 
+  CharacterEncoding -> "UTF-8"],
+ExpressionUUID->"c207366e-060a-406b-a297-9e30e1628f43"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 112, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
+ CellID->1224892054],
+Cell[691, 25, 1559, 45, 70, "Usage",ExpressionUUID->"d6fc54d5-2203-453b-9f45-063555b9d6ee"],
+Cell[2253, 72, 937, 27, 70, "Notes",ExpressionUUID->"5895439e-9e64-4bad-b17b-c350aa79640d"],
+Cell[3193, 101, 755, 20, 70, "Notes",ExpressionUUID->"662a7587-d1b9-4628-b5bb-9117e9f35572"],
+Cell[3951, 123, 107, 0, 70, "Notes",ExpressionUUID->"e71ae133-acbd-4f12-9905-969561834bc3"],
+Cell[4061, 125, 1409, 27, 70, "3ColumnTableMod",ExpressionUUID->"2d67779b-4d27-43bf-9a53-3cfa9d896e1d"],
+Cell[5473, 154, 351, 10, 70, "Notes",ExpressionUUID->"02e42c15-4437-4a3c-81d4-8fa702db5790"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5861, 169, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
+ CellID->1559318232],
+Cell[6323, 184, 1114, 30, 70, "SeeAlso",ExpressionUUID->"e5650154-2004-4dcb-893c-a2b87930b748"]
+}, Open  ]],
+Cell[7452, 217, 435, 12, 70, "TechNotesSection",ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74",
+ CellID->792424486],
+Cell[CellGroupData[{
+Cell[7912, 233, 116, 1, 70, "MoreAboutSection",ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5",
+ CellID->38303248],
+Cell[8031, 236, 355, 9, 70, "MoreAbout",ExpressionUUID->"e5e88daf-0b19-4e87-b68c-7c6d2dbec6cc"]
+}, Open  ]],
+Cell[8401, 248, 471, 13, 70, "RelatedLinksSection",ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea",
+ CellID->47113304],
+Cell[CellGroupData[{
+Cell[8897, 265, 531, 14, 70, "ExamplesInitializationSection",ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5",
+ CellID->1718580883],
+Cell[9431, 281, 192, 3, 70, "ExampleInitialization",ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502",
+ CellID->1969679695]
+}, Open  ]],
+Cell[9638, 287, 442, 12, 70, "PrimaryExamplesSection",ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42",
+ CellID->880084151],
+Cell[10083, 301, 92, 0, 70, "ExampleText",ExpressionUUID->"396ff9df-2be1-4130-98ee-80298601d8cf"],
+Cell[10178, 303, 234, 4, 70, "Input",ExpressionUUID->"566aeaae-ef60-4499-a9ef-7dca837ef404"],
+Cell[10415, 309, 130, 0, 70, "ExampleText",ExpressionUUID->"88a3bae5-fd0e-464f-ac6d-da7727ecce71"],
+Cell[CellGroupData[{
+Cell[10570, 313, 254, 5, 70, "Input",ExpressionUUID->"c0f99778-d262-491c-a71a-547bdcd915b0"],
+Cell[10827, 320, 5137, 106, 70, "Output",ExpressionUUID->"f1e113d3-969b-419a-9b9e-d2ecf1a739d3"]
+}, Open  ]],
+Cell[15979, 429, 147, 2, 70, "ExampleText",ExpressionUUID->"cb7b3851-a37a-4829-ba0f-2ae75755423b"],
+Cell[CellGroupData[{
+Cell[16151, 435, 1123, 30, 70, "Input",ExpressionUUID->"02fd3e35-7363-41d0-a507-387c0b95511e"],
+Cell[17277, 467, 8028, 169, 70, "Output",ExpressionUUID->"4beeccd0-512b-443a-8f6f-7cf15af75b4a"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[25342, 641, 110, 1, 70, "MetadataSection",ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd",
+ CellID->311882160],
+Cell[25455, 644, 476, 12, 70, "History",ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046",
+ CellID->341476719],
+Cell[CellGroupData[{
+Cell[25956, 660, 485, 13, 70, "CategorizationSection",ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329",
+ CellID->1755438392],
+Cell[26444, 675, 134, 2, 70, "Categorization",ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a",
+ CellID->686433507],
+Cell[26581, 679, 159, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec",
+ CellID->605800465],
+Cell[26743, 683, 156, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
+ CellID->468444828],
+Cell[26902, 687, 150, 1, 70, "Categorization",ExpressionUUID->"1bb69a15-5e88-444d-b3c0-01aa7a267ff7"]
+}, Closed]],
+Cell[27067, 691, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
+ CellID->477174294],
+Cell[CellGroupData[{
+Cell[27202, 696, 120, 1, 70, "TemplatesSection",ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c",
+ CellID->1872225408],
+Cell[27325, 699, 149, 2, 70, "Template",ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72",
+ CellID->1562036412],
+Cell[27477, 703, 137, 2, 70, "Template",ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec",
+ CellID->158391909],
+Cell[27617, 707, 136, 2, 70, "Template",ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9",
+ CellID->1360575930],
+Cell[27756, 711, 137, 2, 70, "Template",ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648",
+ CellID->793782254]
+}, Closed]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

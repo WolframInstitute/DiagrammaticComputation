@@ -1,0 +1,501 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     17839,        492]
+NotebookOptionsPosition[     12692,        385]
+NotebookOutlinePosition[     13828,        419]
+CellTagsIndexPosition[     13749,        414]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["PortSum", "ObjectName",
+ CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
+
+Cell[TextData[{
+ Cell["   ", "ModInfo",ExpressionUUID->"c1da1296-bf06-4c00-91f9-1b842e657687"],
+ Cell[BoxData[
+  RowBox[{
+   ButtonBox["PortSum",
+    BaseStyle->"Link",
+    ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/PortSum"], "[", 
+   RowBox[{
+    SubscriptBox[
+     StyleBox["p", "TI"], 
+     StyleBox["1", "TR"]], ",", " ", 
+    SubscriptBox[
+     StyleBox["p", "TI"], 
+     StyleBox["2", "TR"]], ",", " ", "\[Ellipsis]"}], "]"}]], "InlineFormula",
+  ExpressionUUID->"3cf1916d-d9f1-4af0-8c66-bce379aaad39"],
+ " ",
+ "represents the direct sum of the ports ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox[
+    StyleBox["p", "TI"], 
+    StyleBox["i", "TI"]], TraditionalForm]], "InlineFormula",ExpressionUUID->
+  "d6fb64f1-52f2-423c-ba40-b46a9b85b40e"],
+ ".",
+ "\n"
+}], "Usage",ExpressionUUID->"c08e2553-ebda-4976-be2f-6df8e66ba6f1"],
+
+Cell[TextData[{
+ "The sum of ports is again a port whose type is the ",
+ Cell[BoxData[
+  ButtonBox["CirclePlus",
+   BaseStyle->"Link",
+   ButtonData->"paclet:ref/CirclePlus"]], "InlineFormula",ExpressionUUID->
+  "0d7e6b9e-4a4d-4b74-9173-01679ce1793f"],
+ " of the component types."
+}], "Notes",ExpressionUUID->"de17bd35-cf21-4ec4-a3cf-afeabb874df9"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  ButtonBox["PortSum",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/PortSum"]], 
+  "InlineFormula",ExpressionUUID->"518461cf-d027-4488-9711-b5626225c71c"],
+ " is associative; the unit is the zero port ",
+ Cell[BoxData[
+  RowBox[{
+   ButtonBox["Port",
+    BaseStyle->"Link",
+    ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/Port"], 
+   "[", "\"\<0\>\"", "]"}]], "InlineFormula",ExpressionUUID->
+  "495b8d7b-79bd-4a4a-a9ed-5b7234f40087"],
+ "."
+}], "Notes",ExpressionUUID->"bfa9a644-2297-437f-b907-798fc57daca9"],
+
+Cell[TextData[{
+ "The infix shorthand ",
+ Cell[BoxData[
+  RowBox[{
+   SubscriptBox[
+    StyleBox["p", "TI"], 
+    StyleBox["1", "TR"]], " ", "\[CirclePlus]", " ", 
+   SubscriptBox[
+    StyleBox["p", "TI"], 
+    StyleBox["2", "TR"]]}]], "InlineFormula",ExpressionUUID->
+  "aa88aa70-26aa-408a-9aff-bfe895e89905"],
+ " evaluated inside ",
+ Cell[BoxData[
+  ButtonBox["Port",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/Port"]], 
+  "InlineFormula",ExpressionUUID->"0d07d607-9f89-4a8f-ab08-5ea097f6e331"],
+ " produces a ",
+ Cell[BoxData[
+  ButtonBox["PortSum",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/PortSum"]], 
+  "InlineFormula",ExpressionUUID->"9ce64333-8684-44ac-b0de-4ba8995dd846"],
+ "."
+}], "Notes",ExpressionUUID->"e8985312-a09f-4bd9-878e-0c2df25ea31e"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "See Also",
+ Cell[BoxData[
+  TemplateBox[{"SeeAlso", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Insert links to any related reference (function) pages.", 
+        "MoreInfoText"], BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "b7caa910-e086-4d39-871e-e78bfb02a4b9"]
+}], "SeeAlsoSection",
+ CellID->1559318232,ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  ButtonBox["Port",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/Port"]], 
+  "InlineFormula",ExpressionUUID->"f5c96c44-0aaa-4be6-a9c7-59556cd81d40"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  ButtonBox["PortProduct",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/PortProduct"]], 
+  "InlineFormula",ExpressionUUID->"85e83aa5-d366-411c-bd1a-5c736b6880d3"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  ButtonBox["PortMinus",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/PortMinus"]], 
+  "InlineFormula",ExpressionUUID->"76068fc3-bf05-4174-84e4-d3701d3874fe"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  ButtonBox["DiagramSum",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/DiagramSum"]], 
+  "InlineFormula",ExpressionUUID->"4771fbda-413e-4553-9aa5-00683632a0ff"]
+}], "SeeAlso",ExpressionUUID->"8d2a15fc-b0a2-40e1-8c13-a14b1e083b83"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Tech Notes",
+ Cell[BoxData[
+  TemplateBox[{"TechNotes", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell["Insert links to related tech notes.", "MoreInfoText"], BaseStyle -> 
+       "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "a0027a76-2f69-4270-bf06-cff364aa09d7"]
+}], "TechNotesSection",
+ CellID->792424486,ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74"],
+
+Cell[CellGroupData[{
+
+Cell["Related Guides", "MoreAboutSection",
+ CellID->38303248,ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5"],
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox["Ports",
+  BaseStyle->"Link",
+  ButtonData->
+   "paclet:guide/Ports"]], \
+"InlineFormula",ExpressionUUID->"c597f53e-2dd0-4a42-aa20-a2a57c3d7d56"]], \
+"MoreAbout",ExpressionUUID->"8d7a1992-49f1-49e8-85cd-3abecbc6bab2"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Related Links",
+ Cell[BoxData[
+  TemplateBox[{"RelatedLinks", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Insert links to any related page, including web pages.", 
+        "MoreInfoText"], BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "88f916ad-99d1-4784-a15f-dfa2faf44f02"]
+}], "RelatedLinksSection",
+ CellID->47113304,ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Examples Initialization",
+ Cell[BoxData[
+  TemplateBox[{"ExamplesInitialization", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Input that is to be evaluated before any examples are run, e.g. \
+Needs[\[Ellipsis]].", "MoreInfoText"], BaseStyle -> "IFrameBox"]], 
+     "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "1ca4d14a-308f-4a68-bbf6-e6901ce2ab4c"]
+}], "ExamplesInitializationSection",
+ CellID->1718580883,ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<Wolfram`DiagrammaticComputation`\>\"", 
+  "]"}]], "ExampleInitialization",
+ CellID->1969679695,ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502"]
+}, Open  ]],
+
+Cell[BoxData[
+ InterpretationBox[GridBox[{
+    {
+     StyleBox[
+      RowBox[{"Basic", " ", "Examples"}], "PrimaryExamplesSection"], 
+     ButtonBox[
+      RowBox[{
+       RowBox[{"More", " ", "Examples"}], " ", "\[RightTriangle]"}],
+      BaseStyle->"ExtendedExamplesLink",
+      ButtonData:>"ExtendedExamples"]}
+   }],
+  $Line = 0; Null]], "PrimaryExamplesSection",
+ CellID->880084151,ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42"],
+
+Cell["Build a sum of two ports:", "ExampleText",ExpressionUUID->"946f08bb-2e6d-4044-b3aa-bebaba1d637e"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Port", "[", 
+  RowBox[{"a", " ", "\[CirclePlus]", " ", "b"}], "]"}]], "Input",
+ CellLabel->"In[1]:= ",ExpressionUUID->"817c601c-a29a-4f24-ba9d-4a52c917cb10"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{
+   TagBox["a",
+    HoldForm], "\[CirclePlus]", 
+   TagBox["b",
+    HoldForm]}],
+  Wolfram`DiagrammaticComputation`Port`Port[<|
+   "Expression" :> Wolfram`DiagrammaticComputation`Port`PortSum[
+      Wolfram`DiagrammaticComputation`Port`Port[<|
+       "Expression" :> FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a,
+         "NeutralQ" -> False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>], 
+      Wolfram`DiagrammaticComputation`Port`Port[<|
+       "Expression" :> FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b,
+         "NeutralQ" -> False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]], 
+    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+    CirclePlus[\[FormalCapitalT], \[FormalCapitalT]]|>],
+  Tooltip->
+   RowBox[{"\[FormalCapitalT]", "\[CirclePlus]", 
+     "\[FormalCapitalT]"}]]], "Output",
+ CellLabel->"Out[1]= ",ExpressionUUID->"cf61cbb1-4eba-4478-a7b8-b8f55ec05ba7"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "More Examples",
+ Cell[BoxData[
+  TemplateBox[{"MoreExamples", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell["Extended examples in standardized sections.", "MoreInfoText"], 
+       BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "352b6acf-a93b-4224-8779-658881cdabd0"]
+}], "ExtendedExamplesSection",
+ CellTags->"ExtendedExamples",
+ CellID->533848431,ExpressionUUID->"a6228140-1981-46f0-88fc-4d129033136d"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "Properties & Relations", "ExampleSection",ExpressionUUID->
+   "d18b1e1f-4c4c-49a5-bb54-1e5e145ddf4e"],
+  $Line = 0; Null]], "ExampleSection",
+ CellID->2123667759,ExpressionUUID->"0e0d5f37-f3c9-4474-a22b-9f10dcc8b438"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  ButtonBox["PortSum",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/PortSum"]], 
+  "InlineFormula",ExpressionUUID->"6c3b56a2-5cc8-45d2-90de-3c24b9baa87d"],
+ " is the port-level analogue of ",
+ Cell[BoxData[
+  ButtonBox["DiagramSum",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/DiagramSum"]], 
+  "InlineFormula",ExpressionUUID->"e61ac474-94f3-410c-a3d9-a7c4b7083fae"],
+ " \[LongDash] taking the direct sum of two diagrams matches their input and \
+output port sums."
+}], "ExampleText",ExpressionUUID->"8690c6e9-be66-4379-97bd-a3420689b8c1"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Metadata", "MetadataSection",
+ CellID->311882160,ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd"],
+
+Cell[TextData[{
+ "New in: ",
+ Cell["XX", "HistoryData",
+  CellTags->"New",ExpressionUUID->"c83e5b59-d200-4539-afdc-500ed06d3c87"],
+ " | Modified in: ",
+ Cell[" ", "HistoryData",
+  CellTags->"Modified",ExpressionUUID->"d4e38c0c-d937-44f2-85a5-7c0e8fc755ab"],
+ " | Obsolete in: ",
+ Cell[" ", "HistoryData",
+  CellTags->"Obsolete",ExpressionUUID->
+  "4c68d818-8923-4121-80f8-cf0eabb4c0de"]
+}], "History",
+ CellID->341476719,ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Categorization",
+ Cell[BoxData[
+  TemplateBox[{"Metadata", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Metadata such as page URI, context, and type of documentation page.", 
+        "MoreInfoText"], BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "4b3d4122-3cd4-481f-a8ff-5aefbb03e00d"]
+}], "CategorizationSection",
+ CellID->1755438392,ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329"],
+
+Cell["Symbol", "Categorization",
+ CellLabel->"Entity Type",
+ CellID->686433507,ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a"],
+
+Cell["Wolfram/DiagrammaticComputation", "Categorization",
+ CellLabel->"Paclet Name",
+ CellID->605800465,ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec"],
+
+Cell["Wolfram`DiagrammaticComputation`", "Categorization",
+ CellLabel->"Context",
+ CellID->468444828,ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191"],
+
+Cell["Wolfram/DiagrammaticComputation/ref/PortSum", "Categorization",
+ CellLabel->"URI",ExpressionUUID->"11d5cd5f-56f1-417b-ba56-4ca58705dfbb"]
+}, Closed]],
+
+Cell["Keywords", "KeywordsSection",
+ CellID->477174294,ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6"],
+
+Cell[CellGroupData[{
+
+Cell["Syntax Templates", "TemplatesSection",
+ CellID->1872225408,ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Additional Function Template",
+ CellID->1562036412,ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Arguments Pattern",
+ CellID->158391909,ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Local Variables",
+ CellID->1360575930,ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Color Equal Signs",
+ CellID->793782254,ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648"]
+}, Closed]]
+}, Open  ]]
+},
+WindowSize->{700, 770},
+WindowMargins->{{5, Automatic}, {Automatic, 0}},
+TaggingRules->{
+ "Metadata" -> {
+   "title" -> "PortSum", "context" -> "Wolfram`DiagrammaticComputation`", 
+    "keywords" -> {
+     "port", "sum", "direct sum", "CirclePlus", "additive", "choice"}, 
+    "summary" -> "", "paclet" -> "Wolfram/DiagrammaticComputation", "uri" -> 
+    "Wolfram/DiagrammaticComputation/ref/PortSum", "type" -> "Symbol", 
+    "index" -> True, "language" -> "en"}},
+CreateCellID->True,
+CellContext->"Global`",
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->FrontEnd`FileName[{"Wolfram"}, "FunctionPageStylesExt.nb", 
+  CharacterEncoding -> "UTF-8"],
+ExpressionUUID->"c207366e-060a-406b-a297-9e30e1628f43"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "ExtendedExamples"->{
+  Cell[8654, 265, 487, 13, 70, "ExtendedExamplesSection",ExpressionUUID->"a6228140-1981-46f0-88fc-4d129033136d",
+   CellTags->"ExtendedExamples",
+   CellID->533848431]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"ExtendedExamples", 13556, 407}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 105, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
+ CellID->1224892054],
+Cell[684, 25, 843, 25, 70, "Usage",ExpressionUUID->"c08e2553-ebda-4976-be2f-6df8e66ba6f1"],
+Cell[1530, 52, 348, 8, 70, "Notes",ExpressionUUID->"de17bd35-cf21-4ec4-a3cf-afeabb874df9"],
+Cell[1881, 62, 587, 15, 70, "Notes",ExpressionUUID->"bfa9a644-2297-437f-b907-798fc57daca9"],
+Cell[2471, 79, 832, 24, 70, "Notes",ExpressionUUID->"e8985312-a09f-4bd9-878e-0c2df25ea31e"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[3340, 108, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
+ CellID->1559318232],
+Cell[3802, 123, 1017, 24, 70, "SeeAlso",ExpressionUUID->"8d2a15fc-b0a2-40e1-8c13-a14b1e083b83"]
+}, Open  ]],
+Cell[4834, 150, 435, 12, 70, "TechNotesSection",ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74",
+ CellID->792424486],
+Cell[CellGroupData[{
+Cell[5294, 166, 116, 1, 70, "MoreAboutSection",ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5",
+ CellID->38303248],
+Cell[5413, 169, 256, 6, 70, "MoreAbout",ExpressionUUID->"8d7a1992-49f1-49e8-85cd-3abecbc6bab2"]
+}, Open  ]],
+Cell[5684, 178, 471, 13, 70, "RelatedLinksSection",ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea",
+ CellID->47113304],
+Cell[CellGroupData[{
+Cell[6180, 195, 531, 14, 70, "ExamplesInitializationSection",ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5",
+ CellID->1718580883],
+Cell[6714, 211, 192, 3, 70, "ExampleInitialization",ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502",
+ CellID->1969679695]
+}, Open  ]],
+Cell[6921, 217, 442, 12, 70, "PrimaryExamplesSection",ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42",
+ CellID->880084151],
+Cell[7366, 231, 103, 0, 70, "ExampleText",ExpressionUUID->"946f08bb-2e6d-4044-b3aa-bebaba1d637e"],
+Cell[CellGroupData[{
+Cell[7494, 235, 181, 3, 70, "Input",ExpressionUUID->"817c601c-a29a-4f24-ba9d-4a52c917cb10"],
+Cell[7678, 240, 939, 20, 70, "Output",ExpressionUUID->"cf61cbb1-4eba-4478-a7b8-b8f55ec05ba7"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8654, 265, 487, 13, 70, "ExtendedExamplesSection",ExpressionUUID->"a6228140-1981-46f0-88fc-4d129033136d",
+ CellTags->"ExtendedExamples",
+ CellID->533848431],
+Cell[CellGroupData[{
+Cell[9166, 282, 259, 5, 70, "ExampleSection",ExpressionUUID->"0e0d5f37-f3c9-4474-a22b-9f10dcc8b438",
+ CellID->2123667759],
+Cell[9428, 289, 643, 14, 70, "ExampleText",ExpressionUUID->"8690c6e9-be66-4379-97bd-a3420689b8c1"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10120, 309, 110, 1, 70, "MetadataSection",ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd",
+ CellID->311882160],
+Cell[10233, 312, 476, 12, 70, "History",ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046",
+ CellID->341476719],
+Cell[CellGroupData[{
+Cell[10734, 328, 485, 13, 70, "CategorizationSection",ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329",
+ CellID->1755438392],
+Cell[11222, 343, 134, 2, 70, "Categorization",ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a",
+ CellID->686433507],
+Cell[11359, 347, 159, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec",
+ CellID->605800465],
+Cell[11521, 351, 156, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
+ CellID->468444828],
+Cell[11680, 355, 143, 1, 70, "Categorization",ExpressionUUID->"11d5cd5f-56f1-417b-ba56-4ca58705dfbb"]
+}, Closed]],
+Cell[11838, 359, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
+ CellID->477174294],
+Cell[CellGroupData[{
+Cell[11973, 364, 120, 1, 70, "TemplatesSection",ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c",
+ CellID->1872225408],
+Cell[12096, 367, 149, 2, 70, "Template",ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72",
+ CellID->1562036412],
+Cell[12248, 371, 137, 2, 70, "Template",ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec",
+ CellID->158391909],
+Cell[12388, 375, 136, 2, 70, "Template",ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9",
+ CellID->1360575930],
+Cell[12527, 379, 137, 2, 70, "Template",ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648",
+ CellID->793782254]
+}, Closed]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

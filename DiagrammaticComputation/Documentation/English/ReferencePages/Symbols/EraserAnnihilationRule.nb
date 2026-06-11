@@ -1,0 +1,517 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     19485,        508]
+NotebookOptionsPosition[     15079,        418]
+NotebookOutlinePosition[     16019,        446]
+CellTagsIndexPosition[     15976,        443]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["EraserAnnihilationRule", "ObjectName",
+ CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
+
+Cell[TextData[{
+ Cell["   ", "ModInfo",ExpressionUUID->"06ed0853-93bc-406c-ac92-3767e33ddb3b"],
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["EraserAnnihilationRule"]], 
+     "paclet:WolframDiagrammaticComputation/ref/EraserAnnihilationRule", 
+     "WolframDiagrammaticComputation Package Symbol"},
+    "PackageLink",
+    BaseStyle->"InlineFormula"], "[", "]"}]], "InlineFormula",ExpressionUUID->
+  "3bf14a8a-210e-4d24-81f4-b8b71121a5f1"],
+ " ",
+ "returns a rewrite rule annihilating two facing ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["EraserDiagram"]], 
+    "paclet:WolframDiagrammaticComputation/ref/EraserDiagram", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "169138e6-20d4-4007-808e-f9dd3c8beea7"],
+ "s into nothing.",
+ "\n"
+}], "Usage",ExpressionUUID->"bc9c00c7-68e7-45d1-96c5-8092987508b0"],
+
+Cell["\<\
+Encodes the interaction-net erase\[Dash]erase law: an eraser meeting another \
+eraser head-on leaves the empty diagram.\
+\>", "Notes",ExpressionUUID->"e9b1f949-9255-44de-9835-bead5de6e4ce"],
+
+Cell[TextData[{
+ "Options of ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["AnnihilationRule"]], 
+    "paclet:WolframDiagrammaticComputation/ref/AnnihilationRule", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "5222eb49-74f4-4d22-8119-5eee70b57ee8"],
+ " are accepted."
+}], "Notes",ExpressionUUID->"1cda9ced-7c76-4c07-a701-f88fbd3501f1"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "See Also",
+ Cell[BoxData[
+  TemplateBox[{"SeeAlso", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Insert links to any related reference (function) pages.", 
+        "MoreInfoText"], BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "b7caa910-e086-4d39-871e-e78bfb02a4b9"]
+}], "SeeAlsoSection",
+ CellID->1559318232,ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["EraserRule"]], 
+    "paclet:WolframDiagrammaticComputation/ref/EraserRule", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "7a81f950-ecb2-4820-9861-6b71dc223488"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["AnnihilationRule"]], 
+    "paclet:WolframDiagrammaticComputation/ref/AnnihilationRule", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "e811a1d6-654f-4b37-8549-0c765bdb8f6d"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["EraserDiagram"]], 
+    "paclet:WolframDiagrammaticComputation/ref/EraserDiagram", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "0af83951-005d-4169-80a9-87aede256432"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["DiagramRule"]], 
+    "paclet:WolframDiagrammaticComputation/ref/DiagramRule", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "c21dbd83-2514-44ed-97af-b2b9d3255f99"]
+}], "SeeAlso",ExpressionUUID->"2a9b0806-9825-403d-9586-c00a5291b05a"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Tech Notes",
+ Cell[BoxData[
+  TemplateBox[{"TechNotes", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell["Insert links to related tech notes.", "MoreInfoText"], BaseStyle -> 
+       "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "a0027a76-2f69-4270-bf06-cff364aa09d7"]
+}], "TechNotesSection",
+ CellID->792424486,ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74"],
+
+Cell[CellGroupData[{
+
+Cell["Related Guides", "MoreAboutSection",
+ CellID->38303248,ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5"],
+
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["DiagramRewriting"]], 
+   "paclet:WolframDiagrammaticComputation/guide/DiagramRewriting"},
+  "RefLinkPlain",
+  BaseStyle->{
+   "InlineFormula"}]], \
+"InlineFormula",ExpressionUUID->"9b9f9c64-37eb-4884-adb4-e7b3433be4cb"]], \
+"MoreAbout",ExpressionUUID->"89bb570f-49e0-498b-b9d0-2c98c5dedd36"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Related Links",
+ Cell[BoxData[
+  TemplateBox[{"RelatedLinks", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Insert links to any related page, including web pages.", 
+        "MoreInfoText"], BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "88f916ad-99d1-4784-a15f-dfa2faf44f02"]
+}], "RelatedLinksSection",
+ CellID->47113304,ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Examples Initialization",
+ Cell[BoxData[
+  TemplateBox[{"ExamplesInitialization", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Input that is to be evaluated before any examples are run, e.g. \
+Needs[\[Ellipsis]].", "MoreInfoText"], BaseStyle -> "IFrameBox"]], 
+     "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "1ca4d14a-308f-4a68-bbf6-e6901ce2ab4c"]
+}], "ExamplesInitializationSection",
+ CellID->1718580883,ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<Wolfram`DiagrammaticComputation`\>\"", 
+  "]"}]], "ExampleInitialization",
+ CellID->1969679695,ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502"]
+}, Open  ]],
+
+Cell[BoxData[
+ InterpretationBox[GridBox[{
+    {
+     StyleBox[
+      RowBox[{"Basic", " ", "Examples"}], "PrimaryExamplesSection"], 
+     ButtonBox[
+      RowBox[{
+       RowBox[{"More", " ", "Examples"}], " ", "\[RightTriangle]"}],
+      BaseStyle->"ExtendedExamplesLink",
+      ButtonData:>"ExtendedExamples"]}
+   }],
+  $Line = 0; Null]], "PrimaryExamplesSection",
+ CellID->880084151,ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42"],
+
+Cell["The eraser annihilation law:", "ExampleText",ExpressionUUID->"a30454e3-5acd-4b9f-bbc2-0370e851f339"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"EraserAnnihilationRule", "[", "]"}]], "Input",
+ CellLabel->"In[1]:= ",ExpressionUUID->"7d3a0df0-7651-47e2-be70-0a8de6bdbac1"],
+
+Cell[BoxData[
+ RowBox[{
+  GraphicsBox[
+   NamespaceBox["Diagram",
+    DynamicModuleBox[{Typeset`d = HoldComplete[
+      Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+       "DiagramOptions" -> {
+         "PortArrows" -> {{}, {}}, "PortLabels" -> {{}, {}}, "ColumnPorts" -> 
+          False, Alignment -> Center, ImageSize -> {Automatic, 192}}, 
+        "Expression" :> 
+        Wolfram`DiagrammaticComputation`Diagram`DiagramComposition[
+          
+          Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+           "DiagramOptions" -> {
+             "PortArrows" -> {{Automatic}, {}}, "PortLabels" -> {{None}, {}}, 
+              "Shape" -> "Disk", "Width" -> Rational[1, 2], "Height" -> 
+              Rational[1, 2], "LabelFunction" -> ("\[Epsilon]"& )}, 
+            "Expression" :> None, "InputPorts" -> {
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> 
+                Wolfram`DiagrammaticComputation`Port`PortDual[\[FormalX]], 
+                "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+                SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {}|>], 
+          
+          Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+           "DiagramOptions" -> {"Shape" -> GeometricTransformation[
+                GeometricTransformation[
+                 Disk[{0, 0}, {
+                   Rational[1, 4], 
+                   Rational[1, 4]}], {{{1, 0}, {0, 1}}, {0, 0}}], {{{1, 0}, {
+                 0, -1}}, {0, 0}}], "PortArrows" -> {{}, {
+                 Placed[Automatic, {{0, 
+                    Rational[-1, 4]}, {0, 
+                    Rational[-1, 2]}}]}}, "PortLabels" -> {{}, {None}}, 
+              "FloatingPorts" -> False, "Width" -> Rational[1, 2], "Height" -> 
+              Rational[1, 2], "LabelFunction" -> ("\[Epsilon]"& )}, 
+            "Expression" :> None, "InputPorts" -> {}, "OutputPorts" -> {
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> \[FormalX], "NeutralQ" -> False, "Tags" -> {}, 
+                "Type" -> \[FormalCapitalT]|>]}|>]], "InputPorts" -> {}, 
+        "OutputPorts" -> {}|>]]}, {{
+       {Arrowheads[Small], 
+        {EdgeForm[{LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+          RGBColor[0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+          GrayLevel[0.62]]], 
+         GeometricTransformationBox[
+          DiskBox[{1., 1.}, 
+           NCache[{Rational[1, 4], Rational[1, 4]}, {0.25, 0.25}]], {{{1., 
+           0.}, {0., 1.}}, {0., 0.}}]}, {{}, {}}, 
+        {LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], InsetBox["\<\"\[Epsilon]\"\>", {1., 1.}]}}, 
+       {Arrowheads[Small], 
+        {EdgeForm[{LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+          RGBColor[0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+          GrayLevel[0.62]]], 
+         GeometricTransformationBox[
+          GeometricTransformationBox[
+           GeometricTransformationBox[
+            GeometricTransformationBox[
+             DiskBox[{0, 0}, 
+              NCache[{Rational[1, 4], Rational[1, 4]}, {0.25, 0.25}]], {{{1, 
+              0}, {0, 1}}, {0, 0}}], {{{1, 0}, {0, -1}}, {0, 0}}], {{{1., 
+            0.}, {0., 1.}}, {1., 3.}}], {{{1., 0.}, {0., 1.}}, {0., 
+           0.}}]}, {{}, {}}, 
+        {LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], InsetBox["\<\"\[Epsilon]\"\>", {1., 3.}]}}}, 
+      {Arrowheads[{{Small, 0.5}}], {}, 
+       ArrowBox[
+        BSplineCurveBox[{{1., 2.75}, {1., 2.5}, {1., 1.5}, {1., 
+         1.25}}]]}, {}, {}, 
+      {EdgeForm[{LightDarkSwitched[
+        GrayLevel[0], 
+        GrayLevel[1]], Thickness[Tiny]}], FaceForm[None]}}]],
+   BaseStyle->{
+    GraphicsBoxOptions -> {ImageSize -> Medium}, 
+     Wolfram`DiagrammaticComputation`Diagram`Private`GraphicsHighlightColor -> 
+     RGBColor[1, 0, 1]},
+   FormatType->StandardForm,
+   ImageSize->{Automatic, 192}], "\[Rule]", 
+  GraphicsBox[
+   NamespaceBox["Diagram",
+    DynamicModuleBox[{Typeset`d = HoldComplete[
+      Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+       "DiagramOptions" -> {
+         "PortArrows" -> {{}, {}}, "PortLabels" -> {Automatic, Automatic}, 
+          "ShowLabel" -> False, "Shape" -> None, Alignment -> Center, 
+          ImageSize -> {Automatic, 192}, AspectRatio -> 2}, "Expression" :> 
+        None, "InputPorts" -> {}, "OutputPorts" -> {}|>]]}, 
+     {Arrowheads[Small], 
+      {EdgeForm[{LightDarkSwitched[
+        GrayLevel[0], 
+        GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+        RGBColor[0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+        GrayLevel[0.62]]]}, {{}, {}}, 
+      {LightDarkSwitched[
+        GrayLevel[0], 
+        GrayLevel[1]], InsetBox["\<\"\\t\\t\\t\"\>", {0, 0}]}}]],
+   AspectRatio->2,
+   BaseStyle->{
+    GraphicsBoxOptions -> {ImageSize -> Tiny}, 
+     Wolfram`DiagrammaticComputation`Diagram`Private`GraphicsHighlightColor -> 
+     RGBColor[1, 0, 1]},
+   FormatType->StandardForm,
+   ImageSize->{Automatic, 192}]}]], "Output",
+ CellLabel->"Out[1]= ",ExpressionUUID->"7b67db97-2109-4a1d-9b13-5c63b4293a8f"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Metadata", "MetadataSection",
+ CellID->311882160,ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd"],
+
+Cell[TextData[{
+ "New in: ",
+ Cell["XX", "HistoryData",
+  CellTags->"New",ExpressionUUID->"c83e5b59-d200-4539-afdc-500ed06d3c87"],
+ " | Modified in: ",
+ Cell[" ", "HistoryData",
+  CellTags->"Modified",ExpressionUUID->"d4e38c0c-d937-44f2-85a5-7c0e8fc755ab"],
+ " | Obsolete in: ",
+ Cell[" ", "HistoryData",
+  CellTags->"Obsolete",ExpressionUUID->
+  "4c68d818-8923-4121-80f8-cf0eabb4c0de"]
+}], "History",
+ CellID->341476719,ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Categorization",
+ Cell[BoxData[
+  TemplateBox[{"Metadata", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Metadata such as page URI, context, and type of documentation page.", 
+        "MoreInfoText"], BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "4b3d4122-3cd4-481f-a8ff-5aefbb03e00d"]
+}], "CategorizationSection",
+ CellID->1755438392,ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329"],
+
+Cell["Symbol", "Categorization",
+ CellLabel->"Entity Type",
+ CellID->686433507,ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a"],
+
+Cell["Wolfram/DiagrammaticComputation", "Categorization",
+ CellLabel->"Paclet Name",
+ CellID->605800465,ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec"],
+
+Cell["Wolfram`DiagrammaticComputation`", "Categorization",
+ CellLabel->"Context",
+ CellID->468444828,ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191"],
+
+Cell["Wolfram/DiagrammaticComputation/ref/EraserAnnihilationRule", \
+"Categorization",
+ CellLabel->"URI",ExpressionUUID->"5a7cad77-40e6-445f-bc9d-d8d66b955980"]
+}, Closed]],
+
+Cell["Keywords", "KeywordsSection",
+ CellID->477174294,ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6"],
+
+Cell[CellGroupData[{
+
+Cell["Syntax Templates", "TemplatesSection",
+ CellID->1872225408,ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Additional Function Template",
+ CellID->1562036412,ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Arguments Pattern",
+ CellID->158391909,ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Local Variables",
+ CellID->1360575930,ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Color Equal Signs",
+ CellID->793782254,ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648"]
+}, Closed]]
+}, Open  ]]
+},
+WindowSize->{700, 770},
+WindowMargins->{{5, Automatic}, {Automatic, 0}},
+TaggingRules->{
+ "Metadata" -> {
+   "title" -> "EraserAnnihilationRule", "context" -> 
+    "Wolfram`DiagrammaticComputation`", 
+    "keywords" -> {
+     "eraser", "annihilation", "discard", "rule", "interaction net"}, 
+    "summary" -> "", "paclet" -> "Wolfram/DiagrammaticComputation", "uri" -> 
+    "Wolfram/DiagrammaticComputation/ref/EraserAnnihilationRule", "type" -> 
+    "Symbol", "index" -> True, "language" -> "en"}},
+CreateCellID->True,
+CellContext->CellGroup,
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->FrontEnd`FileName[{"Wolfram"}, "FunctionPageStylesExt.nb", 
+  CharacterEncoding -> "UTF-8"],
+ExpressionUUID->"c207366e-060a-406b-a297-9e30e1628f43"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 120, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
+ CellID->1224892054],
+Cell[699, 25, 935, 25, 70, "Usage",ExpressionUUID->"bc9c00c7-68e7-45d1-96c5-8092987508b0"],
+Cell[1637, 52, 199, 3, 70, "Notes",ExpressionUUID->"e9b1f949-9255-44de-9835-bead5de6e4ce"],
+Cell[1839, 57, 443, 12, 70, "Notes",ExpressionUUID->"1cda9ced-7c76-4c07-a701-f88fbd3501f1"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2319, 74, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
+ CellID->1559318232],
+Cell[2781, 89, 1453, 40, 70, "SeeAlso",ExpressionUUID->"2a9b0806-9825-403d-9586-c00a5291b05a"]
+}, Open  ]],
+Cell[4249, 132, 435, 12, 70, "TechNotesSection",ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74",
+ CellID->792424486],
+Cell[CellGroupData[{
+Cell[4709, 148, 116, 1, 70, "MoreAboutSection",ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5",
+ CellID->38303248],
+Cell[4828, 151, 357, 9, 70, "MoreAbout",ExpressionUUID->"89bb570f-49e0-498b-b9d0-2c98c5dedd36"]
+}, Open  ]],
+Cell[5200, 163, 471, 13, 70, "RelatedLinksSection",ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea",
+ CellID->47113304],
+Cell[CellGroupData[{
+Cell[5696, 180, 531, 14, 70, "ExamplesInitializationSection",ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5",
+ CellID->1718580883],
+Cell[6230, 196, 192, 3, 70, "ExampleInitialization",ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502",
+ CellID->1969679695]
+}, Open  ]],
+Cell[6437, 202, 442, 12, 70, "PrimaryExamplesSection",ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42",
+ CellID->880084151],
+Cell[6882, 216, 106, 0, 70, "ExampleText",ExpressionUUID->"a30454e3-5acd-4b9f-bbc2-0370e851f339"],
+Cell[CellGroupData[{
+Cell[7013, 220, 149, 2, 70, "Input",ExpressionUUID->"7d3a0df0-7651-47e2-be70-0a8de6bdbac1"],
+Cell[7165, 224, 5288, 112, 70, "Output",ExpressionUUID->"7b67db97-2109-4a1d-9b13-5c63b4293a8f"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[12490, 341, 110, 1, 70, "MetadataSection",ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd",
+ CellID->311882160],
+Cell[12603, 344, 476, 12, 70, "History",ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046",
+ CellID->341476719],
+Cell[CellGroupData[{
+Cell[13104, 360, 485, 13, 70, "CategorizationSection",ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329",
+ CellID->1755438392],
+Cell[13592, 375, 134, 2, 70, "Categorization",ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a",
+ CellID->686433507],
+Cell[13729, 379, 159, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec",
+ CellID->605800465],
+Cell[13891, 383, 156, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
+ CellID->468444828],
+Cell[14050, 387, 160, 2, 70, "Categorization",ExpressionUUID->"5a7cad77-40e6-445f-bc9d-d8d66b955980"]
+}, Closed]],
+Cell[14225, 392, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
+ CellID->477174294],
+Cell[CellGroupData[{
+Cell[14360, 397, 120, 1, 70, "TemplatesSection",ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c",
+ CellID->1872225408],
+Cell[14483, 400, 149, 2, 70, "Template",ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72",
+ CellID->1562036412],
+Cell[14635, 404, 137, 2, 70, "Template",ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec",
+ CellID->158391909],
+Cell[14775, 408, 136, 2, 70, "Template",ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9",
+ CellID->1360575930],
+Cell[14914, 412, 137, 2, 70, "Template",ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648",
+ CellID->793782254]
+}, Closed]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

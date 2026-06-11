@@ -1,0 +1,759 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     28805,        750]
+NotebookOptionsPosition[     24433,        661]
+NotebookOutlinePosition[     25340,        688]
+CellTagsIndexPosition[     25297,        685]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["DiagramHypergraph", "ObjectName",
+ CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
+
+Cell[TextData[{
+ Cell["   ", "ModInfo",ExpressionUUID->"ab899804-e536-44de-9e87-25fe14bbf1c8"],
+ Cell[BoxData[
+  RowBox[{
+   ButtonBox["DiagramHypergraph",
+    BaseStyle->"Link",
+    ButtonData->
+     "paclet:Wolfram/DiagrammaticComputation/ref/DiagramHypergraph"], "[", 
+   StyleBox["d", "TI"], "]"}]], "InlineFormula",ExpressionUUID->
+  "ff38a3ff-34fb-40b4-be0b-e1dd4169e3b6"],
+ " ",
+ "returns the hypergraph representation of the diagram ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox["d", "TI"], TraditionalForm]], "InlineFormula",ExpressionUUID->
+  "81d5c2b3-2f1b-4063-baa3-09eafdf62c7a"],
+ " used for rule matching.",
+ "\n"
+}], "Usage",ExpressionUUID->"4a0fb913-366a-4e2f-823e-fabec13ce26a"],
+
+Cell["\<\
+In the hypergraph view, each subdiagram becomes a hyperedge labelled with its \
+expression, and each shared port becomes a vertex shared by the corresponding \
+hyperedges.\
+\>", "Notes",ExpressionUUID->"fc08f250-e380-41d2-ab44-707e2810fa58"],
+
+Cell[TextData[{
+ "The matcher of ",
+ Cell[BoxData[
+  ButtonBox["DiagramReplace",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/DiagramReplace"]], 
+  "InlineFormula",ExpressionUUID->"f6a54388-f7ac-4c8a-b5ee-aedc68bb1c11"],
+ " operates on this view, so two diagrams that differ only in port naming or \
+layout match the same rules."
+}], "Notes",ExpressionUUID->"da56d3bf-9bd9-4b92-8cac-295e782a97b6"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "See Also",
+ Cell[BoxData[
+  TemplateBox[{"SeeAlso", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Insert links to any related reference (function) pages.", 
+        "MoreInfoText"], BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "b7caa910-e086-4d39-871e-e78bfb02a4b9"]
+}], "SeeAlsoSection",
+ CellID->1559318232,ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  ButtonBox["DiagramHypergraphRule",
+   BaseStyle->"Link",
+   ButtonData->
+    "paclet:Wolfram/DiagrammaticComputation/ref/DiagramHypergraphRule"]], 
+  "InlineFormula",ExpressionUUID->"97f2c2cb-047f-45d8-97b6-8f207c5e0da3"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  ButtonBox["DiagramRule",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/DiagramRule"]], 
+  "InlineFormula",ExpressionUUID->"09aa94fe-0d65-4bcf-8820-896b2dfe2c46"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  ButtonBox["DiagramsGraph",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/DiagramsGraph"]], 
+  "InlineFormula",ExpressionUUID->"416b2bdd-67be-4509-9df0-231224f70891"]
+}], "SeeAlso",ExpressionUUID->"819fc644-9384-42bf-9b25-687753e9d2df"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Tech Notes",
+ Cell[BoxData[
+  TemplateBox[{"TechNotes", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell["Insert links to related tech notes.", "MoreInfoText"], BaseStyle -> 
+       "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "a0027a76-2f69-4270-bf06-cff364aa09d7"]
+}], "TechNotesSection",
+ CellID->792424486,ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74"],
+
+Cell[CellGroupData[{
+
+Cell["Related Guides", "MoreAboutSection",
+ CellID->38303248,ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5"],
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox["DiagramRewriting",
+  BaseStyle->"Link",
+  ButtonData->
+   "paclet:guide/DiagramRewriting"]], \
+"InlineFormula",ExpressionUUID->"591bdd52-f9f5-47fb-b991-631063e03703"]], \
+"MoreAbout",ExpressionUUID->"28bf1218-6814-4e7b-b4e5-fdb83b22d1c0"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Related Links",
+ Cell[BoxData[
+  TemplateBox[{"RelatedLinks", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Insert links to any related page, including web pages.", 
+        "MoreInfoText"], BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "88f916ad-99d1-4784-a15f-dfa2faf44f02"]
+}], "RelatedLinksSection",
+ CellID->47113304,ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Examples Initialization",
+ Cell[BoxData[
+  TemplateBox[{"ExamplesInitialization", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Input that is to be evaluated before any examples are run, e.g. \
+Needs[\[Ellipsis]].", "MoreInfoText"], BaseStyle -> "IFrameBox"]], 
+     "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "1ca4d14a-308f-4a68-bbf6-e6901ce2ab4c"]
+}], "ExamplesInitializationSection",
+ CellID->1718580883,ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<Wolfram`DiagrammaticComputation`\>\"", 
+  "]"}]], "ExampleInitialization",
+ CellID->1969679695,ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502"]
+}, Open  ]],
+
+Cell[BoxData[
+ InterpretationBox[GridBox[{
+    {
+     StyleBox[
+      RowBox[{"Basic", " ", "Examples"}], "PrimaryExamplesSection"], 
+     ButtonBox[
+      RowBox[{
+       RowBox[{"More", " ", "Examples"}], " ", "\[RightTriangle]"}],
+      BaseStyle->"ExtendedExamplesLink",
+      ButtonData:>"ExtendedExamples"]}
+   }],
+  $Line = 0; Null]], "PrimaryExamplesSection",
+ CellID->880084151,ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42"],
+
+Cell["Hypergraph of a small composition:", "ExampleText",ExpressionUUID->"fc15b8cd-12bd-4b2f-8091-3d5293ff8e83"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"DiagramHypergraph", " ", "@", " ", 
+  RowBox[{"DiagramComposition", "[", 
+   RowBox[{
+    RowBox[{"Diagram", "[", 
+     RowBox[{"\"\<A\>\"", ",", " ", "b", ",", " ", "a"}], "]"}], ",", " ", 
+    RowBox[{"Diagram", "[", 
+     RowBox[{"\"\<B\>\"", ",", " ", "c", ",", " ", "b"}], "]"}]}], 
+   "]"}]}]], "Input",
+ CellLabel->"In[1]:= ",ExpressionUUID->"8dfb2cf9-de7c-4c56-97d7-16f00e81820c"],
+
+Cell[BoxData[
+ GraphicsBox[
+  NamespaceBox["Hypergraph",
+   DynamicModuleBox[{Typeset`hg = HoldComplete[
+     WolframInstitute`Hypergraph`Hypergraph[{
+       HoldForm[
+        Labeled[
+        FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, {{2, 1, 1}}]], 
+       HoldForm[
+        Labeled[
+        FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, {{2, 2, 1}, {
+         2, 1, 1}}]], 
+       HoldForm[
+        Labeled[
+        FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, {{1, 2, 
+         1}}]]}, 
+      WolframInstitute`Hypergraph`Hyperedges[{
+        HoldForm[
+         Labeled[
+         FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, {{2, 1, 
+          1}}]], 
+        HoldForm[
+         Labeled[
+         FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, {{2, 2, 1}, {
+          2, 1, 1}}]]}, {
+        HoldForm[
+         Labeled[
+         FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, {{2, 2, 1}, {
+          2, 1, 1}}]], 
+        HoldForm[
+         Labeled[
+         FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, {{1, 2, 
+          1}}]]}], VertexLabels -> {Verbatim[
+          HoldForm[
+           Labeled[
+           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, {{2, 1, 
+            1}}]]] -> FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
+        Verbatim[
+          HoldForm[
+           Labeled[
+           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, {{2, 1, 
+            1}}]]] -> FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
+        Verbatim[
+          HoldForm[
+           Labeled[
+           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, {{2, 2, 
+            1}, {2, 1, 1}}]]] -> 
+        FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, Verbatim[
+          HoldForm[
+           Labeled[
+           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, {{2, 2, 
+            1}, {2, 1, 1}}]]] -> 
+        FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, Verbatim[
+          HoldForm[
+           Labeled[
+           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, {{2, 2, 
+            1}, {2, 1, 1}}]]] -> 
+        FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, Verbatim[
+          HoldForm[
+           Labeled[
+           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, {{1, 2, 
+            1}}]]] -> FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, 
+        Verbatim[
+          HoldForm[
+           Labeled[
+           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, {{1, 2, 
+            1}}]]] -> FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a},
+       EdgeLabels -> {{
+          HoldForm[
+           Labeled[
+           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, {{2, 1, 
+            1}}]], 
+          HoldForm[
+           Labeled[
+           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, {{2, 2, 
+            1}, {2, 1, 1}}]]} -> ((Automatic -> Underoverscript[
+            HoldForm["B"], 1, 1]) -> {True, False}), {
+          HoldForm[
+           Labeled[
+           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, {{2, 2, 
+            1}, {2, 1, 1}}]], 
+          HoldForm[
+           Labeled[
+           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, {{1, 2, 
+            1}}]]} -> ((Automatic -> Underoverscript[
+            HoldForm["A"], 1, 1]) -> {True, False})}, "EdgeSymmetry" -> {{
+          HoldForm[
+           Labeled[
+           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, {{2, 1, 
+            1}}]], 
+          HoldForm[
+           Labeled[
+           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, {{2, 2, 
+            1}, {2, 1, 1}}]]} -> {
+          Cycles[{}]}, {
+          HoldForm[
+           Labeled[
+           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, {{2, 2, 
+            1}, {2, 1, 1}}]], 
+          HoldForm[
+           Labeled[
+           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, {{1, 2, 
+            1}}]]} -> {
+          Cycles[{}]}, All -> "Ordered"}, 
+      "EdgeAnnotations" -> {"EdgeSymmetry", EdgeLabels}, 
+      "VertexAnnotations" -> {VertexLabels}]]}, 
+    {AbsoluteThickness[Medium], Opacity[0.5], Arrowheads[{{Medium, 0.5}}], {
+      {Opacity[1], Arrowheads[{{Small, 0.5}}], 
+       {LightDarkSwitched[
+         Opacity[0.7, 
+          Hue[0.63, 0.7, 0.5]], 
+         GrayLevel[1]], Arrowheads[{{0.03, 0.5}}], 
+        LineBox[{{0., 3.6739403974420594`*^-16}, {1., 
+         2.4492935982947064`*^-16}}], 
+        {Opacity[1], InsetBox[
+          StyleBox[
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{"Automatic", "\[Rule]", 
+              UnderoverscriptBox[
+               TagBox["\<\"B\"\>",
+                HoldForm], "1", "1"]}], ")"}], "\[Rule]", 
+            RowBox[{"{", 
+             RowBox[{"True", ",", "False"}], "}"}]}],
+           StripOnInput->False,
+           LineColor->LightDarkSwitched[
+             Hue[0.63, 0.7, 0.5], 
+             GrayLevel[1]],
+           FrontFaceColor->LightDarkSwitched[
+             Hue[0.63, 0.7, 0.5], 
+             GrayLevel[1]],
+           BackFaceColor->LightDarkSwitched[
+             Hue[0.63, 0.7, 0.5], 
+             GrayLevel[1]],
+           GraphicsColor->LightDarkSwitched[
+             Hue[0.63, 0.7, 0.5], 
+             GrayLevel[1]],
+           FontColor->LightDarkSwitched[
+             Hue[0.63, 0.7, 0.5], 
+             GrayLevel[1]]], {0.5, 0.0600000000000003}]}}}, 
+      {Opacity[1], Arrowheads[{{Small, 0.5}}], 
+       {LightDarkSwitched[
+         Opacity[0.7, 
+          Hue[0.63, 0.7, 0.5]], 
+         GrayLevel[1]], Arrowheads[{{0.03, 0.5}}], 
+        LineBox[{{1., 2.4492935982947064`*^-16}, {2., 0.}}], 
+        {Opacity[1], InsetBox[
+          StyleBox[
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{"Automatic", "\[Rule]", 
+              UnderoverscriptBox[
+               TagBox["\<\"A\"\>",
+                HoldForm], "1", "1"]}], ")"}], "\[Rule]", 
+            RowBox[{"{", 
+             RowBox[{"True", ",", "False"}], "}"}]}],
+           StripOnInput->False,
+           LineColor->LightDarkSwitched[
+             Hue[0.63, 0.7, 0.5], 
+             GrayLevel[1]],
+           FrontFaceColor->LightDarkSwitched[
+             Hue[0.63, 0.7, 0.5], 
+             GrayLevel[1]],
+           BackFaceColor->LightDarkSwitched[
+             Hue[0.63, 0.7, 0.5], 
+             GrayLevel[1]],
+           GraphicsColor->LightDarkSwitched[
+             Hue[0.63, 0.7, 0.5], 
+             GrayLevel[1]],
+           FontColor->LightDarkSwitched[
+             Hue[0.63, 0.7, 0.5], 
+             GrayLevel[1]]], {1.5, 0.06000000000000012}]}}}}, 
+     {Opacity[1], {
+       {LightDarkSwitched[
+         Hue[0.63, 0.26, 0.89], 
+         GrayLevel[1]], EdgeForm[LightDarkSwitched[
+         Opacity[0.95, 
+          Hue[0.63, 0.7, 0.33]], 
+         GrayLevel[1]]], 
+        DiskBox[{0., 3.6739403974420594`*^-16}, 
+         Offset[{2., 2.}, {0., 0.}]]}, 
+       {LightDarkSwitched[
+         Hue[0.63, 0.26, 0.89], 
+         GrayLevel[1]], EdgeForm[LightDarkSwitched[
+         Opacity[0.95, 
+          Hue[0.63, 0.7, 0.33]], 
+         GrayLevel[1]]], 
+        DiskBox[{1., 2.4492935982947064`*^-16}, 
+         Offset[{2., 2.}, {0., 0.}]]}, 
+       {LightDarkSwitched[
+         Hue[0.63, 0.26, 0.89], 
+         GrayLevel[1]], EdgeForm[LightDarkSwitched[
+         Opacity[0.95, 
+          Hue[0.63, 0.7, 0.33]], 
+         GrayLevel[1]]], DiskBox[{2., 0.}, Offset[{2., 2.}, {0., 0.}]]}}, {
+       InsetBox[
+        StyleBox["c",
+         StripOnInput->False,
+         LineColor->LightDarkSwitched[
+           GrayLevel[0], 
+           GrayLevel[1]],
+         FrontFaceColor->LightDarkSwitched[
+           GrayLevel[0], 
+           GrayLevel[1]],
+         BackFaceColor->LightDarkSwitched[
+           GrayLevel[0], 
+           GrayLevel[1]],
+         GraphicsColor->LightDarkSwitched[
+           GrayLevel[0], 
+           GrayLevel[1]],
+         FontColor->LightDarkSwitched[
+           GrayLevel[0], 
+           GrayLevel[1]]], {0., 3.6739403974420594*^-16}, 
+        ImageScaled[{1.5, 0.49999999999999983}]], InsetBox[
+        StyleBox["b",
+         StripOnInput->False,
+         LineColor->LightDarkSwitched[
+           GrayLevel[0], 
+           GrayLevel[1]],
+         FrontFaceColor->LightDarkSwitched[
+           GrayLevel[0], 
+           GrayLevel[1]],
+         BackFaceColor->LightDarkSwitched[
+           GrayLevel[0], 
+           GrayLevel[1]],
+         GraphicsColor->LightDarkSwitched[
+           GrayLevel[0], 
+           GrayLevel[1]],
+         FontColor->LightDarkSwitched[
+           GrayLevel[0], 
+           GrayLevel[1]]], {1., 2.4492935982947064*^-16}, 
+        ImageScaled[{0.5, -0.5}]], InsetBox[
+        StyleBox["a",
+         StripOnInput->False,
+         LineColor->LightDarkSwitched[
+           GrayLevel[0], 
+           GrayLevel[1]],
+         FrontFaceColor->LightDarkSwitched[
+           GrayLevel[0], 
+           GrayLevel[1]],
+         BackFaceColor->LightDarkSwitched[
+           GrayLevel[0], 
+           GrayLevel[1]],
+         GraphicsColor->LightDarkSwitched[
+           GrayLevel[0], 
+           GrayLevel[1]],
+         FontColor->LightDarkSwitched[
+           GrayLevel[0], 
+           GrayLevel[1]]], {2., 0.}, 
+        ImageScaled[{-0.5, 0.5000000000000002}]]}}}]],
+  BoxID -> "Hypergraph317",
+  Background->LightDarkSwitched[
+    GrayLevel[1], None],
+  BaseStyle->{
+   WolframInstitute`Hypergraph`Formatting`PackagePrivate`\
+GraphicsHighlightColor -> RGBColor[1, 0, 0], 
+    ComponentwiseContextMenu -> {"GraphicsBox" -> {
+        MenuItem["Draw", 
+         KernelExecute[
+          MathLink`CallFrontEnd[
+           FrontEnd`BoxReferenceReplace[
+            FE`BoxReference[
+             EvaluationNotebook[], "Hypergraph317"], 
+            ToBoxes[
+             WolframInstitute`Hypergraph`HypergraphDraw[
+              WolframInstitute`Hypergraph`Hypergraph[{
+                HoldForm[
+                 Labeled[
+                 FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, {{2, 
+                  1, 1}}]], 
+                HoldForm[
+                 Labeled[
+                 FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, {{2, 
+                  2, 1}, {2, 1, 1}}]], 
+                HoldForm[
+                 Labeled[
+                 FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, {{1, 
+                  2, 1}}]]}, 
+               WolframInstitute`Hypergraph`Hyperedges[{
+                 HoldForm[
+                  Labeled[
+                  FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, {{2,
+                    1, 1}}]], 
+                 HoldForm[
+                  Labeled[
+                  FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, {{2,
+                    2, 1}, {2, 1, 1}}]]}, {
+                 HoldForm[
+                  Labeled[
+                  FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, {{2,
+                    2, 1}, {2, 1, 1}}]], 
+                 HoldForm[
+                  Labeled[
+                  FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, {{1,
+                    2, 1}}]]}], VertexLabels -> {Verbatim[
+                   HoldForm[
+                    Labeled[
+                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, {{
+                    2, 1, 1}}]]] -> 
+                 FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
+                 Verbatim[
+                   HoldForm[
+                    Labeled[
+                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, {{
+                    2, 1, 1}}]]] -> 
+                 FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
+                 Verbatim[
+                   HoldForm[
+                    Labeled[
+                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, {{
+                    2, 2, 1}, {2, 1, 1}}]]] -> 
+                 FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
+                 Verbatim[
+                   HoldForm[
+                    Labeled[
+                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, {{
+                    2, 2, 1}, {2, 1, 1}}]]] -> 
+                 FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
+                 Verbatim[
+                   HoldForm[
+                    Labeled[
+                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, {{
+                    2, 2, 1}, {2, 1, 1}}]]] -> 
+                 FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
+                 Verbatim[
+                   HoldForm[
+                    Labeled[
+                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, {{
+                    1, 2, 1}}]]] -> 
+                 FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, 
+                 Verbatim[
+                   HoldForm[
+                    Labeled[
+                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, {{
+                    1, 2, 1}}]]] -> 
+                 FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a}, 
+               EdgeLabels -> {{
+                   HoldForm[
+                    Labeled[
+                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, {{
+                    2, 1, 1}}]], 
+                   HoldForm[
+                    Labeled[
+                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, {{
+                    2, 2, 1}, {2, 1, 1}}]]} -> ((Automatic -> 
+                   Underoverscript[
+                    HoldForm["B"], 1, 1]) -> {True, False}), {
+                   HoldForm[
+                    Labeled[
+                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, {{
+                    2, 2, 1}, {2, 1, 1}}]], 
+                   HoldForm[
+                    Labeled[
+                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, {{
+                    1, 2, 1}}]]} -> ((Automatic -> Underoverscript[
+                    HoldForm["A"], 1, 1]) -> {True, False})}, 
+               "EdgeSymmetry" -> {{
+                   HoldForm[
+                    Labeled[
+                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, {{
+                    2, 1, 1}}]], 
+                   HoldForm[
+                    Labeled[
+                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, {{
+                    2, 2, 1}, {2, 1, 1}}]]} -> {
+                   Cycles[{}]}, {
+                   HoldForm[
+                    Labeled[
+                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, {{
+                    2, 2, 1}, {2, 1, 1}}]], 
+                   HoldForm[
+                    Labeled[
+                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, {{
+                    1, 2, 1}}]]} -> {
+                   Cycles[{}]}, All -> "Ordered"}, 
+               "EdgeAnnotations" -> {"EdgeSymmetry", EdgeLabels}, 
+               "VertexAnnotations" -> {VertexLabels}]]]]]], MenuEvaluator -> 
+         Automatic]}}},
+  FormatType->TraditionalForm,
+  FrameTicks->None,
+  PlotRange->{{0., 2.}, {-1., 1.0000000000000004`}},
+  PlotRangePadding->Scaled[0.2]]], "Output",
+ CellLabel->"Out[1]= ",ExpressionUUID->"b517bff0-12a6-4c8c-8b68-c3cc325345f9"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Metadata", "MetadataSection",
+ CellID->311882160,ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd"],
+
+Cell[TextData[{
+ "New in: ",
+ Cell["XX", "HistoryData",
+  CellTags->"New",ExpressionUUID->"c83e5b59-d200-4539-afdc-500ed06d3c87"],
+ " | Modified in: ",
+ Cell[" ", "HistoryData",
+  CellTags->"Modified",ExpressionUUID->"d4e38c0c-d937-44f2-85a5-7c0e8fc755ab"],
+ " | Obsolete in: ",
+ Cell[" ", "HistoryData",
+  CellTags->"Obsolete",ExpressionUUID->
+  "4c68d818-8923-4121-80f8-cf0eabb4c0de"]
+}], "History",
+ CellID->341476719,ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Categorization",
+ Cell[BoxData[
+  TemplateBox[{"Metadata", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Metadata such as page URI, context, and type of documentation page.", 
+        "MoreInfoText"], BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "4b3d4122-3cd4-481f-a8ff-5aefbb03e00d"]
+}], "CategorizationSection",
+ CellID->1755438392,ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329"],
+
+Cell["Symbol", "Categorization",
+ CellLabel->"Entity Type",
+ CellID->686433507,ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a"],
+
+Cell["Wolfram/DiagrammaticComputation", "Categorization",
+ CellLabel->"Paclet Name",
+ CellID->605800465,ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec"],
+
+Cell["Wolfram`DiagrammaticComputation`", "Categorization",
+ CellLabel->"Context",
+ CellID->468444828,ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191"],
+
+Cell["Wolfram/DiagrammaticComputation/ref/DiagramHypergraph", "Categorization",
+ CellLabel->"URI",ExpressionUUID->"48bbb100-c970-4ed6-842e-026a1e5dd24d"]
+}, Closed]],
+
+Cell["Keywords", "KeywordsSection",
+ CellID->477174294,ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6"],
+
+Cell[CellGroupData[{
+
+Cell["Syntax Templates", "TemplatesSection",
+ CellID->1872225408,ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Additional Function Template",
+ CellID->1562036412,ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Arguments Pattern",
+ CellID->158391909,ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Local Variables",
+ CellID->1360575930,ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Color Equal Signs",
+ CellID->793782254,ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648"]
+}, Closed]]
+}, Open  ]]
+},
+WindowSize->{700, 770},
+WindowMargins->{{5, Automatic}, {Automatic, 0}},
+TaggingRules->{
+ "Metadata" -> {
+   "title" -> "DiagramHypergraph", "context" -> 
+    "Wolfram`DiagrammaticComputation`", 
+    "keywords" -> {"hypergraph", "matching", "view", "rewriting"}, "summary" -> 
+    "", "paclet" -> "Wolfram/DiagrammaticComputation", "uri" -> 
+    "Wolfram/DiagrammaticComputation/ref/DiagramHypergraph", "type" -> 
+    "Symbol", "index" -> True, "language" -> "en"}},
+CreateCellID->True,
+CellContext->"Global`",
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->FrontEnd`FileName[{"Wolfram"}, "FunctionPageStylesExt.nb", 
+  CharacterEncoding -> "UTF-8"],
+ExpressionUUID->"c207366e-060a-406b-a297-9e30e1628f43"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 115, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
+ CellID->1224892054],
+Cell[694, 25, 691, 18, 70, "Usage",ExpressionUUID->"4a0fb913-366a-4e2f-823e-fabec13ce26a"],
+Cell[1388, 45, 251, 4, 70, "Notes",ExpressionUUID->"fc08f250-e380-41d2-ab44-707e2810fa58"],
+Cell[1642, 51, 433, 9, 70, "Notes",ExpressionUUID->"da56d3bf-9bd9-4b92-8cac-295e782a97b6"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2112, 65, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
+ CellID->1559318232],
+Cell[2574, 80, 820, 19, 70, "SeeAlso",ExpressionUUID->"819fc644-9384-42bf-9b25-687753e9d2df"]
+}, Open  ]],
+Cell[3409, 102, 435, 12, 70, "TechNotesSection",ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74",
+ CellID->792424486],
+Cell[CellGroupData[{
+Cell[3869, 118, 116, 1, 70, "MoreAboutSection",ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5",
+ CellID->38303248],
+Cell[3988, 121, 278, 6, 70, "MoreAbout",ExpressionUUID->"28bf1218-6814-4e7b-b4e5-fdb83b22d1c0"]
+}, Open  ]],
+Cell[4281, 130, 471, 13, 70, "RelatedLinksSection",ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea",
+ CellID->47113304],
+Cell[CellGroupData[{
+Cell[4777, 147, 531, 14, 70, "ExamplesInitializationSection",ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5",
+ CellID->1718580883],
+Cell[5311, 163, 192, 3, 70, "ExampleInitialization",ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502",
+ CellID->1969679695]
+}, Open  ]],
+Cell[5518, 169, 442, 12, 70, "PrimaryExamplesSection",ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42",
+ CellID->880084151],
+Cell[5963, 183, 112, 0, 70, "ExampleText",ExpressionUUID->"fc15b8cd-12bd-4b2f-8091-3d5293ff8e83"],
+Cell[CellGroupData[{
+Cell[6100, 187, 412, 9, 70, "Input",ExpressionUUID->"8dfb2cf9-de7c-4c56-97d7-16f00e81820c"],
+Cell[6515, 198, 15299, 382, 70, "Output",ExpressionUUID->"b517bff0-12a6-4c8c-8b68-c3cc325345f9"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[21851, 585, 110, 1, 70, "MetadataSection",ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd",
+ CellID->311882160],
+Cell[21964, 588, 476, 12, 70, "History",ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046",
+ CellID->341476719],
+Cell[CellGroupData[{
+Cell[22465, 604, 485, 13, 70, "CategorizationSection",ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329",
+ CellID->1755438392],
+Cell[22953, 619, 134, 2, 70, "Categorization",ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a",
+ CellID->686433507],
+Cell[23090, 623, 159, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec",
+ CellID->605800465],
+Cell[23252, 627, 156, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
+ CellID->468444828],
+Cell[23411, 631, 153, 1, 70, "Categorization",ExpressionUUID->"48bbb100-c970-4ed6-842e-026a1e5dd24d"]
+}, Closed]],
+Cell[23579, 635, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
+ CellID->477174294],
+Cell[CellGroupData[{
+Cell[23714, 640, 120, 1, 70, "TemplatesSection",ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c",
+ CellID->1872225408],
+Cell[23837, 643, 149, 2, 70, "Template",ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72",
+ CellID->1562036412],
+Cell[23989, 647, 137, 2, 70, "Template",ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec",
+ CellID->158391909],
+Cell[24129, 651, 136, 2, 70, "Template",ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9",
+ CellID->1360575930],
+Cell[24268, 655, 137, 2, 70, "Template",ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648",
+ CellID->793782254]
+}, Closed]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

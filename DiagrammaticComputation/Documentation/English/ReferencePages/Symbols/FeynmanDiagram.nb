@@ -1,0 +1,1572 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     66125,       1563]
+NotebookOptionsPosition[     60310,       1447]
+NotebookOutlinePosition[     61470,       1482]
+CellTagsIndexPosition[     61390,       1477]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["FeynmanDiagram", "ObjectName",
+ CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
+
+Cell[TextData[{
+ Cell["   ", "ModInfo",ExpressionUUID->"efc594c4-ac9c-4716-912e-e6154ceca2ae"],
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["FeynmanDiagram"]], 
+     "paclet:WolframDiagrammaticComputation/ref/FeynmanDiagram", 
+     "WolframDiagrammaticComputation Package Symbol"},
+    "PackageLink",
+    BaseStyle->"InlineFormula"], "[", 
+   StyleBox["graph", "TI"], "]"}]], "InlineFormula",ExpressionUUID->
+  "12000c22-d50b-4be9-80dc-e847e6fe4c8e"],
+ " ",
+ "constructs a ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Diagram"]], 
+    "paclet:WolframDiagrammaticComputation/ref/Diagram", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "fb83e075-50ca-4240-a23c-1f2a700234b2"],
+ " network from the topology graph ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox[
+    RowBox[{"g", "r", "a", "p", "h"}], "TI"], TraditionalForm]], 
+  "InlineFormula",ExpressionUUID->"cb477eb2-766c-4ccf-b767-af3f4e728fe3"],
+ ".",
+ "\n"
+}], "Usage",ExpressionUUID->"eb9b4c8e-440d-4484-84ff-6dd61a0a2a19"],
+
+Cell[TextData[{
+ "The ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox[
+    RowBox[{"g", "r", "a", "p", "h"}], "TI"], TraditionalForm]], 
+  "InlineFormula",ExpressionUUID->"08600896-55ea-4747-a76a-cf889013a7cd"],
+ " is a topology graph as produced by ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["TopologyGraph"]], 
+    "paclet:WolframDiagrammaticComputation/ref/TopologyGraph", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "26b02d99-e9b3-4cc3-9ae5-6d3176199abb"],
+ " or ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["TopologyGraphs"]], 
+    "paclet:WolframDiagrammaticComputation/ref/TopologyGraphs", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "3c8d14c5-624d-4da8-a295-93cfd19680c8"],
+ " \[LongDash] its vertices are interaction points and external legs, its \
+tagged edges are propagators."
+}], "Notes",ExpressionUUID->"877af467-559f-44d2-b03d-abca7adeb4e3"],
+
+Cell[TextData[{
+ "Each vertex becomes a subdiagram (a point for interaction vertices, an \
+invisible node for external legs) and each propagator becomes a wire, \
+rendered with the line style conventional for its FeynArts propagator type \
+(wiggly for gauge bosons, dashed for scalars and ghosts, straight for \
+fermions) via ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["WigglyArcFunction"]], 
+    "paclet:WolframDiagrammaticComputation/ref/WigglyArcFunction", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "d420ee4c-0d04-4fb3-bdde-8e229a55c8ec"],
+ "."
+}], "Notes",ExpressionUUID->"cb60daf9-c33b-4448-93f9-756a81d2ae4f"],
+
+Cell[TextData[{
+ "When the edges carry field insertions (from ",
+ Cell[BoxData[
+ "FeynArts`InsertFields"], "InlineFormula",ExpressionUUID->
+  "9a63678b-67b3-4405-b5ec-3c2d9e9bfedc"],
+ " via ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["TopologyGraphs"]], 
+    "paclet:WolframDiagrammaticComputation/ref/TopologyGraphs", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "4ef71a97-3d09-43be-93db-9420362b557b"],
+ "), the wires are labelled with the LaTeX-typeset field names."
+}], "Notes",ExpressionUUID->"8847eb9e-6a1a-4734-99db-3314c17e100f"],
+
+Cell[TextData[{
+ "Additional options are passed through to ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["DiagramNetwork"]], 
+    "paclet:WolframDiagrammaticComputation/ref/DiagramNetwork", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "ed6caf69-7c56-469b-a7b1-d93105c742ea"],
+ "."
+}], "Notes",ExpressionUUID->"a51d63c5-c14a-4beb-a527-5dfd447d8bf1"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "See Also",
+ Cell[BoxData[
+  TemplateBox[{"SeeAlso", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Insert links to any related reference (function) pages.", 
+        "MoreInfoText"], BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "b7caa910-e086-4d39-871e-e78bfb02a4b9"]
+}], "SeeAlsoSection",
+ CellID->1559318232,ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["TopologyGraph"]], 
+    "paclet:WolframDiagrammaticComputation/ref/TopologyGraph", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "0e1a5c6c-0d63-4dae-8575-8a50f41d4130"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["TopologyGraphs"]], 
+    "paclet:WolframDiagrammaticComputation/ref/TopologyGraphs", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "3195d930-c45e-4c19-b8d0-18c9d416e59e"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["TopologyGraphics"]], 
+    "paclet:WolframDiagrammaticComputation/ref/TopologyGraphics", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "9a54abf5-d52b-4db0-a733-ab47c8806936"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FeynArtsTopologyGraphics"]], 
+    "paclet:WolframDiagrammaticComputation/ref/FeynArtsTopologyGraphics", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "dc241560-d663-41fe-a22e-c4bc1ce28f36"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Diagram"]], 
+    "paclet:WolframDiagrammaticComputation/ref/Diagram", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "96ca83d9-4f6d-4d63-8721-df93318979e4"],
+ " \[FilledVerySmallSquare] ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["DiagramNetwork"]], 
+    "paclet:WolframDiagrammaticComputation/ref/DiagramNetwork", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "a1af839e-9b05-495d-9a62-67b326106b95"]
+}], "SeeAlso",ExpressionUUID->"5b97453a-cce8-4585-af5f-e3a392e9cc97"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Tech Notes",
+ Cell[BoxData[
+  TemplateBox[{"TechNotes", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell["Insert links to related tech notes.", "MoreInfoText"], BaseStyle -> 
+       "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "a0027a76-2f69-4270-bf06-cff364aa09d7"]
+}], "TechNotesSection",
+ CellID->792424486,ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74"],
+
+Cell[CellGroupData[{
+
+Cell["Related Guides", "MoreAboutSection",
+ CellID->38303248,ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5"],
+
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["FeynmanDiagrams"]], 
+   "paclet:WolframDiagrammaticComputation/guide/FeynmanDiagrams"},
+  "RefLinkPlain",
+  BaseStyle->{
+   "InlineFormula"}]], \
+"InlineFormula",ExpressionUUID->"8706836e-e2d9-42ff-b067-26eca4bcd962"]], \
+"MoreAbout",ExpressionUUID->"f006c8b2-5a01-4df7-b5d9-c52ba08acaf3"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Related Links",
+ Cell[BoxData[
+  TemplateBox[{"RelatedLinks", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Insert links to any related page, including web pages.", 
+        "MoreInfoText"], BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "88f916ad-99d1-4784-a15f-dfa2faf44f02"]
+}], "RelatedLinksSection",
+ CellID->47113304,ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Examples Initialization",
+ Cell[BoxData[
+  TemplateBox[{"ExamplesInitialization", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Input that is to be evaluated before any examples are run, e.g. \
+Needs[\[Ellipsis]].", "MoreInfoText"], BaseStyle -> "IFrameBox"]], 
+     "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "1ca4d14a-308f-4a68-bbf6-e6901ce2ab4c"]
+}], "ExamplesInitializationSection",
+ CellID->1718580883,ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<Wolfram`DiagrammaticComputation`\>\"", 
+  "]"}]], "ExampleInitialization",
+ CellID->1969679695,ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502"]
+}, Open  ]],
+
+Cell[BoxData[
+ InterpretationBox[GridBox[{
+    {
+     StyleBox[
+      RowBox[{"Basic", " ", "Examples"}], "PrimaryExamplesSection"], 
+     ButtonBox[
+      RowBox[{
+       RowBox[{"More", " ", "Examples"}], " ", "\[RightTriangle]"}],
+      BaseStyle->"ExtendedExamplesLink",
+      ButtonData:>"ExtendedExamples"]}
+   }],
+  $Line = 0; Null]], "PrimaryExamplesSection",
+ CellID->880084151,ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42"],
+
+Cell["Load FeynArts:", "ExampleText",ExpressionUUID->"908e7b7e-87e1-4c9f-9713-d4861a1ce97f"],
+
+Cell[BoxData[{
+ RowBox[{"Needs", "[", "\"\<FeynArts`\>\"", "]"}], "\n", 
+ RowBox[{
+  RowBox[{"FeynArts`$FAVerbose", " ", "=", " ", "0"}], ";"}]}], "Input",
+ CellLabel->"In[1]:= ",ExpressionUUID->"09c83355-5aa7-48f7-a2cf-d9355a60d78b"],
+
+Cell["Build a Feynman diagram from a tree-level 2 \[RightArrow] 2 topology:", \
+"ExampleText",ExpressionUUID->"dd16b9af-712e-43e0-b201-0cb33d32ecfe"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"FeynmanDiagram", "[", 
+  RowBox[{"TopologyGraph", "[", 
+   RowBox[{"First", " ", "@", " ", 
+    RowBox[{"CreateTopologies", "[", 
+     RowBox[{"0", ",", " ", 
+      RowBox[{"2", " ", "->", " ", "2"}]}], "]"}]}], "]"}], "]"}]], "Input",
+ CellLabel->"In[2]:= ",ExpressionUUID->"33511b55-53ac-4e09-9545-bdc314bc8315"],
+
+Cell[BoxData[
+ GraphicsBox[
+  NamespaceBox["Diagram",
+   DynamicModuleBox[{Typeset`d = HoldComplete[
+     Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+      "DiagramOptions" -> {
+        "PortArrows" -> {{}, {}}, "PortLabels" -> {{}, {}}, "ShowWireLabels" -> 
+         True, "WireLabelFunction" -> (Placed[
+           Replace[
+            Quiet[
+             FeynArts`TheLabel[
+              Part[
+               Replace[
+                #3["Expression"], Interpretation[
+                  Pattern[
+                  Wolfram`DiagrammaticComputation`Diagram`Feynman`Private`x, 
+                   Blank[]], 
+                  Blank[]] :> 
+                Wolfram`DiagrammaticComputation`Diagram`Feynman`Private`x], 
+               3, -1]]], {
+            Pattern[Wolfram`DiagrammaticComputation`Diagram`Feynman`Private`l, 
+               Blank[String]] :> 
+             MaTeX`MaTeX[
+              Wolfram`DiagrammaticComputation`Diagram`Feynman`Private`l], 
+             Blank[] -> ""}], 
+           Offset[{-0.02, 0.05}]]& ), "Arrange" -> False, Alignment -> 
+         Center}, "Expression" :> 
+       Wolfram`DiagrammaticComputation`Diagram`DiagramNetwork[
+         Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+          "DiagramOptions" -> {
+            "PortArrows" -> {{}, {
+               Wolfram`DiagrammaticComputation`Diagram`Feynman`\
+WigglyArcFunction[
+                 ToString[
+                  FeynArts`PropagatorType[
+                   Part[
+                    DirectedEdge[1, 5, {1, FeynArts`Incoming}], 3, -1]]], 0, 
+                 Replace[
+                  FeynArts`PropagatorArrow[
+                   Part[
+                    DirectedEdge[1, 5, {1, FeynArts`Incoming}], 3, -1]], {
+                  Forward -> -1, Backward -> 1, None -> 0}], "Amplitude" -> 
+                 If[#2 === "Net", 0.01, 0.005] 11.180339887498949`, 
+                 "Frequency" -> If[#2 === "Net", 10, 30]/11.180339887498949`, 
+                 "TaperFraction" -> 0][
+                 If[#2 === "Net", 
+                  Line[{{0., 15.}, {10., 10.}}], 
+                  BSplineCurve[#]]]& }}, 
+             "PortLabels" -> {Automatic, {Automatic}}, "Shape" -> None, 
+             "LabelFunction" -> (""& ), "Center" -> {0., 15.}}, "Expression" :> 
+           1, "InputPorts" -> {}, "OutputPorts" -> {
+             
+             Wolfram`DiagrammaticComputation`Port`Port[<|
+              "Expression" :> DirectedEdge[1, 5, {1, FeynArts`Incoming}], 
+               "NeutralQ" -> False, "Tags" -> {}, 
+               "Type" -> \[FormalCapitalT]|>]}|>], 
+         Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+          "DiagramOptions" -> {
+            "PortArrows" -> {{}, {
+               Wolfram`DiagrammaticComputation`Diagram`Feynman`\
+WigglyArcFunction[
+                 ToString[
+                  FeynArts`PropagatorType[
+                   Part[
+                    DirectedEdge[2, 5, {1, FeynArts`Incoming}], 3, -1]]], 0, 
+                 Replace[
+                  FeynArts`PropagatorArrow[
+                   Part[
+                    DirectedEdge[2, 5, {1, FeynArts`Incoming}], 3, -1]], {
+                  Forward -> -1, Backward -> 1, None -> 0}], "Amplitude" -> 
+                 If[#2 === "Net", 0.01, 0.005] 11.180339887498949`, 
+                 "Frequency" -> If[#2 === "Net", 10, 30]/11.180339887498949`, 
+                 "TaperFraction" -> 0][
+                 If[#2 === "Net", 
+                  Line[{{0., 5.}, {10., 10.}}], 
+                  BSplineCurve[#]]]& }}, 
+             "PortLabels" -> {Automatic, {Automatic}}, "Shape" -> None, 
+             "LabelFunction" -> (""& ), "Center" -> {0., 5.}}, "Expression" :> 
+           2, "InputPorts" -> {}, "OutputPorts" -> {
+             
+             Wolfram`DiagrammaticComputation`Port`Port[<|
+              "Expression" :> DirectedEdge[2, 5, {1, FeynArts`Incoming}], 
+               "NeutralQ" -> False, "Tags" -> {}, 
+               "Type" -> \[FormalCapitalT]|>]}|>], 
+         Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+          "DiagramOptions" -> {
+            "PortArrows" -> {{Automatic}, {}}, 
+             "PortLabels" -> {{Automatic}, Automatic}, "Shape" -> None, 
+             "LabelFunction" -> (""& ), "Center" -> {20, 15.}}, "Expression" :> 
+           3, "InputPorts" -> {
+             
+             Wolfram`DiagrammaticComputation`Port`Port[<|
+              "Expression" :> Wolfram`DiagrammaticComputation`Port`PortDual[
+                 DirectedEdge[5, 3, {1, FeynArts`Outgoing}]], "NeutralQ" -> 
+               False, "Tags" -> {}, "Type" -> 
+               SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {}|>], 
+         Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+          "DiagramOptions" -> {
+            "PortArrows" -> {{Automatic}, {}}, 
+             "PortLabels" -> {{Automatic}, Automatic}, "Shape" -> None, 
+             "LabelFunction" -> (""& ), "Center" -> {20, 5.}}, "Expression" :> 
+           4, "InputPorts" -> {
+             
+             Wolfram`DiagrammaticComputation`Port`Port[<|
+              "Expression" :> Wolfram`DiagrammaticComputation`Port`PortDual[
+                 DirectedEdge[5, 4, {1, FeynArts`Outgoing}]], "NeutralQ" -> 
+               False, "Tags" -> {}, "Type" -> 
+               SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {}|>], 
+         Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+          "DiagramOptions" -> {
+            "PortArrows" -> {{Automatic, Automatic}, {
+               Wolfram`DiagrammaticComputation`Diagram`Feynman`\
+WigglyArcFunction[
+                 ToString[
+                  FeynArts`PropagatorType[
+                   Part[
+                    DirectedEdge[5, 3, {1, FeynArts`Outgoing}], 3, -1]]], 0, 
+                 Replace[
+                  FeynArts`PropagatorArrow[
+                   Part[
+                    DirectedEdge[5, 3, {1, FeynArts`Outgoing}], 3, -1]], {
+                  Forward -> -1, Backward -> 1, None -> 0}], "Amplitude" -> 
+                 If[#2 === "Net", 0.01, 0.005] 11.180339887498949`, 
+                 "Frequency" -> If[#2 === "Net", 10, 30]/11.180339887498949`, 
+                 "TaperFraction" -> 0][
+                 If[#2 === "Net", 
+                  Line[{{10., 10.}, {20., 15.}}], 
+                  BSplineCurve[#]]]& , 
+                Wolfram`DiagrammaticComputation`Diagram`Feynman`\
+WigglyArcFunction[
+                 ToString[
+                  FeynArts`PropagatorType[
+                   Part[
+                    DirectedEdge[5, 4, {1, FeynArts`Outgoing}], 3, -1]]], 0, 
+                 Replace[
+                  FeynArts`PropagatorArrow[
+                   Part[
+                    DirectedEdge[5, 4, {1, FeynArts`Outgoing}], 3, -1]], {
+                  Forward -> -1, Backward -> 1, None -> 0}], "Amplitude" -> 
+                 If[#2 === "Net", 0.01, 0.005] 11.180339887498949`, 
+                 "Frequency" -> If[#2 === "Net", 10, 30]/11.180339887498949`, 
+                 "TaperFraction" -> 0][
+                 If[#2 === "Net", 
+                  Line[{{10., 10.}, {20., 5.}}], 
+                  BSplineCurve[#]]]& }}, 
+             "PortLabels" -> {{Automatic, Automatic}, {Automatic, Automatic}},
+              "Shape" -> "Point", "LabelFunction" -> (""& ), 
+             "Center" -> {10., 10.}}, "Expression" :> 5, "InputPorts" -> {
+             
+             Wolfram`DiagrammaticComputation`Port`Port[<|
+              "Expression" :> Wolfram`DiagrammaticComputation`Port`PortDual[
+                 DirectedEdge[1, 5, {1, FeynArts`Incoming}]], "NeutralQ" -> 
+               False, "Tags" -> {}, "Type" -> SuperStar[\[FormalCapitalT]]|>], 
+             
+             Wolfram`DiagrammaticComputation`Port`Port[<|
+              "Expression" :> Wolfram`DiagrammaticComputation`Port`PortDual[
+                 DirectedEdge[2, 5, {1, FeynArts`Incoming}]], "NeutralQ" -> 
+               False, "Tags" -> {}, "Type" -> 
+               SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
+             
+             Wolfram`DiagrammaticComputation`Port`Port[<|
+              "Expression" :> DirectedEdge[5, 3, {1, FeynArts`Outgoing}], 
+               "NeutralQ" -> False, "Tags" -> {}, 
+               "Type" -> \[FormalCapitalT]|>], 
+             
+             Wolfram`DiagrammaticComputation`Port`Port[<|
+              "Expression" :> DirectedEdge[5, 4, {1, FeynArts`Outgoing}], 
+               "NeutralQ" -> False, "Tags" -> {}, 
+               "Type" -> \[FormalCapitalT]|>]}|>]], "InputPorts" -> {}, 
+       "OutputPorts" -> {}|>]]}, 
+    NamespaceBox[{
+      {LightDarkSwitched[
+        GrayLevel[0], 
+        GrayLevel[1]], Opacity[0.7], CapForm["Round"], Arrowheads[Medium], 
+       StyleBox[{{
+          {Arrowheads[{{Small, 0.5}}], LineBox[{{0., 15.}, {10., 10.}}]}, 
+          InsetBox[
+           StyleBox[
+            TemplateBox[{"\"\"", "\"X\""},
+             "ClickToCopy2"],
+            StripOnInput->False,
+            LineColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            FrontFaceColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            BackFaceColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            GraphicsColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            FontColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]]], {4.98, 12.55}]}, {
+          {Arrowheads[{{Small, 0.5}}], LineBox[{{0., 5.}, {10., 10.}}]}, 
+          InsetBox[
+           StyleBox[
+            TemplateBox[{"\"\"", "\"X\""},
+             "ClickToCopy2"],
+            StripOnInput->False,
+            LineColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            FrontFaceColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            BackFaceColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            GraphicsColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            FontColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]]], {4.98, 7.55}]}, {
+          {Arrowheads[{{Small, 0.5}}], LineBox[{{10., 10.}, {20., 15.}}]}, 
+          InsetBox[
+           StyleBox[
+            TemplateBox[{"\"\"", "\"X\""},
+             "ClickToCopy2"],
+            StripOnInput->False,
+            LineColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            FrontFaceColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            BackFaceColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            GraphicsColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            FontColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]]], {14.98, 12.55}]}, {
+          {Arrowheads[{{Small, 0.5}}], LineBox[{{10., 10.}, {20., 5.}}]}, 
+          InsetBox[
+           StyleBox[
+            TemplateBox[{"\"\"", "\"X\""},
+             "ClickToCopy2"],
+            StripOnInput->False,
+            LineColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            FrontFaceColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            BackFaceColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            GraphicsColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            FontColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]]], {14.98, 7.55}]}},
+        FormatType->StandardForm]}, 
+      {Hue[0.6, 0.5, 1.], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+       StyleBox[{
+         TagBox[
+          {LightDarkSwitched[
+            GrayLevel[0], 
+            GrayLevel[1]], GeometricTransformationBox[
+            {Arrowheads[Small], 
+             {EdgeForm[{LightDarkSwitched[
+               GrayLevel[0], 
+               GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+               RGBColor[
+               0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+               GrayLevel[0.62]]]}, {{}, {}}, 
+             {LightDarkSwitched[
+               GrayLevel[0], 
+               GrayLevel[1]], 
+              InsetBox["\<\"\"\>", {0, 0}]}}, {{{-0.5181652724613302, \
+-0.5422220489938375}, {0.5422220489938375, -0.5181652724613302}}, {0., 15.}}]},
+          "DynamicName",
+          BoxID -> "VertexID$1"], 
+         TagBox[
+          {LightDarkSwitched[
+            GrayLevel[0], 
+            GrayLevel[1]], GeometricTransformationBox[
+            {Arrowheads[Small], 
+             {EdgeForm[{LightDarkSwitched[
+               GrayLevel[0], 
+               GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+               RGBColor[
+               0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+               GrayLevel[0.62]]]}, {{}, {}}, 
+             {LightDarkSwitched[
+               GrayLevel[0], 
+               GrayLevel[1]], InsetBox["\<\"\"\>", {0, 0}]}}, {{{
+             0.541312224195797, -0.5191156672035618}, {0.5191156672035618, 
+             0.541312224195797}}, {0., 5.}}]},
+          "DynamicName",
+          BoxID -> "VertexID$2"], 
+         TagBox[
+          {LightDarkSwitched[
+            GrayLevel[0], 
+            GrayLevel[1]], GeometricTransformationBox[
+            {Arrowheads[Small], 
+             {EdgeForm[{LightDarkSwitched[
+               GrayLevel[0], 
+               GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+               RGBColor[
+               0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+               GrayLevel[0.62]]]}, {{}, {}}, 
+             {LightDarkSwitched[
+               GrayLevel[0], 
+               GrayLevel[1]], InsetBox["\<\"\"\>", {0, 0}]}}, {{{
+             0.5398689930054976, -0.5206164330783556}, {0.5206164330783556, 
+             0.5398689930054976}}, {20., 15.}}]},
+          "DynamicName",
+          BoxID -> "VertexID$3"], 
+         TagBox[
+          {LightDarkSwitched[
+            GrayLevel[0], 
+            GrayLevel[1]], GeometricTransformationBox[
+            {Arrowheads[Small], 
+             {EdgeForm[{LightDarkSwitched[
+               GrayLevel[0], 
+               GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+               RGBColor[
+               0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+               GrayLevel[0.62]]]}, {{}, {}}, 
+             {LightDarkSwitched[
+               GrayLevel[0], 
+               GrayLevel[1]], 
+              InsetBox["\<\"\"\>", {0, 0}]}}, {{{-0.5220449673054991, \
+-0.5384877455532303}, {0.5384877455532303, -0.5220449673054991}}, {20., 5.}}]},
+          "DynamicName",
+          BoxID -> "VertexID$4"], 
+         TagBox[
+          {LightDarkSwitched[
+            GrayLevel[0], 
+            GrayLevel[1]], GeometricTransformationBox[
+            {Arrowheads[{{Small, 0.7}}], 
+             {EdgeForm[{LightDarkSwitched[
+               GrayLevel[0], 
+               GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+               RGBColor[
+               0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+               GrayLevel[0.62]]], 
+              {PointSize[Medium], PointBox[{0, 0}]}}, {{{}, {}}, {{}, {}}}, 
+             {LightDarkSwitched[
+               GrayLevel[0], 
+               GrayLevel[1]], InsetBox["\<\"\"\>", {0, 0}]}}, {{{
+             0.014069465592846254`, -0.7498680218131266}, {0.7498680218131266,
+              0.014069465592846254`}}, {10., 10.}}]},
+          "DynamicName",
+          BoxID -> "VertexID$5"]},
+        FormatType->StandardForm]}}]]],
+  BaseStyle->{
+   GraphicsBoxOptions -> {ImageSize -> Medium}, 
+    Wolfram`DiagrammaticComputation`Diagram`Private`GraphicsHighlightColor -> 
+    RGBColor[1, 0, 1]},
+  FormatType->TraditionalForm,
+  FrameTicks->None]], "Output",
+ CellLabel->"Out[2]= ",ExpressionUUID->"a9e76ffb-4b69-4683-ada7-cc2b627e9ccb"]
+}, Open  ]],
+
+Cell["Insert Standard Model fields and draw the labelled diagram:", \
+"ExampleText",ExpressionUUID->"79322fcd-11e1-4e3c-9853-7d4470244a17"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ins", " ", "=", " ", 
+   RowBox[{"InsertFields", "[", 
+    RowBox[{
+     RowBox[{"CreateTopologies", "[", 
+      RowBox[{"0", ",", " ", 
+       RowBox[{"2", " ", "->", " ", "2"}]}], "]"}], ",", "\n", "  ", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"F", "[", 
+         RowBox[{"2", ",", " ", 
+          RowBox[{"{", "1", "}"}]}], "]"}], ",", " ", 
+        RowBox[{"-", 
+         RowBox[{"F", "[", 
+          RowBox[{"2", ",", " ", 
+           RowBox[{"{", "1", "}"}]}], "]"}]}]}], "}"}], " ", "->", " ", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"F", "[", 
+         RowBox[{"2", ",", " ", 
+          RowBox[{"{", "2", "}"}]}], "]"}], ",", " ", 
+        RowBox[{"-", 
+         RowBox[{"F", "[", 
+          RowBox[{"2", ",", " ", 
+           RowBox[{"{", "2", "}"}]}], "]"}]}]}], "}"}]}], ",", "\n", "  ", 
+     RowBox[{"InsertionLevel", " ", "->", " ", 
+      RowBox[{"{", "Classes", "}"}]}]}], "]"}]}], ";"}], "\n", 
+ RowBox[{"FeynmanDiagram", "[", 
+  RowBox[{"First", " ", "@", " ", 
+   RowBox[{"TopologyGraphs", "[", "ins", "]"}]}], "]"}]}], "Input",
+ CellLabel->"In[3]:= ",ExpressionUUID->"a55a2d16-0dc7-4233-8799-218aedaaffb3"],
+
+Cell[BoxData[
+ GraphicsBox[
+  NamespaceBox["Diagram",
+   DynamicModuleBox[{Typeset`d = HoldComplete[
+     Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+      "DiagramOptions" -> {
+        "PortArrows" -> {{}, {}}, "PortLabels" -> {{}, {}}, "ShowWireLabels" -> 
+         True, "WireLabelFunction" -> (Placed[
+           Replace[
+            Quiet[
+             FeynArts`TheLabel[
+              Part[
+               Replace[
+                #3["Expression"], Interpretation[
+                  Pattern[
+                  Wolfram`DiagrammaticComputation`Diagram`Feynman`Private`x, 
+                   Blank[]], 
+                  Blank[]] :> 
+                Wolfram`DiagrammaticComputation`Diagram`Feynman`Private`x], 
+               3, -1]]], {
+            Pattern[Wolfram`DiagrammaticComputation`Diagram`Feynman`Private`l, 
+               Blank[String]] :> 
+             MaTeX`MaTeX[
+              Wolfram`DiagrammaticComputation`Diagram`Feynman`Private`l], 
+             Blank[] -> ""}], 
+           Offset[{-0.02, 0.05}]]& ), "Arrange" -> False, Alignment -> 
+         Center}, "Expression" :> 
+       Wolfram`DiagrammaticComputation`Diagram`DiagramNetwork[
+         Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+          "DiagramOptions" -> {
+            "PortArrows" -> {{}, {
+               Wolfram`DiagrammaticComputation`Diagram`Feynman`\
+WigglyArcFunction[
+                 ToString[
+                  FeynArts`PropagatorType[
+                   Part[
+                    UndirectedEdge[1, 5, {1, 1, 
+                    FeynArts`F[2, {1}]}], 3, -1]]], 0, 
+                 Replace[
+                  FeynArts`PropagatorArrow[
+                   Part[
+                    UndirectedEdge[1, 5, {1, 1, 
+                    FeynArts`F[2, {1}]}], 3, -1]], {
+                  Forward -> -1, Backward -> 1, None -> 0}], "Amplitude" -> 
+                 If[#2 === "Net", 0.01, 0.005] 7.810249675906656, "Frequency" -> 
+                 If[#2 === "Net", 10, 30]/7.810249675906656, "TaperFraction" -> 
+                 0][
+                 If[#2 === "Net", 
+                  Line[{{0., 15.}, {6., 10.}}], 
+                  BSplineCurve[#]]]& }}, 
+             "PortLabels" -> {Automatic, {Automatic}}, "Shape" -> None, 
+             "LabelFunction" -> (""& ), "Center" -> {0., 15.}}, "Expression" :> 
+           1, "InputPorts" -> {}, "OutputPorts" -> {
+             
+             Wolfram`DiagrammaticComputation`Port`Port[<|
+              "Expression" :> UndirectedEdge[1, 5, {1, 1, 
+                  FeynArts`F[2, {1}]}], "NeutralQ" -> False, "Tags" -> {}, 
+               "Type" -> \[FormalCapitalT]|>]}|>], 
+         Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+          "DiagramOptions" -> {
+            "PortArrows" -> {{}, {
+               Wolfram`DiagrammaticComputation`Diagram`Feynman`\
+WigglyArcFunction[
+                 ToString[
+                  FeynArts`PropagatorType[
+                   Part[
+                    UndirectedEdge[2, 5, {1, 2, -FeynArts`F[2, {1}]}], 
+                    3, -1]]], 0, 
+                 Replace[
+                  FeynArts`PropagatorArrow[
+                   Part[
+                    UndirectedEdge[2, 5, {1, 2, -FeynArts`F[2, {1}]}], 
+                    3, -1]], {Forward -> -1, Backward -> 1, None -> 0}], 
+                 "Amplitude" -> 
+                 If[#2 === "Net", 0.01, 0.005] 7.810249675906656, "Frequency" -> 
+                 If[#2 === "Net", 10, 30]/7.810249675906656, "TaperFraction" -> 
+                 0][
+                 If[#2 === "Net", 
+                  Line[{{0., 5.}, {6., 10.}}], 
+                  BSplineCurve[#]]]& }}, 
+             "PortLabels" -> {Automatic, {Automatic}}, "Shape" -> None, 
+             "LabelFunction" -> (""& ), "Center" -> {0., 5.}}, "Expression" :> 
+           2, "InputPorts" -> {}, "OutputPorts" -> {
+             
+             Wolfram`DiagrammaticComputation`Port`Port[<|
+              "Expression" :> 
+               UndirectedEdge[2, 5, {1, 2, -FeynArts`F[2, {1}]}], "NeutralQ" -> 
+               False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}|>], 
+         Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+          "DiagramOptions" -> {
+            "PortArrows" -> {{Automatic}, {}}, 
+             "PortLabels" -> {{Automatic}, Automatic}, "Shape" -> None, 
+             "LabelFunction" -> (""& ), "Center" -> {20, 15.}}, "Expression" :> 
+           3, "InputPorts" -> {
+             
+             Wolfram`DiagrammaticComputation`Port`Port[<|
+              "Expression" :> Wolfram`DiagrammaticComputation`Port`PortDual[
+                 UndirectedEdge[6, 3, {1, 3, -FeynArts`F[2, {2}]}]], 
+               "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+               SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {}|>], 
+         Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+          "DiagramOptions" -> {
+            "PortArrows" -> {{Automatic}, {}}, 
+             "PortLabels" -> {{Automatic}, Automatic}, "Shape" -> None, 
+             "LabelFunction" -> (""& ), "Center" -> {20, 5.}}, "Expression" :> 
+           4, "InputPorts" -> {
+             
+             Wolfram`DiagrammaticComputation`Port`Port[<|
+              "Expression" :> Wolfram`DiagrammaticComputation`Port`PortDual[
+                 UndirectedEdge[6, 4, {1, 4, 
+                   FeynArts`F[2, {2}]}]], "NeutralQ" -> False, "Tags" -> {}, 
+               "Type" -> SuperStar[\[FormalCapitalT]]|>]}, 
+           "OutputPorts" -> {}|>], 
+         Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+          "DiagramOptions" -> {
+            "PortArrows" -> {{Automatic, Automatic}, {
+               Wolfram`DiagrammaticComputation`Diagram`Feynman`\
+WigglyArcFunction[
+                 ToString[
+                  FeynArts`PropagatorType[
+                   Part[
+                    UndirectedEdge[5, 6, {1, 5, FeynArts`S}], 3, -1]]], 0, 
+                 Replace[
+                  FeynArts`PropagatorArrow[
+                   Part[
+                    UndirectedEdge[5, 6, {1, 5, FeynArts`S}], 3, -1]], {
+                  Forward -> -1, Backward -> 1, None -> 0}], "Amplitude" -> 
+                 If[#2 === "Net", 0.01, 0.005] 8., "Frequency" -> 
+                 If[#2 === "Net", 10, 30]/8., "TaperFraction" -> 0][
+                 If[#2 === "Net", 
+                  Line[{{6., 10.}, {14., 10.}}], 
+                  BSplineCurve[#]]]& }}, 
+             "PortLabels" -> {{Automatic, Automatic}, {Automatic}}, "Shape" -> 
+             "Point", "LabelFunction" -> (""& ), "Center" -> {6., 10.}}, 
+           "Expression" :> 5, "InputPorts" -> {
+             
+             Wolfram`DiagrammaticComputation`Port`Port[<|
+              "Expression" :> Wolfram`DiagrammaticComputation`Port`PortDual[
+                 UndirectedEdge[1, 5, {1, 1, 
+                   FeynArts`F[2, {1}]}]], "NeutralQ" -> False, "Tags" -> {}, 
+               "Type" -> SuperStar[\[FormalCapitalT]]|>], 
+             
+             Wolfram`DiagrammaticComputation`Port`Port[<|
+              "Expression" :> Wolfram`DiagrammaticComputation`Port`PortDual[
+                 UndirectedEdge[2, 5, {1, 2, -FeynArts`F[2, {1}]}]], 
+               "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+               SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
+             
+             Wolfram`DiagrammaticComputation`Port`Port[<|
+              "Expression" :> UndirectedEdge[5, 6, {1, 5, FeynArts`S}], 
+               "NeutralQ" -> False, "Tags" -> {}, 
+               "Type" -> \[FormalCapitalT]|>]}|>], 
+         Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+          "DiagramOptions" -> {
+            "PortArrows" -> {{Automatic}, {
+               Wolfram`DiagrammaticComputation`Diagram`Feynman`\
+WigglyArcFunction[
+                 ToString[
+                  FeynArts`PropagatorType[
+                   Part[
+                    UndirectedEdge[6, 3, {1, 3, -FeynArts`F[2, {2}]}], 
+                    3, -1]]], 0, 
+                 Replace[
+                  FeynArts`PropagatorArrow[
+                   Part[
+                    UndirectedEdge[6, 3, {1, 3, -FeynArts`F[2, {2}]}], 
+                    3, -1]], {Forward -> -1, Backward -> 1, None -> 0}], 
+                 "Amplitude" -> 
+                 If[#2 === "Net", 0.01, 0.005] 7.810249675906656, "Frequency" -> 
+                 If[#2 === "Net", 10, 30]/7.810249675906656, "TaperFraction" -> 
+                 0][
+                 If[#2 === "Net", 
+                  Line[{{20., 15.}, {14., 10.}}], 
+                  BSplineCurve[#]]]& , 
+                Wolfram`DiagrammaticComputation`Diagram`Feynman`\
+WigglyArcFunction[
+                 ToString[
+                  FeynArts`PropagatorType[
+                   Part[
+                    UndirectedEdge[6, 4, {1, 4, 
+                    FeynArts`F[2, {2}]}], 3, -1]]], 0, 
+                 Replace[
+                  FeynArts`PropagatorArrow[
+                   Part[
+                    UndirectedEdge[6, 4, {1, 4, 
+                    FeynArts`F[2, {2}]}], 3, -1]], {
+                  Forward -> -1, Backward -> 1, None -> 0}], "Amplitude" -> 
+                 If[#2 === "Net", 0.01, 0.005] 7.810249675906656, "Frequency" -> 
+                 If[#2 === "Net", 10, 30]/7.810249675906656, "TaperFraction" -> 
+                 0][
+                 If[#2 === "Net", 
+                  Line[{{20., 5.}, {14., 10.}}], 
+                  BSplineCurve[#]]]& }}, 
+             "PortLabels" -> {{Automatic}, {Automatic, Automatic}}, "Shape" -> 
+             "Point", "LabelFunction" -> (""& ), "Center" -> {14., 10.}}, 
+           "Expression" :> 6, "InputPorts" -> {
+             
+             Wolfram`DiagrammaticComputation`Port`Port[<|
+              "Expression" :> Wolfram`DiagrammaticComputation`Port`PortDual[
+                 UndirectedEdge[5, 6, {1, 5, FeynArts`S}]], "NeutralQ" -> 
+               False, "Tags" -> {}, "Type" -> 
+               SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
+             
+             Wolfram`DiagrammaticComputation`Port`Port[<|
+              "Expression" :> 
+               UndirectedEdge[6, 3, {1, 3, -FeynArts`F[2, {2}]}], "NeutralQ" -> 
+               False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>], 
+             
+             Wolfram`DiagrammaticComputation`Port`Port[<|
+              "Expression" :> UndirectedEdge[6, 4, {1, 4, 
+                  FeynArts`F[2, {2}]}], "NeutralQ" -> False, "Tags" -> {}, 
+               "Type" -> \[FormalCapitalT]|>]}|>]], "InputPorts" -> {}, 
+       "OutputPorts" -> {}|>]]}, 
+    NamespaceBox[{
+      {LightDarkSwitched[
+        GrayLevel[0], 
+        GrayLevel[1]], Opacity[0.7], CapForm["Round"], Arrowheads[Medium], 
+       StyleBox[{{
+          {Arrowheads[{{Small, 0.5}}], 
+           {Arrowheads[{{-Small, 0.5}}], LineBox[{{0., 15.}, {6., 10.}}]}}, 
+          InsetBox[
+           StyleBox[
+            TemplateBox[{
+              GraphicsBox[{
+                Thickness[0.1347708894878706], 
+                StyleBox[{
+                  
+                  FilledCurveBox[{{{1, 4, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+                    3}, {1, 3, 3}, {0, 1, 0}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+                    3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}}, {{1, 4, 3}, {0, 1, 
+                    0}, {1, 3, 3}, {1, 3, 3}}}, {CompressedData["
+1:eJxTTMoPSmViYGBQBmIQPRMEfoo7qH9SeTkrU8oBxn/gGu84a6MUlBZ36I/o
+9mf8IOXAAAINCP6bttxuo2gEX2HXgn2pfuIOB7r3NZk8lnIIeXv544yHYg7t
+CuyqZ0qg5l0UdhCpnFRyNkXMoWR5yYZ//XwOZ0BgjajDi9rH2effcMH527w2
+WMypZIXzbUsca0/PYXJoA5l3RRzOj1GNkDkXIw3ng/3DKQPng91pLQsxh4fF
+QRhkv4qCgx1IXoYTzgf7YwM3nO++5uhyBglBh5XfXlacMVBwOAjyV7KwQzin
+WLvxfAWIP1jEHVaA5AMU4eFhDAKbleD8+yB/KyrD+SycXfLJeioOGiB3doo6
+/Hz7+oClsirUfCE4H+yvPVxw/ixwBP2wXyukw5d+TwnOh/kPxv+y7+PWdDMJ
+aDgwQeJ1pwjcPBgfYo4wnI+SHk5KOqCnDwBT8fTo
+                    "], {{5.481249999999999, 9.565629999999997}, {
+                    5.481249999999999, 8.31094}, {3.5687499999999996`, 
+                    8.31094}, {3.06719, 8.31094}, {2.5656300000000005`, 
+                    8.31094}, {3.07969, 10.151600000000002`}, {
+                    4.214059999999999, 10.329700000000003`}, {4.59688, 
+                    10.329700000000003`}, {5.121880000000001, 
+                    10.329700000000003`}, {5.481249999999999, 
+                    10.020299999999999`}, {5.481249999999999, 
+                    9.565629999999997}}}]}, {
+                  Thickness[0.1347708894878706]}, StripOnInput -> False]}, {
+               ImageSize -> {7.4179726027397255`, 16.338709838107096`}, 
+                BaselinePosition -> Scaled[0.32439307852814453`], 
+                ImageSize -> {8., 17.}, 
+                PlotRange -> {{0., 7.42}, {0., 16.34}}, AspectRatio -> 
+                Automatic}], "\"X\""},
+             "ClickToCopy2"],
+            StripOnInput->False,
+            LineColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            FrontFaceColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            BackFaceColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            GraphicsColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            FontColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]]], {2.98, 12.55}]}, {
+          {Arrowheads[{{Small, 0.5}}], 
+           {Arrowheads[{{Small, 0.5}}], LineBox[{{0., 5.}, {6., 10.}}]}}, 
+          InsetBox[
+           StyleBox[
+            TemplateBox[{
+              GraphicsBox[{
+                Thickness[0.1347708894878706], 
+                StyleBox[{
+                  
+                  FilledCurveBox[{{{1, 4, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+                    3}, {1, 3, 3}, {0, 1, 0}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+                    3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}}, {{1, 4, 3}, {0, 1, 
+                    0}, {1, 3, 3}, {1, 3, 3}}}, {CompressedData["
+1:eJxTTMoPSmViYGBQBmIQPRMEfoo7qH9SeTkrU8oBxn/gGu84a6MUlBZ36I/o
+9mf8IOXAAAINCP6bttxuo2gEX2HXgn2pfuIOB7r3NZk8lnIIeXv544yHYg7t
+CuyqZ0qg5l0UdhCpnFRyNkXMoWR5yYZ//XwOZ0BgjajDi9rH2effcMH527w2
+WMypZIXzbUsca0/PYXJoA5l3RRzOj1GNkDkXIw3ng/3DKQPng91pLQsxh4fF
+QRhkv4qCgx1IXoYTzgf7YwM3nO++5uhyBglBh5XfXlacMVBwOAjyV7KwQzin
+WLvxfAWIP1jEHVaA5AMU4eFhDAKbleD8+yB/KyrD+SycXfLJeioOGiB3doo6
+/Hz7+oClsirUfCE4H+yvPVxw/ixwBP2wXyukw5d+TwnOh/kPxv+y7+PWdDMJ
+aDgwQeJ1pwjcPBgfYo4wnI+SHk5KOqCnDwBT8fTo
+                    "], {{5.481249999999999, 9.565629999999997}, {
+                    5.481249999999999, 8.31094}, {3.5687499999999996`, 
+                    8.31094}, {3.06719, 8.31094}, {2.5656300000000005`, 
+                    8.31094}, {3.07969, 10.151600000000002`}, {
+                    4.214059999999999, 10.329700000000003`}, {4.59688, 
+                    10.329700000000003`}, {5.121880000000001, 
+                    10.329700000000003`}, {5.481249999999999, 
+                    10.020299999999999`}, {5.481249999999999, 
+                    9.565629999999997}}}]}, {
+                  Thickness[0.1347708894878706]}, StripOnInput -> False]}, {
+               ImageSize -> {7.4179726027397255`, 16.338709838107096`}, 
+                BaselinePosition -> Scaled[0.32439307852814453`], 
+                ImageSize -> {8., 17.}, 
+                PlotRange -> {{0., 7.42}, {0., 16.34}}, AspectRatio -> 
+                Automatic}], "\"X\""},
+             "ClickToCopy2"],
+            StripOnInput->False,
+            LineColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            FrontFaceColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            BackFaceColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            GraphicsColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            FontColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]]], {2.98, 7.550000000000001}]}, {
+          {Arrowheads[{{Small, 0.5}}], 
+           {Dashing[Medium], LineBox[{{6., 10.}, {14., 10.}}]}}, InsetBox[
+           StyleBox[
+            TemplateBox[{"\"\"", "\"X\""},
+             "ClickToCopy2"],
+            StripOnInput->False,
+            LineColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            FrontFaceColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            BackFaceColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            GraphicsColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            FontColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]]], {9.98, 10.05}]}, {
+          {Arrowheads[{{Small, 0.5}}], 
+           {Arrowheads[{{Small, 0.5}}], LineBox[{{20., 15.}, {14., 10.}}]}}, 
+          InsetBox[
+           StyleBox[
+            TemplateBox[{
+              GraphicsBox[{
+                Thickness[0.1107419712070875], 
+                StyleBox[{
+                  
+                  FilledCurveBox[{{{1, 4, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+                   3}, {1, 3, 3}, {0, 1, 0}, {0, 1, 0}, {1, 3, 3}, {1, 3, 
+                   3}, {1, 3, 3}, {0, 1, 0}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+                   3}, {1, 3, 3}, {0, 1, 0}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+                   3}, {0, 1, 0}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+                   3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+                   3}}}, CompressedData["
+1:eJxdlHtIU1EcxzdD3S2dZbvzbvfOR971gPyjXKQi7SekaVQr9Q+jKMimSIZF
+0oMmmK8we0CKOZPRw1p/GC5Ka1amSfbwEShUWqCiRDUNLSV1oO2cs52BPzgc
+Pvee83t+7404kpdqXCaRSKSutce1fFyrraK1SNcRCuv+iD9rGQE8bMxyWZIA
+umiXVYbCdOtUU/ZpgZxL8fJ42fGKzV81lMNabrUaezVQY3ZZrAAPgzfKsy0a
+SJ/on6q5wBO/3wW4mlFhkNo4aETvF3joRtbAwtO0uIxFfzXl1eeu5/fUc5Tx
+fpkD09DsYLRDSVmCbDiEMgpvnuPAgfJzcjCceDih9pEaRtC+TwV7UT4RAjxD
+8axqeJlnmjDfC4eD2gyht46H88j/zTWgQPHHeDjT0Zxojook/nMFyMmbLH2v
+EynbtGPFlt1eLnTGneh9IMINlMcAD1m4btEd18u4v4/VS1hF/PWINN+oiLDp
+XKUIyQ1vrJJZlsxpVE36/5wlff+toozn8UlF6hFYUv8qFaxH8ytXQCrKI8HT
+12DaX8NYSt+WtCDvPHbaYurmGMqLyPQyaEfx74ZQxvMdUVHGfdvOw7b8hIIu
+gYEhFH9KgAMoHxNDzrdriN/uQNrfwpAC35wkOZTHp7Rk3Ykk+TJBUBJoaKwy
+ipSfbJ19ffSSl3+damKdDpH6m5twtMVGat16CKB8DetuBeW/qE/VDKgthzZ0
+rdSS+vtldJ42vjnqw/iMXo/q+MaA6UfRfLV9Ro/rz2Sgz9n52bJ/Rn/Smm9b
++CijjOuM9zLJyw8s7yrrj93/p8f6HPCF5CbD28yyecrFqH4/CXgY72YJdKHr
+ATLyPklK5mJf7p6XD5nzCznp/yupu44AqB+0jm7q8CXfByiJztbK3DtL+4HD
+2BVwBfGknLIdfR8Xgynjud1WkPudSqo3j55Kw/213Tql+zwLO5BeYzh6n+hW
+RRnrPY2nnIjOnxWInyoWStCe7tbJrhDijwslPM7R/xV+/oWHpf+z/+nnSpk=
+
+                   "]]}, {
+                  Thickness[0.1107419712070875]}, StripOnInput -> False]}, {
+               ImageSize -> {9.035496886674968, 16.338709838107096`}, 
+                BaselinePosition -> Scaled[0.32439307852814453`], 
+                ImageSize -> {10., 17.}, 
+                PlotRange -> {{0., 9.03}, {0., 16.34}}, AspectRatio -> 
+                Automatic}], "\"X\""},
+             "ClickToCopy2"],
+            StripOnInput->False,
+            LineColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            FrontFaceColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            BackFaceColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            GraphicsColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            FontColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]]], {16.98, 12.55}]}, {
+          {Arrowheads[{{Small, 0.5}}], 
+           {Arrowheads[{{-Small, 0.5}}], LineBox[{{20., 5.}, {14., 10.}}]}}, 
+          InsetBox[
+           StyleBox[
+            TemplateBox[{
+              GraphicsBox[{
+                Thickness[0.1107419712070875], 
+                StyleBox[{
+                  
+                  FilledCurveBox[{{{1, 4, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+                   3}, {1, 3, 3}, {0, 1, 0}, {0, 1, 0}, {1, 3, 3}, {1, 3, 
+                   3}, {1, 3, 3}, {0, 1, 0}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+                   3}, {1, 3, 3}, {0, 1, 0}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+                   3}, {0, 1, 0}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+                   3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 3}, {1, 3, 
+                   3}}}, CompressedData["
+1:eJxdlHtIU1EcxzdD3S2dZbvzbvfOR971gPyjXKQi7SekaVQr9Q+jKMimSIZF
+0oMmmK8we0CKOZPRw1p/GC5Ka1amSfbwEShUWqCiRDUNLSV1oO2cs52BPzgc
+Pvee83t+7404kpdqXCaRSKSutce1fFyrraK1SNcRCuv+iD9rGQE8bMxyWZIA
+umiXVYbCdOtUU/ZpgZxL8fJ42fGKzV81lMNabrUaezVQY3ZZrAAPgzfKsy0a
+SJ/on6q5wBO/3wW4mlFhkNo4aETvF3joRtbAwtO0uIxFfzXl1eeu5/fUc5Tx
+fpkD09DsYLRDSVmCbDiEMgpvnuPAgfJzcjCceDih9pEaRtC+TwV7UT4RAjxD
+8axqeJlnmjDfC4eD2gyht46H88j/zTWgQPHHeDjT0Zxojook/nMFyMmbLH2v
+EynbtGPFlt1eLnTGneh9IMINlMcAD1m4btEd18u4v4/VS1hF/PWINN+oiLDp
+XKUIyQ1vrJJZlsxpVE36/5wlff+toozn8UlF6hFYUv8qFaxH8ytXQCrKI8HT
+12DaX8NYSt+WtCDvPHbaYurmGMqLyPQyaEfx74ZQxvMdUVHGfdvOw7b8hIIu
+gYEhFH9KgAMoHxNDzrdriN/uQNrfwpAC35wkOZTHp7Rk3Ykk+TJBUBJoaKwy
+ipSfbJ19ffSSl3+damKdDpH6m5twtMVGat16CKB8DetuBeW/qE/VDKgthzZ0
+rdSS+vtldJ42vjnqw/iMXo/q+MaA6UfRfLV9Ro/rz2Sgz9n52bJ/Rn/Smm9b
++CijjOuM9zLJyw8s7yrrj93/p8f6HPCF5CbD28yyecrFqH4/CXgY72YJdKHr
+ATLyPklK5mJf7p6XD5nzCznp/yupu44AqB+0jm7q8CXfByiJztbK3DtL+4HD
+2BVwBfGknLIdfR8Xgynjud1WkPudSqo3j55Kw/213Tql+zwLO5BeYzh6n+hW
+RRnrPY2nnIjOnxWInyoWStCe7tbJrhDijwslPM7R/xV+/oWHpf+z/+nnSpk=
+
+                   "]]}, {
+                  Thickness[0.1107419712070875]}, StripOnInput -> False]}, {
+               ImageSize -> {9.035496886674968, 16.338709838107096`}, 
+                BaselinePosition -> Scaled[0.32439307852814453`], 
+                ImageSize -> {10., 17.}, 
+                PlotRange -> {{0., 9.03}, {0., 16.34}}, AspectRatio -> 
+                Automatic}], "\"X\""},
+             "ClickToCopy2"],
+            StripOnInput->False,
+            LineColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            FrontFaceColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            BackFaceColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            GraphicsColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]],
+            FontColor->LightDarkSwitched[
+              GrayLevel[0], 
+              GrayLevel[1]]], {16.98, 7.550000000000001}]}},
+        FormatType->StandardForm]}, 
+      {Hue[0.6, 0.5, 1.], EdgeForm[{GrayLevel[0], Opacity[0.7]}], 
+       StyleBox[{
+         TagBox[
+          {LightDarkSwitched[
+            GrayLevel[0], 
+            GrayLevel[1]], GeometricTransformationBox[
+            {Arrowheads[Small], 
+             {EdgeForm[{LightDarkSwitched[
+               GrayLevel[0], 
+               GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+               RGBColor[
+               0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+               GrayLevel[0.62]]]}, {{}, {}}, 
+             {LightDarkSwitched[
+               GrayLevel[0], 
+               GrayLevel[1]], InsetBox["\<\"\"\>", {0, 0}]}}, {{{
+             0.4393978659243838, -0.6078071366980624}, {0.6078071366980624, 
+             0.4393978659243838}}, {0., 15.}}]},
+          "DynamicName",
+          BoxID -> "VertexID$1"], 
+         TagBox[
+          {LightDarkSwitched[
+            GrayLevel[0], 
+            GrayLevel[1]], GeometricTransformationBox[
+            {Arrowheads[Small], 
+             {EdgeForm[{LightDarkSwitched[
+               GrayLevel[0], 
+               GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+               RGBColor[
+               0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+               GrayLevel[0.62]]]}, {{}, {}}, 
+             {LightDarkSwitched[
+               GrayLevel[0], 
+               GrayLevel[1]], 
+              InsetBox["\<\"\"\>", {0, 0}]}}, {{{-0.5325982391904849, \
+-0.5280521902342563}, {0.5280521902342563, -0.5325982391904849}}, {0., 5.}}]},
+          
+          "DynamicName",
+          BoxID -> "VertexID$2"], 
+         TagBox[
+          {LightDarkSwitched[
+            GrayLevel[0], 
+            GrayLevel[1]], GeometricTransformationBox[
+            {Arrowheads[Small], 
+             {EdgeForm[{LightDarkSwitched[
+               GrayLevel[0], 
+               GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+               RGBColor[
+               0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+               GrayLevel[0.62]]]}, {{}, {}}, 
+             {LightDarkSwitched[
+               GrayLevel[0], 
+               GrayLevel[1]], 
+              InsetBox["\<\"\"\>", {0, 0}]}}, {{{-0.4635796078523764, \
+-0.5895709857035343}, {0.5895709857035343, -0.4635796078523764}}, {20., 
+             15.}}]},
+          "DynamicName",
+          BoxID -> "VertexID$3"], 
+         TagBox[
+          {LightDarkSwitched[
+            GrayLevel[0], 
+            GrayLevel[1]], GeometricTransformationBox[
+            {Arrowheads[Small], 
+             {EdgeForm[{LightDarkSwitched[
+               GrayLevel[0], 
+               GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+               RGBColor[
+               0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+               GrayLevel[0.62]]]}, {{}, {}}, 
+             {LightDarkSwitched[
+               GrayLevel[0], 
+               GrayLevel[1]], InsetBox["\<\"\"\>", {0, 0}]}}, {{{
+             0.5103096401264191, -0.5496217528392091}, {0.5496217528392091, 
+             0.5103096401264191}}, {20., 5.}}]},
+          "DynamicName",
+          BoxID -> "VertexID$4"], 
+         TagBox[
+          {LightDarkSwitched[
+            GrayLevel[0], 
+            GrayLevel[1]], GeometricTransformationBox[
+            {Arrowheads[{{Small, 0.7}}], 
+             {EdgeForm[{LightDarkSwitched[
+               GrayLevel[0], 
+               GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+               RGBColor[
+               0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+               GrayLevel[0.62]]], 
+              {PointSize[Medium], PointBox[{0, 0}]}}, {{{}, {}}, {}}, 
+             {LightDarkSwitched[
+               GrayLevel[0], 
+               GrayLevel[1]], 
+              InsetBox["\<\"\"\>", {0, 0}]}}, {{{-0.016820197595475848`, \
+-0.7498113635794332}, {0.7498113635794332, -0.016820197595475848`}}, {6., 
+             10.}}]},
+          "DynamicName",
+          BoxID -> "VertexID$5"], 
+         TagBox[
+          {LightDarkSwitched[
+            GrayLevel[0], 
+            GrayLevel[1]], GeometricTransformationBox[
+            {Arrowheads[{{Small, 0.7}}], 
+             {EdgeForm[{LightDarkSwitched[
+               GrayLevel[0], 
+               GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+               RGBColor[
+               0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+               GrayLevel[0.62]]], 
+              {PointSize[Medium], PointBox[{0, 0}]}}, {{}, {{}, {}}}, 
+             {LightDarkSwitched[
+               GrayLevel[0], 
+               GrayLevel[1]], InsetBox["\<\"\"\>", {0, 0}]}}, {{{
+             0.010710430781215821`, -0.7499235205489163}, {0.7499235205489163,
+              0.010710430781215821`}}, {14., 10.}}]},
+          "DynamicName",
+          BoxID -> "VertexID$6"]},
+        FormatType->StandardForm]}}]]],
+  BaseStyle->{
+   GraphicsBoxOptions -> {ImageSize -> Medium}, 
+    Wolfram`DiagrammaticComputation`Diagram`Private`GraphicsHighlightColor -> 
+    RGBColor[1, 0, 1]},
+  FormatType->TraditionalForm,
+  FrameTicks->None]], "Output",
+ CellLabel->"Out[3]= ",ExpressionUUID->"5012ac06-8434-4c5f-9421-0baea295fd71"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "More Examples",
+ Cell[BoxData[
+  TemplateBox[{"MoreExamples", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell["Extended examples in standardized sections.", "MoreInfoText"], 
+       BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "352b6acf-a93b-4224-8779-658881cdabd0"]
+}], "ExtendedExamplesSection",
+ CellTags->"ExtendedExamples",
+ CellID->533848431,ExpressionUUID->"a6228140-1981-46f0-88fc-4d129033136d"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "Properties & Relations", "ExampleSection",ExpressionUUID->
+   "d18b1e1f-4c4c-49a5-bb54-1e5e145ddf4e"],
+  $Line = 0; Null]], "ExampleSection",
+ CellID->2123667759,ExpressionUUID->"0e0d5f37-f3c9-4474-a22b-9f10dcc8b438"],
+
+Cell[TextData[{
+ "The result is an ordinary ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Diagram"]], 
+    "paclet:WolframDiagrammaticComputation/ref/Diagram", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "2753b979-fe02-4b9c-a042-a6180db7f915"],
+ ", so all diagram operations (composition, surgery, rewriting) apply. For \
+pure FeynArts-style rendering without the diagram structure, use ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FeynArtsTopologyGraphics"]], 
+    "paclet:WolframDiagrammaticComputation/ref/FeynArtsTopologyGraphics", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "b94ab81e-213a-4b58-99e6-25f7bafddb42"],
+ "."
+}], "ExampleText",ExpressionUUID->"71ee45d8-661b-421e-91bc-1930c3c80cea"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Metadata", "MetadataSection",
+ CellID->311882160,ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd"],
+
+Cell[TextData[{
+ "New in: ",
+ Cell["XX", "HistoryData",
+  CellTags->"New",ExpressionUUID->"c83e5b59-d200-4539-afdc-500ed06d3c87"],
+ " | Modified in: ",
+ Cell[" ", "HistoryData",
+  CellTags->"Modified",ExpressionUUID->"d4e38c0c-d937-44f2-85a5-7c0e8fc755ab"],
+ " | Obsolete in: ",
+ Cell[" ", "HistoryData",
+  CellTags->"Obsolete",ExpressionUUID->
+  "4c68d818-8923-4121-80f8-cf0eabb4c0de"]
+}], "History",
+ CellID->341476719,ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Categorization",
+ Cell[BoxData[
+  TemplateBox[{"Metadata", 
+    Cell[
+     BoxData[
+      FrameBox[
+       Cell[
+       "Metadata such as page URI, context, and type of documentation page.", 
+        "MoreInfoText"], BaseStyle -> "IFrameBox"]], "MoreInfoTextOuter"]},
+   "MoreInfoOpenerButtonTemplate"]],ExpressionUUID->
+  "4b3d4122-3cd4-481f-a8ff-5aefbb03e00d"]
+}], "CategorizationSection",
+ CellID->1755438392,ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329"],
+
+Cell["Symbol", "Categorization",
+ CellLabel->"Entity Type",
+ CellID->686433507,ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a"],
+
+Cell["Wolfram/DiagrammaticComputation", "Categorization",
+ CellLabel->"Paclet Name",
+ CellID->605800465,ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec"],
+
+Cell["Wolfram`DiagrammaticComputation`", "Categorization",
+ CellLabel->"Context",
+ CellID->468444828,ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191"],
+
+Cell["Wolfram/DiagrammaticComputation/ref/FeynmanDiagram", "Categorization",
+ CellLabel->"URI",ExpressionUUID->"66caaa12-03c2-4a8d-b3c5-9341b13629b2"]
+}, Closed]],
+
+Cell["Keywords", "KeywordsSection",
+ CellID->477174294,ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6"],
+
+Cell[CellGroupData[{
+
+Cell["Syntax Templates", "TemplatesSection",
+ CellID->1872225408,ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Additional Function Template",
+ CellID->1562036412,ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Arguments Pattern",
+ CellID->158391909,ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Local Variables",
+ CellID->1360575930,ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9"],
+
+Cell[BoxData[""], "Template",
+ CellLabel->"Color Equal Signs",
+ CellID->793782254,ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648"]
+}, Closed]]
+}, Open  ]]
+},
+WindowSize->{700, 770},
+WindowMargins->{{5, Automatic}, {Automatic, 0}},
+TaggingRules->{
+ "Metadata" -> {
+   "title" -> "FeynmanDiagram", "context" -> 
+    "Wolfram`DiagrammaticComputation`", 
+    "keywords" -> {
+     "Feynman", "particle physics", "propagator", "vertex", "FeynArts"}, 
+    "summary" -> "", "paclet" -> "Wolfram/DiagrammaticComputation", "uri" -> 
+    "Wolfram/DiagrammaticComputation/ref/FeynmanDiagram", "type" -> "Symbol", 
+    "index" -> True, "language" -> "en"}},
+CreateCellID->True,
+CellContext->CellGroup,
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
+StyleDefinitions->FrontEnd`FileName[{"Wolfram"}, "FunctionPageStylesExt.nb", 
+  CharacterEncoding -> "UTF-8"],
+ExpressionUUID->"c207366e-060a-406b-a297-9e30e1628f43"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "ExtendedExamples"->{
+  Cell[55988, 1318, 487, 13, 70, "ExtendedExamplesSection",ExpressionUUID->"a6228140-1981-46f0-88fc-4d129033136d",
+   CellTags->"ExtendedExamples",
+   CellID->533848431]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"ExtendedExamples", 61195, 1470}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 112, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
+ CellID->1224892054],
+Cell[691, 25, 1106, 32, 70, "Usage",ExpressionUUID->"eb9b4c8e-440d-4484-84ff-6dd61a0a2a19"],
+Cell[1800, 59, 1071, 29, 70, "Notes",ExpressionUUID->"877af467-559f-44d2-b03d-abca7adeb4e3"],
+Cell[2874, 90, 729, 16, 70, "Notes",ExpressionUUID->"cb60daf9-c33b-4448-93f9-756a81d2ae4f"],
+Cell[3606, 108, 647, 16, 70, "Notes",ExpressionUUID->"8847eb9e-6a1a-4734-99db-3314c17e100f"],
+Cell[4256, 126, 456, 12, 70, "Notes",ExpressionUUID->"a51d63c5-c14a-4beb-a527-5dfd447d8bf1"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4749, 143, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
+ CellID->1559318232],
+Cell[5211, 158, 2179, 60, 70, "SeeAlso",ExpressionUUID->"5b97453a-cce8-4585-af5f-e3a392e9cc97"]
+}, Open  ]],
+Cell[7405, 221, 435, 12, 70, "TechNotesSection",ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74",
+ CellID->792424486],
+Cell[CellGroupData[{
+Cell[7865, 237, 116, 1, 70, "MoreAboutSection",ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5",
+ CellID->38303248],
+Cell[7984, 240, 355, 9, 70, "MoreAbout",ExpressionUUID->"f006c8b2-5a01-4df7-b5d9-c52ba08acaf3"]
+}, Open  ]],
+Cell[8354, 252, 471, 13, 70, "RelatedLinksSection",ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea",
+ CellID->47113304],
+Cell[CellGroupData[{
+Cell[8850, 269, 531, 14, 70, "ExamplesInitializationSection",ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5",
+ CellID->1718580883],
+Cell[9384, 285, 192, 3, 70, "ExampleInitialization",ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502",
+ CellID->1969679695]
+}, Open  ]],
+Cell[9591, 291, 442, 12, 70, "PrimaryExamplesSection",ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42",
+ CellID->880084151],
+Cell[10036, 305, 92, 0, 70, "ExampleText",ExpressionUUID->"908e7b7e-87e1-4c9f-9713-d4861a1ce97f"],
+Cell[10131, 307, 234, 4, 70, "Input",ExpressionUUID->"09c83355-5aa7-48f7-a2cf-d9355a60d78b"],
+Cell[10368, 313, 149, 1, 70, "ExampleText",ExpressionUUID->"dd16b9af-712e-43e0-b201-0cb33d32ecfe"],
+Cell[CellGroupData[{
+Cell[10542, 318, 338, 7, 70, "Input",ExpressionUUID->"33511b55-53ac-4e09-9545-bdc314bc8315"],
+Cell[10883, 327, 16081, 360, 70, "Output",ExpressionUUID->"a9e76ffb-4b69-4683-ada7-cc2b627e9ccb"]
+}, Open  ]],
+Cell[26979, 690, 139, 1, 70, "ExampleText",ExpressionUUID->"79322fcd-11e1-4e3c-9853-7d4470244a17"],
+Cell[CellGroupData[{
+Cell[27143, 695, 1202, 32, 70, "Input",ExpressionUUID->"a55a2d16-0dc7-4233-8799-218aedaaffb3"],
+Cell[28348, 729, 27603, 584, 70, "Output",ExpressionUUID->"5012ac06-8434-4c5f-9421-0baea295fd71"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[55988, 1318, 487, 13, 70, "ExtendedExamplesSection",ExpressionUUID->"a6228140-1981-46f0-88fc-4d129033136d",
+ CellTags->"ExtendedExamples",
+ CellID->533848431],
+Cell[CellGroupData[{
+Cell[56500, 1335, 259, 5, 70, "ExampleSection",ExpressionUUID->"0e0d5f37-f3c9-4474-a22b-9f10dcc8b438",
+ CellID->2123667759],
+Cell[56762, 1342, 920, 23, 70, "ExampleText",ExpressionUUID->"71ee45d8-661b-421e-91bc-1930c3c80cea"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[57731, 1371, 110, 1, 70, "MetadataSection",ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd",
+ CellID->311882160],
+Cell[57844, 1374, 476, 12, 70, "History",ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046",
+ CellID->341476719],
+Cell[CellGroupData[{
+Cell[58345, 1390, 485, 13, 70, "CategorizationSection",ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329",
+ CellID->1755438392],
+Cell[58833, 1405, 134, 2, 70, "Categorization",ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a",
+ CellID->686433507],
+Cell[58970, 1409, 159, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec",
+ CellID->605800465],
+Cell[59132, 1413, 156, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
+ CellID->468444828],
+Cell[59291, 1417, 150, 1, 70, "Categorization",ExpressionUUID->"66caaa12-03c2-4a8d-b3c5-9341b13629b2"]
+}, Closed]],
+Cell[59456, 1421, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
+ CellID->477174294],
+Cell[CellGroupData[{
+Cell[59591, 1426, 120, 1, 70, "TemplatesSection",ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c",
+ CellID->1872225408],
+Cell[59714, 1429, 149, 2, 70, "Template",ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72",
+ CellID->1562036412],
+Cell[59866, 1433, 137, 2, 70, "Template",ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec",
+ CellID->158391909],
+Cell[60006, 1437, 136, 2, 70, "Template",ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9",
+ CellID->1360575930],
+Cell[60145, 1441, 137, 2, 70, "Template",ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648",
+ CellID->793782254]
+}, Closed]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
