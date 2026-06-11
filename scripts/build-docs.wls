@@ -162,11 +162,32 @@ If[$darkMode,
     ]
 ];
 
+(* DocumentationBuild's Related Guides harvester requires a ButtonBox link
+   in every MoreAbout cell (it does First @ Cases[cell, _ButtonBox] and
+   fails with First[{}] otherwise), but MarkdownToNotebook emits a
+   RefLinkPlain TemplateBox when the guide resolves locally. Rewrite those
+   to Link ButtonBoxes with the full paclet guide URI; also upgrade
+   system-style "paclet:guide/X" data to the paclet URI. *)
+$guideURIPrefix = "paclet:Wolfram/DiagrammaticComputation/guide/";
+
+guideButton[name_String] := ButtonBox[name, BaseStyle -> "Link", ButtonData -> $guideURIPrefix <> name];
+
+fixupMoreAbout[nbPath_String] := Module[{nb, new},
+    nb = Quiet @ Get[nbPath];
+    If[Head[nb] =!= Notebook, Return[]];
+    new = nb /. c : Cell[_, "MoreAbout", ___] :> (c /. {
+        TemplateBox[{Cell[TextData[name_String], ___], _String, ___}, "RefLinkPlain", ___] :> guideButton[name],
+        ButtonBox[name_String, ___, ButtonData -> uri_String /; StringStartsQ[uri, "paclet:guide/"], ___] :> guideButton[name]
+    });
+    If[new =!= nb, Export[nbPath, new, "NB"]]
+];
+
 build1[src_String, nbDst_String] := Module[{twinDst},
     twinDst = FileNameJoin[{DirectoryName[src], FileBaseName[src] <> "-out.md"}];
     If[$buildNb,
         Print["[ nb ] ", FileNameTake[src, -2], "  ->  ", FileNameTake[nbDst, -2]];
-        mtn[src, nbDst]
+        mtn[src, nbDst];
+        fixupMoreAbout[nbDst]
     ];
     If[$buildTwin,
         Print["[twin] ", FileNameTake[src, -2], "  ->  ", FileNameTake[twinDst, -2]];
