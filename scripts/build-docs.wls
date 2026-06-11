@@ -102,18 +102,21 @@ With[{
     Print["[stubs] declared ", Length @ symbolNames, " top-level symbol aliases for link resolution"]
 ];
 
-$docsRoot  = FileNameJoin[{$root, "docs"}];
-$guidesIn  = FileNameJoin[{$docsRoot, "guides"}];
-$symbolsIn = FileNameJoin[{$docsRoot, "symbols"}];
+$docsRoot     = FileNameJoin[{$root, "docs"}];
+$guidesIn     = FileNameJoin[{$docsRoot, "guides"}];
+$symbolsIn    = FileNameJoin[{$docsRoot, "symbols"}];
+$tutorialsIn  = FileNameJoin[{$docsRoot, "tutorials"}];
 
-$pacletDoc  = FileNameJoin[{$root, "DiagrammaticComputation", "Documentation", "English"}];
-$guidesOut  = FileNameJoin[{$pacletDoc, "Guides"}];
-$symbolsOut = FileNameJoin[{$pacletDoc, "ReferencePages", "Symbols"}];
+$pacletDoc    = FileNameJoin[{$root, "DiagrammaticComputation", "Documentation", "English"}];
+$guidesOut    = FileNameJoin[{$pacletDoc, "Guides"}];
+$symbolsOut   = FileNameJoin[{$pacletDoc, "ReferencePages", "Symbols"}];
+$tutorialsOut = FileNameJoin[{$pacletDoc, "Tutorials"}];
 
 ensureDir[d_] := If[! DirectoryQ[d], CreateDirectory[d, CreateIntermediateDirectories -> True]];
 
 ensureDir[$guidesOut];
 ensureDir[$symbolsOut];
+ensureDir[$tutorialsOut];
 
 (* --- argv parsing ----------------------------------------------------- *)
 
@@ -171,14 +174,25 @@ build1[src_String, nbDst_String] := Module[{twinDst},
     ];
 ];
 
-run[] := Module[{guideFiles, symbolFiles},
-    guideFiles  = Select[FileNames["*.md", $guidesIn], filter];
-    symbolFiles = Select[FileNames["*.md", $symbolsIn, Infinity], filter];
+(* The paclet definition notebook builds from docs/ResourceDefinition.md to
+   the non-standard in-repo filename. *)
+$definitionIn  = FileNameJoin[{$docsRoot, "ResourceDefinition.md"}];
+$definitionOut = FileNameJoin[{$root, "DiagrammaticComputation", "DiagrammaticComputation | Definition Notebook.nb"}];
+
+run[] := Module[{guideFiles, symbolFiles, tutorialFiles},
+    guideFiles    = Select[FileNames["*.md", $guidesIn], filter];
+    symbolFiles   = Select[FileNames["*.md", $symbolsIn, Infinity], filter];
+    tutorialFiles = Select[FileNames["*.md", $tutorialsIn], filter];
+    If[ FileExistsQ[$definitionIn] && filter[$definitionIn],
+        build1[$definitionIn, $definitionOut]
+    ];
     (* Skip already-emitted twin files. *)
-    symbolFiles = DeleteCases[symbolFiles, _?(StringEndsQ["-out.md"])];
-    guideFiles  = DeleteCases[guideFiles,  _?(StringEndsQ["-out.md"])];
-    Print["Guides: ",  Length[guideFiles]];
-    Print["Symbols: ", Length[symbolFiles]];
+    symbolFiles   = DeleteCases[symbolFiles,   _?(StringEndsQ["-out.md"])];
+    guideFiles    = DeleteCases[guideFiles,    _?(StringEndsQ["-out.md"])];
+    tutorialFiles = DeleteCases[tutorialFiles, _?(StringEndsQ["-out.md"])];
+    Print["Guides: ",    Length[guideFiles]];
+    Print["Symbols: ",   Length[symbolFiles]];
+    Print["Tutorials: ", Length[tutorialFiles]];
     Scan[
         build1[#, FileNameJoin[{$guidesOut,  FileBaseName[#] <> ".nb"}]] &,
         guideFiles
@@ -186,6 +200,10 @@ run[] := Module[{guideFiles, symbolFiles},
     Scan[
         build1[#, FileNameJoin[{$symbolsOut, FileBaseName[#] <> ".nb"}]] &,
         symbolFiles
+    ];
+    Scan[
+        build1[#, FileNameJoin[{$tutorialsOut, FileBaseName[#] <> ".nb"}]] &,
+        tutorialFiles
     ];
     Print["Done."]
 ];
