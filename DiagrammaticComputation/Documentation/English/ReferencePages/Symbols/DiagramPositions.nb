@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[     25637,        651]
-NotebookOptionsPosition[     21274,        562]
-NotebookOutlinePosition[     22170,        589]
-CellTagsIndexPosition[     22127,        586]
+NotebookDataLength[     38922,        971]
+NotebookOptionsPosition[     34214,        877]
+NotebookOutlinePosition[     35123,        904]
+CellTagsIndexPosition[     35080,        901]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -24,7 +24,7 @@ Cell["DiagramPositions", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"cd05f5b0-4a43-47de-b0a5-57fcc9342258"],
+ Cell["   ", "ModInfo",ExpressionUUID->"4184b159-4624-4a30-a062-91414b31420b"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
@@ -35,16 +35,71 @@ Cell[TextData[{
     "PackageLink",
     BaseStyle->"InlineFormula"], "[", 
    StyleBox["d", "TI"], "]"}]], "InlineFormula",ExpressionUUID->
-  "39104687-4ff9-4817-ad49-40443f2d6b2d"],
+  "a2d5b7c6-77db-4731-aaf1-f9da6992b2ce"],
  " ",
- "returns the list of positions of every subdiagram of ",
+ "returns an association of position \[RightArrow] subdiagram for every \
+subdiagram of ",
  Cell[BoxData[
   FormBox[
    StyleBox["d", "TI"], TraditionalForm]], "InlineFormula",ExpressionUUID->
-  "34c5af73-11ea-4243-93dc-0294c3295edb"],
+  "1441b4cd-ba56-4689-a97a-f554be094fdc"],
  ".",
- "\n"
-}], "Usage",ExpressionUUID->"f638abe8-6faa-409c-b6a9-281a3b6f062b"],
+ "\n",
+ Cell["   ", "ModInfo",ExpressionUUID->"cd7c09be-5c6b-4ee4-b86c-527fa2cc8bda"],
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["DiagramPositions"]], 
+     "paclet:Wolfram/DiagrammaticComputation/ref/DiagramPositions", 
+     "Wolfram/DiagrammaticComputation Package Symbol"},
+    "PackageLink",
+    BaseStyle->"InlineFormula"], "[", 
+   RowBox[{
+    StyleBox["d", "TI"], ",", " ", 
+    StyleBox["lvl", "TI"]}], "]"}]], "InlineFormula",ExpressionUUID->
+  "9e9a560f-93cb-485e-98a9-c6aa2d3c2890"],
+ " ",
+ "includes positions down to level ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox[
+    RowBox[{"l", "v", "l"}], "TI"], TraditionalForm]], "InlineFormula",
+  ExpressionUUID->"eec0a732-32d8-4ce3-a56b-2670daf34ef7"],
+ ".",
+ "\n",
+ Cell["   ", "ModInfo",ExpressionUUID->"81535e84-f146-44fa-b40c-d3b6c0b14d2d"],
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["DiagramPositions"]], 
+     "paclet:Wolfram/DiagrammaticComputation/ref/DiagramPositions", 
+     "Wolfram/DiagrammaticComputation Package Symbol"},
+    "PackageLink",
+    BaseStyle->"InlineFormula"], "[", 
+   RowBox[{
+    StyleBox["d", "TI"], ",", " ", 
+    RowBox[{"{", 
+     RowBox[{
+      StyleBox["min", "TI"], ",", " ", 
+      StyleBox["max", "TI"]}], "}"}]}], "]"}]], "InlineFormula",
+  ExpressionUUID->"ce4d62a2-7b3f-4039-90e4-2932dd91abf7"],
+ " ",
+ "includes positions between levels ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox[
+    RowBox[{"m", "i", "n"}], "TI"], TraditionalForm]], "InlineFormula",
+  ExpressionUUID->"86cc5dd9-5461-4aa2-97ff-af15e4efa61f"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox[
+    RowBox[{"m", "a", "x"}], "TI"], TraditionalForm]], "InlineFormula",
+  ExpressionUUID->"7bdd40f7-ef7c-47a9-944c-533fd3a2864f"],
+ "."
+}], "Usage",ExpressionUUID->"f496a36f-560e-4739-ac53-e30ef61887cd"],
 
 Cell[TextData[{
  "Positions are integer-list addresses into the diagram's expression tree, in \
@@ -55,7 +110,7 @@ the same convention as ",
      TextData["Position"]], "paclet:ref/Position"},
    "RefLink",
    BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
-  "9983a854-c09c-471b-abdf-3ffad8e20d10"],
+  "dd5c3ef9-b8e9-4efe-a8bb-396a368d3d0c"],
  " and ",
  Cell[BoxData[
   TemplateBox[{
@@ -63,17 +118,36 @@ the same convention as ",
      TextData["Extract"]], "paclet:ref/Extract"},
    "RefLink",
    BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
-  "e03c4468-3523-4d8b-9488-25788e8a49ff"],
- " on Wolfram Language expressions."
-}], "Notes",ExpressionUUID->"7f40eb04-816d-4c67-8c33-8590a2a76081"],
-
-Cell[TextData[{
- "The empty position ",
+  "312f5b54-bd3b-4d68-95e1-fac4006a842e"],
+ "; the empty position ",
  Cell[BoxData[
   RowBox[{"{", "}"}]], "InlineFormula",ExpressionUUID->
-  "28964e53-f7d8-4b1a-9e7c-d2d0c602d55d"],
- " refers to the diagram itself."
-}], "Notes",ExpressionUUID->"f233d848-fb7f-46ff-8888-bb69fccf7c5c"]
+  "c717a4a7-c3c5-49f6-879a-e1cd03ed0219"],
+ " is the diagram itself."
+}], "Notes",ExpressionUUID->"03478e8c-d454-40ee-84d5-80e458c0915f"],
+
+Cell[TextData[{
+ "The level specification follows the ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Level"]], "paclet:ref/Level"},
+   "RefLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "9dd41f48-3281-47b1-979b-22f4a33047c2"],
+ " conventions: ",
+ Cell[BoxData[
+  RowBox[{"{", 
+   StyleBox["lvl", "TI"], "}"}]], "InlineFormula",ExpressionUUID->
+  "e9c9c319-e7d4-4d49-a8f8-f0ce88289ae7"],
+ " is exactly level ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox[
+    RowBox[{"l", "v", "l"}], "TI"], TraditionalForm]], "InlineFormula",
+  ExpressionUUID->"e8f8d70b-095b-4596-856f-ee0bd2306bfd"],
+ ", and negative levels count from the deepest position."
+}], "Notes",ExpressionUUID->"14b4f1a8-f91f-46e4-a9f5-c70a7f0fef23"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -102,7 +176,7 @@ Cell[TextData[{
     "Wolfram/DiagrammaticComputation Package Symbol"},
    "PackageLink",
    BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
-  "e11994cb-7303-4795-9cc5-7993407a3c32"],
+  "c2ee098c-beeb-4694-88c0-859c85be8666"],
  " \[FilledVerySmallSquare] ",
  Cell[BoxData[
   TemplateBox[{
@@ -112,7 +186,7 @@ Cell[TextData[{
     "Wolfram/DiagrammaticComputation Package Symbol"},
    "PackageLink",
    BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
-  "3db856dc-9b9e-42d1-904e-31c525f7ed5a"],
+  "a1cceedc-51cd-4df3-b6b4-c8a8b55dd295"],
  " \[FilledVerySmallSquare] ",
  Cell[BoxData[
   TemplateBox[{
@@ -122,8 +196,8 @@ Cell[TextData[{
     "Wolfram/DiagrammaticComputation Package Symbol"},
    "PackageLink",
    BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
-  "2cf1642b-915f-4c3a-9fec-f5106ecfbf00"]
-}], "SeeAlso",ExpressionUUID->"f7996d7b-8a75-4c43-9028-fab636b01aed"]
+  "ede1c9e7-f29b-4b1e-9470-9495cb7ad6c2"]
+}], "SeeAlso",ExpressionUUID->"f8285770-1245-4868-8f11-5a85544f377a"]
 }, Open  ]],
 
 Cell[TextData[{
@@ -150,8 +224,8 @@ Cell[TextData[Cell[BoxData[
   BaseStyle->"Link",
   ButtonData->
    "paclet:Wolfram/DiagrammaticComputation/guide/DiagramSurgery"]], \
-"InlineFormula",ExpressionUUID->"22c08829-0761-4181-b354-e1ffaa391385"]], \
-"MoreAbout",ExpressionUUID->"8f4b3415-7979-4945-9077-8c2fd53f97a0"]
+"InlineFormula",ExpressionUUID->"1f240e53-7007-47bb-aba6-fb4ff733fd99"]], \
+"MoreAbout",ExpressionUUID->"f5b71750-77a3-45a4-be88-4f3248334b50"]
 }, Open  ]],
 
 Cell[TextData[{
@@ -207,7 +281,7 @@ Cell[BoxData[
   $Line = 0; Null]], "PrimaryExamplesSection",
  CellID->880084151,ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42"],
 
-Cell["List the positions of all subdiagrams:", "ExampleText",ExpressionUUID->"89c9a18b-664c-4ac6-87dd-4c1ad18ecdc8"],
+Cell["Positions of all subdiagrams, keyed to the subdiagrams:", "ExampleText",ExpressionUUID->"15a8f13f-e5ca-4670-bf7a-03aa7afbab2b"],
 
 Cell[CellGroupData[{
 
@@ -220,7 +294,7 @@ Cell[BoxData[
     RowBox[{"Diagram", "[", 
      RowBox[{"\"\<B\>\"", ",", " ", "c", ",", " ", "b"}], "]"}]}], 
    "]"}]}]], "Input",
- CellLabel->"In[1]:= ",ExpressionUUID->"09f4ae55-85d3-486a-8dd9-ed452c12a1fb"],
+ CellLabel->"In[1]:= ",ExpressionUUID->"7486df88-4a55-41bb-be88-0ef3a99fb97f"],
 
 Cell[BoxData[
  RowBox[{"\[LeftAssociation]", 
@@ -479,7 +553,248 @@ Cell[BoxData[
        Wolfram`DiagrammaticComputation`Diagram`Private`GraphicsHighlightColor -> 
        RGBColor[1, 0, 1]},
      FormatType->StandardForm]}]}], "\[RightAssociation]"}]], "Output",
- CellLabel->"Out[1]= ",ExpressionUUID->"9535c347-8928-4483-ae8b-32b51906da7c"]
+ CellLabel->"Out[1]= ",ExpressionUUID->"7595f090-bec9-4dd7-8699-efc7d864cbeb"]
+}, Open  ]],
+
+Cell["Only the immediate subdiagrams:", "ExampleText",ExpressionUUID->"9501d049-5d88-4db1-9a34-7fbae58b918c"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"DiagramPositions", "[", 
+  RowBox[{
+   RowBox[{"Diagram", "[", 
+    RowBox[{
+     RowBox[{"DiagramProduct", "[", 
+      RowBox[{
+       RowBox[{"Diagram", "[", 
+        RowBox[{"\"\<A\>\"", ",", " ", "a", ",", " ", "c"}], "]"}], ",", " ", 
+       
+       RowBox[{"Diagram", "[", 
+        RowBox[{"\"\<B\>\"", ",", " ", "b"}], "]"}]}], "]"}], " ", "/*", " ", 
+     
+     RowBox[{"Diagram", "[", 
+      RowBox[{"\"\<C\>\"", ",", " ", 
+       RowBox[{"{", 
+        RowBox[{"c", ",", " ", "b"}], "}"}], ",", " ", "e"}], "]"}]}], "]"}], 
+   ",", " ", 
+   RowBox[{"{", "1", "}"}]}], "]"}]], "Input",
+ CellLabel->"In[2]:= ",ExpressionUUID->"acfd97a9-90b5-45f7-add1-043e09a51edc"],
+
+Cell[BoxData[
+ RowBox[{"\[LeftAssociation]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"{", "1", "}"}], "\[Rule]", 
+    GraphicsBox[
+     NamespaceBox["Diagram",
+      DynamicModuleBox[{Typeset`d = HoldComplete[
+        Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+         "DiagramOptions" -> {
+           "PortArrows" -> {{Automatic, Automatic}, {Automatic}}, 
+            "PortLabels" -> {{Automatic, Automatic}, {Automatic}}}, 
+          "Expression" :> "C", "InputPorts" -> {
+            
+            Wolfram`DiagrammaticComputation`Port`Port[<|
+             "Expression" :> 
+              Wolfram`DiagrammaticComputation`Port`PortDual[
+               Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`c], 
+              "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+              SuperStar[\[FormalCapitalT]]|>], 
+            
+            Wolfram`DiagrammaticComputation`Port`Port[<|
+             "Expression" :> 
+              Wolfram`DiagrammaticComputation`Port`PortDual[
+               Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b], 
+              "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+              SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
+            
+            Wolfram`DiagrammaticComputation`Port`Port[<|
+             "Expression" :> MTNB$1610s42yt5s85`e, "NeutralQ" -> False, 
+              "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}|>]]}, 
+       {Arrowheads[Small], 
+        {EdgeForm[{LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+          RGBColor[0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+          GrayLevel[0.62]]], 
+         GeometricTransformationBox[
+          RectangleBox[
+           NCache[{Rational[-1, 2], Rational[-1, 2]}, {-0.5, -0.5}]], {{{1, 
+           0}, {0, 1}}, {0, 0}}]}, {{{
+           ArrowBox[{{-0.2666666666666667, 0.75}, {-0.2666666666666667, 
+            0.5}}], InsetBox[
+            InterpretationBox[
+             TagBox["c",
+              HoldForm],
+             
+             Wolfram`DiagrammaticComputation`Port`Port[<|
+              "Expression" :> 
+               Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`c, 
+               "NeutralQ" -> False, "Tags" -> {}, 
+               "Type" -> \[FormalCapitalT]|>],
+             Tooltip->"\[FormalCapitalT]"], {-0.2666666666666667, 0.875}]}, {
+           ArrowBox[{{0.2666666666666666, 0.75}, {0.2666666666666666, 0.5}}], 
+           InsetBox[
+            InterpretationBox[
+             TagBox["b",
+              HoldForm],
+             
+             Wolfram`DiagrammaticComputation`Port`Port[<|
+              "Expression" :> 
+               Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b, 
+               "NeutralQ" -> False, "Tags" -> {}, 
+               "Type" -> \[FormalCapitalT]|>],
+             Tooltip->"\[FormalCapitalT]"], {0.2666666666666666, 0.875}]}}, {
+          ArrowBox[{{0., -0.5}, {0., -0.75}}], InsetBox[
+           InterpretationBox[
+            TagBox["e",
+             HoldForm],
+            
+            Wolfram`DiagrammaticComputation`Port`Port[<|
+             "Expression" :> MTNB$1610s42yt5s85`e, "NeutralQ" -> False, 
+              "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
+            Tooltip->"\[FormalCapitalT]"], {0., -0.875}]}}, 
+        {LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], InsetBox[
+          TagBox["\<\"C\"\>",
+           HoldForm], {0, 0}]}}]],
+     BaseStyle->{
+      GraphicsBoxOptions -> {ImageSize -> Tiny}, 
+       Wolfram`DiagrammaticComputation`Diagram`Private`GraphicsHighlightColor -> 
+       RGBColor[1, 0, 1]},
+     FormatType->StandardForm]}], ",", 
+   RowBox[{
+    RowBox[{"{", "2", "}"}], "\[Rule]", 
+    GraphicsBox[
+     NamespaceBox["Diagram",
+      DynamicModuleBox[{Typeset`d = HoldComplete[
+        Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+         "DiagramOptions" -> {
+           "PortArrows" -> {{Automatic}, {Automatic, Automatic}}}, 
+          "Expression" :> 
+          Wolfram`DiagrammaticComputation`Diagram`DiagramProduct[
+            
+            Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+             "DiagramOptions" -> {
+               "PortArrows" -> {{Automatic}, {Automatic}}, 
+                "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
+              "A", "InputPorts" -> {
+                
+                Wolfram`DiagrammaticComputation`Port`Port[<|
+                 "Expression" :> 
+                  Wolfram`DiagrammaticComputation`Port`PortDual[
+                   Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`a],
+                   "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+                  SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
+                
+                Wolfram`DiagrammaticComputation`Port`Port[<|
+                 "Expression" :> 
+                  Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`c, 
+                  "NeutralQ" -> False, "Tags" -> {}, 
+                  "Type" -> \[FormalCapitalT]|>]}|>], 
+            
+            Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
+             "DiagramOptions" -> {
+               "PortArrows" -> {Automatic, {Automatic}}, 
+                "PortLabels" -> {Automatic, {Automatic}}}, "Expression" :> 
+              "B", "InputPorts" -> {}, "OutputPorts" -> {
+                
+                Wolfram`DiagrammaticComputation`Port`Port[<|
+                 "Expression" :> 
+                  Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b, 
+                  "NeutralQ" -> False, "Tags" -> {}, 
+                  "Type" -> \[FormalCapitalT]|>]}|>]], "InputPorts" -> {
+            
+            Wolfram`DiagrammaticComputation`Port`Port[<|
+             "Expression" :> 
+              Wolfram`DiagrammaticComputation`Port`PortDual[
+               Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`a], 
+              "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
+              SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
+            
+            Wolfram`DiagrammaticComputation`Port`Port[<|
+             "Expression" :> 
+              Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`c, 
+              "NeutralQ" -> False, "Tags" -> {}, 
+              "Type" -> \[FormalCapitalT]|>], 
+            
+            Wolfram`DiagrammaticComputation`Port`Port[<|
+             "Expression" :> 
+              Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b, 
+              "NeutralQ" -> False, "Tags" -> {}, 
+              "Type" -> \[FormalCapitalT]|>]}|>]]}, {{
+         {Arrowheads[Small], 
+          {EdgeForm[{LightDarkSwitched[
+            GrayLevel[0], 
+            GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+            RGBColor[
+            0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+            GrayLevel[0.62]]], 
+           GeometricTransformationBox[
+            RectangleBox[{0.5, 0.5}], {{{1., 0.}, {0., 1.}}, {0., 0.}}]}, {{
+            ArrowBox[{{1., 1.75}, {1., 1.5}}], InsetBox[
+             InterpretationBox[
+              TagBox["a",
+               HoldForm],
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> 
+                Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`a, 
+                "NeutralQ" -> False, "Tags" -> {}, 
+                "Type" -> \[FormalCapitalT]|>],
+              Tooltip->"\[FormalCapitalT]"], {1., 1.875}]}, {
+            ArrowBox[{{1., 0.5}, {1., 0.25}}], InsetBox[
+             InterpretationBox[
+              TagBox["c",
+               HoldForm],
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> 
+                Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`c, 
+                "NeutralQ" -> False, "Tags" -> {}, 
+                "Type" -> \[FormalCapitalT]|>],
+              Tooltip->"\[FormalCapitalT]"], {1., 0.125}]}}, 
+          {LightDarkSwitched[
+            GrayLevel[0], 
+            GrayLevel[1]], InsetBox[
+            TagBox["\<\"A\"\>",
+             HoldForm], {1., 1.}]}}, 
+         {Arrowheads[Small], 
+          {EdgeForm[{LightDarkSwitched[
+            GrayLevel[0], 
+            GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
+            RGBColor[
+            0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
+            GrayLevel[0.62]]], 
+           GeometricTransformationBox[
+            RectangleBox[{2.5, 0.5}], {{{1., 0.}, {0., 1.}}, {0., 
+             0.}}]}, {{}, {ArrowBox[{{3., 0.5}, {3., 0.25}}], InsetBox[
+             InterpretationBox[
+              TagBox["b",
+               HoldForm],
+              
+              Wolfram`DiagrammaticComputation`Port`Port[<|
+               "Expression" :> 
+                Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b, 
+                "NeutralQ" -> False, "Tags" -> {}, 
+                "Type" -> \[FormalCapitalT]|>],
+              Tooltip->"\[FormalCapitalT]"], {3., 0.125}]}}, 
+          {LightDarkSwitched[
+            GrayLevel[0], 
+            GrayLevel[1]], InsetBox[
+            TagBox["\<\"B\"\>",
+             HoldForm], {3., 1.}]}}}, {}, {}, {}, 
+        {EdgeForm[{LightDarkSwitched[
+          GrayLevel[0], 
+          GrayLevel[1]], Thickness[Tiny]}], FaceForm[None]}}]],
+     BaseStyle->{
+      GraphicsBoxOptions -> {ImageSize -> Medium}, 
+       Wolfram`DiagrammaticComputation`Diagram`Private`GraphicsHighlightColor -> 
+       RGBColor[1, 0, 1]},
+     FormatType->StandardForm]}]}], "\[RightAssociation]"}]], "Output",
+ CellLabel->"Out[2]= ",ExpressionUUID->"1da03dc1-9261-4382-9030-0aeb76bc2a45"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -531,7 +846,7 @@ Cell["Wolfram`DiagrammaticComputation`", "Categorization",
  CellID->468444828,ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191"],
 
 Cell["Wolfram/DiagrammaticComputation/ref/DiagramPositions", "Categorization",
- CellLabel->"URI",ExpressionUUID->"ee6e56f4-7bdd-40df-8c45-c6c0cbc50349"]
+ CellLabel->"URI",ExpressionUUID->"0fbad9d5-d000-4b42-81c7-302b721ae6d8"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -566,8 +881,8 @@ TaggingRules->{
  "Metadata" -> {
    "title" -> "DiagramPositions", "context" -> 
     "Wolfram`DiagrammaticComputation`", 
-    "keywords" -> {"positions", "indices", "addressing"}, "summary" -> "", 
-    "paclet" -> "Wolfram/DiagrammaticComputation", "uri" -> 
+    "keywords" -> {"positions", "indices", "addressing", "levelspec"}, 
+    "summary" -> "", "paclet" -> "Wolfram/DiagrammaticComputation", "uri" -> 
     "Wolfram/DiagrammaticComputation/ref/DiagramPositions", "type" -> 
     "Symbol", "index" -> True, "language" -> "en"}},
 CreateCellID->True,
@@ -591,65 +906,70 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 114, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[693, 25, 767, 21, 70, "Usage",ExpressionUUID->"f638abe8-6faa-409c-b6a9-281a3b6f062b"],
-Cell[1463, 48, 666, 19, 70, "Notes",ExpressionUUID->"7f40eb04-816d-4c67-8c33-8590a2a76081"],
-Cell[2132, 69, 255, 6, 70, "Notes",ExpressionUUID->"f233d848-fb7f-46ff-8888-bb69fccf7c5c"]
+Cell[693, 25, 2543, 76, 70, "Usage",ExpressionUUID->"f496a36f-560e-4739-ac53-e30ef61887cd"],
+Cell[3239, 103, 796, 23, 70, "Notes",ExpressionUUID->"03478e8c-d454-40ee-84d5-80e458c0915f"],
+Cell[4038, 128, 745, 21, 70, "Notes",ExpressionUUID->"14b4f1a8-f91f-46e4-a9f5-c70a7f0fef23"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[2424, 80, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
+Cell[4820, 154, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
  CellID->1559318232],
-Cell[2886, 95, 1128, 30, 70, "SeeAlso",ExpressionUUID->"f7996d7b-8a75-4c43-9028-fab636b01aed"]
+Cell[5282, 169, 1128, 30, 70, "SeeAlso",ExpressionUUID->"f8285770-1245-4868-8f11-5a85544f377a"]
 }, Open  ]],
-Cell[4029, 128, 435, 12, 70, "TechNotesSection",ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74",
+Cell[6425, 202, 435, 12, 70, "TechNotesSection",ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74",
  CellID->792424486],
 Cell[CellGroupData[{
-Cell[4489, 144, 116, 1, 70, "MoreAboutSection",ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5",
+Cell[6885, 218, 116, 1, 70, "MoreAboutSection",ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5",
  CellID->38303248],
-Cell[4608, 147, 306, 6, 70, "MoreAbout",ExpressionUUID->"8f4b3415-7979-4945-9077-8c2fd53f97a0"]
+Cell[7004, 221, 306, 6, 70, "MoreAbout",ExpressionUUID->"f5b71750-77a3-45a4-be88-4f3248334b50"]
 }, Open  ]],
-Cell[4929, 156, 471, 13, 70, "RelatedLinksSection",ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea",
+Cell[7325, 230, 471, 13, 70, "RelatedLinksSection",ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea",
  CellID->47113304],
 Cell[CellGroupData[{
-Cell[5425, 173, 531, 14, 70, "ExamplesInitializationSection",ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5",
+Cell[7821, 247, 531, 14, 70, "ExamplesInitializationSection",ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5",
  CellID->1718580883],
-Cell[5959, 189, 192, 3, 70, "ExampleInitialization",ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502",
+Cell[8355, 263, 192, 3, 70, "ExampleInitialization",ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502",
  CellID->1969679695]
 }, Open  ]],
-Cell[6166, 195, 442, 12, 70, "PrimaryExamplesSection",ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42",
+Cell[8562, 269, 442, 12, 70, "PrimaryExamplesSection",ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42",
  CellID->880084151],
-Cell[6611, 209, 116, 0, 70, "ExampleText",ExpressionUUID->"89c9a18b-664c-4ac6-87dd-4c1ad18ecdc8"],
+Cell[9007, 283, 133, 0, 70, "ExampleText",ExpressionUUID->"15a8f13f-e5ca-4670-bf7a-03aa7afbab2b"],
 Cell[CellGroupData[{
-Cell[6752, 213, 411, 9, 70, "Input",ExpressionUUID->"09f4ae55-85d3-486a-8dd9-ed452c12a1fb"],
-Cell[7166, 224, 11490, 257, 70, "Output",ExpressionUUID->"9535c347-8928-4483-ae8b-32b51906da7c"]
+Cell[9165, 287, 411, 9, 70, "Input",ExpressionUUID->"7486df88-4a55-41bb-be88-0ef3a99fb97f"],
+Cell[9579, 298, 11490, 257, 70, "Output",ExpressionUUID->"7595f090-bec9-4dd7-8699-efc7d864cbeb"]
+}, Open  ]],
+Cell[21084, 558, 109, 0, 70, "ExampleText",ExpressionUUID->"9501d049-5d88-4db1-9a34-7fbae58b918c"],
+Cell[CellGroupData[{
+Cell[21218, 562, 696, 19, 70, "Input",ExpressionUUID->"acfd97a9-90b5-45f7-add1-043e09a51edc"],
+Cell[21917, 583, 9679, 213, 70, "Output",ExpressionUUID->"1da03dc1-9261-4382-9030-0aeb76bc2a45"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[18693, 486, 110, 1, 70, "MetadataSection",ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd",
+Cell[31633, 801, 110, 1, 70, "MetadataSection",ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd",
  CellID->311882160],
-Cell[18806, 489, 476, 12, 70, "History",ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046",
+Cell[31746, 804, 476, 12, 70, "History",ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046",
  CellID->341476719],
 Cell[CellGroupData[{
-Cell[19307, 505, 485, 13, 70, "CategorizationSection",ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329",
+Cell[32247, 820, 485, 13, 70, "CategorizationSection",ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329",
  CellID->1755438392],
-Cell[19795, 520, 134, 2, 70, "Categorization",ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a",
+Cell[32735, 835, 134, 2, 70, "Categorization",ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a",
  CellID->686433507],
-Cell[19932, 524, 159, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec",
+Cell[32872, 839, 159, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec",
  CellID->605800465],
-Cell[20094, 528, 156, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
+Cell[33034, 843, 156, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[20253, 532, 152, 1, 70, "Categorization",ExpressionUUID->"ee6e56f4-7bdd-40df-8c45-c6c0cbc50349"]
+Cell[33193, 847, 152, 1, 70, "Categorization",ExpressionUUID->"0fbad9d5-d000-4b42-81c7-302b721ae6d8"]
 }, Closed]],
-Cell[20420, 536, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
+Cell[33360, 851, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],
 Cell[CellGroupData[{
-Cell[20555, 541, 120, 1, 70, "TemplatesSection",ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c",
+Cell[33495, 856, 120, 1, 70, "TemplatesSection",ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c",
  CellID->1872225408],
-Cell[20678, 544, 149, 2, 70, "Template",ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72",
+Cell[33618, 859, 149, 2, 70, "Template",ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72",
  CellID->1562036412],
-Cell[20830, 548, 137, 2, 70, "Template",ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec",
+Cell[33770, 863, 137, 2, 70, "Template",ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec",
  CellID->158391909],
-Cell[20970, 552, 136, 2, 70, "Template",ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9",
+Cell[33910, 867, 136, 2, 70, "Template",ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9",
  CellID->1360575930],
-Cell[21109, 556, 137, 2, 70, "Template",ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648",
+Cell[34049, 871, 137, 2, 70, "Template",ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648",
  CellID->793782254]
 }, Closed]]
 }, Open  ]]

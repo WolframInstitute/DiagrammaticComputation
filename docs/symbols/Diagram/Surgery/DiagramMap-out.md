@@ -4,27 +4,30 @@ Name: DiagramMap
 Context: Wolfram`DiagrammaticComputation`
 Paclet: Wolfram/DiagrammaticComputation
 URI: Wolfram/DiagrammaticComputation/ref/DiagramMap
-Keywords: [map, transform, traverse, recursive]
+Keywords: [map, transform, traverse, recursive, leaves]
 SeeAlso: [DiagramMapAt, DiagramReplacePart, Map]
 RelatedGuides: [DiagramSurgery]
 ---
 
 ## Usage
 
-<code>[DiagramMap](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramMap)[$f$, $d$]</code> applies the function $f$ to every subdiagram of $d$ and returns the rebuilt diagram.
+<code>[DiagramMap](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramMap)[$f$, $d$]</code> applies the function $f$ to every singleton subdiagram of $d$ and returns the rebuilt diagram.
+
+<code>[DiagramMap](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramMap)[$f$, $d$, $lvl$]</code> descends at most $lvl$ levels, applying $f$ to whatever subdiagrams it reaches there.
+
+<code>[DiagramMap](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramMap)[$f$][$d$]</code> is the operator form.
 
 ## Details & Options
 
-- Like <code>Map[$f$, $d$, Infinity]</code> but respecting diagram structure: $f$ is given a <code>[Diagram](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/Diagram)</code> and is expected to return a <code>[Diagram](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/Diagram)</code>.
+- Compositions, products, sums and networks are traversed and rebuilt with their options; $f$ transforms the leaves and is expected to return something <code>[Diagram](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/Diagram)</code> accepts.
+- With a finite level, subtrees below the cutoff are passed to $f$ whole.
 
 ## Basic Examples
 
-Tag every subdiagram:
+Relabel every leaf diagram:
 
 ```wl
-DiagramMap[Diagram[Style[#["Expression"], Red], ##2] &,
-  DiagramComposition[Diagram["A", b, a], Diagram["B", c, b]]
-]
+DiagramMap[Diagram[#, "Expression" -> "Z"] &, DiagramComposition[Diagram["A", b, a], Diagram["B", c, b]]]
 ```
 
 ![output](images/DiagramMap-out-1.png)

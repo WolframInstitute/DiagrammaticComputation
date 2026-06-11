@@ -11,18 +11,32 @@ RelatedGuides: [DiagramSurgery]
 
 ## Usage
 
-<code>[DiagramDelete](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramDelete)[$d$, $position$]</code> deletes the subdiagram of $d$ at $position$.
+<code>[DiagramDelete](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramDelete)[$d$, {$i$, $j$, …}]</code> deletes the subdiagram of $d$ at position {$i$, $j$, …}.
+
+<code>[DiagramDelete](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramDelete)[$d$, {$pos_1$, $pos_2$, …}]</code> deletes the subdiagrams at all the positions $pos_i$.
 
 ## Details & Options
 
-- Deletion does not break port matching; surrounding subdiagrams are reconnected as if the deleted piece had been replaced by an <code>[IdentityDiagram](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/IdentityDiagram)</code> of matching ports.
+- Positions follow the <code>[DiagramPositions](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramPositions)</code> convention; the diagram analogue of <code>[Delete](https://reference.wolfram.com/language/ref/Delete.html)</code>.
+- The containing composite is rebuilt without the deleted entries; a composite left with a single subdiagram normalizes to that subdiagram.
 
 ## Basic Examples
 
-Drop the second subdiagram of a composition:
+Drop the first stage of a composition; the remaining single stage normalizes to a plain diagram:
 
 ```wl
-DiagramDelete[DiagramComposition[Diagram["A", b, a], Diagram["B", c, b]], {2}]
+DiagramDelete[DiagramComposition[Diagram["A", b, a], Diagram["B", c, b]], {1}]
 ```
 
 ![output](images/DiagramDelete-out-1.png)
+
+Delete one factor inside a nested product:
+
+```wl
+DiagramDelete[
+  Diagram[DiagramProduct[Diagram["A", a, c], Diagram["B", b]] /* Diagram["C", {c, b}, e]],
+  {2, 1}
+]
+```
+
+![output](images/DiagramDelete-out-2.png)

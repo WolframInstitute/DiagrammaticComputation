@@ -11,20 +11,27 @@ RelatedGuides: [DiagramSurgery]
 
 ## Usage
 
-<code>[DiagramMapAt]()[$f$, $d$, $positions$]</code> applies the function $f$ to the subdiagrams of $d$ at the given $positions$.
+<code>[DiagramMapAt]()[$f$, $d$, {$i$, $j$, …}]</code> applies $f$ to the subdiagram of $d$ at position {$i$, $j$, …}.
+
+<code>[DiagramMapAt]()[$f$, $d$, {$pos_1$, $pos_2$, …}]</code> applies $f$ at all the positions $pos_i$.
+
+<code>[DiagramMapAt]()[$f$, $pos$][$d$]</code> is the operator form.
 
 ## Details & Options
 
-- Positions follow the same convention as <code>[DiagramPositions]()</code> / <code>[Position]()</code>.
-- $positions$ may be a single position or a list of positions.
+- $f$ receives two arguments — the subdiagram and its position — and its result is wrapped back into a <code>[Diagram]()</code>.
+- Positions follow the <code>[DiagramPositions]()</code> convention; the diagram analogue of <code>[MapAt]()</code>.
 
 ## Basic Examples
 
-Recolor only the first subdiagram:
+Restyle only the second subdiagram:
 
 ```wl
-DiagramMapAt[Diagram[Style[#["Expression"], Red], ##2] &,
-  DiagramComposition[Diagram["A", b, a], Diagram["B", c, b]],
-  {1}
-]
+DiagramMapAt[Diagram[#, "Shape" -> "Circle"] &, DiagramComposition[Diagram["A", b, a], Diagram["B", c, b]], {2}]
+```
+
+The function also receives the position:
+
+```wl
+DiagramMapAt[Diagram[#1, "Expression" -> ToString[#2]] &, DiagramComposition[Diagram["A", b, a], Diagram["B", c, b]], {2}]
 ```
