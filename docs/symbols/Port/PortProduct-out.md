@@ -11,7 +11,7 @@ RelatedGuides: [Ports]
 
 ## Usage
 
-<code>[PortProduct](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/PortProduct)[$p_1$, $p_2$, …]</code> represents the parallel (tensor) product of the ports $p_i$.
+<code>[PortProduct](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/PortProduct)[$p_1$, $p_2$, ...]</code> represents the parallel (tensor) product of the ports $p_i$.
 
 ## Details & Options
 
@@ -40,4 +40,4 @@ Port[a \[CircleTimes] b]
 
 ## Properties and Relations
 
-<code>[PortProduct](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/PortProduct)</code> is the port-level analogue of <code>[DiagramProduct](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramProduct)</code> — composing diagrams in parallel matches their input and output port products.
+<code>[PortProduct](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/PortProduct)</code> is the port-level analogue of <code>[DiagramProduct](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramProduct)</code> -- composing diagrams in parallel matches their input and output port products.

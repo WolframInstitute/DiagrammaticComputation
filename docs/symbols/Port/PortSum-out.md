@@ -11,7 +11,7 @@ RelatedGuides: [Ports]
 
 ## Usage
 
-<code>[PortSum](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/PortSum)[$p_1$, $p_2$, …]</code> represents the direct sum of the ports $p_i$.
+<code>[PortSum](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/PortSum)[$p_1$, $p_2$, ...]</code> represents the direct sum of the ports $p_i$.
 
 ## Details & Options
 
@@ -31,4 +31,4 @@ Port[a \[CirclePlus] b]
 
 ## Properties and Relations
 
-<code>[PortSum](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/PortSum)</code> is the port-level analogue of <code>[DiagramSum](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramSum)</code> — taking the direct sum of two diagrams matches their input and output port sums.
+<code>[PortSum](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/PortSum)</code> is the port-level analogue of <code>[DiagramSum](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramSum)</code> -- taking the direct sum of two diagrams matches their input and output port sums.

@@ -13,7 +13,7 @@ RelatedGuides: [DiagramRewriting]
 
 <code>[DiagramReplace](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramReplace)[$d$, $src$ -> $tgt$]</code> rewrites the first match of the diagram $src$ in $d$ to $tgt$.
 
-<code>[DiagramReplace](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramReplace)[$d$, {$rule_1$, $rule_2$, …}]</code> tries each rule in turn, applying the first that matches.
+<code>[DiagramReplace](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramReplace)[$d$, {$rule_1$, $rule_2$, ...}]</code> tries each rule in turn, applying the first that matches.
 
 <code>[DiagramReplace](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramReplace)[$rule$][$d$]</code> is the operator form.
 

@@ -15,7 +15,7 @@ RelatedGuides: [DiagramRewriting]
 
 ## Details & Options
 
-- Encodes the interaction-net erase–erase law: an eraser meeting another eraser head-on leaves the empty diagram.
+- Encodes the interaction-net erase-erase law: an eraser meeting another eraser head-on leaves the empty diagram.
 - Options of <code>[AnnihilationRule](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/AnnihilationRule)</code> are accepted.
 
 ## Basic Examples

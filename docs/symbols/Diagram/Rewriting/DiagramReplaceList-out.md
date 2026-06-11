@@ -15,7 +15,7 @@ RelatedGuides: [DiagramRewriting]
 
 <code>[DiagramReplaceList](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramReplaceList)[$d$, $rule$, $n$]</code> returns at most $n$ rewrites.
 
-<code>[DiagramReplaceList](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramReplaceList)[$d$, {$rule_1$, $rule_2$, …}]</code> enumerates rewrites for each of the given rules.
+<code>[DiagramReplaceList](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramReplaceList)[$d$, {$rule_1$, $rule_2$, ...}]</code> enumerates rewrites for each of the given rules.
 
 ## Details & Options
 

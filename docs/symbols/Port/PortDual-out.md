@@ -11,7 +11,7 @@ RelatedGuides: [Ports]
 
 ## Usage
 
-<code>[PortDual](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/PortDual)[$p$]</code> represents the dual of the port $p$ — same expression and type, opposite direction.
+<code>[PortDual](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/PortDual)[$p$]</code> represents the dual of the port $p$ -- same expression and type, opposite direction.
 
 <code>[PortDual](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/PortDual)[$expr$, $type$]</code> constructs a dual port directly from an expression and type.
 

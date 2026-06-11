@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[     12886,        333]
-NotebookOptionsPosition[      8374,        243]
-NotebookOutlinePosition[      9435,        273]
-CellTagsIndexPosition[      9392,        270]
+NotebookDataLength[     12903,        333]
+NotebookOptionsPosition[      8391,        243]
+NotebookOutlinePosition[      9452,        273]
+CellTagsIndexPosition[      9409,        270]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -31,11 +31,11 @@ networks, lambda terms and system models all have diagrammatic readings. ",
   TemplateBox[{
     Cell[
      TextData["ToDiagram"]], 
-    "paclet:WolframDiagrammaticComputation/ref/ToDiagram", 
-    "WolframDiagrammaticComputation Package Symbol"},
+    "paclet:Wolfram/DiagrammaticComputation/ref/ToDiagram", 
+    "Wolfram/DiagrammaticComputation Package Symbol"},
    "PackageLink",
    BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
-  "17149559-3fbe-4a9d-97ae-8ae6299d87a6"],
+  "b861555e-e36e-4e39-9e97-947b3d49f3ec"],
  " is the universal entry point for getting ",
  StyleBox["into", "TI"],
  " the diagram representation; ",
@@ -43,31 +43,31 @@ networks, lambda terms and system models all have diagrammatic readings. ",
   TemplateBox[{
     Cell[
      TextData["DiagramFunction"]], 
-    "paclet:WolframDiagrammaticComputation/ref/DiagramFunction", 
-    "WolframDiagrammaticComputation Package Symbol"},
+    "paclet:Wolfram/DiagrammaticComputation/ref/DiagramFunction", 
+    "Wolfram/DiagrammaticComputation Package Symbol"},
    "PackageLink",
    BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
-  "62ee0ea1-e0a8-4ede-abbf-435537cec351"],
+  "67d2f5ef-841c-4652-a88a-8845b7a9405f"],
  " and ",
  Cell[BoxData[
   TemplateBox[{
     Cell[
      TextData["DiagramTensor"]], 
-    "paclet:WolframDiagrammaticComputation/ref/DiagramTensor", 
-    "WolframDiagrammaticComputation Package Symbol"},
+    "paclet:Wolfram/DiagrammaticComputation/ref/DiagramTensor", 
+    "Wolfram/DiagrammaticComputation Package Symbol"},
    "PackageLink",
    BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
-  "3c3f5668-9eca-414e-8ff8-3ff2d1ca44c7"],
+  "26ecda64-2db6-4723-9178-233e88a7f726"],
  " are the dual exits back to ordinary Wolfram Language expressions; and ",
  Cell[BoxData[
   TemplateBox[{
     Cell[
      TextData["TensorDiagram"]], 
-    "paclet:WolframDiagrammaticComputation/ref/TensorDiagram", 
-    "WolframDiagrammaticComputation Package Symbol"},
+    "paclet:Wolfram/DiagrammaticComputation/ref/TensorDiagram", 
+    "Wolfram/DiagrammaticComputation Package Symbol"},
    "PackageLink",
    BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
-  "caa5c334-cc21-4904-8230-89307a256dcd"],
+  "3fc25335-ce82-4610-b910-492605e4878f"],
  " imports the tensor side directly."
 }], "GuideAbstract",
  CellID->2001916300,ExpressionUUID->"ef0ab37b-2e0d-4399-8f7e-82603ccbe925"]
@@ -78,70 +78,70 @@ Cell[CellGroupData[{
 Cell["", "GuideFunctionsSection",
  CellID->1866139230,ExpressionUUID->"a0ea3657-4c83-4862-93c8-ecf80cebc774"],
 
-Cell["Importing to a diagram", "GuideFunctionsSubsection",ExpressionUUID->"547b9d2a-aad6-41a5-8e11-1446bf7394cd"],
+Cell["Importing to a diagram", "GuideFunctionsSubsection",ExpressionUUID->"bbf0443c-140c-4432-83f5-297a3afac471"],
 
 Cell[TextData[{
  Cell[BoxData[
   TemplateBox[{
     Cell[
      TextData["ToDiagram"]], 
-    "paclet:WolframDiagrammaticComputation/ref/ToDiagram", 
-    "WolframDiagrammaticComputation Package Symbol"},
+    "paclet:Wolfram/DiagrammaticComputation/ref/ToDiagram", 
+    "Wolfram/DiagrammaticComputation Package Symbol"},
    "PackageLink",
    BaseStyle->"InlineFormula"]], "InlineGuideFunction",
   TaggingRules->{"PageType" -> "Function"},ExpressionUUID->
-  "40753126-f154-47e7-9015-8aea440da4d0"],
+  "82ebc776-b067-4bd2-8ac8-977302f73b9c"],
  " \[LongDash] ",
  "\[LongDash] convert graphs, trees, hypergraphs, NetGraphs, lambda terms and \
 system models to a diagram"
-}], "GuideText",ExpressionUUID->"e6e8d859-2cde-4a52-98e8-3e8dc5b443cf"],
+}], "GuideText",ExpressionUUID->"604a5b05-9f6f-40e1-8f62-0977c7014048"],
 
 Cell[TextData[{
  Cell[BoxData[
   TemplateBox[{
     Cell[
      TextData["TensorDiagram"]], 
-    "paclet:WolframDiagrammaticComputation/ref/TensorDiagram", 
-    "WolframDiagrammaticComputation Package Symbol"},
+    "paclet:Wolfram/DiagrammaticComputation/ref/TensorDiagram", 
+    "Wolfram/DiagrammaticComputation Package Symbol"},
    "PackageLink",
    BaseStyle->"InlineFormula"]], "InlineGuideFunction",
   TaggingRules->{"PageType" -> "Function"},ExpressionUUID->
-  "61978a8c-4924-4f15-a263-948f14e8e557"],
+  "91847864-9a61-4790-b85c-09733033387e"],
  " \[LongDash] ",
  "\[LongDash] convert a tensor expression to a diagram"
-}], "GuideText",ExpressionUUID->"f8461356-3bd9-451f-aa52-3ea7d3ad518b"],
+}], "GuideText",ExpressionUUID->"a93c35f1-25ff-4069-be29-b832bbb1e70e"],
 
-Cell["Exporting from a diagram", "GuideFunctionsSubsection",ExpressionUUID->"1da14b83-aa49-4056-b5c3-590bb584bbce"],
+Cell["Exporting from a diagram", "GuideFunctionsSubsection",ExpressionUUID->"d956eca7-7765-4a5f-a835-dcf7f4afd3ed"],
 
 Cell[TextData[{
  Cell[BoxData[
   TemplateBox[{
     Cell[
      TextData["DiagramFunction"]], 
-    "paclet:WolframDiagrammaticComputation/ref/DiagramFunction", 
-    "WolframDiagrammaticComputation Package Symbol"},
+    "paclet:Wolfram/DiagrammaticComputation/ref/DiagramFunction", 
+    "Wolfram/DiagrammaticComputation Package Symbol"},
    "PackageLink",
    BaseStyle->"InlineFormula"]], "InlineGuideFunction",
   TaggingRules->{"PageType" -> "Function"},ExpressionUUID->
-  "d40df06c-abb6-4b53-83ec-29959563cdd7"],
+  "5c6c5e5d-428e-4891-9499-4a76f7b0c3e0"],
  " \[LongDash] ",
  "\[LongDash] extract a pure function from a diagram"
-}], "GuideText",ExpressionUUID->"69db2a3f-f458-4156-a5b8-a2dfc5e1f10a"],
+}], "GuideText",ExpressionUUID->"7cecb00a-daad-4c44-aadf-ca4514eca2a8"],
 
 Cell[TextData[{
  Cell[BoxData[
   TemplateBox[{
     Cell[
      TextData["DiagramTensor"]], 
-    "paclet:WolframDiagrammaticComputation/ref/DiagramTensor", 
-    "WolframDiagrammaticComputation Package Symbol"},
+    "paclet:Wolfram/DiagrammaticComputation/ref/DiagramTensor", 
+    "Wolfram/DiagrammaticComputation Package Symbol"},
    "PackageLink",
    BaseStyle->"InlineFormula"]], "InlineGuideFunction",
   TaggingRules->{"PageType" -> "Function"},ExpressionUUID->
-  "df292928-cece-405a-ae2b-ba1ce48c2eb3"],
+  "adeb0326-ab17-41c9-87d6-21fc8f5993bf"],
  " \[LongDash] ",
  "\[LongDash] extract a symbolic tensor expression from a diagram"
-}], "GuideText",ExpressionUUID->"af0c1d37-4bd8-49df-ba3b-3bbda52c0abe"]
+}], "GuideText",ExpressionUUID->"7f526807-f04f-4e84-b510-df6b0573013c"]
 }, Open  ]],
 
 Cell["Tech Notes", "GuideTutorialsSection",
@@ -157,11 +157,11 @@ Cell[TextData[Cell[BoxData[
  TemplateBox[{
    Cell[
     TextData["Diagrams"]], 
-   "paclet:WolframDiagrammaticComputation/guide/Diagrams"},
+   "paclet:Wolfram/DiagrammaticComputation/guide/Diagrams"},
   "RefLinkPlain",
   BaseStyle->{
    "InlineFormula"}]], \
-"InlineFormula",ExpressionUUID->"a589208d-ed3f-4180-baca-cf6ca2ddeb8c"]], \
+"InlineFormula",ExpressionUUID->"0b85057a-94e5-4b2e-b44e-5cb17f4fb895"]], \
 "GuideMoreAbout",
  CellID->1567025153,ExpressionUUID->"e0ff5a6e-1488-40e3-9571-e445309cac69"]
 }, Open  ]],
@@ -207,7 +207,7 @@ Cell["Wolfram`DiagrammaticComputation`", "Categorization",
 
 Cell["Wolfram/DiagrammaticComputation/guide/DiagramConversion", \
 "Categorization",
- CellLabel->"URI",ExpressionUUID->"e61b2f18-16bc-49c5-8b30-67b768da7058"]
+ CellLabel->"URI",ExpressionUUID->"f48f04a6-f40e-4dfb-86c8-de87bc140e78"]
 }, Closed]],
 
 Cell[CellGroupData[{
@@ -275,63 +275,63 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 114, 1, 70, "GuideTitle",ExpressionUUID->"a3a3c038-ca24-47b7-9945-83f1c1312fe3",
  CellID->942062912],
-Cell[693, 25, 1845, 47, 70, "GuideAbstract",ExpressionUUID->"ef0ab37b-2e0d-4399-8f7e-82603ccbe925",
+Cell[693, 25, 1853, 47, 70, "GuideAbstract",ExpressionUUID->"ef0ab37b-2e0d-4399-8f7e-82603ccbe925",
  CellID->2001916300]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[2575, 77, 109, 1, 70, "GuideFunctionsSection",ExpressionUUID->"a0ea3657-4c83-4862-93c8-ecf80cebc774",
+Cell[2583, 77, 109, 1, 70, "GuideFunctionsSection",ExpressionUUID->"a0ea3657-4c83-4862-93c8-ecf80cebc774",
  CellID->1866139230],
-Cell[2687, 80, 113, 0, 70, "GuideFunctionsSubsection",ExpressionUUID->"547b9d2a-aad6-41a5-8e11-1446bf7394cd"],
-Cell[2803, 82, 575, 14, 70, "GuideText",ExpressionUUID->"e6e8d859-2cde-4a52-98e8-3e8dc5b443cf"],
-Cell[3381, 98, 531, 13, 70, "GuideText",ExpressionUUID->"f8461356-3bd9-451f-aa52-3ea7d3ad518b"],
-Cell[3915, 113, 115, 0, 70, "GuideFunctionsSubsection",ExpressionUUID->"1da14b83-aa49-4056-b5c3-590bb584bbce"],
-Cell[4033, 115, 533, 13, 70, "GuideText",ExpressionUUID->"69db2a3f-f458-4156-a5b8-a2dfc5e1f10a"],
-Cell[4569, 130, 542, 13, 70, "GuideText",ExpressionUUID->"af0c1d37-4bd8-49df-ba3b-3bbda52c0abe"]
+Cell[2695, 80, 113, 0, 70, "GuideFunctionsSubsection",ExpressionUUID->"bbf0443c-140c-4432-83f5-297a3afac471"],
+Cell[2811, 82, 577, 14, 70, "GuideText",ExpressionUUID->"604a5b05-9f6f-40e1-8f62-0977c7014048"],
+Cell[3391, 98, 533, 13, 70, "GuideText",ExpressionUUID->"a93c35f1-25ff-4069-be29-b832bbb1e70e"],
+Cell[3927, 113, 115, 0, 70, "GuideFunctionsSubsection",ExpressionUUID->"d956eca7-7765-4a5f-a835-dcf7f4afd3ed"],
+Cell[4045, 115, 535, 13, 70, "GuideText",ExpressionUUID->"7cecb00a-daad-4c44-aadf-ca4514eca2a8"],
+Cell[4583, 130, 544, 13, 70, "GuideText",ExpressionUUID->"7f526807-f04f-4e84-b510-df6b0573013c"]
 }, Open  ]],
-Cell[5126, 146, 118, 1, 70, "GuideTutorialsSection",ExpressionUUID->"90fbef20-ae74-4ea3-a50b-de22929861f8",
+Cell[5142, 146, 118, 1, 70, "GuideTutorialsSection",ExpressionUUID->"90fbef20-ae74-4ea3-a50b-de22929861f8",
  CellID->415694126],
 Cell[CellGroupData[{
-Cell[5269, 151, 189, 2, 70, "GuideMoreAboutSection",ExpressionUUID->"0c9c7cc7-143a-48e7-bf27-45dd9029bd50",
+Cell[5285, 151, 189, 2, 70, "GuideMoreAboutSection",ExpressionUUID->"0c9c7cc7-143a-48e7-bf27-45dd9029bd50",
  CellID->23220180],
-Cell[5461, 155, 367, 10, 70, "GuideMoreAbout",ExpressionUUID->"e0ff5a6e-1488-40e3-9571-e445309cac69",
+Cell[5477, 155, 368, 10, 70, "GuideMoreAbout",ExpressionUUID->"e0ff5a6e-1488-40e3-9571-e445309cac69",
  CellID->1567025153]
 }, Open  ]],
-Cell[5843, 168, 124, 1, 70, "GuideRelatedLinksSection",ExpressionUUID->"f8d14542-737b-4330-8523-975dc2960049",
+Cell[5860, 168, 124, 1, 70, "GuideRelatedLinksSection",ExpressionUUID->"f8d14542-737b-4330-8523-975dc2960049",
  CellID->415694148],
 Cell[CellGroupData[{
-Cell[5992, 173, 110, 1, 70, "MetadataSection",ExpressionUUID->"1e562958-8f54-4854-b782-f4766015b2b2",
+Cell[6009, 173, 110, 1, 70, "MetadataSection",ExpressionUUID->"1e562958-8f54-4854-b782-f4766015b2b2",
  CellID->311882160],
-Cell[6105, 176, 476, 12, 70, "History",ExpressionUUID->"6e43ae3a-1f84-4ca3-8250-559a053a9513",
+Cell[6122, 176, 476, 12, 70, "History",ExpressionUUID->"6e43ae3a-1f84-4ca3-8250-559a053a9513",
  CellID->341476719],
 Cell[CellGroupData[{
-Cell[6606, 192, 123, 1, 70, "CategorizationSection",ExpressionUUID->"cbe57f1c-788c-4a86-8338-08191b5d7b7b",
+Cell[6623, 192, 123, 1, 70, "CategorizationSection",ExpressionUUID->"cbe57f1c-788c-4a86-8338-08191b5d7b7b",
  CellID->1122911449],
-Cell[6732, 195, 133, 2, 70, "Categorization",ExpressionUUID->"4bb65dd8-004f-4758-b626-8984c4a9f475",
+Cell[6749, 195, 133, 2, 70, "Categorization",ExpressionUUID->"4bb65dd8-004f-4758-b626-8984c4a9f475",
  CellID->686433507],
-Cell[6868, 199, 159, 2, 70, "Categorization",ExpressionUUID->"ea3b4732-cbcc-4f28-9e20-bfabae54c52c",
+Cell[6885, 199, 159, 2, 70, "Categorization",ExpressionUUID->"ea3b4732-cbcc-4f28-9e20-bfabae54c52c",
  CellID->605800465],
-Cell[7030, 203, 156, 2, 70, "Categorization",ExpressionUUID->"52afa833-5422-4969-8c91-b9af19a42a2e",
+Cell[7047, 203, 156, 2, 70, "Categorization",ExpressionUUID->"52afa833-5422-4969-8c91-b9af19a42a2e",
  CellID->468444828],
-Cell[7189, 207, 157, 2, 70, "Categorization",ExpressionUUID->"e61b2f18-16bc-49c5-8b30-67b768da7058"]
+Cell[7206, 207, 157, 2, 70, "Categorization",ExpressionUUID->"f48f04a6-f40e-4dfb-86c8-de87bc140e78"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[7383, 214, 111, 1, 70, "KeywordsSection",ExpressionUUID->"99169e92-9e69-4982-8b71-ac9518fe5ead",
+Cell[7400, 214, 111, 1, 70, "KeywordsSection",ExpressionUUID->"99169e92-9e69-4982-8b71-ac9518fe5ead",
  CellID->1427428552],
-Cell[7497, 217, 106, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
+Cell[7514, 217, 106, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
  CellID->1251852827],
-Cell[7606, 220, 101, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
+Cell[7623, 220, 101, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
  CellID->1251852827],
-Cell[7710, 223, 100, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
+Cell[7727, 223, 100, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
  CellID->1251852827],
-Cell[7813, 226, 106, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
+Cell[7830, 226, 106, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
  CellID->1251852827],
-Cell[7922, 229, 102, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
+Cell[7939, 229, 102, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
  CellID->1251852827],
-Cell[8027, 232, 102, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
+Cell[8044, 232, 102, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
  CellID->1251852827],
-Cell[8132, 235, 104, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
+Cell[8149, 235, 104, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
  CellID->1251852827],
-Cell[8239, 238, 107, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
+Cell[8256, 238, 107, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
  CellID->1251852827]
 }, Closed]]
 }, Open  ]]

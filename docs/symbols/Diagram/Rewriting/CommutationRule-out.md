@@ -11,9 +11,9 @@ RelatedGuides: [DiagramRewriting]
 
 ## Usage
 
-<code>[CommutationRule](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/CommutationRule)[{$x_1$, …}, {$y_1$, …}]</code> returns a rewrite rule commuting a generic process past a copy node, with input ports $x_i$ and output ports $y_i$.
+<code>[CommutationRule](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/CommutationRule)[{$x_1$, ...}, {$y_1$, ...}]</code> returns a rewrite rule commuting a generic process past a copy node, with input ports $x_i$ and output ports $y_i$.
 
-<code>[CommutationRule](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/CommutationRule)[$expr_1$, $expr_2$, {$x_1$, …}, {$y_1$, …}]</code> commutes processes labelled $expr_1$ and $expr_2$.
+<code>[CommutationRule](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/CommutationRule)[$expr_1$, $expr_2$, {$x_1$, ...}, {$y_1$, ...}]</code> commutes processes labelled $expr_1$ and $expr_2$.
 
 <code>[CommutationRule](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/CommutationRule)[$d$, $c$]</code> commutes the unary-input diagrams $d$ and $c$ past each other.
 

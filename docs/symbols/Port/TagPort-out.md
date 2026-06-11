@@ -13,7 +13,7 @@ RelatedGuides: [Ports]
 
 <code>[TagPort](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/TagPort)[$p$, $tag$]</code> attaches the tag $tag$ to the port $p$.
 
-<code>[TagPort](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/TagPort)[$p$, {$tag_1$, $tag_2$, …}]</code> attaches a list of tags.
+<code>[TagPort](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/TagPort)[$p$, {$tag_1$, $tag_2$, ...}]</code> attaches a list of tags.
 
 ## Details & Options
 

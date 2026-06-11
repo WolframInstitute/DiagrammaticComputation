@@ -11,7 +11,7 @@ RelatedGuides: [DiagramRewriting]
 
 ## Usage
 
-<code>[PropagationRule](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/PropagationRule)[$a$, {$b_1$, …, $b_n$}, $f$]</code> returns a rewrite rule propagating a unary process with input $a$ through an $n$-ary node with outputs $b_1, …, b_n$, applying $f$ to the node's label.
+<code>[PropagationRule](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/PropagationRule)[$a$, {$b_1$, ..., $b_n$}, $f$]</code> returns a rewrite rule propagating a unary process with input $a$ through an $n$-ary node with outputs $b_1, ..., b_n$, applying $f$ to the node's label.
 
 ## Details & Options
 

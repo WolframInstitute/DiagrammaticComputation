@@ -11,7 +11,7 @@ RelatedGuides: [DiagramGrid, DiagramSurgery]
 
 ## Usage
 
-<code>[DiagramAssignPorts](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramAssignPorts)[$d$, {$i_1$, …}, {$o_1$, …}]</code> assigns the explicit input ports $i_1, …$ and output ports $o_1, …$ to the diagram $d$.
+<code>[DiagramAssignPorts](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramAssignPorts)[$d$, {$i_1$, ...}, {$o_1$, ...}]</code> assigns the explicit input ports $i_1, ...$ and output ports $o_1, ...$ to the diagram $d$.
 
 <code>[DiagramAssignPorts](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramAssignPorts)[$d$, $rules$]</code> renames ports according to a list of <code>oldName -> newName</code> rules.
 

@@ -11,7 +11,7 @@ RelatedGuides: [DiagramRewriting]
 
 ## Usage
 
-<code>[EraserDiagram](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/EraserDiagram)[$p$]</code> is the canonical erase / discard diagram on the port $p$ — one input, no outputs.
+<code>[EraserDiagram](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/EraserDiagram)[$p$]</code> is the canonical erase / discard diagram on the port $p$ -- one input, no outputs.
 
 ## Details & Options
 

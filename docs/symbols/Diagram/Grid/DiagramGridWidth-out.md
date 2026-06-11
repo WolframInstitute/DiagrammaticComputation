@@ -11,7 +11,7 @@ RelatedGuides: [DiagramGrid]
 
 ## Usage
 
-<code>[DiagramGridWidth](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramGridWidth)[$d$]</code> gives the width of the diagram's grid layout — the number of columns required to lay out $d$ as a 2D grid.
+<code>[DiagramGridWidth](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramGridWidth)[$d$]</code> gives the width of the diagram's grid layout -- the number of columns required to lay out $d$ as a 2D grid.
 
 ## Basic Examples
 

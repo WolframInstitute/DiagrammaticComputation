@@ -10,7 +10,7 @@ RelatedGuides: [DiagramRewriting, DiagramSurgery]
 RelatedTutorials: [IntroductiontoDiagrammaticComputation, DiagramExamples]
 ---
 
-Diagram rewriting replaces a piece of a diagram matching a pattern with another piece, reconnecting the wires. Matching happens on the diagram's hypergraph structure, so rules are insensitive to layout and port naming — formal pattern symbols in port positions bind to whatever wiring the match finds. This tech note builds rewrite rules for algebraic laws and applies them with <code>[DiagramReplaceList](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramReplaceList)</code> and <code>[DiagramReplace](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramReplace)</code>.
+Diagram rewriting replaces a piece of a diagram matching a pattern with another piece, reconnecting the wires. Matching happens on the diagram's hypergraph structure, so rules are insensitive to layout and port naming -- formal pattern symbols in port positions bind to whatever wiring the match finds. This tech note builds rewrite rules for algebraic laws and applies them with <code>[DiagramReplaceList](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramReplaceList)</code> and <code>[DiagramReplace](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramReplace)</code>.
 
 ```wl
 << Wolfram`DiagrammaticComputation`

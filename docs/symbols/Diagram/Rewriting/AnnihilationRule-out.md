@@ -13,7 +13,7 @@ RelatedGuides: [DiagramRewriting]
 
 <code>[AnnihilationRule](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/AnnihilationRule)[$d_1$, $d_2$]</code> returns a rewrite rule annihilating the facing diagrams $d_1$ and $d_2$ into identity wires.
 
-<code>[AnnihilationRule](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/AnnihilationRule)[$expr_1$, $expr_2$, {$x_1$, …, $x_n$}, {$y_1$, …, $y_n$}]</code> annihilates nodes labelled $expr_1$ and $expr_2$ with legs $x_i$ and $y_i$.
+<code>[AnnihilationRule](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/AnnihilationRule)[$expr_1$, $expr_2$, {$x_1$, ..., $x_n$}, {$y_1$, ..., $y_n$}]</code> annihilates nodes labelled $expr_1$ and $expr_2$ with legs $x_i$ and $y_i$.
 
 ## Details & Options
 

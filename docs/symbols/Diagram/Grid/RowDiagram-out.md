@@ -11,11 +11,11 @@ RelatedGuides: [DiagramGrid]
 
 ## Usage
 
-<code>[RowDiagram](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/RowDiagram)[{$d_1$, $d_2$, …}]</code> arranges the diagrams $d_i$ in a horizontal row.
+<code>[RowDiagram](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/RowDiagram)[{$d_1$, $d_2$, ...}]</code> arranges the diagrams $d_i$ in a horizontal row.
 
 ## Details & Options
 
-- Equivalent in structure to <code>[DiagramProduct](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramProduct)[$d_1$, $d_2$, …]</code> but with default port-arrow display tuned for a row layout.
+- Equivalent in structure to <code>[DiagramProduct](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramProduct)[$d_1$, $d_2$, ...]</code> but with default port-arrow display tuned for a row layout.
 
 ## Basic Examples
 

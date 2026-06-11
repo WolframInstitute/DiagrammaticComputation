@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[     25925,        680]
-NotebookOptionsPosition[     21551,        591]
-NotebookOutlinePosition[     22458,        618]
-CellTagsIndexPosition[     22415,        615]
+NotebookDataLength[     29091,        765]
+NotebookOptionsPosition[     24717,        676]
+NotebookOutlinePosition[     25624,        703]
+CellTagsIndexPosition[     25581,        700]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -24,33 +24,33 @@ Cell["DiagramHypergraph", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"f6e79022-5a1c-4f8f-9e0f-d2ea5f5f8c10"],
+ Cell["   ", "ModInfo",ExpressionUUID->"9be6ffe3-b0df-4d42-895c-4eb5fbfe0889"],
  Cell[BoxData[
   RowBox[{
    TemplateBox[{
      Cell[
       TextData["DiagramHypergraph"]], 
-     "paclet:WolframDiagrammaticComputation/ref/DiagramHypergraph", 
-     "WolframDiagrammaticComputation Package Symbol"},
+     "paclet:Wolfram/DiagrammaticComputation/ref/DiagramHypergraph", 
+     "Wolfram/DiagrammaticComputation Package Symbol"},
     "PackageLink",
     BaseStyle->"InlineFormula"], "[", 
    StyleBox["d", "TI"], "]"}]], "InlineFormula",ExpressionUUID->
-  "11cb0342-7a55-48e4-9ecb-3e3381bb6cab"],
+  "98911db6-8455-4ccd-a7a5-24da0e09d68c"],
  " ",
  "returns the hypergraph representation of the diagram ",
  Cell[BoxData[
   FormBox[
    StyleBox["d", "TI"], TraditionalForm]], "InlineFormula",ExpressionUUID->
-  "0a773bc0-e5af-4a10-a5f0-45e89445564c"],
+  "68497a84-6dcd-4341-8f3a-7a640eb84bf0"],
  " used for rule matching.",
  "\n"
-}], "Usage",ExpressionUUID->"82b15180-7afb-4082-841d-b8f9c24b2d59"],
+}], "Usage",ExpressionUUID->"47829ca3-63af-4f32-ae12-220e15b15d3c"],
 
 Cell["\<\
 In the hypergraph view, each subdiagram becomes a hyperedge labelled with its \
 expression, and each shared port becomes a vertex shared by the corresponding \
 hyperedges.\
-\>", "Notes",ExpressionUUID->"25da75e2-086c-4054-9592-e0c07d6bd7d3"],
+\>", "Notes",ExpressionUUID->"e564083a-4bd2-430a-95e3-13d2ac09cd16"],
 
 Cell[TextData[{
  "The matcher of ",
@@ -58,14 +58,14 @@ Cell[TextData[{
   TemplateBox[{
     Cell[
      TextData["DiagramReplace"]], 
-    "paclet:WolframDiagrammaticComputation/ref/DiagramReplace", 
-    "WolframDiagrammaticComputation Package Symbol"},
+    "paclet:Wolfram/DiagrammaticComputation/ref/DiagramReplace", 
+    "Wolfram/DiagrammaticComputation Package Symbol"},
    "PackageLink",
    BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
-  "3e1f9653-bb1d-427f-9552-9d1f7cdd9a68"],
+  "3eee3c14-3cd0-4999-b767-8c5251b7e664"],
  " operates on this view, so two diagrams that differ only in port naming or \
 layout match the same rules."
-}], "Notes",ExpressionUUID->"1d7dbacb-9b70-4134-99c1-77c49094c8ad"]
+}], "Notes",ExpressionUUID->"a730e186-93e7-4199-84aa-8f4d08b43882"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -90,32 +90,32 @@ Cell[TextData[{
   TemplateBox[{
     Cell[
      TextData["DiagramHypergraphRule"]], 
-    "paclet:WolframDiagrammaticComputation/ref/DiagramHypergraphRule", 
-    "WolframDiagrammaticComputation Package Symbol"},
+    "paclet:Wolfram/DiagrammaticComputation/ref/DiagramHypergraphRule", 
+    "Wolfram/DiagrammaticComputation Package Symbol"},
    "PackageLink",
    BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
-  "52fcd5ea-7c62-4309-ba25-b600860a9148"],
+  "caa25bc5-56cc-44db-bc42-49d338ff609c"],
  " \[FilledVerySmallSquare] ",
  Cell[BoxData[
   TemplateBox[{
     Cell[
      TextData["DiagramRule"]], 
-    "paclet:WolframDiagrammaticComputation/ref/DiagramRule", 
-    "WolframDiagrammaticComputation Package Symbol"},
+    "paclet:Wolfram/DiagrammaticComputation/ref/DiagramRule", 
+    "Wolfram/DiagrammaticComputation Package Symbol"},
    "PackageLink",
    BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
-  "c812cf4a-3574-4a7a-9b76-33023c11d1e9"],
+  "b04c2d87-a5db-4934-a5d9-82b6626044c9"],
  " \[FilledVerySmallSquare] ",
  Cell[BoxData[
   TemplateBox[{
     Cell[
      TextData["DiagramsGraph"]], 
-    "paclet:WolframDiagrammaticComputation/ref/DiagramsGraph", 
-    "WolframDiagrammaticComputation Package Symbol"},
+    "paclet:Wolfram/DiagrammaticComputation/ref/DiagramsGraph", 
+    "Wolfram/DiagrammaticComputation Package Symbol"},
    "PackageLink",
    BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
-  "0316545f-e388-4b86-b97a-b9d18c18aadd"]
-}], "SeeAlso",ExpressionUUID->"c0b3e39c-da78-4d06-866f-64e16e9474fc"]
+  "2329cb26-8d2f-4e49-8d44-3f3b47a32ea3"]
+}], "SeeAlso",ExpressionUUID->"0d756f96-a918-4842-8f02-58a40a706344"]
 }, Open  ]],
 
 Cell[TextData[{
@@ -141,9 +141,9 @@ Cell[TextData[Cell[BoxData[
  ButtonBox["DiagramRewriting",
   BaseStyle->"Link",
   ButtonData->
-   "paclet:WolframDiagrammaticComputation/guide/DiagramRewriting"]], \
-"InlineFormula",ExpressionUUID->"a252fc1a-f1b7-40e1-8663-26a82b35f469"]], \
-"MoreAbout",ExpressionUUID->"8b4abe71-1382-4866-a5a7-554c9ed11495"]
+   "paclet:Wolfram/DiagrammaticComputation/guide/DiagramRewriting"]], \
+"InlineFormula",ExpressionUUID->"d71dcb2a-24be-4784-88b9-3e5524c8b458"]], \
+"MoreAbout",ExpressionUUID->"1e6c4f7e-ec03-4dff-adbe-ec6c80e7fef3"]
 }, Open  ]],
 
 Cell[TextData[{
@@ -199,7 +199,7 @@ Cell[BoxData[
   $Line = 0; Null]], "PrimaryExamplesSection",
  CellID->880084151,ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42"],
 
-Cell["Hypergraph of a small composition:", "ExampleText",ExpressionUUID->"7faf367d-0173-43f7-983d-4f0f324ee570"],
+Cell["Hypergraph of a small composition:", "ExampleText",ExpressionUUID->"c74b4baa-2d00-4f26-a698-ded95dce97a6"],
 
 Cell[CellGroupData[{
 
@@ -212,7 +212,7 @@ Cell[BoxData[
     RowBox[{"Diagram", "[", 
      RowBox[{"\"\<B\>\"", ",", " ", "c", ",", " ", "b"}], "]"}]}], 
    "]"}]}]], "Input",
- CellLabel->"In[1]:= ",ExpressionUUID->"3fad65e4-b4fe-4496-8c9f-ffc064bad4f4"],
+ CellLabel->"In[1]:= ",ExpressionUUID->"651933ea-e673-4cca-8790-c350309acb7e"],
 
 Cell[BoxData[
  GraphicsBox[
@@ -220,63 +220,105 @@ Cell[BoxData[
    DynamicModuleBox[{Typeset`hg = HoldComplete[
      WolframInstitute`Hypergraph`Hypergraph[{
        HoldForm[
-        Labeled[MTNB$1boplaluof2iv`c, {{2, 1, 1}}]], 
+        Labeled[
+        Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`c, {{2, 1, 
+         1}}]], 
        HoldForm[
-        Labeled[MTNB$1boplaluof2iv`b, {{2, 2, 1}, {2, 1, 1}}]], 
+        Labeled[
+        Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b, {{2, 2, 
+         1}, {2, 1, 1}}]], 
        HoldForm[
-        Labeled[MTNB$1boplaluof2iv`a, {{1, 2, 1}}]]}, 
+        Labeled[
+        Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`a, {{1, 2, 
+         1}}]]}, 
       WolframInstitute`Hypergraph`Hyperedges[{
         HoldForm[
-         Labeled[MTNB$1boplaluof2iv`c, {{2, 1, 1}}]], 
+         Labeled[
+         Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`c, {{2, 1, 
+          1}}]], 
         HoldForm[
-         Labeled[MTNB$1boplaluof2iv`b, {{2, 2, 1}, {2, 1, 1}}]]}, {
+         Labeled[
+         Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b, {{2, 2, 
+          1}, {2, 1, 1}}]]}, {
         HoldForm[
-         Labeled[MTNB$1boplaluof2iv`b, {{2, 2, 1}, {2, 1, 1}}]], 
+         Labeled[
+         Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b, {{2, 2, 
+          1}, {2, 1, 1}}]], 
         HoldForm[
-         Labeled[MTNB$1boplaluof2iv`a, {{1, 2, 1}}]]}], 
-      VertexLabels -> {Verbatim[
+         Labeled[
+         Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`a, {{1, 2, 
+          1}}]]}], VertexLabels -> {Verbatim[
           HoldForm[
-           Labeled[MTNB$1boplaluof2iv`c, {{2, 1, 1}}]]] -> 
-        MTNB$1boplaluof2iv`c, Verbatim[
+           Labeled[
+           Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`c, {{2, 1, 
+            1}}]]] -> 
+        Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`c, Verbatim[
           HoldForm[
-           Labeled[MTNB$1boplaluof2iv`c, {{2, 1, 1}}]]] -> 
-        MTNB$1boplaluof2iv`c, Verbatim[
+           Labeled[
+           Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`c, {{2, 1, 
+            1}}]]] -> 
+        Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`c, Verbatim[
           HoldForm[
-           Labeled[MTNB$1boplaluof2iv`b, {{2, 2, 1}, {2, 1, 1}}]]] -> 
-        MTNB$1boplaluof2iv`b, Verbatim[
+           Labeled[
+           Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b, {{2, 2, 
+            1}, {2, 1, 1}}]]] -> 
+        Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b, Verbatim[
           HoldForm[
-           Labeled[MTNB$1boplaluof2iv`b, {{2, 2, 1}, {2, 1, 1}}]]] -> 
-        MTNB$1boplaluof2iv`b, Verbatim[
+           Labeled[
+           Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b, {{2, 2, 
+            1}, {2, 1, 1}}]]] -> 
+        Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b, Verbatim[
           HoldForm[
-           Labeled[MTNB$1boplaluof2iv`b, {{2, 2, 1}, {2, 1, 1}}]]] -> 
-        MTNB$1boplaluof2iv`b, Verbatim[
+           Labeled[
+           Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b, {{2, 2, 
+            1}, {2, 1, 1}}]]] -> 
+        Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b, Verbatim[
           HoldForm[
-           Labeled[MTNB$1boplaluof2iv`a, {{1, 2, 1}}]]] -> 
-        MTNB$1boplaluof2iv`a, Verbatim[
+           Labeled[
+           Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`a, {{1, 2, 
+            1}}]]] -> 
+        Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`a, Verbatim[
           HoldForm[
-           Labeled[MTNB$1boplaluof2iv`a, {{1, 2, 1}}]]] -> 
-        MTNB$1boplaluof2iv`a}, EdgeLabels -> {{
+           Labeled[
+           Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`a, {{1, 2, 
+            1}}]]] -> 
+        Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`a}, 
+      EdgeLabels -> {{
           HoldForm[
-           Labeled[MTNB$1boplaluof2iv`c, {{2, 1, 1}}]], 
+           Labeled[
+           Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`c, {{2, 1, 
+            1}}]], 
           HoldForm[
-           Labeled[MTNB$1boplaluof2iv`b, {{2, 2, 1}, {2, 1, 1}}]]} -> ((
-          Automatic -> Underoverscript[
+           Labeled[
+           Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b, {{2, 2, 
+            1}, {2, 1, 1}}]]} -> ((Automatic -> Underoverscript[
             HoldForm["B"], 1, 1]) -> {True, False}), {
           HoldForm[
-           Labeled[MTNB$1boplaluof2iv`b, {{2, 2, 1}, {2, 1, 1}}]], 
+           Labeled[
+           Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b, {{2, 2, 
+            1}, {2, 1, 1}}]], 
           HoldForm[
-           Labeled[MTNB$1boplaluof2iv`a, {{1, 2, 1}}]]} -> ((Automatic -> 
-          Underoverscript[
+           Labeled[
+           Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`a, {{1, 2, 
+            1}}]]} -> ((Automatic -> Underoverscript[
             HoldForm["A"], 1, 1]) -> {True, False})}, "EdgeSymmetry" -> {{
           HoldForm[
-           Labeled[MTNB$1boplaluof2iv`c, {{2, 1, 1}}]], 
+           Labeled[
+           Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`c, {{2, 1, 
+            1}}]], 
           HoldForm[
-           Labeled[MTNB$1boplaluof2iv`b, {{2, 2, 1}, {2, 1, 1}}]]} -> {
+           Labeled[
+           Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b, {{2, 2, 
+            1}, {2, 1, 1}}]]} -> {
           Cycles[{}]}, {
           HoldForm[
-           Labeled[MTNB$1boplaluof2iv`b, {{2, 2, 1}, {2, 1, 1}}]], 
+           Labeled[
+           Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b, {{2, 2, 
+            1}, {2, 1, 1}}]], 
           HoldForm[
-           Labeled[MTNB$1boplaluof2iv`a, {{1, 2, 1}}]]} -> {
+           Labeled[
+           Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`a, {{1, 2, 
+            1}}]]} -> {
           Cycles[{}]}, All -> "Ordered"}, 
       "EdgeAnnotations" -> {"EdgeSymmetry", EdgeLabels}, 
       "VertexAnnotations" -> {VertexLabels}]]}, 
@@ -424,7 +466,7 @@ Cell[BoxData[
            GrayLevel[0], 
            GrayLevel[1]]], {2., 0.}, 
         ImageScaled[{-0.5, 0.5000000000000002}]]}}}]],
-  BoxID -> "Hypergraph562",
+  BoxID -> "Hypergraph568",
   Background->LightDarkSwitched[
     GrayLevel[1], None],
   BaseStyle->{
@@ -436,70 +478,113 @@ GraphicsHighlightColor -> RGBColor[1, 0, 0],
           MathLink`CallFrontEnd[
            FrontEnd`BoxReferenceReplace[
             FE`BoxReference[
-             EvaluationNotebook[], "Hypergraph562"], 
+             EvaluationNotebook[], "Hypergraph568"], 
             ToBoxes[
              WolframInstitute`Hypergraph`HypergraphDraw[
               WolframInstitute`Hypergraph`Hypergraph[{
                 HoldForm[
-                 Labeled[MTNB$1boplaluof2iv`c, {{2, 1, 1}}]], 
+                 Labeled[
+                 Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`c, {{
+                  2, 1, 1}}]], 
                 HoldForm[
-                 Labeled[MTNB$1boplaluof2iv`b, {{2, 2, 1}, {2, 1, 1}}]], 
+                 Labeled[
+                 Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b, {{
+                  2, 2, 1}, {2, 1, 1}}]], 
                 HoldForm[
-                 Labeled[MTNB$1boplaluof2iv`a, {{1, 2, 1}}]]}, 
+                 Labeled[
+                 Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`a, {{
+                  1, 2, 1}}]]}, 
                WolframInstitute`Hypergraph`Hyperedges[{
                  HoldForm[
-                  Labeled[MTNB$1boplaluof2iv`c, {{2, 1, 1}}]], 
+                  Labeled[
+                  Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`c, \
+{{2, 1, 1}}]], 
                  HoldForm[
-                  Labeled[MTNB$1boplaluof2iv`b, {{2, 2, 1}, {2, 1, 1}}]]}, {
+                  Labeled[
+                  Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b, \
+{{2, 2, 1}, {2, 1, 1}}]]}, {
                  HoldForm[
-                  Labeled[MTNB$1boplaluof2iv`b, {{2, 2, 1}, {2, 1, 1}}]], 
+                  Labeled[
+                  Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b, \
+{{2, 2, 1}, {2, 1, 1}}]], 
                  HoldForm[
-                  Labeled[MTNB$1boplaluof2iv`a, {{1, 2, 1}}]]}], 
-               VertexLabels -> {Verbatim[
-                   HoldForm[
-                    Labeled[MTNB$1boplaluof2iv`c, {{2, 1, 1}}]]] -> 
-                 MTNB$1boplaluof2iv`c, Verbatim[
-                   HoldForm[
-                    Labeled[MTNB$1boplaluof2iv`c, {{2, 1, 1}}]]] -> 
-                 MTNB$1boplaluof2iv`c, Verbatim[
-                   HoldForm[
-                    Labeled[MTNB$1boplaluof2iv`b, {{2, 2, 1}, {2, 1, 1}}]]] -> 
-                 MTNB$1boplaluof2iv`b, Verbatim[
-                   HoldForm[
-                    Labeled[MTNB$1boplaluof2iv`b, {{2, 2, 1}, {2, 1, 1}}]]] -> 
-                 MTNB$1boplaluof2iv`b, Verbatim[
-                   HoldForm[
-                    Labeled[MTNB$1boplaluof2iv`b, {{2, 2, 1}, {2, 1, 1}}]]] -> 
-                 MTNB$1boplaluof2iv`b, Verbatim[
-                   HoldForm[
-                    Labeled[MTNB$1boplaluof2iv`a, {{1, 2, 1}}]]] -> 
-                 MTNB$1boplaluof2iv`a, Verbatim[
-                   HoldForm[
-                    Labeled[MTNB$1boplaluof2iv`a, {{1, 2, 1}}]]] -> 
-                 MTNB$1boplaluof2iv`a}, EdgeLabels -> {{
-                   HoldForm[
-                    Labeled[MTNB$1boplaluof2iv`c, {{2, 1, 1}}]], 
+                  Labeled[
+                  Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`a, \
+{{1, 2, 1}}]]}], VertexLabels -> {Verbatim[
                    HoldForm[
                     Labeled[
-                    MTNB$1boplaluof2iv`b, {{2, 2, 1}, {2, 1, 1}}]]} -> ((
-                   Automatic -> Underoverscript[
+                    Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`c,\
+ {{2, 1, 1}}]]] -> Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`c, 
+                 Verbatim[
+                   HoldForm[
+                    Labeled[
+                    Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`c,\
+ {{2, 1, 1}}]]] -> Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`c, 
+                 Verbatim[
+                   HoldForm[
+                    Labeled[
+                    Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b,\
+ {{2, 2, 1}, {2, 1, 1}}]]] -> 
+                 Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b, 
+                 Verbatim[
+                   HoldForm[
+                    Labeled[
+                    Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b,\
+ {{2, 2, 1}, {2, 1, 1}}]]] -> 
+                 Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b, 
+                 Verbatim[
+                   HoldForm[
+                    Labeled[
+                    Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b,\
+ {{2, 2, 1}, {2, 1, 1}}]]] -> 
+                 Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b, 
+                 Verbatim[
+                   HoldForm[
+                    Labeled[
+                    Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`a,\
+ {{1, 2, 1}}]]] -> Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`a, 
+                 Verbatim[
+                   HoldForm[
+                    Labeled[
+                    Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`a,\
+ {{1, 2, 1}}]]] -> Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`a},
+                EdgeLabels -> {{
+                   HoldForm[
+                    Labeled[
+                    Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`c,\
+ {{2, 1, 1}}]], 
+                   HoldForm[
+                    Labeled[
+                    Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b,\
+ {{2, 2, 1}, {2, 1, 1}}]]} -> ((Automatic -> Underoverscript[
                     HoldForm["B"], 1, 1]) -> {True, False}), {
                    HoldForm[
-                    Labeled[MTNB$1boplaluof2iv`b, {{2, 2, 1}, {2, 1, 1}}]], 
+                    Labeled[
+                    Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b,\
+ {{2, 2, 1}, {2, 1, 1}}]], 
                    HoldForm[
-                    Labeled[MTNB$1boplaluof2iv`a, {{1, 2, 1}}]]} -> ((
-                   Automatic -> Underoverscript[
+                    Labeled[
+                    Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`a,\
+ {{1, 2, 1}}]]} -> ((Automatic -> Underoverscript[
                     HoldForm["A"], 1, 1]) -> {True, False})}, 
                "EdgeSymmetry" -> {{
                    HoldForm[
-                    Labeled[MTNB$1boplaluof2iv`c, {{2, 1, 1}}]], 
+                    Labeled[
+                    Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`c,\
+ {{2, 1, 1}}]], 
                    HoldForm[
-                    Labeled[MTNB$1boplaluof2iv`b, {{2, 2, 1}, {2, 1, 1}}]]} -> {
+                    Labeled[
+                    Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b,\
+ {{2, 2, 1}, {2, 1, 1}}]]} -> {
                    Cycles[{}]}, {
                    HoldForm[
-                    Labeled[MTNB$1boplaluof2iv`b, {{2, 2, 1}, {2, 1, 1}}]], 
+                    Labeled[
+                    Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`b,\
+ {{2, 2, 1}, {2, 1, 1}}]], 
                    HoldForm[
-                    Labeled[MTNB$1boplaluof2iv`a, {{1, 2, 1}}]]} -> {
+                    Labeled[
+                    Wolfram`DiagrammaticComputation`Diagram`Rewriting`Rules`a,\
+ {{1, 2, 1}}]]} -> {
                    Cycles[{}]}, All -> "Ordered"}, 
                "EdgeAnnotations" -> {"EdgeSymmetry", EdgeLabels}, 
                "VertexAnnotations" -> {VertexLabels}]]]]]], MenuEvaluator -> 
@@ -508,7 +593,7 @@ GraphicsHighlightColor -> RGBColor[1, 0, 0],
   FrameTicks->None,
   PlotRange->{{0., 2.}, {-1., 1.0000000000000004`}},
   PlotRangePadding->Scaled[0.2]]], "Output",
- CellLabel->"Out[1]= ",ExpressionUUID->"48b1d4cf-233f-42fa-bf3f-5afd4e871bdd"]
+ CellLabel->"Out[1]= ",ExpressionUUID->"817ad632-bde7-47fe-82b0-dae7f30d39ca"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -560,7 +645,7 @@ Cell["Wolfram`DiagrammaticComputation`", "Categorization",
  CellID->468444828,ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191"],
 
 Cell["Wolfram/DiagrammaticComputation/ref/DiagramHypergraph", "Categorization",
- CellLabel->"URI",ExpressionUUID->"6b017d1f-cd30-4bc5-ad65-e899e46dc620"]
+ CellLabel->"URI",ExpressionUUID->"c87c3e37-a705-4c30-8f9a-bb176cb213f1"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -620,65 +705,65 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 115, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[694, 25, 790, 21, 70, "Usage",ExpressionUUID->"82b15180-7afb-4082-841d-b8f9c24b2d59"],
-Cell[1487, 48, 251, 4, 70, "Notes",ExpressionUUID->"25da75e2-086c-4054-9592-e0c07d6bd7d3"],
-Cell[1741, 54, 534, 13, 70, "Notes",ExpressionUUID->"1d7dbacb-9b70-4134-99c1-77c49094c8ad"]
+Cell[694, 25, 792, 21, 70, "Usage",ExpressionUUID->"47829ca3-63af-4f32-ae12-220e15b15d3c"],
+Cell[1489, 48, 251, 4, 70, "Notes",ExpressionUUID->"e564083a-4bd2-430a-95e3-13d2ac09cd16"],
+Cell[1743, 54, 536, 13, 70, "Notes",ExpressionUUID->"a730e186-93e7-4199-84aa-8f4d08b43882"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[2312, 72, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
+Cell[2316, 72, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
  CellID->1559318232],
-Cell[2774, 87, 1118, 30, 70, "SeeAlso",ExpressionUUID->"c0b3e39c-da78-4d06-866f-64e16e9474fc"]
+Cell[2778, 87, 1124, 30, 70, "SeeAlso",ExpressionUUID->"0d756f96-a918-4842-8f02-58a40a706344"]
 }, Open  ]],
-Cell[3907, 120, 435, 12, 70, "TechNotesSection",ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74",
+Cell[3917, 120, 435, 12, 70, "TechNotesSection",ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74",
  CellID->792424486],
 Cell[CellGroupData[{
-Cell[4367, 136, 116, 1, 70, "MoreAboutSection",ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5",
+Cell[4377, 136, 116, 1, 70, "MoreAboutSection",ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5",
  CellID->38303248],
-Cell[4486, 139, 309, 6, 70, "MoreAbout",ExpressionUUID->"8b4abe71-1382-4866-a5a7-554c9ed11495"]
+Cell[4496, 139, 310, 6, 70, "MoreAbout",ExpressionUUID->"1e6c4f7e-ec03-4dff-adbe-ec6c80e7fef3"]
 }, Open  ]],
-Cell[4810, 148, 471, 13, 70, "RelatedLinksSection",ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea",
+Cell[4821, 148, 471, 13, 70, "RelatedLinksSection",ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea",
  CellID->47113304],
 Cell[CellGroupData[{
-Cell[5306, 165, 531, 14, 70, "ExamplesInitializationSection",ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5",
+Cell[5317, 165, 531, 14, 70, "ExamplesInitializationSection",ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5",
  CellID->1718580883],
-Cell[5840, 181, 192, 3, 70, "ExampleInitialization",ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502",
+Cell[5851, 181, 192, 3, 70, "ExampleInitialization",ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502",
  CellID->1969679695]
 }, Open  ]],
-Cell[6047, 187, 442, 12, 70, "PrimaryExamplesSection",ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42",
+Cell[6058, 187, 442, 12, 70, "PrimaryExamplesSection",ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42",
  CellID->880084151],
-Cell[6492, 201, 112, 0, 70, "ExampleText",ExpressionUUID->"7faf367d-0173-43f7-983d-4f0f324ee570"],
+Cell[6503, 201, 112, 0, 70, "ExampleText",ExpressionUUID->"c74b4baa-2d00-4f26-a698-ded95dce97a6"],
 Cell[CellGroupData[{
-Cell[6629, 205, 412, 9, 70, "Input",ExpressionUUID->"3fad65e4-b4fe-4496-8c9f-ffc064bad4f4"],
-Cell[7044, 216, 11888, 294, 70, "Output",ExpressionUUID->"48b1d4cf-233f-42fa-bf3f-5afd4e871bdd"]
+Cell[6640, 205, 412, 9, 70, "Input",ExpressionUUID->"651933ea-e673-4cca-8790-c350309acb7e"],
+Cell[7055, 216, 15043, 379, 70, "Output",ExpressionUUID->"817ad632-bde7-47fe-82b0-dae7f30d39ca"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[18969, 515, 110, 1, 70, "MetadataSection",ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd",
+Cell[22135, 600, 110, 1, 70, "MetadataSection",ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd",
  CellID->311882160],
-Cell[19082, 518, 476, 12, 70, "History",ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046",
+Cell[22248, 603, 476, 12, 70, "History",ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046",
  CellID->341476719],
 Cell[CellGroupData[{
-Cell[19583, 534, 485, 13, 70, "CategorizationSection",ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329",
+Cell[22749, 619, 485, 13, 70, "CategorizationSection",ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329",
  CellID->1755438392],
-Cell[20071, 549, 134, 2, 70, "Categorization",ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a",
+Cell[23237, 634, 134, 2, 70, "Categorization",ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a",
  CellID->686433507],
-Cell[20208, 553, 159, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec",
+Cell[23374, 638, 159, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec",
  CellID->605800465],
-Cell[20370, 557, 156, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
+Cell[23536, 642, 156, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[20529, 561, 153, 1, 70, "Categorization",ExpressionUUID->"6b017d1f-cd30-4bc5-ad65-e899e46dc620"]
+Cell[23695, 646, 153, 1, 70, "Categorization",ExpressionUUID->"c87c3e37-a705-4c30-8f9a-bb176cb213f1"]
 }, Closed]],
-Cell[20697, 565, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
+Cell[23863, 650, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],
 Cell[CellGroupData[{
-Cell[20832, 570, 120, 1, 70, "TemplatesSection",ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c",
+Cell[23998, 655, 120, 1, 70, "TemplatesSection",ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c",
  CellID->1872225408],
-Cell[20955, 573, 149, 2, 70, "Template",ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72",
+Cell[24121, 658, 149, 2, 70, "Template",ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72",
  CellID->1562036412],
-Cell[21107, 577, 137, 2, 70, "Template",ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec",
+Cell[24273, 662, 137, 2, 70, "Template",ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec",
  CellID->158391909],
-Cell[21247, 581, 136, 2, 70, "Template",ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9",
+Cell[24413, 666, 136, 2, 70, "Template",ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9",
  CellID->1360575930],
-Cell[21386, 585, 137, 2, 70, "Template",ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648",
+Cell[24552, 670, 137, 2, 70, "Template",ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648",
  CellID->793782254]
 }, Closed]]
 }, Open  ]]

@@ -45,62 +45,12 @@ mtn = ResourceFunction[ResourceObject[
 
 $root      = FileNameDrop[$InputFileName, -2];
 
-(* Make the in-development paclet visible AND actually load its symbols, so
-   MarkdownToNotebook can resolve inline `<code>[Foo]()</code>` links to
-   paclet:Wolfram/DiagrammaticComputation/ref/Foo URLs in the body text.
-   The converter resolves an inline `[Foo]()` by checking
-   `Names[$docContext <> "Foo"]`. Our $docContext is the top-level
-   `Wolfram`DiagrammaticComputation`` but the actual symbol definitions
-   live in subcontexts (`Wolfram`DiagrammaticComputation`Diagram`Diagram`,
-   `…`Port`Port`, …), so by default `Names[]` finds nothing and the body
-   refs render as plain code spans.
-
-   The PacletInfo's `Symbols` extension already lists every exported name
-   (the same list the front end uses for paclet doc resolution); we stub
-   each one in the top-level context so `Names[]` can see them. The stubs
-   are name-only — calling them still routes to the subpackage definitions
-   because those are on `$ContextPath` after `Needs[]`. *)
+(* Load the in-development paclet so MarkdownToNotebook can resolve inline
+   `<code>[Foo]()</code>` links (it accepts symbols defined in subcontexts of
+   the document's Context) and so the examples evaluate against the real
+   definitions. *)
 PacletDirectoryLoad[$root];
 Needs["Wolfram`DiagrammaticComputation`"];
-
-(* One stub per documented symbol — we use the docs/symbols/ tree as the
-   source of truth (the PacletInfo's Symbols extension currently lists only
-   the original 25 symbols; the docs cover all 95).
-
-   IMPORTANT: a bare `ToExpression["Wolfram`DiagrammaticComputation`Foo"]`
-   creates a top-level stub that *shadows* the real subpackage symbol
-   (`…`Diagram`Foo`, `…`Port`Foo`, …) on $ContextPath — so cells like
-   `Diagram["A", …]` would resolve to the empty stub and render as plain
-   expression text instead of evaluating to a graphic.
-
-   To make link-resolution happy *and* keep evaluation working, each stub
-   is set as an alias (OwnValue) to its real subpackage symbol: looking up
-   the bare `Diagram` resolves to the stub, the stub evaluates to the real
-   `…`Diagram`Diagram`, and the call proceeds with the real DownValues. *)
-(* Look up the real symbol via $ContextPath (NOT via Symbol[name], which
-   blindly creates a fresh symbol in $Context = Global` regardless of what
-   the path holds — that bug pinned every stub to an empty Global` symbol
-   and broke every example output). ToExpression with `Hold` resolves the
-   short name through $ContextPath without evaluating it. *)
-stubAlias[name_String] := Module[{held, realFullName, stubFullName},
-    held = Quiet @ ToExpression[name, InputForm, Hold];
-    If[Head[held] =!= Hold, Return[]];
-    realFullName = ReleaseHold[Context[#] <> SymbolName[#] & @@ held];
-    stubFullName = "Wolfram`DiagrammaticComputation`" <> name;
-    (* Skip if the real symbol is already at the top context. *)
-    If[realFullName === stubFullName, Return[]];
-    ToExpression[stubFullName <> " = " <> realFullName]
-];
-
-With[{
-    symbolNames = DeleteCases[
-        FileBaseName /@ FileNames["*.md", FileNameJoin[{$root, "docs", "symbols"}], Infinity],
-        _?(StringEndsQ["-out"])
-    ]
-},
-    Quiet[Scan[stubAlias, symbolNames], {General::shdw}];
-    Print["[stubs] declared ", Length @ symbolNames, " top-level symbol aliases for link resolution"]
-];
 
 $docsRoot     = FileNameJoin[{$root, "docs"}];
 $guidesIn     = FileNameJoin[{$docsRoot, "guides"}];

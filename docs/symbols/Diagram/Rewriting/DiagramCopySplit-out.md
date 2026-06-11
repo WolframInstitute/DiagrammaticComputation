@@ -15,7 +15,7 @@ RelatedGuides: [DiagramRewriting]
 
 ## Details & Options
 
-- Encodes the law <code>copy ∘ d = (d ⊗ d) ∘ copy</code> when $d$ is a *natural* diagram (one whose meaning duplicates across the classical structure).
+- Encodes the law <code>copy () d = (d (x) d) () copy</code> when $d$ is a *natural* diagram (one whose meaning duplicates across the classical structure).
 
 ## Basic Examples
 

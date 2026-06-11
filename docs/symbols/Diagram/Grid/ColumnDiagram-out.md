@@ -11,11 +11,11 @@ RelatedGuides: [DiagramGrid]
 
 ## Usage
 
-<code>[ColumnDiagram](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/ColumnDiagram)[{$d_1$, $d_2$, …}]</code> arranges the diagrams $d_i$ in a vertical column.
+<code>[ColumnDiagram](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/ColumnDiagram)[{$d_1$, $d_2$, ...}]</code> arranges the diagrams $d_i$ in a vertical column.
 
 ## Details & Options
 
-- Equivalent in structure to <code>[DiagramComposition](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramComposition)[$d_1$, $d_2$, …]</code> but with default port-arrow display tuned for a column layout.
+- Equivalent in structure to <code>[DiagramComposition](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramComposition)[$d_1$, $d_2$, ...]</code> but with default port-arrow display tuned for a column layout.
 
 ## Basic Examples
 

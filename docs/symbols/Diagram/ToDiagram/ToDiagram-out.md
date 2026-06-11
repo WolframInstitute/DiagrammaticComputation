@@ -19,12 +19,12 @@ RelatedGuides: [DiagramConversion, Diagrams]
 
 | Input | Result |
 |---|---|
-| <code>Graph[…]</code> | network of identity-like diagrams whose port names are the vertices |
-| <code>Tree[…]</code> | composition of branching diagrams following the tree's structure |
+| <code>Graph[...]</code> | network of identity-like diagrams whose port names are the vertices |
+| <code>Tree[...]</code> | composition of branching diagrams following the tree's structure |
 | hypergraph (list of edges) | network whose subdiagrams are the hyperedges |
-| <code>NetGraph[…]</code> | network of diagrams whose ports are the named inputs/outputs of each node |
-| <code>SystemModel[…]</code> / <code>.mo</code> import | network of subsystems with connector ports |
-| <code>\[FormalLambda][…]</code> (lambda term) | network whose wiring encodes variable binding |
+| <code>NetGraph[...]</code> | network of diagrams whose ports are the named inputs/outputs of each node |
+| <code>SystemModel[...]</code> / <code>.mo</code> import | network of subsystems with connector ports |
+| <code>\[FormalLambda][...]</code> (lambda term) | network whose wiring encodes variable binding |
 | <code>_Diagram</code> | the diagram itself |
 
 ## Basic Examples

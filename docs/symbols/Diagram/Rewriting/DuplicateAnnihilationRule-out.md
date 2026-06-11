@@ -11,11 +11,11 @@ RelatedGuides: [DiagramRewriting]
 
 ## Usage
 
-<code>[DuplicateAnnihilationRule](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DuplicateAnnihilationRule)[{$x_1$, …, $x_n$}, {$y_1$, …, $y_n$}]</code> returns a rewrite rule annihilating two facing copy nodes into parallel identity wires connecting $x_i$ to $y_i$.
+<code>[DuplicateAnnihilationRule](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DuplicateAnnihilationRule)[{$x_1$, ..., $x_n$}, {$y_1$, ..., $y_n$}]</code> returns a rewrite rule annihilating two facing copy nodes into parallel identity wires connecting $x_i$ to $y_i$.
 
 ## Details & Options
 
-- Encodes the interaction-net duplication–annihilation law: when a copy meets its co-copy head-on, both disappear and their legs join pairwise.
+- Encodes the interaction-net duplication-annihilation law: when a copy meets its co-copy head-on, both disappear and their legs join pairwise.
 - The following options can be given:
 
 | Option | Default | Description |

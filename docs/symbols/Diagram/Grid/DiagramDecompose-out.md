@@ -15,7 +15,7 @@ RelatedGuides: [DiagramGrid, DiagramSurgery]
 
 ## Details & Options
 
-- The result is the structural skeleton of $d$ — a nested <code>[DiagramComposition](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramComposition)</code> / <code>[DiagramProduct](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramProduct)</code> / <code>[DiagramNetwork](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramNetwork)</code> expression whose leaves are the singleton subdiagrams of $d$.
+- The result is the structural skeleton of $d$ -- a nested <code>[DiagramComposition](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramComposition)</code> / <code>[DiagramProduct](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramProduct)</code> / <code>[DiagramNetwork](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramNetwork)</code> expression whose leaves are the singleton subdiagrams of $d$.
 - This is the canonical way to *read* the structure of a built diagram; for *patterns over* this structure, use <code>[DiagramSubdiagrams](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramSubdiagrams)</code> and the surgery functions.
 
 ## Basic Examples

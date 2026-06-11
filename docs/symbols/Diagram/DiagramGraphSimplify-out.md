@@ -4,26 +4,33 @@ Name: DiagramGraphSimplify
 Context: Wolfram`DiagrammaticComputation`
 Paclet: Wolfram/DiagrammaticComputation
 URI: Wolfram/DiagrammaticComputation/ref/DiagramGraphSimplify
-Keywords: [simplify, port graph, contraction, normalise]
-SeeAlso: [SimplifyDiagram, DiagramsPortGraph, DiagramsGraph]
+Keywords: [simplify, graph, wire, contraction]
+SeeAlso: [SimplifyDiagram, DiagramsGraph, DiagramsNetGraph]
 RelatedGuides: [Diagrams]
 ---
 
 ## Usage
 
-<code>[DiagramGraphSimplify](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramGraphSimplify)[$d$]</code> simplifies the underlying port graph of the diagram $d$ by contracting redundant wires and merging spiders.
+<code>[DiagramGraphSimplify](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramGraphSimplify)[$g$]</code> simplifies a diagram graph $g$ by deleting wire-shaped vertices and reconnecting the edges that passed through them.
 
 ## Details & Options
 
-- Operates on the graph view of a diagram (see <code>[DiagramsPortGraph](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramsPortGraph)</code>) rather than its expression structure. Use after <code>[ToDiagramNetwork](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/ToDiagramNetwork)</code> to clean up redundant connections.
-- The expression-level analogue is <code>[SimplifyDiagram](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/SimplifyDiagram)</code>.
+- The argument is a <code>[Graph](https://reference.wolfram.com/language/ref/Graph.html)</code> whose vertices carry <code>"Diagram"</code> annotations — the form produced by a diagram's <code>"Graph"</code> property.
+- Vertices whose diagram is empty, or whose shape is a pure wire bundle (<code>"Wires"[…]</code> — identities, permutations), are removed; their incoming and outgoing edges are joined according to the wire connectivity.
+- This is the graph-level engine behind a diagram's <code>"Simplify"</code> option; the diagram-level counterpart is <code>[SimplifyDiagram](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/SimplifyDiagram)</code>.
 
 ## Basic Examples
 
-Simplify the port graph of a network:
+Simplify away an identity wire from a composition's graph:
 
 ```wl
-DiagramGraphSimplify[DiagramNetwork[Diagram["A", a, b], Diagram["B", a, c]]]
+g = DiagramComposition[IdentityDiagram[a], Diagram["A", b, a]]["Graph"]
 ```
 
 ![output](images/DiagramGraphSimplify-out-1.png)
+
+```wl
+DiagramGraphSimplify[g]
+```
+
+![output](images/DiagramGraphSimplify-out-2.png)

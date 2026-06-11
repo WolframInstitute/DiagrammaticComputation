@@ -13,7 +13,7 @@ RelatedGuides: [DiagramSurgery]
 
 <code>[DiagramReplacePart](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramReplacePart)[$d$, $position$ -> $new$]</code> replaces the subdiagram of $d$ at $position$ with $new$.
 
-<code>[DiagramReplacePart](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramReplacePart)[$d$, {$pos_1$ -> $new_1$, $pos_2$ -> $new_2$, …}]</code> replaces at several positions.
+<code>[DiagramReplacePart](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramReplacePart)[$d$, {$pos_1$ -> $new_1$, $pos_2$ -> $new_2$, ...}]</code> replaces at several positions.
 
 ## Basic Examples
 

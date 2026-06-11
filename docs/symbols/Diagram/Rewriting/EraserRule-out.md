@@ -11,7 +11,7 @@ RelatedGuides: [DiagramRewriting]
 
 ## Usage
 
-<code>[EraserRule](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/EraserRule)[{$p_1$, $p_2$, …}]</code> returns a rewrite rule that propagates an <code>[EraserDiagram](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/EraserDiagram)</code> through a process with ports $p_1, p_2, …$, erasing it port by port.
+<code>[EraserRule](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/EraserRule)[{$p_1$, $p_2$, ...}]</code> returns a rewrite rule that propagates an <code>[EraserDiagram](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/EraserDiagram)</code> through a process with ports $p_1, p_2, ...$, erasing it port by port.
 
 ## Details & Options
 

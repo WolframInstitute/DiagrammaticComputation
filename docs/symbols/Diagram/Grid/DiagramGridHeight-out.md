@@ -11,7 +11,7 @@ RelatedGuides: [DiagramGrid]
 
 ## Usage
 
-<code>[DiagramGridHeight](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramGridHeight)[$d$]</code> gives the height of the diagram's grid layout — the number of rows required to lay out $d$ as a 2D grid.
+<code>[DiagramGridHeight](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/DiagramGridHeight)[$d$]</code> gives the height of the diagram's grid layout -- the number of rows required to lay out $d$ as a 2D grid.
 
 ## Basic Examples
 

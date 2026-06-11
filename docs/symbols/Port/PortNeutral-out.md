@@ -11,7 +11,7 @@ RelatedGuides: [Ports]
 
 ## Usage
 
-<code>[PortNeutral](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/PortNeutral)[$p$]</code> marks the port $p$ as *neutral* — a unit-like port that acts as the identity under composition.
+<code>[PortNeutral](https://resources.wolframcloud.com/PacletRepository/resources/Wolfram/DiagrammaticComputation/ref/PortNeutral)[$p$]</code> marks the port $p$ as *neutral* -- a unit-like port that acts as the identity under composition.
 
 ## Details & Options
 
