@@ -28,8 +28,11 @@
 
    Usage:
 
-       wolframscript -f scripts/build-docs.wls           (* all pages *)
-       wolframscript -f scripts/build-docs.wls Diagram   (* one page *)
+       wolframscript -f scripts/build-docs.wls               (* all pages *)
+       wolframscript -f scripts/build-docs.wls Diagram       (* one page *)
+       wolframscript -f scripts/build-docs.wls "Diagram*"    (* basename pattern *)
+       wolframscript -f scripts/build-docs.wls Surgery       (* path subset: docs/symbols/Diagram/Surgery *)
+       wolframscript -f scripts/build-docs.wls tutorials     (* every tech note *)
 
    Flags (any position):
 
@@ -79,9 +82,22 @@ $buildTwin = ! flag["--nb-only"];
 $darkMode  = flag["--dark"];
 $clearCache = flag["--no-cache"];
 
-(* Positional filter: any non-flag args restrict the build to matching basenames. *)
-$names = DeleteCases[$args, _String?(StringStartsQ["--"])];
-filter[src_] := $names === {} || MemberQ[$names, FileBaseName[src]];
+(* Positional selectors: any non-flag args restrict the build to matching
+   sources. A selector matches when, case-insensitively,
+     - the page basename matches it as an abbreviated string pattern
+       ("Diagram", "Diagram*", "*Rule"), or
+     - it occurs in the source path relative to docs/
+       ("Surgery", "symbols/Diagram/Grid", "tutorials").
+   Multiple selectors are a union. *)
+$selectors = DeleteCases[$args, _String?(StringStartsQ["--"])];
+
+filter[src_String] := $selectors === {} || With[
+    {base = FileBaseName[src], rel = StringDelete[src, $docsRoot <> $PathnameSeparator]},
+    AnyTrue[$selectors,
+        StringMatchQ[base, #, IgnoreCase -> True] ||
+        StringContainsQ[rel, #, IgnoreCase -> True] &
+    ]
+];
 
 (* --- driver ---------------------------------------------------------- *)
 
