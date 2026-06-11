@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[     14625,        405]
-NotebookOptionsPosition[     10079,        313]
-NotebookOutlinePosition[     10955,        339]
-CellTagsIndexPosition[     10912,        336]
+NotebookDataLength[     14999,        420]
+NotebookOptionsPosition[     10450,        328]
+NotebookOutlinePosition[     11326,        354]
+CellTagsIndexPosition[     11283,        351]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -24,36 +24,44 @@ Cell["TagPort", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"adf42326-33e2-4866-bfd1-91b961023b1c"],
+ Cell["   ", "ModInfo",ExpressionUUID->"aa5de8a8-93ca-4edc-8586-dc62b73685cd"],
  Cell[BoxData[
   RowBox[{
-   ButtonBox["TagPort",
-    BaseStyle->"Link",
-    ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/TagPort"], "[", 
+   TemplateBox[{
+     Cell[
+      TextData["TagPort"]], 
+     "paclet:WolframDiagrammaticComputation/ref/TagPort", 
+     "WolframDiagrammaticComputation Package Symbol"},
+    "PackageLink",
+    BaseStyle->"InlineFormula"], "[", 
    RowBox[{
     StyleBox["p", "TI"], ",", " ", 
     StyleBox["tag", "TI"]}], "]"}]], "InlineFormula",ExpressionUUID->
-  "976fe1aa-1b57-4acb-87dc-4b709d74aa6f"],
+  "642d53d9-74cf-4b58-97a3-966c29da4141"],
  " ",
  "attaches the tag ",
  Cell[BoxData[
   FormBox[
    StyleBox[
     RowBox[{"t", "a", "g"}], "TI"], TraditionalForm]], "InlineFormula",
-  ExpressionUUID->"31ff0caf-81ea-40e5-860e-f914c636968c"],
+  ExpressionUUID->"8493b830-77c8-405e-91c6-d400fced776e"],
  " to the port ",
  Cell[BoxData[
   FormBox[
    StyleBox["p", "TI"], TraditionalForm]], "InlineFormula",ExpressionUUID->
-  "04b8701c-7e2f-4ef0-9015-124ff248bf02"],
+  "9b0028f3-811b-4d8f-a656-ad20bea9b142"],
  ".",
  "\n",
- Cell["   ", "ModInfo",ExpressionUUID->"5e24355e-cc98-48c6-a80b-665c9e456c40"],
+ Cell["   ", "ModInfo",ExpressionUUID->"06c55728-c378-4bc5-89de-8b5a3f367a6d"],
  Cell[BoxData[
   RowBox[{
-   ButtonBox["TagPort",
-    BaseStyle->"Link",
-    ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/TagPort"], "[", 
+   TemplateBox[{
+     Cell[
+      TextData["TagPort"]], 
+     "paclet:WolframDiagrammaticComputation/ref/TagPort", 
+     "WolframDiagrammaticComputation Package Symbol"},
+    "PackageLink",
+    BaseStyle->"InlineFormula"], "[", 
    RowBox[{
     StyleBox["p", "TI"], ",", " ", 
     RowBox[{"{", 
@@ -64,23 +72,23 @@ Cell[TextData[{
       SubscriptBox[
        StyleBox["tag", "TI"], 
        StyleBox["2", "TR"]], ",", " ", "\[Ellipsis]"}], "}"}]}], "]"}]], 
-  "InlineFormula",ExpressionUUID->"2a65d6ce-2ed4-4e4e-af0c-fa4ec8561e2f"],
+  "InlineFormula",ExpressionUUID->"068390a5-87ee-4cea-88b8-a5dc2e979913"],
  " ",
  "attaches a list of tags."
-}], "Usage",ExpressionUUID->"e82496ae-35db-416d-81a9-519f90c7f817"],
+}], "Usage",ExpressionUUID->"3e6c2352-f273-42e5-8e57-ba5f64544250"],
 
 Cell[TextData[{
  "Tags are user-defined annotations stored in the port's ",
  Cell[BoxData["\"\<Tags\>\""], "InlineFormula",ExpressionUUID->
-  "ea1c0612-0f4d-4734-a15f-1aba91d42d14"],
+  "939b97bb-2c57-4f8b-9e39-24ef93a280a0"],
  " option. They are preserved by diagram composition and surgery but do not \
 affect type matching."
-}], "Notes",ExpressionUUID->"633f7c69-bf0e-418d-a584-3957b87c5c94"],
+}], "Notes",ExpressionUUID->"60b1dd32-acb3-4ce1-9c8c-2592b8f9784a"],
 
 Cell["\<\
 Multiple tags accumulate: a second call adds to the existing tag list rather \
 than replacing it.\
-\>", "Notes",ExpressionUUID->"aa6d514a-3e3e-454e-a7f0-3b46cafb1cda"]
+\>", "Notes",ExpressionUUID->"04bf9483-675e-4920-a716-9998e3241c55"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -102,17 +110,24 @@ Cell[TextData[{
 
 Cell[TextData[{
  Cell[BoxData[
-  ButtonBox["UntagPort",
-   BaseStyle->"Link",
-   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/UntagPort"]], 
-  "InlineFormula",ExpressionUUID->"8debe6f6-1dad-413b-86d9-5262736bf820"],
+  TemplateBox[{
+    Cell[
+     TextData["UntagPort"]], 
+    "paclet:WolframDiagrammaticComputation/ref/UntagPort", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "43a09dbf-30b8-49af-b685-ef5629502416"],
  " \[FilledVerySmallSquare] ",
  Cell[BoxData[
-  ButtonBox["Port",
-   BaseStyle->"Link",
-   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/Port"]], 
-  "InlineFormula",ExpressionUUID->"e467583a-7a90-4471-a18c-3a62a31f4f50"]
-}], "SeeAlso",ExpressionUUID->"cdf3fdda-26d8-4d30-980e-7fc49d663772"]
+  TemplateBox[{
+    Cell[
+     TextData["Port"]], "paclet:WolframDiagrammaticComputation/ref/Port", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "6964ecd0-ceb1-41a9-b687-8376ccb11f26"]
+}], "SeeAlso",ExpressionUUID->"d8a88faa-7553-45c2-a227-fc31e2aae375"]
 }, Open  ]],
 
 Cell[TextData[{
@@ -138,9 +153,9 @@ Cell[TextData[Cell[BoxData[
  ButtonBox["Ports",
   BaseStyle->"Link",
   ButtonData->
-   "paclet:Wolfram/DiagrammaticComputation/guide/Ports"]], \
-"InlineFormula",ExpressionUUID->"b9e1ca20-951e-4d81-8396-9992d2c4c927"]], \
-"MoreAbout",ExpressionUUID->"cc5fed0b-c1f5-4155-9dbb-02529d37f30d"]
+   "paclet:WolframDiagrammaticComputation/guide/Ports"]], \
+"InlineFormula",ExpressionUUID->"ffd0ab4c-d95c-4eaa-ae16-3cccf5b682aa"]], \
+"MoreAbout",ExpressionUUID->"28f83c97-9ed5-40fa-a068-62190727d0e6"]
 }, Open  ]],
 
 Cell[TextData[{
@@ -196,7 +211,7 @@ Cell[BoxData[
   $Line = 0; Null]], "PrimaryExamplesSection",
  CellID->880084151,ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42"],
 
-Cell["Tag a port with a role:", "ExampleText",ExpressionUUID->"0b64b3b3-0c09-4b6d-af58-5038aff5385b"],
+Cell["Tag a port with a role:", "ExampleText",ExpressionUUID->"0f56c097-335d-41aa-a2d9-8e536e0910b8"],
 
 Cell[CellGroupData[{
 
@@ -205,17 +220,17 @@ Cell[BoxData[
   RowBox[{
    RowBox[{"Port", "[", "a", "]"}], ",", " ", "\"\<input\>\""}], 
   "]"}]], "Input",
- CellLabel->"In[1]:= ",ExpressionUUID->"929534ba-65d0-4759-8b7f-ffd9339de2de"],
+ CellLabel->"In[1]:= ",ExpressionUUID->"643ad65c-8f41-400a-afdb-a19178f3d3fb"],
 
 Cell[BoxData[
  InterpretationBox[
   TagBox["a",
    HoldForm],
   Wolfram`DiagrammaticComputation`Port`Port[<|
-   "Expression" :> FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, 
-    "NeutralQ" -> False, "Tags" -> {"input"}, "Type" -> \[FormalCapitalT]|>],
+   "Expression" :> MTNB$2iiwuwczpnvs`a, "NeutralQ" -> False, 
+    "Tags" -> {"input"}, "Type" -> \[FormalCapitalT]|>],
   Tooltip->"\[FormalCapitalT]"]], "Output",
- CellLabel->"Out[1]= ",ExpressionUUID->"cbdce90a-7e91-469e-a88e-08b2b5618b96"]
+ CellLabel->"Out[1]= ",ExpressionUUID->"7163a9da-f759-46a5-ab2c-6bce2821a2bd"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -226,11 +241,11 @@ Cell[BoxData[
    RowBox[{
     RowBox[{"Port", "[", "a", "]"}], ",", " ", "\"\<input\>\""}], "]"}], 
   "[", "\"\<Tags\>\"", "]"}]], "Input",
- CellLabel->"In[2]:= ",ExpressionUUID->"3d6d459c-ab7c-4ce9-9eb4-1f4a74f89964"],
+ CellLabel->"In[2]:= ",ExpressionUUID->"2a00220c-e20e-4e3b-90b6-bcc83cb262c9"],
 
 Cell[BoxData[
  RowBox[{"{", "\<\"input\"\>", "}"}]], "Output",
- CellLabel->"Out[2]= ",ExpressionUUID->"afd09c43-a578-4e17-ac7e-02d7d3d51377"]
+ CellLabel->"Out[2]= ",ExpressionUUID->"4cbdecca-59e1-4b03-8d44-b2814003a97d"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -282,7 +297,7 @@ Cell["Wolfram`DiagrammaticComputation`", "Categorization",
  CellID->468444828,ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191"],
 
 Cell["Wolfram/DiagrammaticComputation/ref/TagPort", "Categorization",
- CellLabel->"URI",ExpressionUUID->"cd6c0c2a-6968-42dc-9094-8e515565a7fe"]
+ CellLabel->"URI",ExpressionUUID->"612a07a9-ec7f-4817-9af4-709f70f755ab"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -321,7 +336,7 @@ TaggingRules->{
     "Wolfram/DiagrammaticComputation/ref/TagPort", "type" -> "Symbol", 
     "index" -> True, "language" -> "en"}},
 CreateCellID->True,
-CellContext->"Global`",
+CellContext->CellGroup,
 FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->FrontEnd`FileName[{"Wolfram"}, "FunctionPageStylesExt.nb", 
   CharacterEncoding -> "UTF-8"],
@@ -341,69 +356,69 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 105, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[684, 25, 1483, 44, 70, "Usage",ExpressionUUID->"e82496ae-35db-416d-81a9-519f90c7f817"],
-Cell[2170, 71, 351, 6, 70, "Notes",ExpressionUUID->"633f7c69-bf0e-418d-a584-3957b87c5c94"],
-Cell[2524, 79, 177, 3, 70, "Notes",ExpressionUUID->"aa6d514a-3e3e-454e-a7f0-3b46cafb1cda"]
+Cell[684, 25, 1693, 52, 70, "Usage",ExpressionUUID->"3e6c2352-f273-42e5-8e57-ba5f64544250"],
+Cell[2380, 79, 351, 6, 70, "Notes",ExpressionUUID->"60b1dd32-acb3-4ce1-9c8c-2592b8f9784a"],
+Cell[2734, 87, 177, 3, 70, "Notes",ExpressionUUID->"04bf9483-675e-4920-a716-9998e3241c55"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[2738, 87, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
+Cell[2948, 95, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
  CellID->1559318232],
-Cell[3200, 102, 527, 12, 70, "SeeAlso",ExpressionUUID->"cdf3fdda-26d8-4d30-980e-7fc49d663772"]
+Cell[3410, 110, 724, 19, 70, "SeeAlso",ExpressionUUID->"d8a88faa-7553-45c2-a227-fc31e2aae375"]
 }, Open  ]],
-Cell[3742, 117, 435, 12, 70, "TechNotesSection",ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74",
+Cell[4149, 132, 435, 12, 70, "TechNotesSection",ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74",
  CellID->792424486],
 Cell[CellGroupData[{
-Cell[4202, 133, 116, 1, 70, "MoreAboutSection",ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5",
+Cell[4609, 148, 116, 1, 70, "MoreAboutSection",ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5",
  CellID->38303248],
-Cell[4321, 136, 288, 6, 70, "MoreAbout",ExpressionUUID->"cc5fed0b-c1f5-4155-9dbb-02529d37f30d"]
+Cell[4728, 151, 287, 6, 70, "MoreAbout",ExpressionUUID->"28f83c97-9ed5-40fa-a068-62190727d0e6"]
 }, Open  ]],
-Cell[4624, 145, 471, 13, 70, "RelatedLinksSection",ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea",
+Cell[5030, 160, 471, 13, 70, "RelatedLinksSection",ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea",
  CellID->47113304],
 Cell[CellGroupData[{
-Cell[5120, 162, 531, 14, 70, "ExamplesInitializationSection",ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5",
+Cell[5526, 177, 531, 14, 70, "ExamplesInitializationSection",ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5",
  CellID->1718580883],
-Cell[5654, 178, 192, 3, 70, "ExampleInitialization",ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502",
+Cell[6060, 193, 192, 3, 70, "ExampleInitialization",ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502",
  CellID->1969679695]
 }, Open  ]],
-Cell[5861, 184, 442, 12, 70, "PrimaryExamplesSection",ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42",
+Cell[6267, 199, 442, 12, 70, "PrimaryExamplesSection",ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42",
  CellID->880084151],
-Cell[6306, 198, 101, 0, 70, "ExampleText",ExpressionUUID->"0b64b3b3-0c09-4b6d-af58-5038aff5385b"],
+Cell[6712, 213, 101, 0, 70, "ExampleText",ExpressionUUID->"0f56c097-335d-41aa-a2d9-8e536e0910b8"],
 Cell[CellGroupData[{
-Cell[6432, 202, 214, 5, 70, "Input",ExpressionUUID->"929534ba-65d0-4759-8b7f-ffd9339de2de"],
-Cell[6649, 209, 385, 8, 70, "Output",ExpressionUUID->"cbdce90a-7e91-469e-a88e-08b2b5618b96"]
+Cell[6838, 217, 214, 5, 70, "Input",ExpressionUUID->"643ad65c-8f41-400a-afdb-a19178f3d3fb"],
+Cell[7055, 224, 350, 8, 70, "Output",ExpressionUUID->"7163a9da-f759-46a5-ab2c-6bce2821a2bd"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[7071, 222, 255, 6, 70, "Input",ExpressionUUID->"3d6d459c-ab7c-4ce9-9eb4-1f4a74f89964"],
-Cell[7329, 230, 141, 2, 70, "Output",ExpressionUUID->"afd09c43-a578-4e17-ac7e-02d7d3d51377"]
+Cell[7442, 237, 255, 6, 70, "Input",ExpressionUUID->"2a00220c-e20e-4e3b-90b6-bcc83cb262c9"],
+Cell[7700, 245, 141, 2, 70, "Output",ExpressionUUID->"4cbdecca-59e1-4b03-8d44-b2814003a97d"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[7507, 237, 110, 1, 70, "MetadataSection",ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd",
+Cell[7878, 252, 110, 1, 70, "MetadataSection",ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd",
  CellID->311882160],
-Cell[7620, 240, 476, 12, 70, "History",ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046",
+Cell[7991, 255, 476, 12, 70, "History",ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046",
  CellID->341476719],
 Cell[CellGroupData[{
-Cell[8121, 256, 485, 13, 70, "CategorizationSection",ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329",
+Cell[8492, 271, 485, 13, 70, "CategorizationSection",ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329",
  CellID->1755438392],
-Cell[8609, 271, 134, 2, 70, "Categorization",ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a",
+Cell[8980, 286, 134, 2, 70, "Categorization",ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a",
  CellID->686433507],
-Cell[8746, 275, 159, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec",
+Cell[9117, 290, 159, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec",
  CellID->605800465],
-Cell[8908, 279, 156, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
+Cell[9279, 294, 156, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[9067, 283, 143, 1, 70, "Categorization",ExpressionUUID->"cd6c0c2a-6968-42dc-9094-8e515565a7fe"]
+Cell[9438, 298, 143, 1, 70, "Categorization",ExpressionUUID->"612a07a9-ec7f-4817-9af4-709f70f755ab"]
 }, Closed]],
-Cell[9225, 287, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
+Cell[9596, 302, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],
 Cell[CellGroupData[{
-Cell[9360, 292, 120, 1, 70, "TemplatesSection",ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c",
+Cell[9731, 307, 120, 1, 70, "TemplatesSection",ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c",
  CellID->1872225408],
-Cell[9483, 295, 149, 2, 70, "Template",ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72",
+Cell[9854, 310, 149, 2, 70, "Template",ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72",
  CellID->1562036412],
-Cell[9635, 299, 137, 2, 70, "Template",ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec",
+Cell[10006, 314, 137, 2, 70, "Template",ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec",
  CellID->158391909],
-Cell[9775, 303, 136, 2, 70, "Template",ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9",
+Cell[10146, 318, 136, 2, 70, "Template",ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9",
  CellID->1360575930],
-Cell[9914, 307, 137, 2, 70, "Template",ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648",
+Cell[10285, 322, 137, 2, 70, "Template",ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648",
  CellID->793782254]
 }, Closed]]
 }, Open  ]]

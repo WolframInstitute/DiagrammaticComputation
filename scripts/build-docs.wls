@@ -140,58 +140,17 @@ If[$clearCache,
     Scan[DeleteObject, PersistentObjects["MarkdownToNotebook/ExampleOutput/*", "Local"]]
 ];
 
-(* The converter's $lightDark lives in its own ResourceFunction private
-   context (FunctionRepository`$<hash>`), not Global`. We need to evaluate
-   one mtn call first so the package loads and the variable becomes
-   findable via Names, then we can set it there. The actual mtn evaluation
-   below will pick up the override. *)
-setConverterLightDark[mode_String] := Module[{names},
-    names = Names["FunctionRepository`*`$lightDark"];
-    If[names === {},
-        (* prime the package by querying mtn's information *)
-        Quiet @ mtn[];
-        names = Names["FunctionRepository`*`$lightDark"]
-    ];
-    Scan[ToExpression[# <> " = \"" <> mode <> "\""] &, names];
-    Length[names]
-];
-
-If[$darkMode,
-    With[{n = setConverterLightDark["Dark"]},
-        Print["[dark] set $lightDark = Dark in ", n, " converter context(s)"]
-    ]
-];
-
-(* DocumentationBuild's Related Guides harvester requires a ButtonBox link
-   in every MoreAbout cell (it does First @ Cases[cell, _ButtonBox] and
-   fails with First[{}] otherwise), but MarkdownToNotebook emits a
-   RefLinkPlain TemplateBox when the guide resolves locally. Rewrite those
-   to Link ButtonBoxes with the full paclet guide URI; also upgrade
-   system-style "paclet:guide/X" data to the paclet URI. *)
-$guideURIPrefix = "paclet:Wolfram/DiagrammaticComputation/guide/";
-
-guideButton[name_String] := ButtonBox[name, BaseStyle -> "Link", ButtonData -> $guideURIPrefix <> name];
-
-fixupMoreAbout[nbPath_String] := Module[{nb, new},
-    nb = Quiet @ Get[nbPath];
-    If[Head[nb] =!= Notebook, Return[]];
-    new = nb /. c : Cell[_, "MoreAbout", ___] :> (c /. {
-        TemplateBox[{Cell[TextData[name_String], ___], _String, ___}, "RefLinkPlain", ___] :> guideButton[name],
-        ButtonBox[name_String, ___, ButtonData -> uri_String /; StringStartsQ[uri, "paclet:guide/"], ___] :> guideButton[name]
-    });
-    If[new =!= nb, Export[nbPath, new, "NB"]]
-];
+$m2nOptions = If[$darkMode, {"LightDark" -> "Dark"}, {}];
 
 build1[src_String, nbDst_String] := Module[{twinDst},
     twinDst = FileNameJoin[{DirectoryName[src], FileBaseName[src] <> "-out.md"}];
     If[$buildNb,
         Print["[ nb ] ", FileNameTake[src, -2], "  ->  ", FileNameTake[nbDst, -2]];
-        mtn[src, nbDst];
-        fixupMoreAbout[nbDst]
+        mtn[src, nbDst, Sequence @@ $m2nOptions]
     ];
     If[$buildTwin,
         Print["[twin] ", FileNameTake[src, -2], "  ->  ", FileNameTake[twinDst, -2]];
-        mtn[src, twinDst]
+        mtn[src, twinDst, Sequence @@ $m2nOptions]
     ];
 ];
 

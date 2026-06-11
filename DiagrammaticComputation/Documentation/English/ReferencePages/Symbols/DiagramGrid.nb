@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[    198257,       4220]
-NotebookOptionsPosition[    190352,       4070]
-NotebookOutlinePosition[    191469,       4103]
-CellTagsIndexPosition[    191388,       4098]
+NotebookDataLength[     60086,       1525]
+NotebookOptionsPosition[     52019,       1373]
+NotebookOutlinePosition[     53135,       1406]
+CellTagsIndexPosition[     53055,       1401]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -24,93 +24,111 @@ Cell["DiagramGrid", "ObjectName",
  CellID->1224892054,ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec"],
 
 Cell[TextData[{
- Cell["   ", "ModInfo",ExpressionUUID->"f83559d6-317f-4244-b799-e6d9a723b8aa"],
+ Cell["   ", "ModInfo",ExpressionUUID->"1913cce2-c9ba-43cd-995b-c2a7c451f1e3"],
  Cell[BoxData[
   RowBox[{
-   ButtonBox["DiagramGrid",
-    BaseStyle->"Link",
-    ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/DiagramGrid"], "[", 
+   TemplateBox[{
+     Cell[
+      TextData["DiagramGrid"]], 
+     "paclet:WolframDiagrammaticComputation/ref/DiagramGrid", 
+     "WolframDiagrammaticComputation Package Symbol"},
+    "PackageLink",
+    BaseStyle->"InlineFormula"], "[", 
    StyleBox["d", "TI"], "]"}]], "InlineFormula",ExpressionUUID->
-  "d638113b-fb1a-4206-8cc1-1a1873fceff4"],
+  "77298d1f-5dad-46b9-b41d-81dd8df5a955"],
  " ",
  "arranges the diagram ",
  Cell[BoxData[
   FormBox[
    StyleBox["d", "TI"], TraditionalForm]], "InlineFormula",ExpressionUUID->
-  "1536caba-c206-4c91-8395-b58c90c8efb3"],
+  "9ebaf8a2-7e81-4cf2-ba04-5047d184da89"],
  " into a grid and returns its graphics representation, with composition \
 running vertically and product running horizontally.",
  "\n"
-}], "Usage",ExpressionUUID->"93b80eb4-07a8-41c8-a01d-0cfc0c1ee3ef"],
+}], "Usage",ExpressionUUID->"dffbda26-0edb-4166-b159-8162d805c880"],
 
 Cell["\<\
 Each subdiagram is placed in a cell; wires are drawn between matching ports \
 of adjacent cells. The grid expands automatically to accommodate \
 compositions, products and nested structure.\
-\>", "Notes",ExpressionUUID->"e0eb46b1-8b67-4255-93f6-280f8414ac68"],
+\>", "Notes",ExpressionUUID->"96737a1f-361f-4a46-b904-13da55ee1313"],
 
 Cell[TextData[{
  "For diagrams that are not natively grid-arrangeable, first run ",
  Cell[BoxData[
-  ButtonBox["DiagramArrange",
-   BaseStyle->"Link",
-   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/DiagramArrange"]], 
-  "InlineFormula",ExpressionUUID->"ddc62574-7e71-4a8e-9205-416b6ea942d6"],
+  TemplateBox[{
+    Cell[
+     TextData["DiagramArrange"]], 
+    "paclet:WolframDiagrammaticComputation/ref/DiagramArrange", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "0ef64ca1-2a4b-484a-bb18-621d0e5bdf5c"],
  " to insert identities, permutations and spiders."
-}], "Notes",ExpressionUUID->"ba811baf-54f5-480a-936e-47fc8c342be0"],
+}], "Notes",ExpressionUUID->"9afb352a-c930-4e88-b412-16fd95b00efd"],
 
-Cell["The following options are commonly used:", "Notes",ExpressionUUID->"83b3e4bc-6d1a-4eed-bb0b-846f7d14fdca"],
+Cell["The following options are commonly used:", "Notes",ExpressionUUID->"1001ba45-04c2-4324-83fe-4d32a336d66d"],
 
 Cell[BoxData[GridBox[{
    {Cell["      ", "ModInfo",ExpressionUUID->
-     "9482f078-eb18-42fa-b00b-d6f3c982d593"], Cell["Option", "TableText",
-     FontWeight->Bold,ExpressionUUID->"ce3a8d0a-9742-4612-8617-e58174307a2a"],
+     "5cd14663-fbe7-4a02-9796-2fb1f4f970ab"], Cell["Option", "TableText",
+     FontWeight->Bold,ExpressionUUID->"6c0e9ee1-2a65-480c-90e0-561489f6b746"],
      Cell["Default", "TableText",
-     FontWeight->Bold,ExpressionUUID->"c21ab20d-4a6f-47e6-8358-2f83f21dffac"],
+     FontWeight->Bold,ExpressionUUID->"53f96393-d8a7-4900-808f-d55c667cdc94"],
      Cell["Description", "TableText",
-     FontWeight->Bold,ExpressionUUID->"2e44375c-5a6e-4eff-be39-47f1747aef39"]},
+     FontWeight->Bold,ExpressionUUID->"b5dd5347-32d4-4598-b949-e16bdcd60e73"]},
    {Cell["      ", "ModInfo",ExpressionUUID->
-     "675d7bb7-d659-4dfa-88d3-8a33edfb8608"], Cell[TextData[Cell[
+     "af6ef649-fca5-4256-b371-90db885d1b0c"], Cell[TextData[Cell[
     BoxData["\"\<Outline\>\""], "InlineFormula",ExpressionUUID->
-     "9f11e42f-6722-4b38-88ee-a84d1f03a794"]], "TableText",ExpressionUUID->
-     "871d6eb5-8d7d-42cd-ac7a-b8da67705e69"], Cell[TextData[Cell[BoxData[
-     ButtonBox["False",
-      BaseStyle->"Link",
-      ButtonData->"paclet:ref/False"]], "InlineFormula",ExpressionUUID->
-     "33bb88bb-e8c0-41df-ae5c-4ef4199f9515"]], "TableText",ExpressionUUID->
-     "3fd745b1-b552-4c51-a852-d76d1c999680"], Cell["\<\
+     "4f176901-82a7-4b7d-9431-671e54edbbbd"]], "TableText",ExpressionUUID->
+     "423be86d-b33f-4cc8-9dd3-ebc7c33ddf9c"], Cell[TextData[Cell[BoxData[
+     TemplateBox[{
+       Cell[
+        TextData["False"]], "paclet:ref/False"},
+      "RefLink",
+      BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+     "8e85027e-39e1-405c-ae0f-27d16b82f503"]], "TableText",ExpressionUUID->
+     "64e0831d-584f-41db-abcc-921a51607a3e"], Cell["\<\
 dashed outline around auxiliary diagrams introduced by arrangement\
-\>", "TableText",ExpressionUUID->"47cafeeb-8c34-4d8e-bfef-b6a8e23a761b"]},
+\>", "TableText",ExpressionUUID->"baa6f9ab-030d-4b24-9e51-074ca86f4953"]},
    {Cell["      ", "ModInfo",ExpressionUUID->
-     "d7a34c0d-bfdd-4cd1-900f-a9058e8149d1"], Cell[TextData[Cell[BoxData[
-     ButtonBox["Dividers",
-      BaseStyle->"Link",
-      ButtonData->"paclet:ref/Dividers"]], "InlineFormula",ExpressionUUID->
-     "91c43b47-bdb6-4b03-8e38-7a02e2cfc30c"]], "TableText",ExpressionUUID->
-     "6f1eddb5-4808-405e-8851-6a17c4276d77"], Cell[TextData[Cell[BoxData[
-     ButtonBox["False",
-      BaseStyle->"Link",
-      ButtonData->"paclet:ref/False"]], "InlineFormula",ExpressionUUID->
-     "05468fd3-2f20-43d3-b18a-975e334e6677"]], "TableText",ExpressionUUID->
-     "fabf2618-7555-4856-8cf3-bd210176e293"], Cell[
+     "da542163-055f-4c9f-9f41-efe5888c2ac6"], Cell[TextData[Cell[BoxData[
+     TemplateBox[{
+       Cell[
+        TextData["Dividers"]], "paclet:ref/Dividers"},
+      "RefLink",
+      BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+     "4ad13ef0-b7a9-4157-8dd9-4453e840d810"]], "TableText",ExpressionUUID->
+     "c20ca323-8b5c-4fbb-a64e-efdf7a3bf856"], Cell[TextData[Cell[BoxData[
+     TemplateBox[{
+       Cell[
+        TextData["False"]], "paclet:ref/False"},
+      "RefLink",
+      BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+     "e61d89d6-3e9b-4b86-94a3-4bf3ac286070"]], "TableText",ExpressionUUID->
+     "6158579f-c376-41c8-ac09-cb8770b0b089"], Cell[
     "grid dividers between subdiagram cells", "TableText",ExpressionUUID->
-     "9e4fe8db-f3f3-4331-b750-0f04b60d0bc6"]},
+     "1119c227-5229-4489-936a-2109cd383d98"]},
    {Cell["      ", "ModInfo",ExpressionUUID->
-     "39c39add-6101-42d4-a3d1-641ed9ed0a6e"], Cell[TextData[Cell[BoxData[
-     ButtonBox["Alignment",
-      BaseStyle->"Link",
-      ButtonData->"paclet:ref/Alignment"]], "InlineFormula",ExpressionUUID->
-     "53297630-fe06-499b-9c52-3f6b9b76c648"]], "TableText",ExpressionUUID->
-     "d02018a9-5800-497d-a7a8-50fa88314f5e"], Cell[TextData[Cell[BoxData[
-     ButtonBox["Center",
-      BaseStyle->"Link",
-      ButtonData->"paclet:ref/Center"]], "InlineFormula",ExpressionUUID->
-     "2f166677-3cdc-437b-99de-179334433de4"]], "TableText",ExpressionUUID->
-     "0a1cbe0e-f94d-4a4f-b3d2-5da071f38a8f"], Cell[
+     "83ea26d2-97dc-4ce8-ab50-1928b6994fe1"], Cell[TextData[Cell[BoxData[
+     TemplateBox[{
+       Cell[
+        TextData["Alignment"]], "paclet:ref/Alignment"},
+      "RefLink",
+      BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+     "25fbe606-5dcf-4159-b0d4-3d0f2c73052c"]], "TableText",ExpressionUUID->
+     "8d5eb534-e4f7-4249-baa3-dd0be20d9f03"], Cell[TextData[Cell[BoxData[
+     TemplateBox[{
+       Cell[
+        TextData["Center"]], "paclet:ref/Center"},
+      "RefLink",
+      BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+     "57c75e06-af82-4235-8eb6-ee8f630cda4e"]], "TableText",ExpressionUUID->
+     "0a4f5663-5e6d-44c2-b945-25746e176d0d"], Cell[
     "alignment of sub-diagrams within their grid cells", "TableText",
-     ExpressionUUID->"bc547490-b47e-4f8d-9741-5aa20ec1c1e7"]}
-  }]], "3ColumnTableMod",ExpressionUUID->"a9701b8f-ac0c-45d7-b423-\
-4652def1dda3"]
+     ExpressionUUID->"b9c45132-2146-4e08-9979-8834ff0179e1"]}
+  }]], "3ColumnTableMod",ExpressionUUID->"deaa4684-437e-4dd1-bc6c-\
+f386332e28e4"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -132,48 +150,75 @@ Cell[TextData[{
 
 Cell[TextData[{
  Cell[BoxData[
-  ButtonBox["Diagram",
-   BaseStyle->"Link",
-   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/Diagram"]], 
-  "InlineFormula",ExpressionUUID->"1386236b-d70c-4e96-869d-88b118948288"],
+  TemplateBox[{
+    Cell[
+     TextData["Diagram"]], 
+    "paclet:WolframDiagrammaticComputation/ref/Diagram", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "59ea0651-c5fa-477d-8834-3d6f53c52f97"],
  " \[FilledVerySmallSquare] ",
  Cell[BoxData[
-  ButtonBox["DiagramNetwork",
-   BaseStyle->"Link",
-   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/DiagramNetwork"]], 
-  "InlineFormula",ExpressionUUID->"9961e76c-64c4-4e27-83f1-912fd35e849f"],
+  TemplateBox[{
+    Cell[
+     TextData["DiagramNetwork"]], 
+    "paclet:WolframDiagrammaticComputation/ref/DiagramNetwork", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "e1899c42-60e9-4bc1-928f-046138f54377"],
  " \[FilledVerySmallSquare] ",
  Cell[BoxData[
-  ButtonBox["DiagramProduct",
-   BaseStyle->"Link",
-   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/DiagramProduct"]], 
-  "InlineFormula",ExpressionUUID->"42185710-ac39-4dec-a943-8112db6276a1"],
+  TemplateBox[{
+    Cell[
+     TextData["DiagramProduct"]], 
+    "paclet:WolframDiagrammaticComputation/ref/DiagramProduct", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "f8267625-713e-42ca-880c-7f3cd09329c7"],
  " \[FilledVerySmallSquare] ",
  Cell[BoxData[
-  ButtonBox["DiagramComposition",
-   BaseStyle->"Link",
-   ButtonData->
-    "paclet:Wolfram/DiagrammaticComputation/ref/DiagramComposition"]], 
-  "InlineFormula",ExpressionUUID->"893c8846-533c-4c17-bb07-f1f381c26085"],
+  TemplateBox[{
+    Cell[
+     TextData["DiagramComposition"]], 
+    "paclet:WolframDiagrammaticComputation/ref/DiagramComposition", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "554fd368-58af-4242-b7d5-4937cf624e04"],
  " \[FilledVerySmallSquare] ",
  Cell[BoxData[
-  ButtonBox["DiagramArrange",
-   BaseStyle->"Link",
-   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/DiagramArrange"]], 
-  "InlineFormula",ExpressionUUID->"cb0b35cc-8634-4be2-9d5d-bbf5d7275425"],
+  TemplateBox[{
+    Cell[
+     TextData["DiagramArrange"]], 
+    "paclet:WolframDiagrammaticComputation/ref/DiagramArrange", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "71b01627-c2c2-485a-93a2-551a3d15ae6a"],
  " \[FilledVerySmallSquare] ",
  Cell[BoxData[
-  ButtonBox["RowDiagram",
-   BaseStyle->"Link",
-   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/RowDiagram"]], 
-  "InlineFormula",ExpressionUUID->"49335397-8d95-4342-8d2d-d3253a687592"],
+  TemplateBox[{
+    Cell[
+     TextData["RowDiagram"]], 
+    "paclet:WolframDiagrammaticComputation/ref/RowDiagram", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "539736c1-c898-4236-a3ba-08bfe8362bea"],
  " \[FilledVerySmallSquare] ",
  Cell[BoxData[
-  ButtonBox["ColumnDiagram",
-   BaseStyle->"Link",
-   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/ColumnDiagram"]], 
-  "InlineFormula",ExpressionUUID->"19db4c45-942a-4970-86cc-d41678123a50"]
-}], "SeeAlso",ExpressionUUID->"166bfbc2-f1d2-41ac-83b8-049617050c55"]
+  TemplateBox[{
+    Cell[
+     TextData["ColumnDiagram"]], 
+    "paclet:WolframDiagrammaticComputation/ref/ColumnDiagram", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "8979816e-bc19-4fac-bac9-e1d94b25a89d"]
+}], "SeeAlso",ExpressionUUID->"514a9ec5-3040-4afd-974f-ff639c8740f1"]
 }, Open  ]],
 
 Cell[TextData[{
@@ -199,9 +244,9 @@ Cell[TextData[Cell[BoxData[
  ButtonBox["DiagramGrid",
   BaseStyle->"Link",
   ButtonData->
-   "paclet:Wolfram/DiagrammaticComputation/guide/DiagramGrid"]], \
-"InlineFormula",ExpressionUUID->"20979323-c2e8-4f45-8b7c-e1927a85ac8a"]], \
-"MoreAbout",ExpressionUUID->"03abbfb6-c9cd-4cd2-9cc1-e7593ff20dc5"]
+   "paclet:WolframDiagrammaticComputation/guide/DiagramGrid"]], \
+"InlineFormula",ExpressionUUID->"d0ef79bd-83b8-446a-b26c-c6bcd5561cd1"]], \
+"MoreAbout",ExpressionUUID->"4632d390-8fe4-4f64-bb5b-3c651f58bec9"]
 }, Open  ]],
 
 Cell[TextData[{
@@ -257,10 +302,7 @@ Cell[BoxData[
   $Line = 0; Null]], "PrimaryExamplesSection",
  CellID->880084151,ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42"],
 
-Cell["\<\
-Render a product of two diagrams as a grid: Render a composition: Render a \
-small network:\
-\>", "ExampleText",ExpressionUUID->"e4c1d2d9-6d4f-4ff3-be5f-0cac10223e17"],
+Cell["Render a product of two diagrams as a grid:", "ExampleText",ExpressionUUID->"e4b8cfa5-b9a5-4397-8dae-883ce2c57f9a"],
 
 Cell[CellGroupData[{
 
@@ -276,7 +318,7 @@ Cell[BoxData[
     RowBox[{"Diagram", "[", 
      RowBox[{"\"\<B\>\"", ",", " ", "d", ",", " ", "e"}], "]"}]}], 
    "]"}]}]], "Input",
- CellLabel->"In[1]:= ",ExpressionUUID->"689e41a7-6590-4482-a0dc-ef99b7c3486d"],
+ CellLabel->"In[1]:= ",ExpressionUUID->"1b6199cc-2716-4a3d-8815-d471c4b28de3"],
 
 Cell[BoxData[
  GraphicsBox[{{
@@ -296,10 +338,8 @@ Cell[BoxData[
            HoldForm],
           
           Wolfram`DiagrammaticComputation`Port`Port[<|
-           "Expression" :> 
-            FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, 
-            "NeutralQ" -> False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
-          
+           "Expression" :> MTNB$pntff3ahzd3r`a, "NeutralQ" -> False, 
+            "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
           Tooltip->"\[FormalCapitalT]"], {0.9999999999999998, 1.875}]}, {
         ArrowBox[{{3., 1.75}, {3., 1.5}}], InsetBox[
          InterpretationBox[
@@ -307,19 +347,16 @@ Cell[BoxData[
            HoldForm],
           
           Wolfram`DiagrammaticComputation`Port`Port[<|
-           "Expression" :> 
-            FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-            "NeutralQ" -> False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
-          
+           "Expression" :> MTNB$pntff3ahzd3r`b, "NeutralQ" -> False, 
+            "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
           Tooltip->"\[FormalCapitalT]"], {3., 1.875}]}}, {
        ArrowBox[{{2., 0.5}, {2., 0.25}}], InsetBox[
         InterpretationBox[
          TagBox["c",
           HoldForm],
          Wolfram`DiagrammaticComputation`Port`Port[<|
-          "Expression" :> 
-           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, "NeutralQ" -> 
-           False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
+          "Expression" :> MTNB$pntff3ahzd3r`c, "NeutralQ" -> False, 
+           "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
          Tooltip->"\[FormalCapitalT]"], {2., 0.125}]}}, 
      {LightDarkSwitched[
        GrayLevel[0], 
@@ -335,362 +372,20 @@ Cell[BoxData[
       GeometricTransformationBox[
        RectangleBox[{4.5, 0.5}], {{{1., 0.}, {0., 1.}}, {0., 0.}}]}, {{
        ArrowBox[{{5., 1.75}, {5., 1.5}}], InsetBox[
-        FormBox[
-         InterpretationBox[
-          TagBox[
-           GraphicsBox[
-            NamespaceBox["Diagram",
-             DynamicModuleBox[{Typeset`d = HoldComplete[
-               
-               Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                "DiagramOptions" -> {
-                  "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                   "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-                 "Expression" :> 
-                 Wolfram`DiagrammaticComputation`Diagram`DiagramComposition[
-                   
-                   Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic, Automatic}, {
-                    Automatic, Automatic}}}, "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Diagram`DiagramProduct[
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    MTNB$1j799b2aywkkg`B, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    C, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>]], "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                   
-                   Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-                    "Expression" :> MTNB$1j799b2aywkkg`A, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> MTNB$1j799b2aywkkg`y, "NeutralQ" -> False,
-                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}|>]], 
-                 "InputPorts" -> {
-                   
-                   Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                   
-                   Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                   
-                   Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>]]}, {{
-                {Arrowheads[Small], 
-                 {EdgeForm[{LightDarkSwitched[
-                   GrayLevel[0], 
-                   GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
-                   RGBColor[
-                   0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
-                   GrayLevel[0.62]]], 
-                  GeometricTransformationBox[
-                   RectangleBox[{0.5, 0.5}], {{{1., 0.}, {0., 1.}}, {0., 
-                    0.}}]}, {{}, {ArrowBox[{{1., 0.5}, {1., 0.25}}], 
-                   InsetBox[
-                    InterpretationBox[
-                    TagBox["b",
-                    HoldForm],
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>],
-                    Tooltip->"\[FormalCapitalT]"], {1., 0.125}]}}, 
-                 {LightDarkSwitched[
-                   GrayLevel[0], 
-                   GrayLevel[1]], InsetBox[
-                   TagBox["MTNB$1j799b2aywkkg`B",
-                    HoldForm], {1., 1.}]}}, 
-                {Arrowheads[Small], 
-                 {EdgeForm[{LightDarkSwitched[
-                   GrayLevel[0], 
-                   GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
-                   RGBColor[
-                   0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
-                   GrayLevel[0.62]]], 
-                  GeometricTransformationBox[
-                   RectangleBox[{2.5, 0.5}], {{{1., 0.}, {0., 1.}}, {0., 
-                    0.}}]}, {{}, {ArrowBox[{{3., 0.5}, {3., 0.25}}], 
-                   InsetBox[
-                    InterpretationBox[
-                    TagBox["c",
-                    HoldForm],
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>],
-                    Tooltip->"\[FormalCapitalT]"], {3., 0.125}]}}, 
-                 {LightDarkSwitched[
-                   GrayLevel[0], 
-                   GrayLevel[1]], InsetBox[
-                   TagBox["C",
-                    HoldForm], {3., 1.}]}}, 
-                {Arrowheads[Small], 
-                 {EdgeForm[{LightDarkSwitched[
-                   GrayLevel[0], 
-                   GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
-                   RGBColor[
-                   0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
-                   GrayLevel[0.62]]], 
-                  GeometricTransformationBox[
-                   RectangleBox[{0.125, 2.5}, {3.875, 3.5}], {{{1., 0.}, {0., 
-                    1.}}, {0., 0.}}]}, {{ArrowBox[{{2., 3.75}, {2., 3.5}}], 
-                   InsetBox[
-                    InterpretationBox[
-                    TagBox["a",
-                    HoldForm],
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>],
-                    Tooltip->"\[FormalCapitalT]"], {2., 3.875}]}, {{}, {}}}, 
-                 {LightDarkSwitched[
-                   GrayLevel[0], 
-                   GrayLevel[1]], InsetBox[
-                   TagBox["MTNB$1j799b2aywkkg`A",
-                    HoldForm], {2., 3.}]}}}, {
-                {Arrowheads[{{Small, 0.5}}], {}, 
-                 ArrowBox[
-                  BSplineCurveBox[{{0.9999999999999998, 2.5}, {
-                   0.9999999999999998, 2.25}, {1., 1.75}, {1., 1.5}}]], 
-                 InsetBox[
-                  TemplateBox[{"x"},
-                   "ClickToCopy"], {0.8999999999999999, 2.}]}, 
-                {Arrowheads[{{Small, 0.5}}], {}, 
-                 ArrowBox[
-                  BSplineCurveBox[{{3., 2.5}, {3., 2.25}, {3., 1.75}, {3., 
-                   1.5}}]], InsetBox[
-                  TemplateBox[{"MTNB$1j799b2aywkkg`y"},
-                   "ClickToCopy"], {2.9, 2.}]}}, {}, {}, 
-               {EdgeForm[{LightDarkSwitched[
-                 GrayLevel[0], 
-                 GrayLevel[1]], Thickness[Tiny]}], FaceForm[None]}}]],
-            
-            BaseStyle->{
-             GraphicsBoxOptions -> {ImageSize -> Medium}, 
-              Wolfram`DiagrammaticComputation`Diagram`Private`\
-GraphicsHighlightColor -> RGBColor[1, 0, 1]},
-            FormatType->StandardForm],
-           HoldForm],
-          
-          Wolfram`DiagrammaticComputation`Port`Port[<|
-           "Expression" :> 
-            Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-              "DiagramOptions" -> {
-                "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                 "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-               "Expression" :> 
-               Wolfram`DiagrammaticComputation`Diagram`DiagramComposition[
-                 
-                 Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                  "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic, Automatic}, {
-                    Automatic, Automatic}}}, "Expression" :> 
-                   Wolfram`DiagrammaticComputation`Diagram`DiagramProduct[
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    MTNB$1j799b2aywkkg`B, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    C, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>]], "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                 
-                 Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                  "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-                   "Expression" :> MTNB$1j799b2aywkkg`A, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> MTNB$1j799b2aywkkg`y, "NeutralQ" -> False,
-                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}|>]], 
-               "InputPorts" -> {
-                 
-                 Wolfram`DiagrammaticComputation`Port`Port[<|
-                  "Expression" :> 
-                   Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                   "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                   SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                 
-                 Wolfram`DiagrammaticComputation`Port`Port[<|
-                  "Expression" :> 
-                   FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                   "NeutralQ" -> False, "Tags" -> {}, 
-                   "Type" -> \[FormalCapitalT]|>], 
-                 
-                 Wolfram`DiagrammaticComputation`Port`Port[<|
-                  "Expression" :> 
-                   FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                   "NeutralQ" -> False, "Tags" -> {}, 
-                   "Type" -> \[FormalCapitalT]|>]}|>], "NeutralQ" -> False, 
-            "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
-          Tooltip->"\[FormalCapitalT]"],
-         StandardForm], {5., 1.875}]}, {ArrowBox[{{5., 0.5}, {5., 0.25}}], 
-       InsetBox[
+        InterpretationBox[
+         TagBox["d",
+          HoldForm],
+         Wolfram`DiagrammaticComputation`Port`Port[<|
+          "Expression" :> MTNB$pntff3ahzd3r`d, "NeutralQ" -> False, 
+           "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
+         Tooltip->"\[FormalCapitalT]"], {5., 1.875}]}, {
+       ArrowBox[{{5., 0.5}, {5., 0.25}}], InsetBox[
         InterpretationBox[
          TagBox["e",
           HoldForm],
          Wolfram`DiagrammaticComputation`Port`Port[<|
-          "Expression" :> 
-           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`e, "NeutralQ" -> 
-           False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
+          "Expression" :> MTNB$pntff3ahzd3r`e, "NeutralQ" -> False, 
+           "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
          Tooltip->"\[FormalCapitalT]"], {5., 0.125}]}}, 
      {LightDarkSwitched[
        GrayLevel[0], 
@@ -701,8 +396,10 @@ GraphicsHighlightColor -> RGBColor[1, 0, 1]},
      GrayLevel[0], 
      GrayLevel[1]], Thickness[Tiny]}], FaceForm[None]}},
   FormatType->StandardForm]], "Output",
- CellLabel->"Out[1]= ",ExpressionUUID->"70d67c4e-609c-4e19-839e-75b7ce4cba43"]
+ CellLabel->"Out[1]= ",ExpressionUUID->"86de535c-c440-4450-961d-b0f2a65bf692"]
 }, Open  ]],
+
+Cell["Render a composition:", "ExampleText",ExpressionUUID->"3fec35ce-f3c4-420a-b26d-b80471d45ddb"],
 
 Cell[CellGroupData[{
 
@@ -715,7 +412,7 @@ Cell[BoxData[
     RowBox[{"Diagram", "[", 
      RowBox[{"\"\<B\>\"", ",", " ", "c", ",", " ", "b"}], "]"}]}], 
    "]"}]}]], "Input",
- CellLabel->"In[2]:= ",ExpressionUUID->"cf2dfb40-a68f-4361-864f-bdaa95189bcf"],
+ CellLabel->"In[2]:= ",ExpressionUUID->"4918f7e5-a579-448c-b34e-5ef559c41667"],
 
 Cell[BoxData[
  GraphicsBox[{{
@@ -732,9 +429,8 @@ Cell[BoxData[
          TagBox["a",
           HoldForm],
          Wolfram`DiagrammaticComputation`Port`Port[<|
-          "Expression" :> 
-           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, "NeutralQ" -> 
-           False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
+          "Expression" :> MTNB$pntff3ahzd3r`a, "NeutralQ" -> False, 
+           "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
          Tooltip->"\[FormalCapitalT]"], {1., 0.125}]}}, 
      {LightDarkSwitched[
        GrayLevel[0], 
@@ -754,9 +450,8 @@ Cell[BoxData[
          TagBox["c",
           HoldForm],
          Wolfram`DiagrammaticComputation`Port`Port[<|
-          "Expression" :> 
-           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, "NeutralQ" -> 
-           False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
+          "Expression" :> MTNB$pntff3ahzd3r`c, "NeutralQ" -> False, 
+           "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
          Tooltip->"\[FormalCapitalT]"], {1., 3.875}]}, {}}, 
      {LightDarkSwitched[
        GrayLevel[0], 
@@ -772,8 +467,10 @@ Cell[BoxData[
      GrayLevel[0], 
      GrayLevel[1]], Thickness[Tiny]}], FaceForm[None]}},
   FormatType->StandardForm]], "Output",
- CellLabel->"Out[2]= ",ExpressionUUID->"f5509fc2-4a1c-4fb4-b051-3a2b35f33bab"]
+ CellLabel->"Out[2]= ",ExpressionUUID->"5a4818f0-b9d7-4e1c-a543-cf6c8dd3c49f"]
 }, Open  ]],
+
+Cell["Render a small network:", "ExampleText",ExpressionUUID->"f7bde2c2-20d5-4ace-9b57-6515c3e38006"],
 
 Cell[CellGroupData[{
 
@@ -786,7 +483,7 @@ Cell[BoxData[
     RowBox[{"Diagram", "[", 
      RowBox[{"\"\<B\>\"", ",", " ", "a", ",", " ", "c"}], "]"}]}], "]"}], 
   "]"}]], "Input",
- CellLabel->"In[3]:= ",ExpressionUUID->"a5452b0b-c71e-4906-9564-aa476c778149"],
+ CellLabel->"In[3]:= ",ExpressionUUID->"9b427fba-df5b-4e16-84ab-aedd35c462eb"],
 
 Cell[BoxData[
  GraphicsBox[{{
@@ -803,9 +500,8 @@ Cell[BoxData[
          TagBox["b",
           HoldForm],
          Wolfram`DiagrammaticComputation`Port`Port[<|
-          "Expression" :> 
-           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, "NeutralQ" -> 
-           False, "Tags" -> {{1, 2, 1}}, "Type" -> \[FormalCapitalT]|>],
+          "Expression" :> MTNB$pntff3ahzd3r`b, "NeutralQ" -> False, 
+           "Tags" -> {{1, 2, 1}}, "Type" -> \[FormalCapitalT]|>],
          Tooltip->"\[FormalCapitalT]"], {1., 0.125}]}}, 
      {LightDarkSwitched[
        GrayLevel[0], 
@@ -825,9 +521,8 @@ Cell[BoxData[
          TagBox["c",
           HoldForm],
          Wolfram`DiagrammaticComputation`Port`Port[<|
-          "Expression" :> 
-           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, "NeutralQ" -> 
-           False, "Tags" -> {{2, 2, 1}}, "Type" -> \[FormalCapitalT]|>],
+          "Expression" :> MTNB$pntff3ahzd3r`c, "NeutralQ" -> False, 
+           "Tags" -> {{2, 2, 1}}, "Type" -> \[FormalCapitalT]|>],
          Tooltip->"\[FormalCapitalT]"], {3., 0.125}]}}, 
      {LightDarkSwitched[
        GrayLevel[0], 
@@ -860,7 +555,7 @@ Cell[BoxData[
      GrayLevel[0], 
      GrayLevel[1]], Thickness[Tiny]}], FaceForm[None]}},
   FormatType->StandardForm]], "Output",
- CellLabel->"Out[3]= ",ExpressionUUID->"fc7a1fe4-2adb-4e3f-a38f-9d2bd0eb0e26"]
+ CellLabel->"Out[3]= ",ExpressionUUID->"cae5461a-dbaa-48a4-88cc-e4d68b4c8a28"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -892,19 +587,26 @@ Cell[BoxData[
 Cell[TextData[{
  "Use ",
  Cell[BoxData[
-  ButtonBox["DiagramComposition",
-   BaseStyle->"Link",
-   ButtonData->
-    "paclet:Wolfram/DiagrammaticComputation/ref/DiagramComposition"]], 
-  "InlineFormula",ExpressionUUID->"58949069-42a3-4b3c-8794-b9ebd2349440"],
+  TemplateBox[{
+    Cell[
+     TextData["DiagramComposition"]], 
+    "paclet:WolframDiagrammaticComputation/ref/DiagramComposition", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "1cc40202-69b2-494f-b31c-e80004ded901"],
  " and ",
  Cell[BoxData[
-  ButtonBox["DiagramProduct",
-   BaseStyle->"Link",
-   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/DiagramProduct"]], 
-  "InlineFormula",ExpressionUUID->"18e42055-4cca-4196-88d2-d84db57b4e08"],
+  TemplateBox[{
+    Cell[
+     TextData["DiagramProduct"]], 
+    "paclet:WolframDiagrammaticComputation/ref/DiagramProduct", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "9936e548-0780-40cb-a3f1-9279ce6a640c"],
  " together to build a 2D arrangement:"
-}], "ExampleText",ExpressionUUID->"7c912c42-f3a2-4b8c-a20c-0e381baae6bb"],
+}], "ExampleText",ExpressionUUID->"9bbd7180-466e-4ce0-aa2b-63aa5eddd12c"],
 
 Cell[CellGroupData[{
 
@@ -934,7 +636,7 @@ Cell[BoxData[
       RowBox[{"{", 
        RowBox[{"c", ",", " ", "e"}], "}"}]}], "]"}]}], "\n", "]"}]}]], "Input",\
 
- CellLabel->"In[1]:= ",ExpressionUUID->"65cab277-727f-4008-8014-1c14c4bd14d9"],
+ CellLabel->"In[1]:= ",ExpressionUUID->"c707216c-87e0-4d03-9ac3-dc2e990e5e46"],
 
 Cell[BoxData[
  GraphicsBox[{{
@@ -951,9 +653,8 @@ Cell[BoxData[
          TagBox["x",
           HoldForm],
          Wolfram`DiagrammaticComputation`Port`Port[<|
-          "Expression" :> 
-           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x, "NeutralQ" -> 
-           False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
+          "Expression" :> MTNB$pntff3ahzd3r`x, "NeutralQ" -> False, 
+           "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
          Tooltip->"\[FormalCapitalT]"], {2., 0.125}]}}, 
      {LightDarkSwitched[
        GrayLevel[0], 
@@ -1043,265 +744,7 @@ Cell[BoxData[
     {Arrowheads[{{Small, 0.5}}], {}, 
      ArrowBox[BSplineCurveBox[{{3., 4.5}, {3., 4.25}, {3., 3.75}, {3., 
        3.5}}]], InsetBox[
-      TemplateBox[{
-        GraphicsBox[
-         NamespaceBox["Diagram", 
-          DynamicModuleBox[{Typeset`d = HoldComplete[
-              
-              Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-               "DiagramOptions" -> {
-                 "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                  "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-                "Expression" :> 
-                Wolfram`DiagrammaticComputation`Diagram`DiagramComposition[
-                  
-                  Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                   "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic, Automatic}, {
-                    Automatic, Automatic}}}, "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Diagram`DiagramProduct[
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    MTNB$1j799b2aywkkg`B, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    C, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>]], "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                  
-                  Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                   "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-                    "Expression" :> MTNB$1j799b2aywkkg`A, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> MTNB$1j799b2aywkkg`y, "NeutralQ" -> False,
-                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}|>]], 
-                "InputPorts" -> {
-                  
-                  Wolfram`DiagrammaticComputation`Port`Port[<|
-                   "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                  
-                  Wolfram`DiagrammaticComputation`Port`Port[<|
-                   "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                  
-                  Wolfram`DiagrammaticComputation`Port`Port[<|
-                   "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>]]}, {{{{
-               Arrowheads[Small], {
-                Directive[
-                 EdgeForm[
-                  Directive[
-                   Opacity[0.5], 
-                   LightDarkSwitched[
-                    GrayLevel[0], 
-                    GrayLevel[1]]]], 
-                 FaceForm[
-                  LightDarkSwitched[
-                   RGBColor[
-                   0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
-                   GrayLevel[0.62]]]], {
-                 GeometricTransformationBox[
-                  
-                  RectangleBox[{0.5, 0.5}, {1.5, 1.5}], {{{1., 0.}, {0., 
-                   1.}}, {0., 0.}}]}}, {{{{}}}, {{{
-                   ArrowBox[{{1., 0.5}, {1., 0.25}}]}, 
-                  InsetBox[
-                   FormBox[
-                    InterpretationBox[
-                    TagBox["b", HoldForm], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], Tooltip -> 
-                    "\[FormalCapitalT]"], StandardForm], {1., 0.125}]}}}, {
-                LightDarkSwitched[
-                 GrayLevel[0], 
-                 GrayLevel[1]], 
-                InsetBox[
-                 FormBox[
-                  TagBox["MTNB$1j799b2aywkkg`B", HoldForm], StandardForm], {
-                 1., 1.}]}}}, {{
-               Arrowheads[Small], {
-                Directive[
-                 EdgeForm[
-                  Directive[
-                   Opacity[0.5], 
-                   LightDarkSwitched[
-                    GrayLevel[0], 
-                    GrayLevel[1]]]], 
-                 FaceForm[
-                  LightDarkSwitched[
-                   RGBColor[
-                   0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
-                   GrayLevel[0.62]]]], {
-                 GeometricTransformationBox[
-                  
-                  RectangleBox[{2.5, 0.5}, {3.5, 1.5}], {{{1., 0.}, {0., 
-                   1.}}, {0., 0.}}]}}, {{{{}}}, {{{
-                   ArrowBox[{{3., 0.5}, {3., 0.25}}]}, 
-                  InsetBox[
-                   FormBox[
-                    InterpretationBox[
-                    TagBox["c", HoldForm], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], Tooltip -> 
-                    "\[FormalCapitalT]"], StandardForm], {3., 0.125}]}}}, {
-                LightDarkSwitched[
-                 GrayLevel[0], 
-                 GrayLevel[1]], 
-                InsetBox[
-                 FormBox[
-                  TagBox["C", HoldForm], StandardForm], {3., 1.}]}}}, {{
-               Arrowheads[Small], {
-                Directive[
-                 EdgeForm[
-                  Directive[
-                   Opacity[0.5], 
-                   LightDarkSwitched[
-                    GrayLevel[0], 
-                    GrayLevel[1]]]], 
-                 FaceForm[
-                  LightDarkSwitched[
-                   RGBColor[
-                   0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
-                   GrayLevel[0.62]]]], {
-                 GeometricTransformationBox[
-                  
-                  RectangleBox[{0.125, 2.5}, {3.875, 3.5}], {{{1., 0.}, {0., 
-                   1.}}, {0., 0.}}]}}, {{{{
-                   ArrowBox[{{2., 3.75}, {2., 3.5}}]}, 
-                  InsetBox[
-                   FormBox[
-                    InterpretationBox[
-                    TagBox["a", HoldForm], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], Tooltip -> 
-                    "\[FormalCapitalT]"], StandardForm], {2., 
-                   3.875}]}}, {{{}}, {{}}}}, {
-                LightDarkSwitched[
-                 GrayLevel[0], 
-                 GrayLevel[1]], 
-                InsetBox[
-                 FormBox[
-                  TagBox["MTNB$1j799b2aywkkg`A", HoldForm], StandardForm], {
-                 2., 3.}]}}}}, {{{
-               Arrowheads[{{Small, 0.5}}], {}, 
-               ArrowBox[
-                
-                BSplineCurveBox[{{0.9999999999999998, 2.5}, {
-                 0.9999999999999998, 2.25}, {1., 1.75}, {1., 1.5}}]], 
-               InsetBox[
-                FormBox[
-                 TemplateBox[{"x"}, "ClickToCopy"], StandardForm], {
-                0.8999999999999999, 2.}]}, {
-               Arrowheads[{{Small, 0.5}}], {}, 
-               ArrowBox[
-                
-                BSplineCurveBox[{{3., 2.5}, {3., 2.25}, {3., 1.75}, {3., 
-                 1.5}}]], 
-               InsetBox[
-                FormBox[
-                 TemplateBox[{"MTNB$1j799b2aywkkg`y"}, "ClickToCopy"], 
-                 StandardForm], {2.9, 2.}]}}}, {}, {}, {
-             FaceForm[None], 
-             EdgeForm[
-              Directive[
-               Thickness[Tiny], 
-               LightDarkSwitched[
-                GrayLevel[0], 
-                GrayLevel[1]]]]}}]], {
-         BaseStyle -> {
-           GraphicsBoxOptions -> {ImageSize -> Medium}, 
-            Wolfram`DiagrammaticComputation`Diagram`Private`\
-GraphicsHighlightColor -> RGBColor[1, 0, 1]}, FormatType -> StandardForm}]},
+      TemplateBox[{"d"},
        "ClickToCopy"], {2.9, 4.}]}, 
     {Arrowheads[{{Small, 0.5}}], {}, 
      ArrowBox[BSplineCurveBox[{{1., 2.5}, {1., 2.25}, {0.9999999999999998, 
@@ -1311,270 +754,13 @@ GraphicsHighlightColor -> RGBColor[1, 0, 1]}, FormatType -> StandardForm}]},
     {Arrowheads[{{Small, 0.5}}], {}, 
      ArrowBox[BSplineCurveBox[{{3., 2.5}, {3., 2.25}, {3., 1.75}, {3., 
        1.5}}]], InsetBox[
-      TemplateBox[{
-        GraphicsBox[
-         NamespaceBox["Diagram", 
-          DynamicModuleBox[{Typeset`d = HoldComplete[
-              
-              Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-               "DiagramOptions" -> {
-                 "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                  "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-                "Expression" :> 
-                Wolfram`DiagrammaticComputation`Diagram`DiagramComposition[
-                  
-                  Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                   "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic, Automatic}, {
-                    Automatic, Automatic}}}, "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Diagram`DiagramProduct[
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    MTNB$1j799b2aywkkg`B, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    C, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>]], "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                  
-                  Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                   "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-                    "Expression" :> MTNB$1j799b2aywkkg`A, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> MTNB$1j799b2aywkkg`y, "NeutralQ" -> False,
-                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}|>]], 
-                "InputPorts" -> {
-                  
-                  Wolfram`DiagrammaticComputation`Port`Port[<|
-                   "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                  
-                  Wolfram`DiagrammaticComputation`Port`Port[<|
-                   "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                  
-                  Wolfram`DiagrammaticComputation`Port`Port[<|
-                   "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>]]}, {{{{
-               Arrowheads[Small], {
-                Directive[
-                 EdgeForm[
-                  Directive[
-                   Opacity[0.5], 
-                   LightDarkSwitched[
-                    GrayLevel[0], 
-                    GrayLevel[1]]]], 
-                 FaceForm[
-                  LightDarkSwitched[
-                   RGBColor[
-                   0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
-                   GrayLevel[0.62]]]], {
-                 GeometricTransformationBox[
-                  
-                  RectangleBox[{0.5, 0.5}, {1.5, 1.5}], {{{1., 0.}, {0., 
-                   1.}}, {0., 0.}}]}}, {{{{}}}, {{{
-                   ArrowBox[{{1., 0.5}, {1., 0.25}}]}, 
-                  InsetBox[
-                   FormBox[
-                    InterpretationBox[
-                    TagBox["b", HoldForm], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], Tooltip -> 
-                    "\[FormalCapitalT]"], StandardForm], {1., 0.125}]}}}, {
-                LightDarkSwitched[
-                 GrayLevel[0], 
-                 GrayLevel[1]], 
-                InsetBox[
-                 FormBox[
-                  TagBox["MTNB$1j799b2aywkkg`B", HoldForm], StandardForm], {
-                 1., 1.}]}}}, {{
-               Arrowheads[Small], {
-                Directive[
-                 EdgeForm[
-                  Directive[
-                   Opacity[0.5], 
-                   LightDarkSwitched[
-                    GrayLevel[0], 
-                    GrayLevel[1]]]], 
-                 FaceForm[
-                  LightDarkSwitched[
-                   RGBColor[
-                   0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
-                   GrayLevel[0.62]]]], {
-                 GeometricTransformationBox[
-                  
-                  RectangleBox[{2.5, 0.5}, {3.5, 1.5}], {{{1., 0.}, {0., 
-                   1.}}, {0., 0.}}]}}, {{{{}}}, {{{
-                   ArrowBox[{{3., 0.5}, {3., 0.25}}]}, 
-                  InsetBox[
-                   FormBox[
-                    InterpretationBox[
-                    TagBox["c", HoldForm], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], Tooltip -> 
-                    "\[FormalCapitalT]"], StandardForm], {3., 0.125}]}}}, {
-                LightDarkSwitched[
-                 GrayLevel[0], 
-                 GrayLevel[1]], 
-                InsetBox[
-                 FormBox[
-                  TagBox["C", HoldForm], StandardForm], {3., 1.}]}}}, {{
-               Arrowheads[Small], {
-                Directive[
-                 EdgeForm[
-                  Directive[
-                   Opacity[0.5], 
-                   LightDarkSwitched[
-                    GrayLevel[0], 
-                    GrayLevel[1]]]], 
-                 FaceForm[
-                  LightDarkSwitched[
-                   RGBColor[
-                   0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
-                   GrayLevel[0.62]]]], {
-                 GeometricTransformationBox[
-                  
-                  RectangleBox[{0.125, 2.5}, {3.875, 3.5}], {{{1., 0.}, {0., 
-                   1.}}, {0., 0.}}]}}, {{{{
-                   ArrowBox[{{2., 3.75}, {2., 3.5}}]}, 
-                  InsetBox[
-                   FormBox[
-                    InterpretationBox[
-                    TagBox["a", HoldForm], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], Tooltip -> 
-                    "\[FormalCapitalT]"], StandardForm], {2., 
-                   3.875}]}}, {{{}}, {{}}}}, {
-                LightDarkSwitched[
-                 GrayLevel[0], 
-                 GrayLevel[1]], 
-                InsetBox[
-                 FormBox[
-                  TagBox["MTNB$1j799b2aywkkg`A", HoldForm], StandardForm], {
-                 2., 3.}]}}}}, {{{
-               Arrowheads[{{Small, 0.5}}], {}, 
-               ArrowBox[
-                
-                BSplineCurveBox[{{0.9999999999999998, 2.5}, {
-                 0.9999999999999998, 2.25}, {1., 1.75}, {1., 1.5}}]], 
-               InsetBox[
-                FormBox[
-                 TemplateBox[{"x"}, "ClickToCopy"], StandardForm], {
-                0.8999999999999999, 2.}]}, {
-               Arrowheads[{{Small, 0.5}}], {}, 
-               ArrowBox[
-                
-                BSplineCurveBox[{{3., 2.5}, {3., 2.25}, {3., 1.75}, {3., 
-                 1.5}}]], 
-               InsetBox[
-                FormBox[
-                 TemplateBox[{"MTNB$1j799b2aywkkg`y"}, "ClickToCopy"], 
-                 StandardForm], {2.9, 2.}]}}}, {}, {}, {
-             FaceForm[None], 
-             EdgeForm[
-              Directive[
-               Thickness[Tiny], 
-               LightDarkSwitched[
-                GrayLevel[0], 
-                GrayLevel[1]]]]}}]], {
-         BaseStyle -> {
-           GraphicsBoxOptions -> {ImageSize -> Medium}, 
-            Wolfram`DiagrammaticComputation`Diagram`Private`\
-GraphicsHighlightColor -> RGBColor[1, 0, 1]}, FormatType -> StandardForm}]},
+      TemplateBox[{"d"},
        "ClickToCopy"], {2.9, 2.}]}}, {}, {}, 
    {EdgeForm[{LightDarkSwitched[
      GrayLevel[0], 
      GrayLevel[1]], Thickness[Tiny]}], FaceForm[None]}},
   FormatType->StandardForm]], "Output",
- CellLabel->"Out[1]= ",ExpressionUUID->"fbb39d00-ffb7-4dc5-b04b-6ff7c218f6e3"]
+ CellLabel->"Out[1]= ",ExpressionUUID->"ae9c3419-17a2-4c48-83ab-84b3f87be690"]
 }, Open  ]]
 }, Open  ]],
 
@@ -1587,9 +773,9 @@ Cell[BoxData[
   $Line = 0; Null]], "ExampleSection",
  CellID->2061341341,ExpressionUUID->"3276b1d7-cf51-4f3b-970a-56b0e7c469f0"],
 
-Cell["\"Outline\"", "ExampleSubsection",ExpressionUUID->"819afac5-adbf-4682-9b75-d65ccc1126ba"],
+Cell["\"Outline\"", "ExampleSubsection",ExpressionUUID->"d89964b2-f099-4757-8327-983c69fd971a"],
 
-Cell["Outlines all extra diagrams introduced to fill the grid:", "ExampleText",ExpressionUUID->"696999be-ca24-47ce-ad39-80f166c35fa9"],
+Cell["Outlines all extra diagrams introduced to fill the grid:", "ExampleText",ExpressionUUID->"dee49880-3178-46ed-b55e-2475eaede0f8"],
 
 Cell[CellGroupData[{
 
@@ -1605,7 +791,7 @@ Cell[BoxData[
        RowBox[{"{", 
         RowBox[{"c", ",", " ", "b"}], "}"}]}], "]"}]}], "]"}], ",", " ", 
    RowBox[{"\"\<Outline\>\"", " ", "->", " ", "True"}]}], "]"}]], "Input",
- CellLabel->"In[1]:= ",ExpressionUUID->"fd77761b-6c89-4334-9dce-dba2e8813812"],
+ CellLabel->"In[1]:= ",ExpressionUUID->"fd75c896-996d-436a-84eb-b7a49b355cc9"],
 
 Cell[BoxData[
  GraphicsBox[{{
@@ -1627,9 +813,8 @@ Cell[BoxData[
          TagBox["c",
           HoldForm],
          Wolfram`DiagrammaticComputation`Port`Port[<|
-          "Expression" :> 
-           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, "NeutralQ" -> 
-           False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
+          "Expression" :> MTNB$pntff3ahzd3r`c, "NeutralQ" -> False, 
+           "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
          Tooltip->"\[FormalCapitalT]"], {1., 0.125}]}}, 
      {LightDarkSwitched[
        GrayLevel[0], 
@@ -1652,9 +837,8 @@ Cell[BoxData[
          TagBox["a",
           HoldForm],
          Wolfram`DiagrammaticComputation`Port`Port[<|
-          "Expression" :> 
-           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, "NeutralQ" -> 
-           False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
+          "Expression" :> MTNB$pntff3ahzd3r`a, "NeutralQ" -> False, 
+           "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
          Tooltip->"\[FormalCapitalT]"], {3., 0.125}]}}, 
      {LightDarkSwitched[
        GrayLevel[0], 
@@ -1676,354 +860,13 @@ Cell[BoxData[
        GeometricTransformationBox[
         RectangleBox[{0.125, 2.5}, {3.875, 3.5}], {{{1., 0.}, {0., 1.}}, {0., 
          0.}}]}}, {{ArrowBox[{{2., 3.75}, {2., 3.5}}], InsetBox[
-        FormBox[
-         InterpretationBox[
-          TagBox[
-           GraphicsBox[
-            NamespaceBox["Diagram",
-             DynamicModuleBox[{Typeset`d = HoldComplete[
-               
-               Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                "DiagramOptions" -> {
-                  "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                   "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-                 "Expression" :> 
-                 Wolfram`DiagrammaticComputation`Diagram`DiagramComposition[
-                   
-                   Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic, Automatic}, {
-                    Automatic, Automatic}}}, "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Diagram`DiagramProduct[
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    MTNB$1j799b2aywkkg`B, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    C, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>]], "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                   
-                   Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-                    "Expression" :> MTNB$1j799b2aywkkg`A, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> MTNB$1j799b2aywkkg`y, "NeutralQ" -> False,
-                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}|>]], 
-                 "InputPorts" -> {
-                   
-                   Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                   
-                   Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                   
-                   Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>]]}, {{
-                {Arrowheads[Small], 
-                 {EdgeForm[{LightDarkSwitched[
-                   GrayLevel[0], 
-                   GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
-                   RGBColor[
-                   0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
-                   GrayLevel[0.62]]], 
-                  GeometricTransformationBox[
-                   RectangleBox[{0.5, 0.5}], {{{1., 0.}, {0., 1.}}, {0., 
-                    0.}}]}, {{}, {ArrowBox[{{1., 0.5}, {1., 0.25}}], 
-                   InsetBox[
-                    InterpretationBox[
-                    TagBox["b",
-                    HoldForm],
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>],
-                    Tooltip->"\[FormalCapitalT]"], {1., 0.125}]}}, 
-                 {LightDarkSwitched[
-                   GrayLevel[0], 
-                   GrayLevel[1]], InsetBox[
-                   TagBox["MTNB$1j799b2aywkkg`B",
-                    HoldForm], {1., 1.}]}}, 
-                {Arrowheads[Small], 
-                 {EdgeForm[{LightDarkSwitched[
-                   GrayLevel[0], 
-                   GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
-                   RGBColor[
-                   0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
-                   GrayLevel[0.62]]], 
-                  GeometricTransformationBox[
-                   RectangleBox[{2.5, 0.5}], {{{1., 0.}, {0., 1.}}, {0., 
-                    0.}}]}, {{}, {ArrowBox[{{3., 0.5}, {3., 0.25}}], 
-                   InsetBox[
-                    InterpretationBox[
-                    TagBox["c",
-                    HoldForm],
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>],
-                    Tooltip->"\[FormalCapitalT]"], {3., 0.125}]}}, 
-                 {LightDarkSwitched[
-                   GrayLevel[0], 
-                   GrayLevel[1]], InsetBox[
-                   TagBox["C",
-                    HoldForm], {3., 1.}]}}, 
-                {Arrowheads[Small], 
-                 {EdgeForm[{LightDarkSwitched[
-                   GrayLevel[0], 
-                   GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
-                   RGBColor[
-                   0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
-                   GrayLevel[0.62]]], 
-                  GeometricTransformationBox[
-                   RectangleBox[{0.125, 2.5}, {3.875, 3.5}], {{{1., 0.}, {0., 
-                    1.}}, {0., 0.}}]}, {{ArrowBox[{{2., 3.75}, {2., 3.5}}], 
-                   InsetBox[
-                    InterpretationBox[
-                    TagBox["a",
-                    HoldForm],
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>],
-                    Tooltip->"\[FormalCapitalT]"], {2., 3.875}]}, {{}, {}}}, 
-                 {LightDarkSwitched[
-                   GrayLevel[0], 
-                   GrayLevel[1]], InsetBox[
-                   TagBox["MTNB$1j799b2aywkkg`A",
-                    HoldForm], {2., 3.}]}}}, {
-                {Arrowheads[{{Small, 0.5}}], {}, 
-                 ArrowBox[
-                  BSplineCurveBox[{{0.9999999999999998, 2.5}, {
-                   0.9999999999999998, 2.25}, {1., 1.75}, {1., 1.5}}]], 
-                 InsetBox[
-                  TemplateBox[{"x"},
-                   "ClickToCopy"], {0.8999999999999999, 2.}]}, 
-                {Arrowheads[{{Small, 0.5}}], {}, 
-                 ArrowBox[
-                  BSplineCurveBox[{{3., 2.5}, {3., 2.25}, {3., 1.75}, {3., 
-                   1.5}}]], InsetBox[
-                  TemplateBox[{"MTNB$1j799b2aywkkg`y"},
-                   "ClickToCopy"], {2.9, 2.}]}}, {}, {}, 
-               {EdgeForm[{LightDarkSwitched[
-                 GrayLevel[0], 
-                 GrayLevel[1]], Thickness[Tiny]}], FaceForm[None]}}]],
-            
-            BaseStyle->{
-             GraphicsBoxOptions -> {ImageSize -> Medium}, 
-              Wolfram`DiagrammaticComputation`Diagram`Private`\
-GraphicsHighlightColor -> RGBColor[1, 0, 1]},
-            FormatType->StandardForm],
-           HoldForm],
-          
-          Wolfram`DiagrammaticComputation`Port`Port[<|
-           "Expression" :> 
-            Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-              "DiagramOptions" -> {
-                "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                 "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-               "Expression" :> 
-               Wolfram`DiagrammaticComputation`Diagram`DiagramComposition[
-                 
-                 Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                  "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic, Automatic}, {
-                    Automatic, Automatic}}}, "Expression" :> 
-                   Wolfram`DiagrammaticComputation`Diagram`DiagramProduct[
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    MTNB$1j799b2aywkkg`B, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    C, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>]], "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                 
-                 Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                  "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-                   "Expression" :> MTNB$1j799b2aywkkg`A, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> MTNB$1j799b2aywkkg`y, "NeutralQ" -> False,
-                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}|>]], 
-               "InputPorts" -> {
-                 
-                 Wolfram`DiagrammaticComputation`Port`Port[<|
-                  "Expression" :> 
-                   Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                   "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                   SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                 
-                 Wolfram`DiagrammaticComputation`Port`Port[<|
-                  "Expression" :> 
-                   FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                   "NeutralQ" -> False, "Tags" -> {}, 
-                   "Type" -> \[FormalCapitalT]|>], 
-                 
-                 Wolfram`DiagrammaticComputation`Port`Port[<|
-                  "Expression" :> 
-                   FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                   "NeutralQ" -> False, "Tags" -> {}, 
-                   "Type" -> \[FormalCapitalT]|>]}|>], "NeutralQ" -> False, 
-            "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
-          Tooltip->"\[FormalCapitalT]"],
-         StandardForm], {2., 3.875}]}, {{}, {}}}, 
+        InterpretationBox[
+         TagBox["d",
+          HoldForm],
+         Wolfram`DiagrammaticComputation`Port`Port[<|
+          "Expression" :> MTNB$pntff3ahzd3r`d, "NeutralQ" -> False, 
+           "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
+         Tooltip->"\[FormalCapitalT]"], {2., 3.875}]}, {{}, {}}}, 
      {LightDarkSwitched[
        GrayLevel[0], 
        GrayLevel[1]], InsetBox[
@@ -2043,12 +886,12 @@ GraphicsHighlightColor -> RGBColor[1, 0, 1]},
      GrayLevel[0], 
      GrayLevel[1]], Thickness[Tiny]}], FaceForm[None]}},
   FormatType->StandardForm]], "Output",
- CellLabel->"Out[1]= ",ExpressionUUID->"52e1f3a3-463d-4ce2-93c8-2df350ae6810"]
+ CellLabel->"Out[1]= ",ExpressionUUID->"6832133a-3a23-4f9e-b0a5-5b73adc4ae7e"]
 }, Open  ]],
 
-Cell["Dividers", "ExampleSubsection",ExpressionUUID->"475854be-08e8-4ab1-8e51-8b6b421c3163"],
+Cell["Dividers", "ExampleSubsection",ExpressionUUID->"fe88347c-6651-4533-9305-0bbc6ea89aa8"],
 
-Cell["Show grid dividers separating sub-diagrams:", "ExampleText",ExpressionUUID->"892ebe50-8284-4131-b43d-5b1dd545a34b"],
+Cell["Show grid dividers separating sub-diagrams:", "ExampleText",ExpressionUUID->"8c2bf7f0-8db6-40d9-85f4-a7edda9b5402"],
 
 Cell[CellGroupData[{
 
@@ -2073,7 +916,7 @@ Cell[BoxData[
         RowBox[{"\"\<C\>\"", ",", " ", "c"}], "]"}]}], "]"}]}], "\n", "  ", 
     "]"}], ",", "\n", "  ", 
    RowBox[{"Dividers", " ", "->", " ", "All"}]}], "\n", "]"}]], "Input",
- CellLabel->"In[1]:= ",ExpressionUUID->"f07bc02a-7dfa-4a60-a93f-1cf34db951e7"],
+ CellLabel->"In[1]:= ",ExpressionUUID->"312c7a28-97ee-4336-b935-2951f6b49490"],
 
 Cell[BoxData[
  GraphicsBox[{{
@@ -2086,352 +929,13 @@ Cell[BoxData[
       {Haloing[], 
        BSplineCurveBox[{{1., 1.5}, {1., 1.25}, {1., 0.75}, {1., 
         0.5}}]}}, {{}, {ArrowBox[{{1., 0.5}, {1., 0.25}}], InsetBox[
-        FormBox[
-         InterpretationBox[
-          TagBox[
-           GraphicsBox[
-            NamespaceBox["Diagram",
-             DynamicModuleBox[{Typeset`d = HoldComplete[
-               
-               Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                "DiagramOptions" -> {
-                  "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                   "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-                 "Expression" :> 
-                 Wolfram`DiagrammaticComputation`Diagram`DiagramComposition[
-                   
-                   Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic, Automatic}, {
-                    Automatic, Automatic}}}, "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Diagram`DiagramProduct[
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    MTNB$1j799b2aywkkg`B, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    C, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>]], "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                   
-                   Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-                    "Expression" :> MTNB$1j799b2aywkkg`A, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> MTNB$1j799b2aywkkg`y, "NeutralQ" -> False,
-                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}|>]], 
-                 "InputPorts" -> {
-                   
-                   Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                   
-                   Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                   
-                   Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>]]}, {{
-                {Arrowheads[Small], 
-                 {EdgeForm[{LightDarkSwitched[
-                   GrayLevel[0], 
-                   GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
-                   RGBColor[
-                   0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
-                   GrayLevel[0.62]]], 
-                  GeometricTransformationBox[
-                   RectangleBox[{0.5, 0.5}], {{{1., 0.}, {0., 1.}}, {0., 
-                    0.}}]}, {{}, {ArrowBox[{{1., 0.5}, {1., 0.25}}], 
-                   InsetBox[
-                    InterpretationBox[
-                    TagBox["b",
-                    HoldForm],
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>],
-                    Tooltip->"\[FormalCapitalT]"], {1., 0.125}]}}, 
-                 {LightDarkSwitched[
-                   GrayLevel[0], 
-                   GrayLevel[1]], InsetBox[
-                   TagBox["MTNB$1j799b2aywkkg`B",
-                    HoldForm], {1., 1.}]}}, 
-                {Arrowheads[Small], 
-                 {EdgeForm[{LightDarkSwitched[
-                   GrayLevel[0], 
-                   GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
-                   RGBColor[
-                   0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
-                   GrayLevel[0.62]]], 
-                  GeometricTransformationBox[
-                   RectangleBox[{2.5, 0.5}], {{{1., 0.}, {0., 1.}}, {0., 
-                    0.}}]}, {{}, {ArrowBox[{{3., 0.5}, {3., 0.25}}], 
-                   InsetBox[
-                    InterpretationBox[
-                    TagBox["c",
-                    HoldForm],
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>],
-                    Tooltip->"\[FormalCapitalT]"], {3., 0.125}]}}, 
-                 {LightDarkSwitched[
-                   GrayLevel[0], 
-                   GrayLevel[1]], InsetBox[
-                   TagBox["C",
-                    HoldForm], {3., 1.}]}}, 
-                {Arrowheads[Small], 
-                 {EdgeForm[{LightDarkSwitched[
-                   GrayLevel[0], 
-                   GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
-                   RGBColor[
-                   0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
-                   GrayLevel[0.62]]], 
-                  GeometricTransformationBox[
-                   RectangleBox[{0.125, 2.5}, {3.875, 3.5}], {{{1., 0.}, {0., 
-                    1.}}, {0., 0.}}]}, {{ArrowBox[{{2., 3.75}, {2., 3.5}}], 
-                   InsetBox[
-                    InterpretationBox[
-                    TagBox["a",
-                    HoldForm],
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>],
-                    Tooltip->"\[FormalCapitalT]"], {2., 3.875}]}, {{}, {}}}, 
-                 {LightDarkSwitched[
-                   GrayLevel[0], 
-                   GrayLevel[1]], InsetBox[
-                   TagBox["MTNB$1j799b2aywkkg`A",
-                    HoldForm], {2., 3.}]}}}, {
-                {Arrowheads[{{Small, 0.5}}], {}, 
-                 ArrowBox[
-                  BSplineCurveBox[{{0.9999999999999998, 2.5}, {
-                   0.9999999999999998, 2.25}, {1., 1.75}, {1., 1.5}}]], 
-                 InsetBox[
-                  TemplateBox[{"x"},
-                   "ClickToCopy"], {0.8999999999999999, 2.}]}, 
-                {Arrowheads[{{Small, 0.5}}], {}, 
-                 ArrowBox[
-                  BSplineCurveBox[{{3., 2.5}, {3., 2.25}, {3., 1.75}, {3., 
-                   1.5}}]], InsetBox[
-                  TemplateBox[{"MTNB$1j799b2aywkkg`y"},
-                   "ClickToCopy"], {2.9, 2.}]}}, {}, {}, 
-               {EdgeForm[{LightDarkSwitched[
-                 GrayLevel[0], 
-                 GrayLevel[1]], Thickness[Tiny]}], FaceForm[None]}}]],
-            
-            BaseStyle->{
-             GraphicsBoxOptions -> {ImageSize -> Medium}, 
-              Wolfram`DiagrammaticComputation`Diagram`Private`\
-GraphicsHighlightColor -> RGBColor[1, 0, 1]},
-            FormatType->StandardForm],
-           HoldForm],
-          
-          Wolfram`DiagrammaticComputation`Port`Port[<|
-           "Expression" :> 
-            Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-              "DiagramOptions" -> {
-                "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                 "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-               "Expression" :> 
-               Wolfram`DiagrammaticComputation`Diagram`DiagramComposition[
-                 
-                 Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                  "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic, Automatic}, {
-                    Automatic, Automatic}}}, "Expression" :> 
-                   Wolfram`DiagrammaticComputation`Diagram`DiagramProduct[
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    MTNB$1j799b2aywkkg`B, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    C, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>]], "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                 
-                 Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                  "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-                   "Expression" :> MTNB$1j799b2aywkkg`A, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> MTNB$1j799b2aywkkg`y, "NeutralQ" -> False,
-                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}|>]], 
-               "InputPorts" -> {
-                 
-                 Wolfram`DiagrammaticComputation`Port`Port[<|
-                  "Expression" :> 
-                   Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                   "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                   SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                 
-                 Wolfram`DiagrammaticComputation`Port`Port[<|
-                  "Expression" :> 
-                   FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                   "NeutralQ" -> False, "Tags" -> {}, 
-                   "Type" -> \[FormalCapitalT]|>], 
-                 
-                 Wolfram`DiagrammaticComputation`Port`Port[<|
-                  "Expression" :> 
-                   FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                   "NeutralQ" -> False, "Tags" -> {}, 
-                   "Type" -> \[FormalCapitalT]|>]}|>], "NeutralQ" -> False, 
-            "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
-          Tooltip->"\[FormalCapitalT]"],
-         StandardForm], {1., 0.125}]}}, 
+        InterpretationBox[
+         TagBox["d",
+          HoldForm],
+         Wolfram`DiagrammaticComputation`Port`Port[<|
+          "Expression" :> MTNB$pntff3ahzd3r`d, "NeutralQ" -> False, 
+           "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
+         Tooltip->"\[FormalCapitalT]"], {1., 0.125}]}}, 
      {LightDarkSwitched[
        GrayLevel[0], 
        GrayLevel[1]], InsetBox["\<\"\\t\\t\\t\"\>", {1., 1.}]}}, 
@@ -2448,9 +952,8 @@ GraphicsHighlightColor -> RGBColor[1, 0, 1]},
          TagBox["a",
           HoldForm],
          Wolfram`DiagrammaticComputation`Port`Port[<|
-          "Expression" :> 
-           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, "NeutralQ" -> 
-           False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
+          "Expression" :> MTNB$pntff3ahzd3r`a, "NeutralQ" -> False, 
+           "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
          Tooltip->"\[FormalCapitalT]"], {3., 0.125}]}}, 
      {LightDarkSwitched[
        GrayLevel[0], 
@@ -2511,263 +1014,7 @@ GraphicsHighlightColor -> RGBColor[1, 0, 1]},
     {Arrowheads[{{Small, 0.5}}], {}, 
      ArrowBox[BSplineCurveBox[{{1., 4.5}, {1., 4.25}, {1., 3.75}, {1., 
        3.5}}]], InsetBox[
-      TemplateBox[{
-        GraphicsBox[
-         NamespaceBox["Diagram", 
-          DynamicModuleBox[{Typeset`d = HoldComplete[
-              
-              Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-               "DiagramOptions" -> {
-                 "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                  "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-                "Expression" :> 
-                Wolfram`DiagrammaticComputation`Diagram`DiagramComposition[
-                  
-                  Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                   "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic, Automatic}, {
-                    Automatic, Automatic}}}, "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Diagram`DiagramProduct[
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    MTNB$1j799b2aywkkg`B, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    C, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>]], "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                  
-                  Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                   "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-                    "Expression" :> MTNB$1j799b2aywkkg`A, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> MTNB$1j799b2aywkkg`y, "NeutralQ" -> False,
-                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}|>]], 
-                "InputPorts" -> {
-                  
-                  Wolfram`DiagrammaticComputation`Port`Port[<|
-                   "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                  
-                  Wolfram`DiagrammaticComputation`Port`Port[<|
-                   "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                  
-                  Wolfram`DiagrammaticComputation`Port`Port[<|
-                   "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>]]}, {{{{
-               Arrowheads[Small], {
-                Directive[
-                 EdgeForm[
-                  Directive[
-                   Opacity[0.5], 
-                   LightDarkSwitched[
-                    GrayLevel[0], 
-                    GrayLevel[1]]]], 
-                 FaceForm[
-                  LightDarkSwitched[
-                   RGBColor[
-                   0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
-                   GrayLevel[0.62]]]], {
-                 GeometricTransformationBox[
-                  
-                  RectangleBox[{0.5, 0.5}, {1.5, 1.5}], {{{1., 0.}, {0., 
-                   1.}}, {0., 0.}}]}}, {{{{}}}, {{{
-                   ArrowBox[{{1., 0.5}, {1., 0.25}}]}, 
-                  InsetBox[
-                   FormBox[
-                    InterpretationBox[
-                    TagBox["b", HoldForm], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], Tooltip -> 
-                    "\[FormalCapitalT]"], StandardForm], {1., 0.125}]}}}, {
-                LightDarkSwitched[
-                 GrayLevel[0], 
-                 GrayLevel[1]], 
-                InsetBox[
-                 FormBox[
-                  TagBox["MTNB$1j799b2aywkkg`B", HoldForm], StandardForm], {
-                 1., 1.}]}}}, {{
-               Arrowheads[Small], {
-                Directive[
-                 EdgeForm[
-                  Directive[
-                   Opacity[0.5], 
-                   LightDarkSwitched[
-                    GrayLevel[0], 
-                    GrayLevel[1]]]], 
-                 FaceForm[
-                  LightDarkSwitched[
-                   RGBColor[
-                   0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
-                   GrayLevel[0.62]]]], {
-                 GeometricTransformationBox[
-                  RectangleBox[{2.5, 0.5}, {3.5, 1.5}], {{{1., 0.}, {0., 
-                   1.}}, {0., 0.}}]}}, {{{{}}}, {{{
-                   ArrowBox[{{3., 0.5}, {3., 0.25}}]}, 
-                  InsetBox[
-                   FormBox[
-                    InterpretationBox[
-                    TagBox["c", HoldForm], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], Tooltip -> 
-                    "\[FormalCapitalT]"], StandardForm], {3., 0.125}]}}}, {
-                LightDarkSwitched[
-                 GrayLevel[0], 
-                 GrayLevel[1]], 
-                InsetBox[
-                 FormBox[
-                  TagBox["C", HoldForm], StandardForm], {3., 1.}]}}}, {{
-               Arrowheads[Small], {
-                Directive[
-                 EdgeForm[
-                  Directive[
-                   Opacity[0.5], 
-                   LightDarkSwitched[
-                    GrayLevel[0], 
-                    GrayLevel[1]]]], 
-                 FaceForm[
-                  LightDarkSwitched[
-                   RGBColor[
-                   0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
-                   GrayLevel[0.62]]]], {
-                 GeometricTransformationBox[
-                  
-                  RectangleBox[{0.125, 2.5}, {3.875, 3.5}], {{{1., 0.}, {0., 
-                   1.}}, {0., 0.}}]}}, {{{{
-                   ArrowBox[{{2., 3.75}, {2., 3.5}}]}, 
-                  InsetBox[
-                   FormBox[
-                    InterpretationBox[
-                    TagBox["a", HoldForm], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], Tooltip -> 
-                    "\[FormalCapitalT]"], StandardForm], {2., 
-                   3.875}]}}, {{{}}, {{}}}}, {
-                LightDarkSwitched[
-                 GrayLevel[0], 
-                 GrayLevel[1]], 
-                InsetBox[
-                 FormBox[
-                  TagBox["MTNB$1j799b2aywkkg`A", HoldForm], StandardForm], {
-                 2., 3.}]}}}}, {{{
-               Arrowheads[{{Small, 0.5}}], {}, 
-               ArrowBox[
-                
-                BSplineCurveBox[{{0.9999999999999998, 2.5}, {
-                 0.9999999999999998, 2.25}, {1., 1.75}, {1., 1.5}}]], 
-               InsetBox[
-                FormBox[
-                 TemplateBox[{"x"}, "ClickToCopy"], StandardForm], {
-                0.8999999999999999, 2.}]}, {
-               Arrowheads[{{Small, 0.5}}], {}, 
-               ArrowBox[
-                
-                BSplineCurveBox[{{3., 2.5}, {3., 2.25}, {3., 1.75}, {3., 
-                 1.5}}]], 
-               InsetBox[
-                FormBox[
-                 TemplateBox[{"MTNB$1j799b2aywkkg`y"}, "ClickToCopy"], 
-                 StandardForm], {2.9, 2.}]}}}, {}, {}, {
-             FaceForm[None], 
-             EdgeForm[
-              Directive[
-               Thickness[Tiny], 
-               LightDarkSwitched[
-                GrayLevel[0], 
-                GrayLevel[1]]]]}}]], {
-         BaseStyle -> {
-           GraphicsBoxOptions -> {ImageSize -> Medium}, 
-            Wolfram`DiagrammaticComputation`Diagram`Private`\
-GraphicsHighlightColor -> RGBColor[1, 0, 1]}, FormatType -> StandardForm}]},
+      TemplateBox[{"d"},
        "ClickToCopy"], {0.9, 4.}]}, 
     {Arrowheads[{{Small, 0.5}}], {}, 
      ArrowBox[BSplineCurveBox[{{3., 4.5}, {3., 4.25}, {3., 3.75}, {3., 
@@ -2777,264 +1024,7 @@ GraphicsHighlightColor -> RGBColor[1, 0, 1]}, FormatType -> StandardForm}]},
     {Arrowheads[{{Small, 0.5}}], {}, 
      ArrowBox[BSplineCurveBox[{{1., 2.5}, {1., 2.25}, {1., 1.75}, {1., 
        1.5}}]], InsetBox[
-      TemplateBox[{
-        GraphicsBox[
-         NamespaceBox["Diagram", 
-          DynamicModuleBox[{Typeset`d = HoldComplete[
-              
-              Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-               "DiagramOptions" -> {
-                 "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                  "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-                "Expression" :> 
-                Wolfram`DiagrammaticComputation`Diagram`DiagramComposition[
-                  
-                  Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                   "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic, Automatic}, {
-                    Automatic, Automatic}}}, "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Diagram`DiagramProduct[
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    MTNB$1j799b2aywkkg`B, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    C, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>]], "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                  
-                  Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                   "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-                    "Expression" :> MTNB$1j799b2aywkkg`A, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> MTNB$1j799b2aywkkg`y, "NeutralQ" -> False,
-                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}|>]], 
-                "InputPorts" -> {
-                  
-                  Wolfram`DiagrammaticComputation`Port`Port[<|
-                   "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                  Wolfram`DiagrammaticComputation`Port`Port[<|
-                   "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                  
-                  Wolfram`DiagrammaticComputation`Port`Port[<|
-                   "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>]]}, {{{{
-               Arrowheads[Small], {
-                Directive[
-                 EdgeForm[
-                  Directive[
-                   Opacity[0.5], 
-                   LightDarkSwitched[
-                    GrayLevel[0], 
-                    GrayLevel[1]]]], 
-                 FaceForm[
-                  LightDarkSwitched[
-                   RGBColor[
-                   0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
-                   GrayLevel[0.62]]]], {
-                 GeometricTransformationBox[
-                  
-                  RectangleBox[{0.5, 0.5}, {1.5, 1.5}], {{{1., 0.}, {0., 
-                   1.}}, {0., 0.}}]}}, {{{{}}}, {{{
-                   ArrowBox[{{1., 0.5}, {1., 0.25}}]}, 
-                  InsetBox[
-                   FormBox[
-                    InterpretationBox[
-                    TagBox["b", HoldForm], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], Tooltip -> 
-                    "\[FormalCapitalT]"], StandardForm], {1., 0.125}]}}}, {
-                LightDarkSwitched[
-                 GrayLevel[0], 
-                 GrayLevel[1]], 
-                InsetBox[
-                 FormBox[
-                  TagBox["MTNB$1j799b2aywkkg`B", HoldForm], StandardForm], {
-                 1., 1.}]}}}, {{
-               Arrowheads[Small], {
-                Directive[
-                 EdgeForm[
-                  Directive[
-                   Opacity[0.5], 
-                   LightDarkSwitched[
-                    GrayLevel[0], 
-                    GrayLevel[1]]]], 
-                 FaceForm[
-                  LightDarkSwitched[
-                   RGBColor[
-                   0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
-                   GrayLevel[0.62]]]], {
-                 GeometricTransformationBox[
-                  
-                  RectangleBox[{2.5, 0.5}, {3.5, 1.5}], {{{1., 0.}, {0., 
-                   1.}}, {0., 0.}}]}}, {{{{}}}, {{{
-                   ArrowBox[{{3., 0.5}, {3., 0.25}}]}, 
-                  InsetBox[
-                   FormBox[
-                    InterpretationBox[
-                    TagBox["c", HoldForm], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], Tooltip -> 
-                    "\[FormalCapitalT]"], StandardForm], {3., 0.125}]}}}, {
-                LightDarkSwitched[
-                 GrayLevel[0], 
-                 GrayLevel[1]], 
-                InsetBox[
-                 FormBox[
-                  TagBox["C", HoldForm], StandardForm], {3., 1.}]}}}, {{
-               Arrowheads[Small], {
-                Directive[
-                 EdgeForm[
-                  Directive[
-                   Opacity[0.5], 
-                   LightDarkSwitched[
-                    GrayLevel[0], 
-                    GrayLevel[1]]]], 
-                 FaceForm[
-                  LightDarkSwitched[
-                   RGBColor[
-                   0.952941188969422, 0.9529411889694224, 0.9529411889694221], 
-                   GrayLevel[0.62]]]], {
-                 GeometricTransformationBox[
-                  
-                  RectangleBox[{0.125, 2.5}, {3.875, 3.5}], {{{1., 0.}, {0., 
-                   1.}}, {0., 0.}}]}}, {{{{
-                   ArrowBox[{{2., 3.75}, {2., 3.5}}]}, 
-                  InsetBox[
-                   FormBox[
-                    InterpretationBox[
-                    TagBox["a", HoldForm], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], Tooltip -> 
-                    "\[FormalCapitalT]"], StandardForm], {2., 
-                   3.875}]}}, {{{}}, {{}}}}, {
-                LightDarkSwitched[
-                 GrayLevel[0], 
-                 GrayLevel[1]], 
-                InsetBox[
-                 FormBox[
-                  TagBox["MTNB$1j799b2aywkkg`A", HoldForm], StandardForm], {
-                 2., 3.}]}}}}, {{{
-               Arrowheads[{{Small, 0.5}}], {}, 
-               ArrowBox[
-                
-                BSplineCurveBox[{{0.9999999999999998, 2.5}, {
-                 0.9999999999999998, 2.25}, {1., 1.75}, {1., 1.5}}]], 
-               InsetBox[
-                FormBox[
-                 TemplateBox[{"x"}, "ClickToCopy"], StandardForm], {
-                0.8999999999999999, 2.}]}, {
-               Arrowheads[{{Small, 0.5}}], {}, 
-               ArrowBox[
-                
-                BSplineCurveBox[{{3., 2.5}, {3., 2.25}, {3., 1.75}, {3., 
-                 1.5}}]], 
-               InsetBox[
-                FormBox[
-                 TemplateBox[{"MTNB$1j799b2aywkkg`y"}, "ClickToCopy"], 
-                 StandardForm], {2.9, 2.}]}}}, {}, {}, {
-             FaceForm[None], 
-             EdgeForm[
-              Directive[
-               Thickness[Tiny], 
-               LightDarkSwitched[
-                GrayLevel[0], 
-                GrayLevel[1]]]]}}]], {
-         BaseStyle -> {
-           GraphicsBoxOptions -> {ImageSize -> Medium}, 
-            Wolfram`DiagrammaticComputation`Diagram`Private`\
-GraphicsHighlightColor -> RGBColor[1, 0, 1]}, FormatType -> StandardForm}]},
+      TemplateBox[{"d"},
        "ClickToCopy"], {0.9, 2.}]}, 
     {Arrowheads[{{Small, 0.5}}], {}, 
      ArrowBox[BSplineCurveBox[{{3., 2.5}, {3., 2.25}, {3., 1.75}, {3., 
@@ -3081,12 +1071,12 @@ GraphicsHighlightColor -> RGBColor[1, 0, 1]}, FormatType -> StandardForm}]},
        GrayLevel[0], 
        GrayLevel[1]], InsetBox["\<\"\"\>", {3, 5}]}}}},
   FormatType->StandardForm]], "Output",
- CellLabel->"Out[1]= ",ExpressionUUID->"9d938b2b-7384-43fe-a0fa-a9416b624df9"]
+ CellLabel->"Out[1]= ",ExpressionUUID->"3375dc87-f8b1-40be-b965-1db1c309536a"]
 }, Open  ]],
 
-Cell["Alignment", "ExampleSubsection",ExpressionUUID->"7df1fe0b-0d6a-420e-8db7-09f3807ec941"],
+Cell["Alignment", "ExampleSubsection",ExpressionUUID->"9c9b1abe-48ec-4684-82e0-5c4ec50726d0"],
 
-Cell["Align sub-diagrams within their grid cells:", "ExampleText",ExpressionUUID->"7ac29cef-402e-44e6-8d1c-47b023a4d65b"],
+Cell["Align sub-diagrams within their grid cells:", "ExampleText",ExpressionUUID->"5fdce0e7-21bf-4d06-ab13-6c54a16df33a"],
 
 Cell[CellGroupData[{
 
@@ -3103,7 +1093,7 @@ Cell[BoxData[
         RowBox[{"c", ",", " ", "d"}], "}"}], ",", " ", "b"}], "]"}]}], "]"}], 
    ",", " ", 
    RowBox[{"Alignment", " ", "->", " ", "Left"}]}], "]"}]], "Input",
- CellLabel->"In[1]:= ",ExpressionUUID->"f28bd2a8-1602-486f-962f-500da864f966"],
+ CellLabel->"In[1]:= ",ExpressionUUID->"a5228ef8-667d-4af8-ae00-20bf8a6576ec"],
 
 Cell[BoxData[
  GraphicsBox[{{
@@ -3120,9 +1110,8 @@ Cell[BoxData[
          TagBox["a",
           HoldForm],
          Wolfram`DiagrammaticComputation`Port`Port[<|
-          "Expression" :> 
-           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, "NeutralQ" -> 
-           False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
+          "Expression" :> MTNB$pntff3ahzd3r`a, "NeutralQ" -> False, 
+           "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
          Tooltip->"\[FormalCapitalT]"], {1., 0.125}]}}, 
      {LightDarkSwitched[
        GrayLevel[0], 
@@ -3145,366 +1134,18 @@ Cell[BoxData[
            HoldForm],
           
           Wolfram`DiagrammaticComputation`Port`Port[<|
-           "Expression" :> 
-            FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-            "NeutralQ" -> False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
-          
+           "Expression" :> MTNB$pntff3ahzd3r`c, "NeutralQ" -> False, 
+            "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
           Tooltip->"\[FormalCapitalT]"], {0.9999999999999998, 3.875}]}, {
         ArrowBox[{{3., 3.75}, {3., 3.5}}], InsetBox[
-         FormBox[
-          InterpretationBox[
-           TagBox[
-            GraphicsBox[
-             NamespaceBox["Diagram",
-              DynamicModuleBox[{Typeset`d = HoldComplete[
-                
-                Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                 "DiagramOptions" -> {
-                   "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-                  "Expression" :> 
-                  Wolfram`DiagrammaticComputation`Diagram`DiagramComposition[
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic, Automatic}, {
-                    Automatic, Automatic}}}, "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Diagram`DiagramProduct[
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    MTNB$1j799b2aywkkg`B, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    C, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>]], "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-                    "Expression" :> MTNB$1j799b2aywkkg`A, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> MTNB$1j799b2aywkkg`y, "NeutralQ" -> False,
-                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}|>]], 
-                  "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>]]}, {{
-                 {Arrowheads[Small], 
-                  {EdgeForm[{LightDarkSwitched[
-                    GrayLevel[0], 
-                    GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
-                   
-                    RGBColor[
-                    0.952941188969422, 0.9529411889694224, 
-                    0.9529411889694221], 
-                    GrayLevel[0.62]]], 
-                   GeometricTransformationBox[
-                    RectangleBox[{0.5, 0.5}], {{{1., 0.}, {0., 1.}}, {0., 
-                    0.}}]}, {{}, {ArrowBox[{{1., 0.5}, {1., 0.25}}], 
-                    InsetBox[
-                    InterpretationBox[
-                    TagBox["b",
-                    HoldForm],
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>],
-                    Tooltip->"\[FormalCapitalT]"], {1., 0.125}]}}, 
-                  {LightDarkSwitched[
-                    GrayLevel[0], 
-                    GrayLevel[1]], InsetBox[
-                    TagBox["MTNB$1j799b2aywkkg`B",
-                    HoldForm], {1., 1.}]}}, 
-                 {Arrowheads[Small], 
-                  {EdgeForm[{LightDarkSwitched[
-                    GrayLevel[0], 
-                    GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
-                   
-                    RGBColor[
-                    0.952941188969422, 0.9529411889694224, 
-                    0.9529411889694221], 
-                    GrayLevel[0.62]]], 
-                   GeometricTransformationBox[
-                    RectangleBox[{2.5, 0.5}], {{{1., 0.}, {0., 1.}}, {0., 
-                    0.}}]}, {{}, {ArrowBox[{{3., 0.5}, {3., 0.25}}], 
-                    InsetBox[
-                    InterpretationBox[
-                    TagBox["c",
-                    HoldForm],
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>],
-                    Tooltip->"\[FormalCapitalT]"], {3., 0.125}]}}, 
-                  {LightDarkSwitched[
-                    GrayLevel[0], 
-                    GrayLevel[1]], InsetBox[
-                    TagBox["C",
-                    HoldForm], {3., 1.}]}}, 
-                 {Arrowheads[Small], 
-                  {EdgeForm[{LightDarkSwitched[
-                    GrayLevel[0], 
-                    GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
-                   
-                    RGBColor[
-                    0.952941188969422, 0.9529411889694224, 
-                    0.9529411889694221], 
-                    GrayLevel[0.62]]], 
-                   GeometricTransformationBox[
-                    RectangleBox[{0.125, 2.5}, {3.875, 3.5}], {{{1., 0.}, {0.,
-                     1.}}, {0., 0.}}]}, {{ArrowBox[{{2., 3.75}, {2., 3.5}}], 
-                    InsetBox[
-                    InterpretationBox[
-                    TagBox["a",
-                    HoldForm],
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>],
-                    Tooltip->"\[FormalCapitalT]"], {2., 3.875}]}, {{}, {}}}, 
-                  {LightDarkSwitched[
-                    GrayLevel[0], 
-                    GrayLevel[1]], InsetBox[
-                    TagBox["MTNB$1j799b2aywkkg`A",
-                    HoldForm], {2., 3.}]}}}, {
-                 {Arrowheads[{{Small, 0.5}}], {}, 
-                  ArrowBox[
-                   BSplineCurveBox[{{0.9999999999999998, 2.5}, {
-                    0.9999999999999998, 2.25}, {1., 1.75}, {1., 1.5}}]], 
-                  InsetBox[
-                   TemplateBox[{"x"},
-                    "ClickToCopy"], {0.8999999999999999, 2.}]}, 
-                 {Arrowheads[{{Small, 0.5}}], {}, 
-                  ArrowBox[
-                   BSplineCurveBox[{{3., 2.5}, {3., 2.25}, {3., 1.75}, {3., 
-                    1.5}}]], InsetBox[
-                   TemplateBox[{"MTNB$1j799b2aywkkg`y"},
-                    "ClickToCopy"], {2.9, 2.}]}}, {}, {}, 
-                {EdgeForm[{LightDarkSwitched[
-                  GrayLevel[0], 
-                  GrayLevel[1]], Thickness[Tiny]}], FaceForm[None]}}]],
-             
-             BaseStyle->{
-              GraphicsBoxOptions -> {ImageSize -> Medium}, 
-               Wolfram`DiagrammaticComputation`Diagram`Private`\
-GraphicsHighlightColor -> RGBColor[1, 0, 1]},
-             FormatType->StandardForm],
-            HoldForm],
-           
-           Wolfram`DiagrammaticComputation`Port`Port[<|
-            "Expression" :> 
-             Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-               "DiagramOptions" -> {
-                 "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                  "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-                "Expression" :> 
-                Wolfram`DiagrammaticComputation`Diagram`DiagramComposition[
-                  
-                  Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                   "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic, Automatic}, {
-                    Automatic, Automatic}}}, "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Diagram`DiagramProduct[
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    MTNB$1j799b2aywkkg`B, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    C, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>]], "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                  
-                  Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                   "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-                    "Expression" :> MTNB$1j799b2aywkkg`A, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> MTNB$1j799b2aywkkg`y, "NeutralQ" -> False,
-                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}|>]], 
-                "InputPorts" -> {
-                  
-                  Wolfram`DiagrammaticComputation`Port`Port[<|
-                   "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                  
-                  Wolfram`DiagrammaticComputation`Port`Port[<|
-                   "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                  
-                  Wolfram`DiagrammaticComputation`Port`Port[<|
-                   "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], "NeutralQ" -> False, 
-             "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
-           Tooltip->"\[FormalCapitalT]"],
-          StandardForm], {3., 3.875}]}}, {}}, 
+         InterpretationBox[
+          TagBox["d",
+           HoldForm],
+          
+          Wolfram`DiagrammaticComputation`Port`Port[<|
+           "Expression" :> MTNB$pntff3ahzd3r`d, "NeutralQ" -> False, 
+            "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
+          Tooltip->"\[FormalCapitalT]"], {3., 3.875}]}}, {}}, 
      {LightDarkSwitched[
        GrayLevel[0], 
        GrayLevel[1]], InsetBox[
@@ -3519,7 +1160,7 @@ GraphicsHighlightColor -> RGBColor[1, 0, 1]},
      GrayLevel[0], 
      GrayLevel[1]], Thickness[Tiny]}], FaceForm[None]}},
   FormatType->StandardForm]], "Output",
- CellLabel->"Out[1]= ",ExpressionUUID->"557cd99c-7f65-4324-af7b-ccdc6d3af1a2"]
+ CellLabel->"Out[1]= ",ExpressionUUID->"cfe3ebf6-6d21-4a3c-b5c1-5e2d9316de94"]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -3537,7 +1178,7 @@ Cell[BoxData[
         RowBox[{"c", ",", " ", "d"}], "}"}], ",", " ", "b"}], "]"}]}], "]"}], 
    ",", " ", 
    RowBox[{"Alignment", " ", "->", " ", "Right"}]}], "]"}]], "Input",
- CellLabel->"In[2]:= ",ExpressionUUID->"36d5741f-d86f-41b3-9dab-ec8116c86e75"],
+ CellLabel->"In[2]:= ",ExpressionUUID->"61e76466-552e-4cce-aae7-c61522d673d5"],
 
 Cell[BoxData[
  GraphicsBox[{{
@@ -3554,9 +1195,8 @@ Cell[BoxData[
          TagBox["a",
           HoldForm],
          Wolfram`DiagrammaticComputation`Port`Port[<|
-          "Expression" :> 
-           FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, "NeutralQ" -> 
-           False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
+          "Expression" :> MTNB$pntff3ahzd3r`a, "NeutralQ" -> False, 
+           "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
          Tooltip->"\[FormalCapitalT]"], {3., 0.125}]}}, 
      {LightDarkSwitched[
        GrayLevel[0], 
@@ -3579,366 +1219,18 @@ Cell[BoxData[
            HoldForm],
           
           Wolfram`DiagrammaticComputation`Port`Port[<|
-           "Expression" :> 
-            FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-            "NeutralQ" -> False, "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
-          
+           "Expression" :> MTNB$pntff3ahzd3r`c, "NeutralQ" -> False, 
+            "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
           Tooltip->"\[FormalCapitalT]"], {0.9999999999999998, 3.875}]}, {
         ArrowBox[{{3., 3.75}, {3., 3.5}}], InsetBox[
-         FormBox[
-          InterpretationBox[
-           TagBox[
-            GraphicsBox[
-             NamespaceBox["Diagram",
-              DynamicModuleBox[{Typeset`d = HoldComplete[
-                
-                Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                 "DiagramOptions" -> {
-                   "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-                  "Expression" :> 
-                  Wolfram`DiagrammaticComputation`Diagram`DiagramComposition[
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic, Automatic}, {
-                    Automatic, Automatic}}}, "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Diagram`DiagramProduct[
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    MTNB$1j799b2aywkkg`B, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    C, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>]], "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-                    "Expression" :> MTNB$1j799b2aywkkg`A, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> MTNB$1j799b2aywkkg`y, "NeutralQ" -> False,
-                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}|>]], 
-                  "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>]]}, {{
-                 {Arrowheads[Small], 
-                  {EdgeForm[{LightDarkSwitched[
-                    GrayLevel[0], 
-                    GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
-                   
-                    RGBColor[
-                    0.952941188969422, 0.9529411889694224, 
-                    0.9529411889694221], 
-                    GrayLevel[0.62]]], 
-                   GeometricTransformationBox[
-                    RectangleBox[{0.5, 0.5}], {{{1., 0.}, {0., 1.}}, {0., 
-                    0.}}]}, {{}, {ArrowBox[{{1., 0.5}, {1., 0.25}}], 
-                    InsetBox[
-                    InterpretationBox[
-                    TagBox["b",
-                    HoldForm],
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>],
-                    Tooltip->"\[FormalCapitalT]"], {1., 0.125}]}}, 
-                  {LightDarkSwitched[
-                    GrayLevel[0], 
-                    GrayLevel[1]], InsetBox[
-                    TagBox["MTNB$1j799b2aywkkg`B",
-                    HoldForm], {1., 1.}]}}, 
-                 {Arrowheads[Small], 
-                  {EdgeForm[{LightDarkSwitched[
-                    GrayLevel[0], 
-                    GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
-                   
-                    RGBColor[
-                    0.952941188969422, 0.9529411889694224, 
-                    0.9529411889694221], 
-                    GrayLevel[0.62]]], 
-                   GeometricTransformationBox[
-                    RectangleBox[{2.5, 0.5}], {{{1., 0.}, {0., 1.}}, {0., 
-                    0.}}]}, {{}, {ArrowBox[{{3., 0.5}, {3., 0.25}}], 
-                    InsetBox[
-                    InterpretationBox[
-                    TagBox["c",
-                    HoldForm],
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>],
-                    Tooltip->"\[FormalCapitalT]"], {3., 0.125}]}}, 
-                  {LightDarkSwitched[
-                    GrayLevel[0], 
-                    GrayLevel[1]], InsetBox[
-                    TagBox["C",
-                    HoldForm], {3., 1.}]}}, 
-                 {Arrowheads[Small], 
-                  {EdgeForm[{LightDarkSwitched[
-                    GrayLevel[0], 
-                    GrayLevel[1]], Opacity[0.5]}], FaceForm[LightDarkSwitched[
-                   
-                    RGBColor[
-                    0.952941188969422, 0.9529411889694224, 
-                    0.9529411889694221], 
-                    GrayLevel[0.62]]], 
-                   GeometricTransformationBox[
-                    RectangleBox[{0.125, 2.5}, {3.875, 3.5}], {{{1., 0.}, {0.,
-                     1.}}, {0., 0.}}]}, {{ArrowBox[{{2., 3.75}, {2., 3.5}}], 
-                    InsetBox[
-                    InterpretationBox[
-                    TagBox["a",
-                    HoldForm],
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>],
-                    Tooltip->"\[FormalCapitalT]"], {2., 3.875}]}, {{}, {}}}, 
-                  {LightDarkSwitched[
-                    GrayLevel[0], 
-                    GrayLevel[1]], InsetBox[
-                    TagBox["MTNB$1j799b2aywkkg`A",
-                    HoldForm], {2., 3.}]}}}, {
-                 {Arrowheads[{{Small, 0.5}}], {}, 
-                  ArrowBox[
-                   BSplineCurveBox[{{0.9999999999999998, 2.5}, {
-                    0.9999999999999998, 2.25}, {1., 1.75}, {1., 1.5}}]], 
-                  InsetBox[
-                   TemplateBox[{"x"},
-                    "ClickToCopy"], {0.8999999999999999, 2.}]}, 
-                 {Arrowheads[{{Small, 0.5}}], {}, 
-                  ArrowBox[
-                   BSplineCurveBox[{{3., 2.5}, {3., 2.25}, {3., 1.75}, {3., 
-                    1.5}}]], InsetBox[
-                   TemplateBox[{"MTNB$1j799b2aywkkg`y"},
-                    "ClickToCopy"], {2.9, 2.}]}}, {}, {}, 
-                {EdgeForm[{LightDarkSwitched[
-                  GrayLevel[0], 
-                  GrayLevel[1]], Thickness[Tiny]}], FaceForm[None]}}]],
-             
-             BaseStyle->{
-              GraphicsBoxOptions -> {ImageSize -> Medium}, 
-               Wolfram`DiagrammaticComputation`Diagram`Private`\
-GraphicsHighlightColor -> RGBColor[1, 0, 1]},
-             FormatType->StandardForm],
-            HoldForm],
-           
-           Wolfram`DiagrammaticComputation`Port`Port[<|
-            "Expression" :> 
-             Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-               "DiagramOptions" -> {
-                 "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                  "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-                "Expression" :> 
-                Wolfram`DiagrammaticComputation`Diagram`DiagramComposition[
-                  
-                  Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                   "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic, Automatic}, {
-                    Automatic, Automatic}}}, "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Diagram`DiagramProduct[
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    MTNB$1j799b2aywkkg`B, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                    "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic}}}, "Expression" :> 
-                    C, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>]], "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    MTNB$1j799b2aywkkg`y], "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], 
-                  
-                  Wolfram`DiagrammaticComputation`Diagram`Diagram[<|
-                   "DiagramOptions" -> {
-                    "PortArrows" -> {{Automatic}, {Automatic, Automatic}}, 
-                    "PortLabels" -> {{Automatic}, {Automatic, Automatic}}}, 
-                    "Expression" :> MTNB$1j799b2aywkkg`A, "InputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`x, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                    
-                    Wolfram`DiagrammaticComputation`Port`Port[<|
-                    "Expression" :> MTNB$1j799b2aywkkg`y, "NeutralQ" -> False,
-                     "Tags" -> {}, "Type" -> \[FormalCapitalT]|>]}|>]], 
-                "InputPorts" -> {
-                  
-                  Wolfram`DiagrammaticComputation`Port`Port[<|
-                   "Expression" :> 
-                    Wolfram`DiagrammaticComputation`Port`PortDual[
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`a], 
-                    "NeutralQ" -> False, "Tags" -> {}, "Type" -> 
-                    SuperStar[\[FormalCapitalT]]|>]}, "OutputPorts" -> {
-                  
-                  Wolfram`DiagrammaticComputation`Port`Port[<|
-                   "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`b, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>], 
-                  
-                  Wolfram`DiagrammaticComputation`Port`Port[<|
-                   "Expression" :> 
-                    FunctionRepository`$955258636fa042ac87af26c7567e2d7f`c, 
-                    "NeutralQ" -> False, "Tags" -> {}, 
-                    "Type" -> \[FormalCapitalT]|>]}|>], "NeutralQ" -> False, 
-             "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
-           Tooltip->"\[FormalCapitalT]"],
-          StandardForm], {3., 3.875}]}}, {}}, 
+         InterpretationBox[
+          TagBox["d",
+           HoldForm],
+          
+          Wolfram`DiagrammaticComputation`Port`Port[<|
+           "Expression" :> MTNB$pntff3ahzd3r`d, "NeutralQ" -> False, 
+            "Tags" -> {}, "Type" -> \[FormalCapitalT]|>],
+          Tooltip->"\[FormalCapitalT]"], {3., 3.875}]}}, {}}, 
      {LightDarkSwitched[
        GrayLevel[0], 
        GrayLevel[1]], InsetBox[
@@ -3953,7 +1245,7 @@ GraphicsHighlightColor -> RGBColor[1, 0, 1]},
      GrayLevel[0], 
      GrayLevel[1]], Thickness[Tiny]}], FaceForm[None]}},
   FormatType->StandardForm]], "Output",
- CellLabel->"Out[2]= ",ExpressionUUID->"ae172447-77e9-47f2-b2ef-3931225d6f34"]
+ CellLabel->"Out[2]= ",ExpressionUUID->"6d9ceb39-97fd-4fcf-bb2d-a87eb230a679"]
 }, Open  ]]
 }, Open  ]],
 
@@ -3968,25 +1260,36 @@ Cell[BoxData[
 
 Cell[TextData[{
  Cell[BoxData[
-  ButtonBox["DiagramGrid",
-   BaseStyle->"Link",
-   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/DiagramGrid"]], 
-  "InlineFormula",ExpressionUUID->"3ba86e7c-2062-4cdc-a627-ac9889de343f"],
+  TemplateBox[{
+    Cell[
+     TextData["DiagramGrid"]], 
+    "paclet:WolframDiagrammaticComputation/ref/DiagramGrid", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "aa47a916-15d2-4f4b-8239-544e76b14b7f"],
  " is the multi-cell counterpart of ",
  Cell[BoxData[
-  ButtonBox["DiagramGraphics",
-   BaseStyle->"Link",
-   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/DiagramGraphics"]],
-   "InlineFormula",ExpressionUUID->"3988c6c0-ad83-4efb-b101-e845b745a6b1"],
+  TemplateBox[{
+    Cell[
+     TextData["DiagramGraphics"]], 
+    "paclet:WolframDiagrammaticComputation/ref/DiagramGraphics", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "d932ed01-44ab-4134-8009-696d0f2ce60e"],
  ", which renders a diagram as a single opaque node. Use ",
  Cell[BoxData[
-  ButtonBox["DiagramDecompose",
-   BaseStyle->"Link",
-   ButtonData->
-    "paclet:Wolfram/DiagrammaticComputation/ref/DiagramDecompose"]], 
-  "InlineFormula",ExpressionUUID->"c64f1220-ce21-4ed5-bd90-6fdf48c780b7"],
+  TemplateBox[{
+    Cell[
+     TextData["DiagramDecompose"]], 
+    "paclet:WolframDiagrammaticComputation/ref/DiagramDecompose", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "4880d120-c290-462c-9f6d-36e254ed2c54"],
  " to recover the underlying expression tree."
-}], "ExampleText",ExpressionUUID->"e8520487-e16e-4256-a82d-896fa4cffae2"]
+}], "ExampleText",ExpressionUUID->"e66f6450-5ffd-45f4-99c5-229e56437e22"]
 }, Open  ]]
 }, Open  ]],
 
@@ -4039,7 +1342,7 @@ Cell["Wolfram`DiagrammaticComputation`", "Categorization",
  CellID->468444828,ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191"],
 
 Cell["Wolfram/DiagrammaticComputation/ref/DiagramGrid", "Categorization",
- CellLabel->"URI",ExpressionUUID->"46c5f470-3e92-48e2-9ed9-572ffd77a72d"]
+ CellLabel->"URI",ExpressionUUID->"77537995-2069-4992-9158-191e287f28d0"]
 }, Closed]],
 
 Cell["Keywords", "KeywordsSection",
@@ -4078,7 +1381,7 @@ TaggingRules->{
     "Wolfram/DiagrammaticComputation/ref/DiagramGrid", "type" -> "Symbol", 
     "index" -> True, "language" -> "en"}},
 CreateCellID->True,
-CellContext->"Global`",
+CellContext->CellGroup,
 FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->FrontEnd`FileName[{"Wolfram"}, "FunctionPageStylesExt.nb", 
   CharacterEncoding -> "UTF-8"],
@@ -4090,14 +1393,14 @@ ExpressionUUID->"c207366e-060a-406b-a297-9e30e1628f43"
 (*CellTagsOutline
 CellTagsIndex->{
  "ExtendedExamples"->{
-  Cell[38176, 867, 487, 13, 70, "ExtendedExamplesSection",ExpressionUUID->"a6228140-1981-46f0-88fc-4d129033136d",
+  Cell[21146, 562, 487, 13, 70, "ExtendedExamplesSection",ExpressionUUID->"a6228140-1981-46f0-88fc-4d129033136d",
    CellTags->"ExtendedExamples",
    CellID->533848431]}
  }
 *)
 (*CellTagsIndex
 CellTagsIndex->{
- {"ExtendedExamples", 191194, 4091}
+ {"ExtendedExamples", 52861, 1394}
  }
 *)
 (*NotebookFileOutline
@@ -4105,120 +1408,122 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 109, 1, 70, "ObjectName",ExpressionUUID->"8393d601-4014-44ba-afc9-60862df940ec",
  CellID->1224892054],
-Cell[688, 25, 742, 18, 70, "Usage",ExpressionUUID->"93b80eb4-07a8-41c8-a01d-0cfc0c1ee3ef"],
-Cell[1433, 45, 269, 4, 70, "Notes",ExpressionUUID->"e0eb46b1-8b67-4255-93f6-280f8414ac68"],
-Cell[1705, 51, 424, 8, 70, "Notes",ExpressionUUID->"ba811baf-54f5-480a-936e-47fc8c342be0"],
-Cell[2132, 61, 112, 0, 70, "Notes",ExpressionUUID->"83b3e4bc-6d1a-4eed-bb0b-846f7d14fdca"],
-Cell[2247, 63, 2813, 49, 70, "3ColumnTableMod",ExpressionUUID->"a9701b8f-ac0c-45d7-b423-4652def1dda3"]
+Cell[688, 25, 847, 22, 70, "Usage",ExpressionUUID->"dffbda26-0edb-4166-b159-8162d805c880"],
+Cell[1538, 49, 269, 4, 70, "Notes",ExpressionUUID->"96737a1f-361f-4a46-b904-13da55ee1313"],
+Cell[1810, 55, 525, 12, 70, "Notes",ExpressionUUID->"9afb352a-c930-4e88-b412-16fd95b00efd"],
+Cell[2338, 69, 112, 0, 70, "Notes",ExpressionUUID->"1001ba45-04c2-4324-83fe-4d32a336d66d"],
+Cell[2453, 71, 3038, 59, 70, "3ColumnTableMod",ExpressionUUID->"deaa4684-437e-4dd1-bc6c-f386332e28e4"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[5097, 117, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
+Cell[5528, 135, 459, 13, 70, "SeeAlsoSection",ExpressionUUID->"6019c63b-8124-433f-bd7e-253812d6da0e",
  CellID->1559318232],
-Cell[5559, 132, 1806, 43, 70, "SeeAlso",ExpressionUUID->"166bfbc2-f1d2-41ac-83b8-049617050c55"]
+Cell[5990, 150, 2508, 70, 70, "SeeAlso",ExpressionUUID->"514a9ec5-3040-4afd-974f-ff639c8740f1"]
 }, Open  ]],
-Cell[7380, 178, 435, 12, 70, "TechNotesSection",ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74",
+Cell[8513, 223, 435, 12, 70, "TechNotesSection",ExpressionUUID->"fc30b7bb-1c24-4df4-b93c-2a46876a3e74",
  CellID->792424486],
 Cell[CellGroupData[{
-Cell[7840, 194, 116, 1, 70, "MoreAboutSection",ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5",
+Cell[8973, 239, 116, 1, 70, "MoreAboutSection",ExpressionUUID->"090ecd4e-77ab-48e0-ba7a-1f9acccd0dd5",
  CellID->38303248],
-Cell[7959, 197, 300, 6, 70, "MoreAbout",ExpressionUUID->"03abbfb6-c9cd-4cd2-9cc1-e7593ff20dc5"]
+Cell[9092, 242, 299, 6, 70, "MoreAbout",ExpressionUUID->"4632d390-8fe4-4f64-bb5b-3c651f58bec9"]
 }, Open  ]],
-Cell[8274, 206, 471, 13, 70, "RelatedLinksSection",ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea",
+Cell[9406, 251, 471, 13, 70, "RelatedLinksSection",ExpressionUUID->"c8e1cebd-677a-4282-8b17-38a138b1b0ea",
  CellID->47113304],
 Cell[CellGroupData[{
-Cell[8770, 223, 531, 14, 70, "ExamplesInitializationSection",ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5",
+Cell[9902, 268, 531, 14, 70, "ExamplesInitializationSection",ExpressionUUID->"6961daab-c21b-4e4b-b6ac-a9a47f06ffa5",
  CellID->1718580883],
-Cell[9304, 239, 192, 3, 70, "ExampleInitialization",ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502",
+Cell[10436, 284, 192, 3, 70, "ExampleInitialization",ExpressionUUID->"7dcb178c-574f-4ea8-8531-ff0dec195502",
  CellID->1969679695]
 }, Open  ]],
-Cell[9511, 245, 442, 12, 70, "PrimaryExamplesSection",ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42",
+Cell[10643, 290, 442, 12, 70, "PrimaryExamplesSection",ExpressionUUID->"4d971e0b-a467-44b1-b908-78f8a7482a42",
  CellID->880084151],
-Cell[9956, 259, 177, 3, 70, "ExampleText",ExpressionUUID->"e4c1d2d9-6d4f-4ff3-be5f-0cac10223e17"],
+Cell[11088, 304, 121, 0, 70, "ExampleText",ExpressionUUID->"e4b8cfa5-b9a5-4397-8dae-883ce2c57f9a"],
 Cell[CellGroupData[{
-Cell[10158, 266, 467, 12, 70, "Input",ExpressionUUID->"689e41a7-6590-4482-a0dc-ef99b7c3486d"],
-Cell[10628, 280, 21301, 423, 70, "Output",ExpressionUUID->"70d67c4e-609c-4e19-839e-75b7ce4cba43"]
+Cell[11234, 308, 467, 12, 70, "Input",ExpressionUUID->"1b6199cc-2716-4a3d-8815-d471c4b28de3"],
+Cell[11704, 322, 3177, 76, 70, "Output",ExpressionUUID->"86de535c-c440-4450-961d-b0f2a65bf692"]
+}, Open  ]],
+Cell[14896, 401, 99, 0, 70, "ExampleText",ExpressionUUID->"3fec35ce-f3c4-420a-b26d-b80471d45ddb"],
+Cell[CellGroupData[{
+Cell[15020, 405, 406, 9, 70, "Input",ExpressionUUID->"4918f7e5-a579-448c-b34e-5ef559c41667"],
+Cell[15429, 416, 2176, 53, 70, "Output",ExpressionUUID->"5a4818f0-b9d7-4e1c-a543-cf6c8dd3c49f"]
+}, Open  ]],
+Cell[17620, 472, 101, 0, 70, "ExampleText",ExpressionUUID->"f7bde2c2-20d5-4ace-9b57-6515c3e38006"],
+Cell[CellGroupData[{
+Cell[17746, 476, 396, 9, 70, "Input",ExpressionUUID->"9b427fba-df5b-4e16-84ab-aedd35c462eb"],
+Cell[18145, 487, 2964, 70, 70, "Output",ExpressionUUID->"cae5461a-dbaa-48a4-88cc-e4d68b4c8a28"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[31966, 708, 406, 9, 70, "Input",ExpressionUUID->"cf2dfb40-a68f-4361-864f-bdaa95189bcf"],
-Cell[32375, 719, 2270, 55, 70, "Output",ExpressionUUID->"f5509fc2-4a1c-4fb4-b051-3a2b35f33bab"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[34682, 779, 396, 9, 70, "Input",ExpressionUUID->"a5452b0b-c71e-4906-9564-aa476c778149"],
-Cell[35081, 790, 3058, 72, 70, "Output",ExpressionUUID->"fc7a1fe4-2adb-4e3f-a38f-9d2bd0eb0e26"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[38176, 867, 487, 13, 70, "ExtendedExamplesSection",ExpressionUUID->"a6228140-1981-46f0-88fc-4d129033136d",
+Cell[21146, 562, 487, 13, 70, "ExtendedExamplesSection",ExpressionUUID->"a6228140-1981-46f0-88fc-4d129033136d",
  CellTags->"ExtendedExamples",
  CellID->533848431],
 Cell[CellGroupData[{
-Cell[38688, 884, 242, 5, 70, "ExampleSection",ExpressionUUID->"6d08f999-4c69-4709-9b28-82906be6ee75",
+Cell[21658, 579, 242, 5, 70, "ExampleSection",ExpressionUUID->"6d08f999-4c69-4709-9b28-82906be6ee75",
  CellID->1293636265],
-Cell[38933, 891, 603, 15, 70, "ExampleText",ExpressionUUID->"7c912c42-f3a2-4b8c-a20c-0e381baae6bb"],
+Cell[21903, 586, 800, 22, 70, "ExampleText",ExpressionUUID->"9bbd7180-466e-4ce0-aa2b-63aa5eddd12c"],
 Cell[CellGroupData[{
-Cell[39561, 910, 1019, 26, 70, "Input",ExpressionUUID->"65cab277-727f-4008-8014-1c14c4bd14d9"],
-Cell[40583, 938, 29692, 638, 70, "Output",ExpressionUUID->"fbb39d00-ffb7-4dc5-b04b-6ff7c218f6e3"]
+Cell[22728, 612, 1019, 26, 70, "Input",ExpressionUUID->"c707216c-87e0-4d03-9ac3-dc2e990e5e46"],
+Cell[23750, 640, 4962, 122, 70, "Output",ExpressionUUID->"ae9c3419-17a2-4c48-83ab-84b3f87be690"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[70324, 1582, 244, 5, 70, "ExampleSection",ExpressionUUID->"3276b1d7-cf51-4f3b-970a-56b0e7c469f0",
+Cell[28761, 768, 244, 5, 70, "ExampleSection",ExpressionUUID->"3276b1d7-cf51-4f3b-970a-56b0e7c469f0",
  CellID->2061341341],
-Cell[70571, 1589, 95, 0, 70, "ExampleSubsection",ExpressionUUID->"819afac5-adbf-4682-9b75-d65ccc1126ba"],
-Cell[70669, 1591, 134, 0, 70, "ExampleText",ExpressionUUID->"696999be-ca24-47ce-ad39-80f166c35fa9"],
+Cell[29008, 775, 95, 0, 70, "ExampleSubsection",ExpressionUUID->"d89964b2-f099-4757-8327-983c69fd971a"],
+Cell[29106, 777, 134, 0, 70, "ExampleText",ExpressionUUID->"dee49880-3178-46ed-b55e-2475eaede0f8"],
 Cell[CellGroupData[{
-Cell[70828, 1595, 545, 12, 70, "Input",ExpressionUUID->"fd77761b-6c89-4334-9dce-dba2e8813812"],
-Cell[71376, 1609, 22004, 436, 70, "Output",ExpressionUUID->"52e1f3a3-463d-4ce2-93c8-2df350ae6810"]
+Cell[29265, 781, 545, 12, 70, "Input",ExpressionUUID->"fd75c896-996d-436a-84eb-b7a49b355cc9"],
+Cell[29813, 795, 3998, 93, 70, "Output",ExpressionUUID->"6832133a-3a23-4f9e-b0a5-5b73adc4ae7e"]
 }, Open  ]],
-Cell[93395, 2048, 92, 0, 70, "ExampleSubsection",ExpressionUUID->"475854be-08e8-4ab1-8e51-8b6b421c3163"],
-Cell[93490, 2050, 121, 0, 70, "ExampleText",ExpressionUUID->"892ebe50-8284-4131-b43d-5b1dd545a34b"],
+Cell[33826, 891, 92, 0, 70, "ExampleSubsection",ExpressionUUID->"fe88347c-6651-4533-9305-0bbc6ea89aa8"],
+Cell[33921, 893, 121, 0, 70, "ExampleText",ExpressionUUID->"8c2bf7f0-8db6-40d9-85f4-a7edda9b5402"],
 Cell[CellGroupData[{
-Cell[93636, 2054, 880, 21, 70, "Input",ExpressionUUID->"f07bc02a-7dfa-4a60-a93f-1cf34db951e7"],
-Cell[94519, 2077, 48733, 1006, 70, "Output",ExpressionUUID->"9d938b2b-7384-43fe-a0fa-a9416b624df9"]
+Cell[34067, 897, 880, 21, 70, "Input",ExpressionUUID->"312c7a28-97ee-4336-b935-2951f6b49490"],
+Cell[34950, 920, 6171, 153, 70, "Output",ExpressionUUID->"3375dc87-f8b1-40be-b965-1db1c309536a"]
 }, Open  ]],
-Cell[143267, 3086, 93, 0, 70, "ExampleSubsection",ExpressionUUID->"7df1fe0b-0d6a-420e-8db7-09f3807ec941"],
-Cell[143363, 3088, 121, 0, 70, "ExampleText",ExpressionUUID->"7ac29cef-402e-44e6-8d1c-47b023a4d65b"],
+Cell[41136, 1076, 93, 0, 70, "ExampleSubsection",ExpressionUUID->"9c9b1abe-48ec-4684-82e0-5c4ec50726d0"],
+Cell[41232, 1078, 121, 0, 70, "ExampleText",ExpressionUUID->"5fdce0e7-21bf-4d06-ab13-6c54a16df33a"],
 Cell[CellGroupData[{
-Cell[143509, 3092, 543, 13, 70, "Input",ExpressionUUID->"f28bd2a8-1602-486f-962f-500da864f966"],
-Cell[144055, 3107, 20937, 414, 70, "Output",ExpressionUUID->"557cd99c-7f65-4324-af7b-ccdc6d3af1a2"]
+Cell[41378, 1082, 543, 13, 70, "Input",ExpressionUUID->"a5228ef8-667d-4af8-ae00-20bf8a6576ec"],
+Cell[41924, 1097, 2687, 65, 70, "Output",ExpressionUUID->"cfe3ebf6-6d21-4a3c-b5c1-5e2d9316de94"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[165029, 3526, 544, 13, 70, "Input",ExpressionUUID->"36d5741f-d86f-41b3-9dab-ec8116c86e75"],
-Cell[165576, 3541, 20937, 414, 70, "Output",ExpressionUUID->"ae172447-77e9-47f2-b2ef-3931225d6f34"]
+Cell[44648, 1167, 544, 13, 70, "Input",ExpressionUUID->"61e76466-552e-4cce-aae7-c61522d673d5"],
+Cell[45195, 1182, 2687, 65, 70, "Output",ExpressionUUID->"6d9ceb39-97fd-4fcf-bb2d-a87eb230a679"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[186562, 3961, 259, 5, 70, "ExampleSection",ExpressionUUID->"0e0d5f37-f3c9-4474-a22b-9f10dcc8b438",
+Cell[47931, 1253, 259, 5, 70, "ExampleSection",ExpressionUUID->"0e0d5f37-f3c9-4474-a22b-9f10dcc8b438",
  CellID->2123667759],
-Cell[186824, 3968, 903, 20, 70, "ExampleText",ExpressionUUID->"e8520487-e16e-4256-a82d-896fa4cffae2"]
+Cell[48193, 1260, 1201, 31, 70, "ExampleText",ExpressionUUID->"e66f6450-5ffd-45f4-99c5-229e56437e22"]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[187776, 3994, 110, 1, 70, "MetadataSection",ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd",
+Cell[49443, 1297, 110, 1, 70, "MetadataSection",ExpressionUUID->"2b9a20c0-4684-4af0-ae90-008bcb3cd5bd",
  CellID->311882160],
-Cell[187889, 3997, 476, 12, 70, "History",ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046",
+Cell[49556, 1300, 476, 12, 70, "History",ExpressionUUID->"0647d953-178d-43da-935e-923bdb2c5046",
  CellID->341476719],
 Cell[CellGroupData[{
-Cell[188390, 4013, 485, 13, 70, "CategorizationSection",ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329",
+Cell[50057, 1316, 485, 13, 70, "CategorizationSection",ExpressionUUID->"a29a9a03-1747-4a1c-b242-c8059c9e5329",
  CellID->1755438392],
-Cell[188878, 4028, 134, 2, 70, "Categorization",ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a",
+Cell[50545, 1331, 134, 2, 70, "Categorization",ExpressionUUID->"d3672960-eef7-49f2-a47e-fce423fec36a",
  CellID->686433507],
-Cell[189015, 4032, 159, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec",
+Cell[50682, 1335, 159, 2, 70, "Categorization",ExpressionUUID->"e9337bb6-80d8-4427-9444-53c8416845ec",
  CellID->605800465],
-Cell[189177, 4036, 156, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
+Cell[50844, 1339, 156, 2, 70, "Categorization",ExpressionUUID->"a09e9c4d-8ab9-4ae7-b585-c517016e8191",
  CellID->468444828],
-Cell[189336, 4040, 147, 1, 70, "Categorization",ExpressionUUID->"46c5f470-3e92-48e2-9ed9-572ffd77a72d"]
+Cell[51003, 1343, 147, 1, 70, "Categorization",ExpressionUUID->"77537995-2069-4992-9158-191e287f28d0"]
 }, Closed]],
-Cell[189498, 4044, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
+Cell[51165, 1347, 110, 1, 70, "KeywordsSection",ExpressionUUID->"ef06640c-42c9-4c00-9a6c-9b632e3752b6",
  CellID->477174294],
 Cell[CellGroupData[{
-Cell[189633, 4049, 120, 1, 70, "TemplatesSection",ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c",
+Cell[51300, 1352, 120, 1, 70, "TemplatesSection",ExpressionUUID->"119176c2-887f-409f-a0c9-b72561b7624c",
  CellID->1872225408],
-Cell[189756, 4052, 149, 2, 70, "Template",ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72",
+Cell[51423, 1355, 149, 2, 70, "Template",ExpressionUUID->"1b15e1f4-90c6-45fb-bbe0-ea52939f5d72",
  CellID->1562036412],
-Cell[189908, 4056, 137, 2, 70, "Template",ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec",
+Cell[51575, 1359, 137, 2, 70, "Template",ExpressionUUID->"9e18a772-50d9-48d2-8436-649cdc9f97ec",
  CellID->158391909],
-Cell[190048, 4060, 136, 2, 70, "Template",ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9",
+Cell[51715, 1363, 136, 2, 70, "Template",ExpressionUUID->"1e946dbb-3373-40d7-b302-c6d742eac1b9",
  CellID->1360575930],
-Cell[190187, 4064, 137, 2, 70, "Template",ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648",
+Cell[51854, 1367, 137, 2, 70, "Template",ExpressionUUID->"aee0c783-3703-4eff-afcc-bcf11e35c648",
  CellID->793782254]
 }, Closed]]
 }, Open  ]]

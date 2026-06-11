@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[     16562,        429]
-NotebookOptionsPosition[     11385,        331]
-NotebookOutlinePosition[     12398,        360]
-CellTagsIndexPosition[     12355,        357]
+NotebookDataLength[     19286,        506]
+NotebookOptionsPosition[     13626,        403]
+NotebookOutlinePosition[     14663,        433]
+CellTagsIndexPosition[     14620,        430]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -29,62 +29,82 @@ compositional structure, and these subdiagrams can be inspected, matched and \
 edited the same way ordinary expressions can. The functions in this guide are \
 the diagram analogues of ",
  Cell[BoxData[
-  ButtonBox["Position",
-   BaseStyle->"Link",
-   ButtonData->"paclet:ref/Position"]], "InlineFormula",ExpressionUUID->
-  "8f647c0c-ec33-4c92-bff3-a1f5126580a5"],
+  TemplateBox[{
+    Cell[
+     TextData["Position"]], "paclet:ref/Position"},
+   "RefLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "4a4f8dec-67eb-4912-bc47-4ede4abb4ec1"],
  ", ",
  Cell[BoxData[
-  ButtonBox["Cases",
-   BaseStyle->"Link",
-   ButtonData->"paclet:ref/Cases"]], "InlineFormula",ExpressionUUID->
-  "b2df7c30-f7ff-4802-a3c2-dec89c21f37a"],
+  TemplateBox[{
+    Cell[
+     TextData["Cases"]], "paclet:ref/Cases"},
+   "RefLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "951328d3-7afe-4f10-9509-0ff2237ad7b7"],
  ", ",
  Cell[BoxData[
-  ButtonBox["Map",
-   BaseStyle->"Link",
-   ButtonData->"paclet:ref/Map"]], "InlineFormula",ExpressionUUID->
-  "90972d0d-2436-4d05-89e1-4868461b3df5"],
+  TemplateBox[{
+    Cell[
+     TextData["Map"]], "paclet:ref/Map"},
+   "RefLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "63a63641-833e-4bb1-b6f9-3dec70bb05de"],
  ", ",
  Cell[BoxData[
-  ButtonBox["MapAt",
-   BaseStyle->"Link",
-   ButtonData->"paclet:ref/MapAt"]], "InlineFormula",ExpressionUUID->
-  "37ffee5e-d745-4a27-b417-6c46f9ae40d7"],
+  TemplateBox[{
+    Cell[
+     TextData["MapAt"]], "paclet:ref/MapAt"},
+   "RefLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "1b7e8233-3c5e-4bb0-bc74-69714925bd5b"],
  ", ",
  Cell[BoxData[
-  ButtonBox["Extract",
-   BaseStyle->"Link",
-   ButtonData->"paclet:ref/Extract"]], "InlineFormula",ExpressionUUID->
-  "a724c04c-9c11-47a3-a91b-c3a1c5e00dc0"],
+  TemplateBox[{
+    Cell[
+     TextData["Extract"]], "paclet:ref/Extract"},
+   "RefLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "fd5ca6f4-ada8-4fde-ab4b-c441ebdbc507"],
  ", ",
  Cell[BoxData[
-  ButtonBox["Insert",
-   BaseStyle->"Link",
-   ButtonData->"paclet:ref/Insert"]], "InlineFormula",ExpressionUUID->
-  "68655543-6c4c-42ee-9b3a-fb8808be7184"],
+  TemplateBox[{
+    Cell[
+     TextData["Insert"]], "paclet:ref/Insert"},
+   "RefLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "9017f449-059d-4093-9b8d-476782bd52c2"],
  ", ",
  Cell[BoxData[
-  ButtonBox["Delete",
-   BaseStyle->"Link",
-   ButtonData->"paclet:ref/Delete"]], "InlineFormula",ExpressionUUID->
-  "2c42c247-8178-4e04-9231-6ec0b9280f85"],
+  TemplateBox[{
+    Cell[
+     TextData["Delete"]], "paclet:ref/Delete"},
+   "RefLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "73c8441f-9c7f-49b2-ad22-3ca3ccaf8b1c"],
  " and ",
  Cell[BoxData[
-  ButtonBox["ReplacePart",
-   BaseStyle->"Link",
-   ButtonData->"paclet:ref/ReplacePart"]], "InlineFormula",ExpressionUUID->
-  "7c5fecb7-ca21-4dac-b9ed-74dde069cf9a"],
+  TemplateBox[{
+    Cell[
+     TextData["ReplacePart"]], "paclet:ref/ReplacePart"},
+   "RefLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "ccd6c215-a03f-4a2e-9b20-887d9b270eb6"],
  " \[LongDash] they work on the diagram's subdiagram tree, using ",
  Cell[BoxData[
-  ButtonBox["DiagramPattern",
-   BaseStyle->"Link",
-   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/DiagramPattern"]], 
-  "InlineFormula",ExpressionUUID->"bad29fad-993b-4872-a53e-518be03fba09"],
+  TemplateBox[{
+    Cell[
+     TextData["DiagramPattern"]], 
+    "paclet:WolframDiagrammaticComputation/ref/DiagramPattern", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",ExpressionUUID->
+  "f77ea46e-68e2-4559-981c-e40fd0c85a8d"],
  " for matching. This is the plumbing under ",
  Cell[BoxData[
  "DiagramRewriting"], "InlineFormula",ExpressionUUID->
-  "9f48d5bd-fab0-4a13-a899-eef7a60620a2"],
+  "6cb49aa3-7b70-49f0-9616-63950db01e19"],
  "; reach for it when you want non-pattern edits or want to write a custom \
 rewriter."
 }], "GuideAbstract",
@@ -96,140 +116,178 @@ Cell[CellGroupData[{
 Cell["", "GuideFunctionsSection",
  CellID->1866139230,ExpressionUUID->"a0ea3657-4c83-4862-93c8-ecf80cebc774"],
 
+Cell["Inspection", "GuideFunctionsSubsection",ExpressionUUID->"f20a107c-f0d4-4056-a80b-8dfbe982651a"],
+
 Cell[TextData[{
  Cell[BoxData[
-  ButtonBox["DiagramSubdiagrams",
-   BaseStyle->"Link",
-   ButtonData->
-    "paclet:Wolfram/DiagrammaticComputation/ref/DiagramSubdiagrams"]], 
-  "InlineGuideFunction",
+  TemplateBox[{
+    Cell[
+     TextData["DiagramSubdiagrams"]], 
+    "paclet:WolframDiagrammaticComputation/ref/DiagramSubdiagrams", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineGuideFunction",
   TaggingRules->{"PageType" -> "Function"},ExpressionUUID->
-  "fb46d444-38ee-48ad-9043-7388ef8f9b1d"],
+  "26931350-966a-4ef6-b37a-433ecbf3d666"],
  " \[LongDash] ",
  "\[LongDash] list all subdiagrams of a diagram"
-}], "GuideText",ExpressionUUID->"5cfa4e39-b0ec-4838-8bf7-3764b9eb7443"],
+}], "GuideText",ExpressionUUID->"285e2820-ebcb-4bff-931b-27e873f25d48"],
 
 Cell[TextData[{
  Cell[BoxData[
-  ButtonBox["DiagramPositions",
-   BaseStyle->"Link",
-   ButtonData->
-    "paclet:Wolfram/DiagrammaticComputation/ref/DiagramPositions"]], 
-  "InlineGuideFunction",
+  TemplateBox[{
+    Cell[
+     TextData["DiagramPositions"]], 
+    "paclet:WolframDiagrammaticComputation/ref/DiagramPositions", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineGuideFunction",
   TaggingRules->{"PageType" -> "Function"},ExpressionUUID->
-  "3402b745-6f5f-4f2b-beef-656ad3fa8444"],
+  "06dac7bb-3643-48a3-963a-420a4a08d5f5"],
  " \[LongDash] ",
  "\[LongDash] positions of every subdiagram"
-}], "GuideText",ExpressionUUID->"1a6b3e87-f4e6-4db2-807e-08cfa2ac7afb"],
+}], "GuideText",ExpressionUUID->"364d68e7-2e4a-4603-8c15-e45b2af318ea"],
+
+Cell["Patterns", "GuideFunctionsSubsection",ExpressionUUID->"49fa5d0b-e4ef-440a-8d36-78ed79bd2c1a"],
 
 Cell[TextData[{
  Cell[BoxData[
-  ButtonBox["DiagramPattern",
-   BaseStyle->"Link",
-   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/DiagramPattern"]], 
-  "InlineGuideFunction",
+  TemplateBox[{
+    Cell[
+     TextData["DiagramPattern"]], 
+    "paclet:WolframDiagrammaticComputation/ref/DiagramPattern", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineGuideFunction",
   TaggingRules->{"PageType" -> "Function"},ExpressionUUID->
-  "73b4bfdf-de80-4717-af58-709c40715d16"],
+  "679730e0-51b8-4c75-8c2f-bb9c405ba897"],
  " \[LongDash] ",
  "\[LongDash] diagram-shaped pattern for matching subdiagrams"
-}], "GuideText",ExpressionUUID->"b5f39c7b-d7f0-4b08-b798-6349e7f9dc72"],
+}], "GuideText",ExpressionUUID->"d13c9de3-7990-4cdc-b075-178cd3ee1aa3"],
+
+Cell["Locating", "GuideFunctionsSubsection",ExpressionUUID->"c7a22898-92df-431e-bec1-6bab83c0a316"],
 
 Cell[TextData[{
  Cell[BoxData[
-  ButtonBox["DiagramPosition",
-   BaseStyle->"Link",
-   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/DiagramPosition"]],
-   "InlineGuideFunction",
+  TemplateBox[{
+    Cell[
+     TextData["DiagramPosition"]], 
+    "paclet:WolframDiagrammaticComputation/ref/DiagramPosition", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineGuideFunction",
   TaggingRules->{"PageType" -> "Function"},ExpressionUUID->
-  "493009ee-02d4-4b23-870b-51fb9ebe4bb7"],
+  "557cf882-f416-47e4-8709-2fda38a24ffe"],
  " \[LongDash] ",
  "\[LongDash] positions of subdiagrams matching a pattern"
-}], "GuideText",ExpressionUUID->"ea2b8147-3d6c-4d6b-a06e-2577b841b238"],
+}], "GuideText",ExpressionUUID->"4272008a-5f17-4c9b-b004-1f878a9916c9"],
 
 Cell[TextData[{
  Cell[BoxData[
-  ButtonBox["DiagramCases",
-   BaseStyle->"Link",
-   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/DiagramCases"]], 
-  "InlineGuideFunction",
+  TemplateBox[{
+    Cell[
+     TextData["DiagramCases"]], 
+    "paclet:WolframDiagrammaticComputation/ref/DiagramCases", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineGuideFunction",
   TaggingRules->{"PageType" -> "Function"},ExpressionUUID->
-  "82db97ba-74fb-4b7a-95ab-9ff9b25af97b"],
+  "2d1c186d-59b6-4b60-96e1-ee2720be20fc"],
  " \[LongDash] ",
  "\[LongDash] extract subdiagrams matching a pattern"
-}], "GuideText",ExpressionUUID->"7df5f68d-7c86-452e-a91b-2f1ad171ceb8"],
+}], "GuideText",ExpressionUUID->"0faa59d6-8988-4439-8d63-2c4df76bb6d3"],
+
+Cell["Editing", "GuideFunctionsSubsection",ExpressionUUID->"357a3ba6-d1f6-472f-a159-cf6db0f8d31f"],
 
 Cell[TextData[{
  Cell[BoxData[
-  ButtonBox["DiagramMap",
-   BaseStyle->"Link",
-   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/DiagramMap"]], 
-  "InlineGuideFunction",
+  TemplateBox[{
+    Cell[
+     TextData["DiagramMap"]], 
+    "paclet:WolframDiagrammaticComputation/ref/DiagramMap", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineGuideFunction",
   TaggingRules->{"PageType" -> "Function"},ExpressionUUID->
-  "b8253896-e937-460b-9136-f1d88744ecc3"],
+  "3f952078-e798-4b93-84f6-a4400bd2bd2f"],
  " \[LongDash] ",
  "\[LongDash] apply a function to every subdiagram recursively"
-}], "GuideText",ExpressionUUID->"dab40138-b923-4bd6-9695-f6ee2d17f917"],
+}], "GuideText",ExpressionUUID->"62dc046f-96d8-4a8e-8a6e-1a9312f423eb"],
 
 Cell[TextData[{
  Cell[BoxData[
-  ButtonBox["DiagramMapAt",
-   BaseStyle->"Link",
-   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/DiagramMapAt"]], 
-  "InlineGuideFunction",
+  TemplateBox[{
+    Cell[
+     TextData["DiagramMapAt"]], 
+    "paclet:WolframDiagrammaticComputation/ref/DiagramMapAt", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineGuideFunction",
   TaggingRules->{"PageType" -> "Function"},ExpressionUUID->
-  "99eb7718-7401-4417-80f7-07fdf684f868"],
+  "9c65c816-1c25-4bb7-a058-9a1f17fcf6c2"],
  " \[LongDash] ",
  "\[LongDash] apply a function at specific positions"
-}], "GuideText",ExpressionUUID->"3464ed50-85e6-4819-9e0a-aeb3679046e3"],
+}], "GuideText",ExpressionUUID->"ebd64810-2572-45f1-8302-2e5d07dee22f"],
 
 Cell[TextData[{
  Cell[BoxData[
-  ButtonBox["DiagramExtract",
-   BaseStyle->"Link",
-   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/DiagramExtract"]], 
-  "InlineGuideFunction",
+  TemplateBox[{
+    Cell[
+     TextData["DiagramExtract"]], 
+    "paclet:WolframDiagrammaticComputation/ref/DiagramExtract", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineGuideFunction",
   TaggingRules->{"PageType" -> "Function"},ExpressionUUID->
-  "5905f871-c07b-4d8d-91c3-7a6eff4e450b"],
+  "b76eaa66-eaea-4747-927f-dde148b7ebf3"],
  " \[LongDash] ",
  "\[LongDash] extract the subdiagram at a position"
-}], "GuideText",ExpressionUUID->"6d484d67-b572-4def-9e12-b13470a66ae0"],
+}], "GuideText",ExpressionUUID->"afad8518-e18b-4460-9794-10bd4c0dbf82"],
 
 Cell[TextData[{
  Cell[BoxData[
-  ButtonBox["DiagramInsert",
-   BaseStyle->"Link",
-   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/DiagramInsert"]], 
-  "InlineGuideFunction",
+  TemplateBox[{
+    Cell[
+     TextData["DiagramInsert"]], 
+    "paclet:WolframDiagrammaticComputation/ref/DiagramInsert", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineGuideFunction",
   TaggingRules->{"PageType" -> "Function"},ExpressionUUID->
-  "7250aa01-a43d-4d6b-ac86-598df8de4c4b"],
+  "e0484c9b-33cf-425d-a622-5ae7666dba7a"],
  " \[LongDash] ",
  "\[LongDash] insert a subdiagram at a position"
-}], "GuideText",ExpressionUUID->"8e53dfcc-76be-4121-88aa-0f3909e7b8bd"],
+}], "GuideText",ExpressionUUID->"b524d737-62b5-4624-9a01-45941030b15c"],
 
 Cell[TextData[{
  Cell[BoxData[
-  ButtonBox["DiagramDelete",
-   BaseStyle->"Link",
-   ButtonData->"paclet:Wolfram/DiagrammaticComputation/ref/DiagramDelete"]], 
-  "InlineGuideFunction",
+  TemplateBox[{
+    Cell[
+     TextData["DiagramDelete"]], 
+    "paclet:WolframDiagrammaticComputation/ref/DiagramDelete", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineGuideFunction",
   TaggingRules->{"PageType" -> "Function"},ExpressionUUID->
-  "569b6a24-8817-44fd-9fbc-859eee463c51"],
+  "f7fc87f4-d6b6-4f65-b870-560c7e78483e"],
  " \[LongDash] ",
  "\[LongDash] delete the subdiagram at a position"
-}], "GuideText",ExpressionUUID->"2f9f6ebd-e21b-47d5-b21a-bcaadf44fb70"],
+}], "GuideText",ExpressionUUID->"f95626b1-1e4a-42e3-af95-6c2eea098da0"],
 
 Cell[TextData[{
  Cell[BoxData[
-  ButtonBox["DiagramReplacePart",
-   BaseStyle->"Link",
-   ButtonData->
-    "paclet:Wolfram/DiagrammaticComputation/ref/DiagramReplacePart"]], 
-  "InlineGuideFunction",
+  TemplateBox[{
+    Cell[
+     TextData["DiagramReplacePart"]], 
+    "paclet:WolframDiagrammaticComputation/ref/DiagramReplacePart", 
+    "WolframDiagrammaticComputation Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineGuideFunction",
   TaggingRules->{"PageType" -> "Function"},ExpressionUUID->
-  "07d8b98b-918b-4ddc-8566-fbb3e1b575e1"],
+  "b9aebdd0-557e-4853-8089-cf960b4e9d27"],
  " \[LongDash] ",
  "\[LongDash] replace subdiagrams at specific positions"
-}], "GuideText",ExpressionUUID->"d19e54ab-1465-4e78-a0e0-c43e2390ae23"]
+}], "GuideText",ExpressionUUID->"9a659719-7c08-4f4b-b717-cf4b71ad98fc"]
 }, Open  ]],
 
 Cell["Tech Notes", "GuideTutorialsSection",
@@ -241,14 +299,28 @@ Cell["Related Guides", "GuideMoreAboutSection",
  CellChangeTimes->{{3.8430423939366693`*^9, 3.843042395176153*^9}},
  CellID->23220180,ExpressionUUID->"0c9c7cc7-143a-48e7-bf27-45dd9029bd50"],
 
-Cell[TextData[ButtonBox["Diagrams",
- BaseStyle->"Link",
- ButtonData->"paclet:guide/Diagrams"]], "GuideMoreAbout",
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Diagrams"]], 
+   "paclet:WolframDiagrammaticComputation/guide/Diagrams"},
+  "RefLinkPlain",
+  BaseStyle->{
+   "InlineFormula"}]], \
+"InlineFormula",ExpressionUUID->"ed7625e2-e94b-41f8-97e8-af4a3c0d6bf9"]], \
+"GuideMoreAbout",
  CellID->1567025153,ExpressionUUID->"e0ff5a6e-1488-40e3-9571-e445309cac69"],
 
-Cell[TextData[ButtonBox["DiagramRewriting",
- BaseStyle->"Link",
- ButtonData->"paclet:guide/DiagramRewriting"]], "GuideMoreAbout",
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["DiagramRewriting"]], 
+   "paclet:WolframDiagrammaticComputation/guide/DiagramRewriting"},
+  "RefLinkPlain",
+  BaseStyle->{
+   "InlineFormula"}]], \
+"InlineFormula",ExpressionUUID->"b1f0a8be-66f3-4287-ad77-20e03fe5490a"]], \
+"GuideMoreAbout",
  CellID->1567025153,ExpressionUUID->"e0ff5a6e-1488-40e3-9571-e445309cac69"]
 }, Open  ]],
 
@@ -292,7 +364,7 @@ Cell["Wolfram`DiagrammaticComputation`", "Categorization",
  CellID->468444828,ExpressionUUID->"52afa833-5422-4969-8c91-b9af19a42a2e"],
 
 Cell["Wolfram/DiagrammaticComputation/guide/DiagramSurgery", "Categorization",
- CellLabel->"URI",ExpressionUUID->"a31720cd-a088-45ea-b758-4918e77203e5"]
+ CellLabel->"URI",ExpressionUUID->"504ebfd2-046c-4a0c-aec5-be481d7c383b"]
 }, Closed]],
 
 Cell[CellGroupData[{
@@ -343,6 +415,7 @@ diagram", "paclet" -> "Wolfram/DiagrammaticComputation", "uri" ->
     "Wolfram/DiagrammaticComputation/guide/DiagramSurgery", "type" -> "Guide",
      "index" -> True, "language" -> "en"}},
 CreateCellID->True,
+CellContext->CellGroup,
 FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (May 19, 2026)",
 StyleDefinitions->FrontEnd`FileName[{"Wolfram"}, "GuidePageStylesExt.nb", 
   CharacterEncoding -> "UTF-8"],
@@ -362,72 +435,76 @@ Notebook[{
 Cell[CellGroupData[{
 Cell[576, 22, 111, 1, 70, "GuideTitle",ExpressionUUID->"a3a3c038-ca24-47b7-9945-83f1c1312fe3",
  CellID->942062912],
-Cell[690, 25, 2345, 65, 70, "GuideAbstract",ExpressionUUID->"ef0ab37b-2e0d-4399-8f7e-82603ccbe925",
+Cell[690, 25, 2758, 85, 70, "GuideAbstract",ExpressionUUID->"ef0ab37b-2e0d-4399-8f7e-82603ccbe925",
  CellID->2001916300]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[3072, 95, 109, 1, 70, "GuideFunctionsSection",ExpressionUUID->"a0ea3657-4c83-4862-93c8-ecf80cebc774",
+Cell[3485, 115, 109, 1, 70, "GuideFunctionsSection",ExpressionUUID->"a0ea3657-4c83-4862-93c8-ecf80cebc774",
  CellID->1866139230],
-Cell[3184, 98, 441, 11, 70, "GuideText",ExpressionUUID->"5cfa4e39-b0ec-4838-8bf7-3764b9eb7443"],
-Cell[3628, 111, 433, 11, 70, "GuideText",ExpressionUUID->"1a6b3e87-f4e6-4db2-807e-08cfa2ac7afb"],
-Cell[4064, 124, 442, 10, 70, "GuideText",ExpressionUUID->"b5f39c7b-d7f0-4b08-b798-6349e7f9dc72"],
-Cell[4509, 136, 440, 10, 70, "GuideText",ExpressionUUID->"ea2b8147-3d6c-4d6b-a06e-2577b841b238"],
-Cell[4952, 148, 429, 10, 70, "GuideText",ExpressionUUID->"7df5f68d-7c86-452e-a91b-2f1ad171ceb8"],
-Cell[5384, 160, 435, 10, 70, "GuideText",ExpressionUUID->"dab40138-b923-4bd6-9695-f6ee2d17f917"],
-Cell[5822, 172, 429, 10, 70, "GuideText",ExpressionUUID->"3464ed50-85e6-4819-9e0a-aeb3679046e3"],
-Cell[6254, 184, 431, 10, 70, "GuideText",ExpressionUUID->"6d484d67-b572-4def-9e12-b13470a66ae0"],
-Cell[6688, 196, 426, 10, 70, "GuideText",ExpressionUUID->"8e53dfcc-76be-4121-88aa-0f3909e7b8bd"],
-Cell[7117, 208, 428, 10, 70, "GuideText",ExpressionUUID->"2f9f6ebd-e21b-47d5-b21a-bcaadf44fb70"],
-Cell[7548, 220, 449, 11, 70, "GuideText",ExpressionUUID->"d19e54ab-1465-4e78-a0e0-c43e2390ae23"]
+Cell[3597, 118, 101, 0, 70, "GuideFunctionsSubsection",ExpressionUUID->"f20a107c-f0d4-4056-a80b-8dfbe982651a"],
+Cell[3701, 120, 534, 13, 70, "GuideText",ExpressionUUID->"285e2820-ebcb-4bff-931b-27e873f25d48"],
+Cell[4238, 135, 526, 13, 70, "GuideText",ExpressionUUID->"364d68e7-2e4a-4603-8c15-e45b2af318ea"],
+Cell[4767, 150, 99, 0, 70, "GuideFunctionsSubsection",ExpressionUUID->"49fa5d0b-e4ef-440a-8d36-78ed79bd2c1a"],
+Cell[4869, 152, 540, 13, 70, "GuideText",ExpressionUUID->"d13c9de3-7990-4cdc-b075-178cd3ee1aa3"],
+Cell[5412, 167, 99, 0, 70, "GuideFunctionsSubsection",ExpressionUUID->"c7a22898-92df-431e-bec1-6bab83c0a316"],
+Cell[5514, 169, 538, 13, 70, "GuideText",ExpressionUUID->"4272008a-5f17-4c9b-b004-1f878a9916c9"],
+Cell[6055, 184, 527, 13, 70, "GuideText",ExpressionUUID->"0faa59d6-8988-4439-8d63-2c4df76bb6d3"],
+Cell[6585, 199, 98, 0, 70, "GuideFunctionsSubsection",ExpressionUUID->"357a3ba6-d1f6-472f-a159-cf6db0f8d31f"],
+Cell[6686, 201, 533, 13, 70, "GuideText",ExpressionUUID->"62dc046f-96d8-4a8e-8a6e-1a9312f423eb"],
+Cell[7222, 216, 527, 13, 70, "GuideText",ExpressionUUID->"ebd64810-2572-45f1-8302-2e5d07dee22f"],
+Cell[7752, 231, 529, 13, 70, "GuideText",ExpressionUUID->"afad8518-e18b-4460-9794-10bd4c0dbf82"],
+Cell[8284, 246, 524, 13, 70, "GuideText",ExpressionUUID->"b524d737-62b5-4624-9a01-45941030b15c"],
+Cell[8811, 261, 526, 13, 70, "GuideText",ExpressionUUID->"f95626b1-1e4a-42e3-af95-6c2eea098da0"],
+Cell[9340, 276, 542, 13, 70, "GuideText",ExpressionUUID->"9a659719-7c08-4f4b-b717-cf4b71ad98fc"]
 }, Open  ]],
-Cell[8012, 234, 118, 1, 70, "GuideTutorialsSection",ExpressionUUID->"90fbef20-ae74-4ea3-a50b-de22929861f8",
+Cell[9897, 292, 118, 1, 70, "GuideTutorialsSection",ExpressionUUID->"90fbef20-ae74-4ea3-a50b-de22929861f8",
  CellID->415694126],
 Cell[CellGroupData[{
-Cell[8155, 239, 189, 2, 70, "GuideMoreAboutSection",ExpressionUUID->"0c9c7cc7-143a-48e7-bf27-45dd9029bd50",
+Cell[10040, 297, 189, 2, 70, "GuideMoreAboutSection",ExpressionUUID->"0c9c7cc7-143a-48e7-bf27-45dd9029bd50",
  CellID->23220180],
-Cell[8347, 243, 189, 3, 70, "GuideMoreAbout",ExpressionUUID->"e0ff5a6e-1488-40e3-9571-e445309cac69",
+Cell[10232, 301, 367, 10, 70, "GuideMoreAbout",ExpressionUUID->"e0ff5a6e-1488-40e3-9571-e445309cac69",
  CellID->1567025153],
-Cell[8539, 248, 205, 3, 70, "GuideMoreAbout",ExpressionUUID->"e0ff5a6e-1488-40e3-9571-e445309cac69",
+Cell[10602, 313, 383, 10, 70, "GuideMoreAbout",ExpressionUUID->"e0ff5a6e-1488-40e3-9571-e445309cac69",
  CellID->1567025153]
 }, Open  ]],
-Cell[8759, 254, 124, 1, 70, "GuideRelatedLinksSection",ExpressionUUID->"f8d14542-737b-4330-8523-975dc2960049",
+Cell[11000, 326, 124, 1, 70, "GuideRelatedLinksSection",ExpressionUUID->"f8d14542-737b-4330-8523-975dc2960049",
  CellID->415694148],
 Cell[CellGroupData[{
-Cell[8908, 259, 110, 1, 70, "MetadataSection",ExpressionUUID->"1e562958-8f54-4854-b782-f4766015b2b2",
+Cell[11149, 331, 110, 1, 70, "MetadataSection",ExpressionUUID->"1e562958-8f54-4854-b782-f4766015b2b2",
  CellID->311882160],
-Cell[9021, 262, 476, 12, 70, "History",ExpressionUUID->"6e43ae3a-1f84-4ca3-8250-559a053a9513",
+Cell[11262, 334, 476, 12, 70, "History",ExpressionUUID->"6e43ae3a-1f84-4ca3-8250-559a053a9513",
  CellID->341476719],
 Cell[CellGroupData[{
-Cell[9522, 278, 123, 1, 70, "CategorizationSection",ExpressionUUID->"cbe57f1c-788c-4a86-8338-08191b5d7b7b",
+Cell[11763, 350, 123, 1, 70, "CategorizationSection",ExpressionUUID->"cbe57f1c-788c-4a86-8338-08191b5d7b7b",
  CellID->1122911449],
-Cell[9648, 281, 133, 2, 70, "Categorization",ExpressionUUID->"4bb65dd8-004f-4758-b626-8984c4a9f475",
+Cell[11889, 353, 133, 2, 70, "Categorization",ExpressionUUID->"4bb65dd8-004f-4758-b626-8984c4a9f475",
  CellID->686433507],
-Cell[9784, 285, 159, 2, 70, "Categorization",ExpressionUUID->"ea3b4732-cbcc-4f28-9e20-bfabae54c52c",
+Cell[12025, 357, 159, 2, 70, "Categorization",ExpressionUUID->"ea3b4732-cbcc-4f28-9e20-bfabae54c52c",
  CellID->605800465],
-Cell[9946, 289, 156, 2, 70, "Categorization",ExpressionUUID->"52afa833-5422-4969-8c91-b9af19a42a2e",
+Cell[12187, 361, 156, 2, 70, "Categorization",ExpressionUUID->"52afa833-5422-4969-8c91-b9af19a42a2e",
  CellID->468444828],
-Cell[10105, 293, 152, 1, 70, "Categorization",ExpressionUUID->"a31720cd-a088-45ea-b758-4918e77203e5"]
+Cell[12346, 365, 152, 1, 70, "Categorization",ExpressionUUID->"504ebfd2-046c-4a0c-aec5-be481d7c383b"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[10294, 299, 111, 1, 70, "KeywordsSection",ExpressionUUID->"99169e92-9e69-4982-8b71-ac9518fe5ead",
+Cell[12535, 371, 111, 1, 70, "KeywordsSection",ExpressionUUID->"99169e92-9e69-4982-8b71-ac9518fe5ead",
  CellID->1427428552],
-Cell[10408, 302, 103, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
+Cell[12649, 374, 103, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
  CellID->1251852827],
-Cell[10514, 305, 104, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
+Cell[12755, 377, 104, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
  CellID->1251852827],
-Cell[10621, 308, 103, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
+Cell[12862, 380, 103, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
  CellID->1251852827],
-Cell[10727, 311, 99, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
+Cell[12968, 383, 99, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
  CellID->1251852827],
-Cell[10829, 314, 103, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
+Cell[13070, 386, 103, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
  CellID->1251852827],
-Cell[10935, 317, 103, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
+Cell[13176, 389, 103, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
  CellID->1251852827],
-Cell[11041, 320, 102, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
+Cell[13282, 392, 102, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
  CellID->1251852827],
-Cell[11146, 323, 102, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
+Cell[13387, 395, 102, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
  CellID->1251852827],
-Cell[11251, 326, 106, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
+Cell[13492, 398, 106, 1, 70, "Keywords",ExpressionUUID->"90374130-df8e-4799-aaa2-c8b32eecdde9",
  CellID->1251852827]
 }, Closed]]
 }, Open  ]]
