@@ -7,9 +7,10 @@ PacletObject[
     "Creator" -> "Nik Murzin, Ian Ford",
     "License" -> "MIT",
     "PublisherID" -> "Wolfram",
-    "Version" -> "1.0.7",
+    "Version" -> "1.0.8",
     "WolframVersion" -> "14.2+",
     "PrimaryContext" -> "Wolfram`DiagrammaticComputation`",
+    "Dependencies" -> {"WolframInstitute/Hypergraph"},
     "Extensions" -> {
       {
         "Kernel",
