@@ -1,29 +1,14 @@
-BeginPackage["Wolfram`DiagrammaticComputation`Utilities`"];
-
-
-fillAutomatic
-reverseTree
-reverseEdge
-
-getName
-tag
-untag
-InterpretationForm
-
-collectPorts
-collectPortsListBy
-
-inheritedQ
-
-FirstPositions
-FirstPositionsWithMissing
-
-SmoothGraphicsCurves
-
-GridFoliation
-
-
-Begin["Wolfram`DiagrammaticComputation`Utilities`Private`"];
+(* Internal cross-file helpers (Structured Package Format: PackageScoped =
+   visible across the paclet's files, not exported to users). *)
+PackageScoped[{
+    fillAutomatic, reverseTree, reverseEdge,
+    getName, tag, untag, InterpretationForm,
+    collectPorts, collectPortsListBy,
+    inheritedQ,
+    FirstPositions, FirstPositionsWithMissing,
+    SmoothGraphicsCurves,
+    GridFoliation
+}]
 
 
 fillAutomatic[expr_, arities_List, def_ : Inherited] := MapThread[
@@ -178,8 +163,3 @@ GridFoliation[g_Graph] /; DirectedGraphQ[g] && AcyclicGraphQ[g] := With[{sources
 			]
 	]
 ]
-
-
-End[];
-
-EndPackage[];

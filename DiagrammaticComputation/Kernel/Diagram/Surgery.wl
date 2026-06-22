@@ -1,19 +1,8 @@
-BeginPackage["Wolfram`DiagrammaticComputation`Diagram`Surgery`", {"Wolfram`DiagrammaticComputation`Diagram`", "Wolfram`DiagrammaticComputation`Utilities`"}];
-
-DiagramSubdiagrams
-DiagramPositions
-DiagramPattern
-DiagramCases
-DiagramPosition
-DiagramMap
-DiagramMapAt
-DiagramReplacePart
-DiagramExtract
-DiagramInsert
-DiagramDelete
-
-
-Begin["Wolfram`DiagrammaticComputation`Diagram`Surgery`Private`"];
+PackageExported[{
+    DiagramSubdiagrams, DiagramPositions, DiagramPattern, DiagramCases,
+    DiagramPosition, DiagramMap, DiagramMapAt, DiagramReplacePart,
+    DiagramExtract, DiagramInsert, DiagramDelete
+}]
 
 
 DiagramPositions[d_Diagram, lvl : (_Integer ? NonNegative) | Infinity : Infinity] := With[{subDiagrams = d["SubDiagrams"]},
@@ -157,9 +146,3 @@ DiagramDelete[d_Diagram, pos : {{___Integer} ...}, curPos_ : {}] := Enclose @
     ]
 
 DiagramDelete[d_Diagram, pos : {___Integer}] := DiagramDelete[d, {pos}]
-
-
-
-End[]
-
-EndPackage[]

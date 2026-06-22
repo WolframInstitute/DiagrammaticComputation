@@ -1,39 +1,18 @@
-BeginPackage["Wolfram`DiagrammaticComputation`Diagram`Rewriting`", {
-    "Wolfram`DiagrammaticComputation`Port`",
-    "Wolfram`DiagrammaticComputation`Diagram`",
-    "Wolfram`DiagrammaticComputation`Utilities`",
-    "Wolfram`DiagrammaticComputation`Diagram`Surgery`",
-    "Wolfram`DiagrammaticComputation`Diagram`Grid`",
-    "WolframInstitute`Hypergraph`"
+PackageImport["WolframInstitute`Hypergraph`"]
+
+PackageExported[{
+    DiagramHypergraph, DiagramHypergraphRule,
+    DiagramReplaceList, DiagramReplace, DiagramNestReplace,
+    DiagramExpressionReplace,
+    RemoveDiagramRule, DiagramRule,
+    EraserDiagram,
+    CommutationRule, EraserRule, AnnihilationRule, DuplicateAnnihilationRule,
+    EraserAnnihilationRule, DuplicateEraserRule,
+    PropagationRule,
+    DiagramCopySplit,
+    $LambdaInteractionRules, $LambdaCroissantBracketRules,
+    $LambdaCroissantBracketPolarizedRules
 }]
-
-DiagramHypergraph
-DiagramHypergraphRule
-
-DiagramReplaceList
-DiagramReplace
-DiagramNestReplace
-
-DiagramExpressionReplace
-
-RemoveDiagramRule
-DiagramRule
-
-EraserDiagram
-
-CommutationRule
-EraserRule
-AnnihilationRule
-DuplicateAnnihilationRule
-EraserAnnihilationRule
-DuplicateEraserRule
-
-PropagationRule
-
-DiagramCopySplit
-
-
-Begin["`Rules`"]
 
 $LambdaInteractionRules = <|
 	"BetaReduce" :> AnnihilationRule[Subscript["\[Lambda]", _], "\[Application]", {SuperStar[var], body}, {SuperStar[arg], app}],
@@ -68,10 +47,6 @@ $LambdaCroissantBracketPolarizedRules = <|
 	"BracketPropagation" :> PropagationRule[a, {b, c}, # + 1 &, "Shape" -> "Bracket"],
 	"DualBracketPropagation" :> PropagationRule[a, {SuperStar[b], c}, # + 1 &, "Shape" -> "Bracket"]
 |>
-
-End[]
-
-Begin["`Private`"]
 
 
 Options[DiagramHypergraph] = Join[{"Pattern" -> False, "Symmetric" -> False}, Options[Hypergraph]]
@@ -546,9 +521,3 @@ DiagramCopySplit[d_Diagram] := If[d["NetworkQ"], Identity, DiagramArrange][
 		FilterRules[d["DiagramOptions"], Except["PortFunction"]]
 	]
 ]
-
-
-End[]
-
-EndPackage[]
-

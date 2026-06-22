@@ -1,21 +1,8 @@
-BeginPackage["Wolfram`DiagrammaticComputation`Port`", {"Wolfram`DiagrammaticComputation`Utilities`"}];
-
-Port
-PortQ
-EmptyPortQ
-ZeroPortQ
-
-PortDual
-PortMinus
-PortNeutral
-PortProduct
-PortSum
-PortPower
-
-TagPort
-UntagPort
-
-Begin["Wolfram`DiagrammaticComputation`Port`Private`"];
+PackageExported[{
+    Port, PortQ, EmptyPortQ, ZeroPortQ,
+    PortDual, PortMinus, PortNeutral, PortProduct, PortSum, PortPower,
+    TagPort, UntagPort
+}]
 
 
 (* ::Section:: *)
@@ -308,9 +295,3 @@ PortProduct /: MakeBoxes[PortProduct[ps___], form_] := With[{boxes = ToBoxes[Cir
 PortSum /: MakeBoxes[PortSum[ps___], form_] := With[{boxes = ToBoxes[CirclePlus[ps], form]}, InterpretationBox[boxes, PortSum[ps]]]
 
 PortPower /: MakeBoxes[PortPower[p_, q_], form_] := With[{boxes = ToBoxes[Superscript[p, q], form]}, InterpretationBox[boxes, PortPower[p, q]]]
-
-
-
-End[];
-
-EndPackage[];

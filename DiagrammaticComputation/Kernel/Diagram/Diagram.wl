@@ -1,56 +1,21 @@
-BeginPackage["Wolfram`DiagrammaticComputation`Diagram`", {
-    "Wolfram`DiagrammaticComputation`Utilities`",
-    "Wolfram`DiagrammaticComputation`Port`",
-    "Wolfram`DiagrammaticComputation`Diagram`Grid`",
-    "Wolfram`DiagrammaticComputation`Diagram`Surgery`"
-}];
+PackageExported[{
+    Diagram, DiagramQ,
+    DiagramDual, DiagramFlip, DiagramReverse,
+    DiagramProduct, DiagramSum, DiagramComposition, DiagramRightComposition,
+    DiagramNetwork, ToDiagramNetwork, SingletonDiagram, ZeroDiagram,
+    EmptyDiagram, EmptyDiagramQ, CapDiagram, CupDiagram, IdentityDiagram,
+    PermutationDiagram, SpiderDiagram, CopyDiagram, MergeDiagram,
+    DiagramGraphics, DiagramsFreePorts, DiagramsPortGraph, DiagramsGraph,
+    DiagramsNetGraph,
+    DiagramGraphSimplify, SimplifyDiagram,
+    DiagramSplit, DiagramPermute,
+    DiagramTensor, TensorDiagram, DiagramFunction
+}]
 
-Diagram
-DiagramQ
+(* Internal: shared across paclet files but not user-facing.
+   $DefaultPortLabelFunction is referenced from Grid.wl. *)
+PackageScoped[{$DiagramHeadPattern, $DiagramDefaultGraphics, $DefaultPortLabelFunction}]
 
-DiagramDual
-DiagramFlip
-DiagramReverse
-
-DiagramProduct
-DiagramSum
-DiagramComposition
-DiagramRightComposition
-DiagramNetwork
-ToDiagramNetwork
-SingletonDiagram
-ZeroDiagram
-EmptyDiagram
-EmptyDiagramQ
-CapDiagram
-CupDiagram
-IdentityDiagram
-PermutationDiagram
-SpiderDiagram
-CopyDiagram
-MergeDiagram
-
-DiagramGraphics
-DiagramsFreePorts
-DiagramsPortGraph
-DiagramsGraph
-DiagramsNetGraph
-
-DiagramGraphSimplify
-SimplifyDiagram
-
-DiagramSplit
-DiagramPermute
-
-DiagramTensor
-TensorDiagram
-DiagramFunction
-
-$DiagramHeadPattern
-$DiagramDefaultGraphics
-
-
-Begin["Wolfram`DiagrammaticComputation`Diagram`Private`"];
 
 
 (* ::Subsection:: *)
@@ -2226,8 +2191,3 @@ DiagramFunction[diagram_Diagram, opts : OptionsPattern[]] := Enclose @ Replace[d
         finalMap @* outputMap @* f @* inputMap
 	]
 }]
-
-
-End[];
-
-EndPackage[];

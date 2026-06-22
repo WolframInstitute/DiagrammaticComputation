@@ -1,8 +1,4 @@
-BeginPackage["Wolfram`DiagrammaticComputation`Diagram`DiagramDraw`", {"Wolfram`DiagrammaticComputation`Port`", "Wolfram`DiagrammaticComputation`Diagram`"}];
-
-DiagramDraw
-
-Begin["Wolfram`DiagrammaticComputation`Diagram`DiagramDraw`Private`"];
+PackageExported[{DiagramDraw}]
 
 
 findBoxId[boxes_, mousePos_] := Replace[FirstPosition[boxes, "Box"[boxPos_, _] /; RegionDistance[RegionBoundary[Rectangle @@ boxPos], mousePos] < .01, Missing[], {1}, Heads -> False], {id_} :> id]
@@ -196,9 +192,3 @@ DiagramDraw[diagram_ : <||>, opts : OptionsPattern[]] := DynamicModule[{
 	];
 	canvas
 ]
-
-
-End[];
-
-EndPackage[];
-

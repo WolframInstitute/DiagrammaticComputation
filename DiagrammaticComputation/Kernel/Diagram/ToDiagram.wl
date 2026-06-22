@@ -1,8 +1,4 @@
-BeginPackage["Wolfram`DiagrammaticComputation`Diagram`ToDiagram`", {"Wolfram`DiagrammaticComputation`Utilities`", "Wolfram`DiagrammaticComputation`Port`", "Wolfram`DiagrammaticComputation`Diagram`", "Wolfram`DiagrammaticComputation`Diagram`Grid`"}];
-
-ToDiagram
-
-Begin["Wolfram`DiagrammaticComputation`Diagram`ToDiagram`Private`"];
+PackageExported[{ToDiagram}]
 
 
 ToDiagram[g_Graph, opts : OptionsPattern[GraphDiagram]] := GraphDiagram[g, opts]
@@ -242,8 +238,3 @@ QuantumCircuitDiagram[qc_Wolfram`QuantumFramework`QuantumCircuitOperator, opts :
 	Diagram[d, "OutputPorts" -> SortBy[d["OutputPorts"], #["Name"] &], "InputPorts" -> SortBy[d["InputPorts"], #["Name"] &],
 		"PortOrderingFunction" -> Function[Replace[#["HoldName"], {HoldForm[Interpretation[_, (Subscript | Superscript)[_, order_][_]]] :> order + 1, _ -> 0}]]]
 ]
-
-
-End[];
-
-EndPackage[];

@@ -8,7 +8,7 @@ PacletObject[
     "License" -> "MIT",
     "PublisherID" -> "Wolfram",
     "Version" -> "1.0.8",
-    "WolframVersion" -> "14.2+",
+    "WolframVersion" -> "15.0+",
     "PrimaryContext" -> "Wolfram`DiagrammaticComputation`",
     "Dependencies" -> {"WolframInstitute/Hypergraph"},
     "Extensions" -> {

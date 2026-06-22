@@ -1,25 +1,11 @@
-BeginPackage["Wolfram`DiagrammaticComputation`Diagram`Grid`", {"Wolfram`DiagrammaticComputation`Port`", "Wolfram`DiagrammaticComputation`Diagram`", "Wolfram`DiagrammaticComputation`Utilities`", "Wolfram`DiagrammaticComputation`Diagram`Surgery`"}];
-
-ColumnDiagram
-RowDiagram
-DiagramGrid
-
-DiagramArrange
-DiagramDecompose
-
-DiagramMatchPorts
-DiagramAssignPorts
-
-GridInputPorts
-GridOutputPorts
-
-DiagramGridWidth
-DiagramGridHeight
-DiagramGridWidthHeight
-
-DiagramGridTree
-
-Begin["Wolfram`DiagrammaticComputation`Diagram`Grid`Private`"];
+PackageExported[{
+    ColumnDiagram, RowDiagram, DiagramGrid,
+    DiagramArrange, DiagramDecompose,
+    DiagramMatchPorts, DiagramAssignPorts,
+    GridInputPorts, GridOutputPorts,
+    DiagramGridWidth, DiagramGridHeight, DiagramGridWidthHeight,
+    DiagramGridTree
+}]
 
 {$Black, $White} = If[$VersionNumber >= 14.3, {LightDarkSwitched[Black, White], LightDarkSwitched[White, Black]}, {Black, White}]
 
@@ -771,7 +757,7 @@ DiagramGrid[diagram_Diagram ? DiagramQ, opts : OptionsPattern[]] := Block[{
                     #[[2]]["Graphics",
                         PlotInteractivity -> plotInteractivity,
                         "PortsFirst" -> False,
-                        "PortLabelFunction" -> Function[Framed[Wolfram`DiagrammaticComputation`Diagram`Private`$DefaultPortLabelFunction[##], Background -> $White, FrameStyle -> LightGray]]
+                        "PortLabelFunction" -> Function[Framed[$DefaultPortLabelFunction[##], Background -> $White, FrameStyle -> LightGray]]
                     ][[1]] & /@ subDiagrams,
                     dividers
                 }
@@ -1114,9 +1100,3 @@ DiagramGridTree[diag_Diagram ? DiagramQ, opts : OptionsPattern[]] := With[{
 		TreeElementStyle -> {TreeCases[_Diagram] -> EdgeForm[StandardBlue]}
 	]
 ]
-
-
-End[];
-
-EndPackage[];
-

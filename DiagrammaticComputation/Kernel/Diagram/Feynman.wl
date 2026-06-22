@@ -1,13 +1,7 @@
-BeginPackage["Wolfram`DiagrammaticComputation`Diagram`Feynman`", {"Wolfram`DiagrammaticComputation`Diagram`"}];
-
-TopologyGraphics
-FeynArtsTopologyGraphics
-TopologyGraph
-TopologyGraphs
-FeynmanDiagram
-WigglyArcFunction
-
-Begin["Wolfram`DiagrammaticComputation`Diagram`Feynman`Private`"];
+PackageExported[{
+    TopologyGraphics, FeynArtsTopologyGraphics, TopologyGraph,
+    TopologyGraphs, FeynmanDiagram, WigglyArcFunction
+}]
 
 
 TopologyGraphics[top : _FeynArts`Topology[___] -> g_] := Block[ {v, p, s},
@@ -144,7 +138,3 @@ WigglyArcFunction[shape_String : "Straight", k : _ ? NumericQ : 0, arrow : _ ? N
         ]
     }
 ]
-
-End[];
-
-EndPackage[];
