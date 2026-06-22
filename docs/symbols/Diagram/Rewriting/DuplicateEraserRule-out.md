@@ -1,7 +1,7 @@
 ---
 Template: Symbol
 Name: DuplicateEraserRule
-Context: Wolfram`DiagrammaticComputation`
+Context: Wolfram`DiagrammaticComputation`Rewriting`
 Paclet: Wolfram/DiagrammaticComputation
 URI: Wolfram/DiagrammaticComputation/ref/DuplicateEraserRule
 Keywords: [duplicate, eraser, copy, discard, rule, interaction net]

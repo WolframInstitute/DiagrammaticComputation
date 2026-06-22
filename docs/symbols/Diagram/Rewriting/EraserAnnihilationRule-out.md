@@ -1,7 +1,7 @@
 ---
 Template: Symbol
 Name: EraserAnnihilationRule
-Context: Wolfram`DiagrammaticComputation`
+Context: Wolfram`DiagrammaticComputation`Rewriting`
 Paclet: Wolfram/DiagrammaticComputation
 URI: Wolfram/DiagrammaticComputation/ref/EraserAnnihilationRule
 Keywords: [eraser, annihilation, discard, rule, interaction net]

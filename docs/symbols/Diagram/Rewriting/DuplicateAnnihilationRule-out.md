@@ -1,7 +1,7 @@
 ---
 Template: Symbol
 Name: DuplicateAnnihilationRule
-Context: Wolfram`DiagrammaticComputation`
+Context: Wolfram`DiagrammaticComputation`Rewriting`
 Paclet: Wolfram/DiagrammaticComputation
 URI: Wolfram/DiagrammaticComputation/ref/DuplicateAnnihilationRule
 Keywords: [duplicate, annihilation, copy, rule, interaction net]

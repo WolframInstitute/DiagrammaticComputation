@@ -1,7 +1,7 @@
 ---
 Template: Symbol
 Name: EraserDiagram
-Context: Wolfram`DiagrammaticComputation`
+Context: Wolfram`DiagrammaticComputation`Rewriting`
 Paclet: Wolfram/DiagrammaticComputation
 URI: Wolfram/DiagrammaticComputation/ref/EraserDiagram
 Keywords: [eraser, discard, counit, terminal]

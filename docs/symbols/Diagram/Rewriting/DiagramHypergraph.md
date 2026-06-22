@@ -1,7 +1,7 @@
 ---
 Template: Symbol
 Name: DiagramHypergraph
-Context: Wolfram`DiagrammaticComputation`
+Context: Wolfram`DiagrammaticComputation`Rewriting`
 Paclet: Wolfram/DiagrammaticComputation
 URI: Wolfram/DiagrammaticComputation/ref/DiagramHypergraph
 Keywords: [hypergraph, matching, view, rewriting]

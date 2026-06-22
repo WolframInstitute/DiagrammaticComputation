@@ -1,7 +1,7 @@
 ---
 Template: Symbol
 Name: DiagramReplace
-Context: Wolfram`DiagrammaticComputation`
+Context: Wolfram`DiagrammaticComputation`Rewriting`
 Paclet: Wolfram/DiagrammaticComputation
 URI: Wolfram/DiagrammaticComputation/ref/DiagramReplace
 Keywords: [replace, rewrite, rule, first match]

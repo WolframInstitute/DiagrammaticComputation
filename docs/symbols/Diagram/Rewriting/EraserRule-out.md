@@ -1,7 +1,7 @@
 ---
 Template: Symbol
 Name: EraserRule
-Context: Wolfram`DiagrammaticComputation`
+Context: Wolfram`DiagrammaticComputation`Rewriting`
 Paclet: Wolfram/DiagrammaticComputation
 URI: Wolfram/DiagrammaticComputation/ref/EraserRule
 Keywords: [eraser, discard, rule, deletion]

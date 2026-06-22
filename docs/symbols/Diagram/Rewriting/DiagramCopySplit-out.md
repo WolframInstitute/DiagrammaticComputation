@@ -1,7 +1,7 @@
 ---
 Template: Symbol
 Name: DiagramCopySplit
-Context: Wolfram`DiagrammaticComputation`
+Context: Wolfram`DiagrammaticComputation`Rewriting`
 Paclet: Wolfram/DiagrammaticComputation
 URI: Wolfram/DiagrammaticComputation/ref/DiagramCopySplit
 Keywords: [copy, split, distribute, rule]

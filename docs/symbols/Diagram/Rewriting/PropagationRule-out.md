@@ -1,7 +1,7 @@
 ---
 Template: Symbol
 Name: PropagationRule
-Context: Wolfram`DiagrammaticComputation`
+Context: Wolfram`DiagrammaticComputation`Rewriting`
 Paclet: Wolfram/DiagrammaticComputation
 URI: Wolfram/DiagrammaticComputation/ref/PropagationRule
 Keywords: [propagation, commute, duplicate, rule, interaction net]

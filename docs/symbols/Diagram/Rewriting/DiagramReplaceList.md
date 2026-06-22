@@ -1,7 +1,7 @@
 ---
 Template: Symbol
 Name: DiagramReplaceList
-Context: Wolfram`DiagrammaticComputation`
+Context: Wolfram`DiagrammaticComputation`Rewriting`
 Paclet: Wolfram/DiagrammaticComputation
 URI: Wolfram/DiagrammaticComputation/ref/DiagramReplaceList
 Keywords: [replace list, enumerate, rule, alternatives]

@@ -1,7 +1,7 @@
 ---
 Template: Symbol
 Name: DiagramNestReplace
-Context: Wolfram`DiagrammaticComputation`
+Context: Wolfram`DiagrammaticComputation`Rewriting`
 Paclet: Wolfram/DiagrammaticComputation
 URI: Wolfram/DiagrammaticComputation/ref/DiagramNestReplace
 Keywords: [nest, repeat, rewrite, fixed point]

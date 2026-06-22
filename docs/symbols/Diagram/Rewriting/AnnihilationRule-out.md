@@ -1,7 +1,7 @@
 ---
 Template: Symbol
 Name: AnnihilationRule
-Context: Wolfram`DiagrammaticComputation`
+Context: Wolfram`DiagrammaticComputation`Rewriting`
 Paclet: Wolfram/DiagrammaticComputation
 URI: Wolfram/DiagrammaticComputation/ref/AnnihilationRule
 Keywords: [annihilation, cancel, rule, interaction net]

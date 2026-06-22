@@ -1,7 +1,7 @@
 ---
 Template: Symbol
 Name: RemoveDiagramRule
-Context: Wolfram`DiagrammaticComputation`
+Context: Wolfram`DiagrammaticComputation`Rewriting`
 Paclet: Wolfram/DiagrammaticComputation
 URI: Wolfram/DiagrammaticComputation/ref/RemoveDiagramRule
 Keywords: [remove, rule, deletion, rewrite]

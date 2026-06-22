@@ -1,7 +1,7 @@
 ---
 Template: Symbol
 Name: CommutationRule
-Context: Wolfram`DiagrammaticComputation`
+Context: Wolfram`DiagrammaticComputation`Rewriting`
 Paclet: Wolfram/DiagrammaticComputation
 URI: Wolfram/DiagrammaticComputation/ref/CommutationRule
 Keywords: [commutation, exchange, rule, interaction net]
