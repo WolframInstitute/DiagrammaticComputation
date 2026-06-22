@@ -14,6 +14,14 @@ PackageExported[{
     $LambdaCroissantBracketPolarizedRules
 }]
 
+(* The rewriting rules and their helper functions use bare pattern atoms
+   (var, body, arg, app, x1, x2, y1, y2, a, b, c, ...) as port names. Parse
+   them into a dedicated Rewriting context so they have a stable identity and
+   never collide with the user's globals; this context is not on $ContextPath,
+   so the atoms are not exported. Public symbols are still resolved through the
+   path (and bound to their PackageExported identities). *)
+Begin["Wolfram`DiagrammaticComputation`Rewriting`"]
+
 $LambdaInteractionRules = <|
 	"BetaReduce" :> AnnihilationRule[Subscript["\[Lambda]", _], "\[Application]", {SuperStar[var], body}, {SuperStar[arg], app}],
 	"DupReduce" :> DuplicateAnnihilationRule[{x1, x2}, {y1, y2}, "Bend" -> True],
@@ -521,3 +529,5 @@ DiagramCopySplit[d_Diagram] := If[d["NetworkQ"], Identity, DiagramArrange][
 		FilterRules[d["DiagramOptions"], Except["PortFunction"]]
 	]
 ]
+
+End[]
