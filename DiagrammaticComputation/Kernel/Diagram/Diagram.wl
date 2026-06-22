@@ -345,7 +345,7 @@ DiagramReverse[d_ ? DiagramQ, opts : OptionsPattern[]] := Diagram[
     }],
     "OutputPorts" -> Reverse[Through[d["FlatOutputPorts"]["Reverse"]]],
     "InputPorts" -> Reverse[Through[d["FlatInputPorts"]["Reverse"]]],
-    "PortArrows" -> MapThread[Placed, {Reverse /@ d["PortStyles", opts], Reverse /@ ReflectionTransform[{1, 0}, d["Center"]] @ d["PortArrows", opts]}, 2],
+    "PortArrows" -> MapThread[MapThread[Placed, {##}] &, {Reverse /@ d["PortStyles", opts], Reverse /@ ReflectionTransform[{1, 0}, d["Center"]] /@ d["PortArrows", opts]}],
     "PortLabels" -> (Reverse /@ d["PortLabels", opts]),
     If[ ! TrueQ[OptionValue["Singleton"]],
         "Shape" -> Replace[d["OptionValue"["Shape"]], {
@@ -1088,7 +1088,7 @@ DiagramGraphics[diagram_ ? DiagramQ, opts : OptionsPattern[]] := Enclose @ With[
                             Replace[#["Label"], HoldForm[None] -> "\t\t\t"],
                             #["View"]
                         ],
-                        FirstCase[#["Shape"], r_GeometricTransformation :> Mean[RegionCentroid /@ ResourceFunction["ExtractGraphicsPrimitives"][r]], {0, 0}, All]
+                        FirstCase[#["Shape"], r_GeometricTransformation :> RegionCentroid[r], {0, 0}, All]
                     ]
                 ]] @ diagram
             ],

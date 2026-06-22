@@ -8,6 +8,9 @@ DiagramPosition
 DiagramMap
 DiagramMapAt
 DiagramReplacePart
+DiagramExtract
+DiagramInsert
+DiagramDelete
 
 
 Begin["Wolfram`DiagrammaticComputation`Diagram`Surgery`Private`"];
@@ -111,6 +114,49 @@ DiagramReplacePart[d_Diagram, pos : {{___Integer} ...} -> new_, curPos_ : {}] :=
     ]
 
 DiagramReplacePart[d_Diagram, pos : {___Integer} -> new_] := DiagramReplacePart[d, {pos} -> new]
+
+
+DiagramExtract[d_Diagram, {}] := d
+
+DiagramExtract[d_Diagram, pos : {i_Integer, rest___}] := DiagramExtract[d["SubDiagrams"][[i]], {rest}]
+
+DiagramExtract[d_Diagram, pos : {{___Integer} ...}] := DiagramExtract[d, #] & /@ pos
+
+
+DiagramInsert[d_Diagram, elem_, pos : {{___Integer} ...}, curPos_ : {}] := Enclose @ 
+    ConfirmBy[
+        If[ d["Head"] === None,
+            d,
+            Block[{newArgs = MapIndexed[DiagramInsert[#, elem, pos, Join[curPos, #2]] &, d["SubDiagrams"]], insertPositions},
+                insertPositions = List /@ Select[pos, Length[#] == Length[curPos] + 1 && Take[#, Length[curPos]] === curPos &][[All, -1]];
+                If[ Length[insertPositions] > 0,
+                    newArgs = Insert[newArgs, elem, insertPositions]
+                ];
+                Diagram[d["Head"] @@ newArgs, d["DiagramOptions"]]
+            ]
+        ],
+        DiagramQ
+    ]
+
+DiagramInsert[d_Diagram, elem_, pos : {___Integer}] := DiagramInsert[d, elem, {pos}]
+
+
+DiagramDelete[d_Diagram, pos : {{___Integer} ...}, curPos_ : {}] := Enclose @ 
+    ConfirmBy[
+        If[ d["Head"] === None,
+            d,
+            Diagram[
+                d["Head"] @@ MapIndexed[
+                    If[MemberQ[pos, Join[curPos, #2]], Nothing, DiagramDelete[#1, pos, Join[curPos, #2]]] &,
+                    d["SubDiagrams"]
+                ],
+                d["DiagramOptions"]
+            ]
+        ],
+        DiagramQ
+    ]
+
+DiagramDelete[d_Diagram, pos : {___Integer}] := DiagramDelete[d, {pos}]
 
 
 
