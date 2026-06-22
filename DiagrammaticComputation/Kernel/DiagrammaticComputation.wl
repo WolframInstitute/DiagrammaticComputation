@@ -2,23 +2,20 @@
    PackageInitialize scans the .wl files alongside this loader (and up to
    three levels below) for Package* declarations, then loads them.
 
-   - IgnoreFiles excludes Circuit.wl: the QuantumFramework-dependent circuit
-     bridge is an optional submodule loaded on demand, not at paclet load.
-   - LoadFirstFiles pins the file order to the original dependency order so
-     load-time option inheritance (Options[X] = Options[Y]) resolves exactly
-     as before. *)
+   IgnoreFiles excludes the optional submodules that pull external paclets, so
+   the base paclet loads without those dependencies present. Each is its own
+   context with its own loader, loaded on demand:
+     Circuit.wl                  - depends on Wolfram`QuantumFramework`
+     Diagram/Rewriting/          - depends on WolframInstitute`Hypergraph`; the
+                                   Kernel extension maps the context
+                                   Wolfram`DiagrammaticComputation`Rewriting` to
+                                   Diagram/Rewriting/Init.wl, so it loads via
+                                   Needs["Wolfram`DiagrammaticComputation`Rewriting`"] *)
 
 PackageInitialize["Wolfram`DiagrammaticComputation`",
-    "IgnoreFiles" -> {"Circuit.wl"},
-    "LoadFirstFiles" -> {
-        "Utilities.wl",
-        "Port.wl",
-        FileNameJoin[{"Diagram", "Diagram.wl"}],
-        FileNameJoin[{"Diagram", "Grid.wl"}],
-        FileNameJoin[{"Diagram", "ToDiagram.wl"}],
-        FileNameJoin[{"Diagram", "Surgery.wl"}],
-        FileNameJoin[{"Diagram", "DiagramDraw.wl"}],
-        FileNameJoin[{"Diagram", "Rewriting.wl"}],
-        FileNameJoin[{"Diagram", "Feynman.wl"}]
+    "IgnoreFiles" -> {
+        "Circuit.wl",
+        FileNameJoin[{"Diagram", "Rewriting", "Init.wl"}],
+        FileNameJoin[{"Diagram", "Rewriting", "Rewriting.wl"}]
     }
 ]

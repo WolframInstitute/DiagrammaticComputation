@@ -1,3 +1,21 @@
+(* Rewriting submodule, in its own context Wolfram`DiagrammaticComputation`Rewriting`,
+   loaded on demand by its sibling loader Init.wl. It depends on
+   WolframInstitute`Hypergraph`, so keeping it out of the base paclet load lets the
+   core paclet load without that dependency present. Load it with
+       Needs["Wolfram`DiagrammaticComputation`Rewriting`"]
+
+   Structured Package Format placement:
+   - PackageExported puts the public API, the capitalized internal helpers, and the
+     $-constants into the primary Rewriting context, on $ContextPath.
+   - The bare port atoms used in the rules (var, body, arg, app, x1, x2, a, b, c, ...)
+     are parsed inside Begin[primary context] so they too live in the Rewriting context
+     and print by their short names - but without being exported (SPF's only declaration
+     that targets the primary context is PackageExported, which would export them, so a
+     Begin into that context is the way to land there unexported).
+   - The lowercase helper functions are left undeclared, so SPF assigns them to this
+     file's private subcontext, off $ContextPath. *)
+
+PackageImport["Wolfram`DiagrammaticComputation`"]
 PackageImport["WolframInstitute`Hypergraph`"]
 
 PackageExported[{
@@ -10,16 +28,15 @@ PackageExported[{
     EraserAnnihilationRule, DuplicateEraserRule,
     PropagationRule,
     DiagramCopySplit,
+    DiagramHyperedge, DiagramPortReplace, MatchDiagrams, DuplicateRule,
     $LambdaInteractionRules, $LambdaCroissantBracketRules,
-    $LambdaCroissantBracketPolarizedRules
+    $LambdaCroissantBracketPolarizedRules,
+    $CopyOptions, $Port
 }]
 
-(* The rewriting rules and their helper functions use bare pattern atoms
-   (var, body, arg, app, x1, x2, y1, y2, a, b, c, ...) as port names. Parse
-   them into a dedicated Rewriting context so they have a stable identity and
-   never collide with the user's globals; this context is not on $ContextPath,
-   so the atoms are not exported. Public symbols are still resolved through the
-   path (and bound to their PackageExported identities). *)
+(* Rule sets: the bare port atoms (var, body, arg, app, x1, x2, a, b, c, ...) parse
+   into the primary Rewriting context so they print by short name, yet stay out of the
+   PackageExported public API. *)
 Begin["Wolfram`DiagrammaticComputation`Rewriting`"]
 
 $LambdaInteractionRules = <|
@@ -55,6 +72,8 @@ $LambdaCroissantBracketPolarizedRules = <|
 	"BracketPropagation" :> PropagationRule[a, {b, c}, # + 1 &, "Shape" -> "Bracket"],
 	"DualBracketPropagation" :> PropagationRule[a, {SuperStar[b], c}, # + 1 &, "Shape" -> "Bracket"]
 |>
+
+End[]
 
 
 Options[DiagramHypergraph] = Join[{"Pattern" -> False, "Symmetric" -> False}, Options[Hypergraph]]
@@ -529,5 +548,3 @@ DiagramCopySplit[d_Diagram] := If[d["NetworkQ"], Identity, DiagramArrange][
 		FilterRules[d["DiagramOptions"], Except["PortFunction"]]
 	]
 ]
-
-End[]

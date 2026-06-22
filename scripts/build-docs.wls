@@ -54,6 +54,9 @@ $root      = FileNameDrop[$InputFileName, -2];
    definitions. *)
 PacletDirectoryLoad[$root];
 Needs["Wolfram`DiagrammaticComputation`"];
+(* The Rewriting submodule is its own on-demand context; load it too so its
+   reference pages resolve their symbol links and evaluate their examples. *)
+Needs["Wolfram`DiagrammaticComputation`Rewriting`"];
 
 $docsRoot     = FileNameJoin[{$root, "docs"}];
 $guidesIn     = FileNameJoin[{$docsRoot, "guides"}];
