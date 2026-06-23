@@ -8,14 +8,14 @@
    - PackageExported puts the public API, the capitalized internal helpers, and the
      $-constants into the primary Rewriting context, on $ContextPath.
    - The bare port atoms used in the rules (var, body, arg, app, x1, x2, a, b, c, ...)
-     are parsed inside Begin[primary context] so they too live in the Rewriting context
-     and print by their short names - but without being exported (SPF's only declaration
-     that targets the primary context is PackageExported, which would export them, so a
-     Begin into that context is the way to land there unexported).
+     are parsed inside Begin into the Rewriting`Rules` subcontext: not part of the
+     exported API, but Init.wl puts that subcontext on $ContextPath so the rules still
+     print by their short atom names.
    - The lowercase helper functions are left undeclared, so SPF assigns them to this
      file's private subcontext, off $ContextPath. *)
 
 PackageImport["Wolfram`DiagrammaticComputation`"]
+
 PackageImport["WolframInstitute`Hypergraph`"]
 
 PackageExported[{
@@ -37,7 +37,7 @@ PackageExported[{
 (* Rule sets: the bare port atoms (var, body, arg, app, x1, x2, a, b, c, ...) parse
    into the primary Rewriting context so they print by short name, yet stay out of the
    PackageExported public API. *)
-Begin["Wolfram`DiagrammaticComputation`Rewriting`"]
+Begin["Wolfram`DiagrammaticComputation`Rewriting`Rules`"]
 
 $LambdaInteractionRules = <|
 	"BetaReduce" :> AnnihilationRule[Subscript["\[Lambda]", _], "\[Application]", {SuperStar[var], body}, {SuperStar[arg], app}],
